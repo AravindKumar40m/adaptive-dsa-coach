@@ -1,0 +1,25 @@
+{
+  "slug": "can-finish-courses",
+  "title": "Can You Finish All Courses",
+  "concept": "graphs",
+  "difficulty": "medium",
+  "statement": "A school offers `n` courses numbered `0` to `n - 1`. Some courses have **prerequisites**: each entry `prerequisites[i] = [a, b]` means you must finish course `b` **before** you can take course `a`.\n\nReturn `true` if it is possible to finish **all** the courses, otherwise `false` (which happens when the prerequisites contain a circle, like course 0 needing 1 and course 1 needing 0).",
+  "constraints": [
+    "1 <= n <= 2000",
+    "0 <= len(prerequisites) <= 5000",
+    "each pair [a, b] has a != b and 0 <= a, b < n (a pair may repeat)"
+  ],
+  "signature": { "name": "can_finish", "params": [{ "name": "n", "type": "int" }, { "name": "prerequisites", "type": "int[][]" }], "returns": "bool" },
+  "examples": [
+    { "args": [2, [[1, 0]]], "expected": true, "explanation": "Take course 0, then course 1." },
+    { "args": [2, [[1, 0], [0, 1]]], "expected": false, "explanation": "Each course needs the other first." }
+  ],
+  "edgeTests": [[1, []], [3, []], [3, [[1, 0], [2, 1]]], [3, [[1, 0], [2, 1], [0, 2]]], [4, [[1, 0], [2, 0], [3, 1], [3, 2]]], [3, [[1, 0], [1, 0]]]],
+  "expected": { "time": "O(n + m)", "space": "O(n + m)" },
+  "hints": {
+    "nudge": "Which courses can you take right away? What changes after you take one?",
+    "pattern": "Topological sort (Kahn's algorithm): repeatedly take a course whose prerequisites are all done.",
+    "pseudocode": "indegree[a] = number of prerequisites of a; adj[b] = courses that need b\nqueue = courses with indegree 0; taken = 0\nwhile queue: c = pop; taken++; for each course x needing c: indegree[x]--; if 0: push x\nreturn taken == n",
+    "walkthrough": "Count, for every course, how many unfinished prerequisites it has. Courses with zero can be taken now: put them in a queue. Taking a course finishes a prerequisite for every course that needs it, so reduce their counts, and queue any that reach zero. If you manage to take all n courses, there is no circle. If some courses never reach zero, they are stuck waiting on each other in a cycle, so the answer is false. O(n + m) time."
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "lowest-common-ancestor",
+  "title": "Lowest Common Ancestor",
+  "concept": "trees",
+  "difficulty": "medium",
+  "statement": "In a binary tree, the **lowest common ancestor** (LCA) of two nodes is the deepest node that has both of them in its subtree (a node counts as being in its own subtree).\n\nYou are given `root`, whose node values are all **different**, and two values `p` and `q` that both exist in the tree. Return the **value of their lowest common ancestor**. (In the examples a tree is written level by level from the top; `null` marks a missing child.)",
+  "constraints": [
+    "1 <= number of nodes <= 10000",
+    "-1000000000 <= node value <= 1000000000, all different",
+    "p and q are values that appear in the tree (they may be equal)"
+  ],
+  "signature": { "name": "lowest_common_ancestor", "params": [{ "name": "root", "type": "TreeNode" }, { "name": "p", "type": "int" }, { "name": "q", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[3, 5, 1, 6, 2, 0, 8, null, null, 7, 4], 5, 1], "expected": 3, "explanation": "5 is in the left subtree and 1 in the right subtree of 3, so 3 is their lowest common ancestor." },
+    { "args": [[3, 5, 1, 6, 2, 0, 8, null, null, 7, 4], 5, 4], "expected": 5, "explanation": "4 is inside the subtree of 5, and a node is its own ancestor." }
+  ],
+  "edgeTests": [[[1], 1, 1], [[1, 2], 1, 2], [[1, 2, 3], 2, 3], [[1, 2, 3, 4, 5], 4, 5], [[1, 2, 3, 4, 5], 4, 3], [[1, 2, null, 3], 3, 3]],
+  "expected": { "time": "O(n)", "space": "O(h)" },
+  "hints": {
+    "nudge": "Look for p and q below each node. Where do the two searches 'split apart'?",
+    "pattern": "Recursion that returns a node when it finds p or q, and combines the answers from both sides.",
+    "pseudocode": "find(node): if node is empty or node.val is p or q: return node\n  left = find(node.left); right = find(node.right)\n  if left and right: return node   // p and q are on different sides\n  return left or right",
+    "walkthrough": "Search both subtrees of each node. If a node equals p or q, report it. If the left search finds one target and the right search finds the other, the current node is the first place where the paths split, so it is the LCA. If only one side reports something, pass that result up (either both targets are on that side, or the one that was found is the answer when the other is below it). O(n) time. A simpler idea: record the root-to-p and root-to-q paths and take the last node they share."
+  }
+}

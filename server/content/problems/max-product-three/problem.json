@@ -1,0 +1,24 @@
+{
+  "slug": "max-product-three",
+  "title": "Best Product of Three",
+  "concept": "sorting",
+  "difficulty": "easy",
+  "statement": "Pick **any three different positions** of `nums` and multiply their values. Return the **largest product** you can get. Remember that two negative numbers multiply to a positive one.",
+  "constraints": [
+    "3 <= len(nums) <= 100000",
+    "-1000 <= nums[i] <= 1000"
+  ],
+  "signature": { "name": "max_product_of_three", "params": [{ "name": "nums", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 2, 3]], "expected": 6, "explanation": "1 * 2 * 3." },
+    { "args": [[-10, -10, 5, 2]], "expected": 500, "explanation": "(-10) * (-10) * 5 = 500." }
+  ],
+  "edgeTests": [[[-1, -2, -3]], [[0, 0, 0]], [[-5, -4, 1]], [[-5, 0, 3, 4]], [[1, 2, 3, 4]]],
+  "expected": { "time": "O(n log n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "The answer uses either the three largest numbers, or the two smallest (most negative) numbers with the largest. Why?",
+    "pattern": "Sort, then compare two candidates.",
+    "pseudocode": "sort(nums)\nreturn max(nums[n-1]*nums[n-2]*nums[n-3], nums[0]*nums[1]*nums[n-1])",
+    "walkthrough": "Trying every triple is O(n^3). After sorting, the best product is one of two cases: the three biggest numbers, or the two most negative numbers (whose product is positive and big) times the biggest number. Compute both and return the larger. The products are at most 10^9, which fits in a 32-bit int."
+  }
+}

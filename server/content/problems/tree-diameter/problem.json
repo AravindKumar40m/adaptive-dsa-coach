@@ -1,0 +1,24 @@
+{
+  "slug": "tree-diameter",
+  "title": "Longest Path in a Tree",
+  "concept": "trees",
+  "difficulty": "medium",
+  "statement": "The **diameter** of a binary tree is the length of the longest path between **any two nodes**, measured in **edges** (the connections between parent and child). The path may or may not pass through the root.\n\nGiven `root`, return the diameter. A tree with zero or one node has diameter 0. (In the examples a tree is written level by level from the top; `null` marks a missing child.)",
+  "constraints": [
+    "0 <= number of nodes <= 10000",
+    "-1000000000 <= node value <= 1000000000"
+  ],
+  "signature": { "name": "tree_diameter", "params": [{ "name": "root", "type": "TreeNode" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 2, 3, 4, 5]], "expected": 3, "explanation": "The path 4 -> 2 -> 1 -> 3 has 3 edges (so does 5 -> 2 -> 1 -> 3)." },
+    { "args": [[1, 2]], "expected": 1, "explanation": "One edge." }
+  ],
+  "edgeTests": [[[]], [[1]], [[1, 2, 3]], [[1, 2, null, 3, null, 4]], [[1, null, 2, null, 3]], [[1, 2, 3, 4, 5, 6, 7, 8]]],
+  "expected": { "time": "O(n)", "space": "O(h)" },
+  "hints": {
+    "nudge": "The longest path has a highest node. Through that node, how long is the path in terms of its two subtrees?",
+    "pattern": "One recursive pass that returns each node's height while updating a global best.",
+    "pseudocode": "best = 0\nheight(node): if node is empty: return 0\n  l = height(node.left); r = height(node.right)\n  best = max(best, l + r)\n  return 1 + max(l, r)",
+    "walkthrough": "For a node, the longest path that bends at that node goes down the deepest path on the left and the deepest path on the right, so its length in edges is (left height) + (right height), with heights counted in nodes. Computing the heights separately for every node costs O(n^2). Instead compute each node's height once in a post-order recursion, and while doing so update the best answer with l + r. The height returned to the parent is 1 + max(l, r). O(n) time."
+  }
+}

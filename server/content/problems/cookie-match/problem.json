@@ -1,0 +1,24 @@
+{
+  "slug": "cookie-match",
+  "title": "Cookie Match",
+  "concept": "greedy",
+  "difficulty": "easy",
+  "statement": "A teacher has cookies of different sizes, `sizes[j]`, and children who each need a cookie of at least some size to be happy, `needs[i]`. Each child can receive **at most one** cookie, and each cookie can go to **at most one** child. A child is happy only if their cookie's size is at least their need.\n\nReturn the **largest number of happy children**.",
+  "constraints": [
+    "1 <= len(needs), len(sizes) <= 100000",
+    "1 <= needs[i], sizes[j] <= 1000000000"
+  ],
+  "signature": { "name": "max_happy", "params": [{ "name": "needs", "type": "int[]" }, { "name": "sizes", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 2, 3], [1, 1]], "expected": 1, "explanation": "Only the child needing 1 can be made happy; both cookies are size 1." },
+    { "args": [[1, 2], [1, 2, 3]], "expected": 2, "explanation": "Give size 1 to the first child and size 2 to the second." }
+  ],
+  "edgeTests": [[[5], [4]], [[5], [5]], [[1, 1, 1], [3]], [[3], [1, 1, 1, 3]], [[2, 2], [1, 1]], [[4, 1, 3], [3, 4, 1]]],
+  "expected": { "time": "O(n log n + m log m)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Which child is easiest to satisfy? Which cookie is the cheapest one that does the job for them?",
+    "pattern": "Greedy: sort both lists and match the smallest sufficient cookie to the least demanding child.",
+    "pseudocode": "sort(needs); sort(sizes)\ni = 0 (child)\nfor each cookie c in sizes (small to big):\n  if i < n and c >= needs[i]: i++\nreturn i",
+    "walkthrough": "Trying every assignment is exponential. Think greedily: giving a big cookie to a child who needs little wastes it, so serve the least demanding children first with the smallest cookies that work. Sort both lists. Walk through the cookies from smallest to largest, keeping a pointer to the next unhappy child (smallest need first). If the cookie is big enough for that child, they are happy and the pointer advances; otherwise the cookie is too small for everyone remaining, so skip it. The pointer ends at the number of happy children. O(n log n + m log m) for the sorting."
+  }
+}

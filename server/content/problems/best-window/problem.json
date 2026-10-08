@@ -1,0 +1,24 @@
+{
+  "slug": "best-window",
+  "title": "Best Window",
+  "concept": "sliding_window",
+  "difficulty": "medium",
+  "statement": "A shop recorded its profit (or loss, if negative) for each day in `profits`. The owner wants to find the best streak of exactly `k` days in a row.\n\nReturn the **largest total profit** over any `k` consecutive days.",
+  "constraints": [
+    "1 <= k <= len(profits) <= 100000",
+    "-1000 <= profits[i] <= 1000"
+  ],
+  "signature": { "name": "best_window_sum", "params": [{ "name": "profits", "type": "int[]" }, { "name": "k", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[2, -1, 5, -3, 4, 6], 3], "expected": 7, "explanation": "The windows sum to 6, 1, 6 and 7. The last one, -3 + 4 + 6, is best." },
+    { "args": [[-4, -2, -9], 2], "expected": -6, "explanation": "Even the best window is a loss: -4 + -2." }
+  ],
+  "edgeTests": [[[5], 1], [[1, 2, 3], 3], [[-1, -1, -1, -1], 1], [[3, -2, 7], 1], [[1000, 1000, 1000], 2]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "When the window moves one day to the right, what changes in its total? Do you need to add everything up again?",
+    "pattern": "Sliding window: add the day that enters, subtract the day that leaves.",
+    "pseudocode": "window = sum of the first k values; best = window\nfor i from k to n-1:\n  window = window + profits[i] - profits[i-k]\n  best = max(best, window)\nreturn best",
+    "walkthrough": "Summing each window from scratch costs O(n*k). Notice neighbouring windows share k-1 days: moving right adds one new day and drops the oldest one. Compute the first window's sum once, then slide: window += profits[i] - profits[i-k], updating the best as you go. That is O(n) time and O(1) space."
+  }
+}

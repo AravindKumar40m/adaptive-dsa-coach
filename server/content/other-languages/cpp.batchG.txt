@@ -1,0 +1,100 @@
+//### max-depth
+int max_depth(TreeNode* root) {
+    if (root == nullptr) return 0;
+    return 1 + max(max_depth(root->left), max_depth(root->right));
+}
+//### invert-tree
+TreeNode* invert_tree(TreeNode* root) {
+    if (root == nullptr) return nullptr;
+    TreeNode* left = invert_tree(root->left);
+    TreeNode* right = invert_tree(root->right);
+    root->left = right;
+    root->right = left;
+    return root;
+}
+//### same-tree
+bool is_same_tree(TreeNode* first, TreeNode* second) {
+    if (first == nullptr && second == nullptr) return true;
+    if (first == nullptr || second == nullptr) return false;
+    return first->val == second->val && is_same_tree(first->left, second->left) && is_same_tree(first->right, second->right);
+}
+//### level-sums
+vector<int> level_sums(TreeNode* root) {
+    vector<int> result;
+    if (root == nullptr) return result;
+    queue<TreeNode*> q;
+    q.push(root);
+    while (!q.empty()) {
+        int size = (int) q.size();
+        int total = 0;
+        for (int i = 0; i < size; i++) {
+            TreeNode* node = q.front();
+            q.pop();
+            total += node->val;
+            if (node->left) q.push(node->left);
+            if (node->right) q.push(node->right);
+        }
+        result.push_back(total);
+    }
+    return result;
+}
+//### is-valid-bst
+static bool bst_check(TreeNode* node, long long low, long long high) {
+    if (node == nullptr) return true;
+    if (node->val <= low || node->val >= high) return false;
+    return bst_check(node->left, low, node->val) && bst_check(node->right, node->val, high);
+}
+bool is_valid_bst(TreeNode* root) {
+    return bst_check(root, LLONG_MIN, LLONG_MAX);
+}
+//### lowest-common-ancestor
+static TreeNode* lca_find(TreeNode* node, int p, int q) {
+    if (node == nullptr || node->val == p || node->val == q) return node;
+    TreeNode* left = lca_find(node->left, p, q);
+    TreeNode* right = lca_find(node->right, p, q);
+    if (left != nullptr && right != nullptr) return node;
+    return left != nullptr ? left : right;
+}
+int lowest_common_ancestor(TreeNode* root, int p, int q) {
+    return lca_find(root, p, q)->val;
+}
+//### tree-diameter
+static int diameter_height(TreeNode* node, int& best) {
+    if (node == nullptr) return 0;
+    int left = diameter_height(node->left, best), right = diameter_height(node->right, best);
+    best = max(best, left + right);
+    return 1 + max(left, right);
+}
+int tree_diameter(TreeNode* root) {
+    int best = 0;
+    diameter_height(root, best);
+    return best;
+}
+//### max-path-sum
+static int path_gain(TreeNode* node, int& best) {
+    if (node == nullptr) return 0;
+    int left = max(0, path_gain(node->left, best)), right = max(0, path_gain(node->right, best));
+    best = max(best, node->val + left + right);
+    return node->val + max(left, right);
+}
+int max_path_sum(TreeNode* root) {
+    int best = INT_MIN;
+    path_gain(root, best);
+    return best;
+}
+//### build-tree-from-orders
+static TreeNode* rebuild(vector<int>& preorder, unordered_map<int, int>& position, int& next, int lo, int hi) {
+    if (lo > hi) return nullptr;
+    int value = preorder[next++];
+    TreeNode* node = new TreeNode(value);
+    int mid = position[value];
+    node->left = rebuild(preorder, position, next, lo, mid - 1);
+    node->right = rebuild(preorder, position, next, mid + 1, hi);
+    return node;
+}
+TreeNode* build_tree(vector<int>& preorder, vector<int>& inorder) {
+    unordered_map<int, int> position;
+    for (int i = 0; i < (int) inorder.size(); i++) position[inorder[i]] = i;
+    int next = 0;
+    return rebuild(preorder, position, next, 0, (int) inorder.size() - 1);
+}

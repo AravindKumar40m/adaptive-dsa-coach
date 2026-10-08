@@ -1,0 +1,9 @@
+node_modules/
+.env
+infra/judge0.conf
+dist/
+*.log
+.DS_Store
+# synthetic data is regenerable (python simulate.py) and large
+data/synthetic/attempts.csv
+.claude/

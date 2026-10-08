@@ -1,0 +1,160 @@
+//### reverse-list
+class Solution {
+    public ListNode reverseList(ListNode head) {
+        ListNode prev = null;
+        while (head != null) {
+            ListNode next = head.next;
+            head.next = prev;
+            prev = head;
+            head = next;
+        }
+        return prev;
+    }
+}
+//### middle-value
+class Solution {
+    public int middleValue(ListNode head) {
+        ListNode slow = head, fast = head;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        return slow.val;
+    }
+}
+//### merge-two-lists
+class Solution {
+    public ListNode mergeLists(ListNode first, ListNode second) {
+        ListNode dummy = new ListNode(0), tail = dummy;
+        while (first != null && second != null) {
+            if (first.val <= second.val) { tail.next = first; first = first.next; }
+            else { tail.next = second; second = second.next; }
+            tail = tail.next;
+        }
+        tail.next = first != null ? first : second;
+        return dummy.next;
+    }
+}
+//### remove-nth-from-end
+class Solution {
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        ListNode dummy = new ListNode(0, head), fast = dummy, slow = dummy;
+        for (int i = 0; i < n; i++) fast = fast.next;
+        while (fast.next != null) { fast = fast.next; slow = slow.next; }
+        slow.next = slow.next.next;
+        return dummy.next;
+    }
+}
+//### cycle-length
+class Solution {
+    public int cycleLength(ListNode head) {
+        ListNode slow = head, fast = head;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+            if (slow == fast) {
+                int count = 1;
+                ListNode cur = slow.next;
+                while (cur != slow) { count++; cur = cur.next; }
+                return count;
+            }
+        }
+        return 0;
+    }
+}
+//### reverse-k-group
+class Solution {
+    public ListNode reverseInGroups(ListNode head, int k) {
+        ListNode dummy = new ListNode(0, head), groupPrev = dummy;
+        while (true) {
+            ListNode kth = groupPrev;
+            for (int i = 0; i < k; i++) {
+                kth = kth.next;
+                if (kth == null) return dummy.next;
+            }
+            ListNode groupNext = kth.next, prev = groupNext, cur = groupPrev.next;
+            while (cur != groupNext) {
+                ListNode next = cur.next;
+                cur.next = prev;
+                prev = cur;
+                cur = next;
+            }
+            ListNode oldFirst = groupPrev.next;
+            groupPrev.next = kth;
+            groupPrev = oldFirst;
+        }
+    }
+}
+//### sort-list
+class Solution {
+    private ListNode merge(ListNode a, ListNode b) {
+        ListNode dummy = new ListNode(0), tail = dummy;
+        while (a != null && b != null) {
+            if (a.val <= b.val) { tail.next = a; a = a.next; }
+            else { tail.next = b; b = b.next; }
+            tail = tail.next;
+        }
+        tail.next = a != null ? a : b;
+        return dummy.next;
+    }
+
+    public ListNode sortList(ListNode head) {
+        if (head == null || head.next == null) return head;
+        ListNode slow = head, fast = head.next;
+        while (fast != null && fast.next != null) { slow = slow.next; fast = fast.next.next; }
+        ListNode middle = slow.next;
+        slow.next = null;
+        return merge(sortList(head), sortList(middle));
+    }
+}
+//### last-stone-weight
+class Solution {
+    public int lastStone(int[] stones) {
+        PriorityQueue<Integer> heap = new PriorityQueue<>(Collections.reverseOrder());
+        for (int s : stones) heap.add(s);
+        while (heap.size() > 1) {
+            int a = heap.poll(), b = heap.poll();
+            if (a != b) heap.add(a - b);
+        }
+        return heap.isEmpty() ? 0 : heap.peek();
+    }
+}
+//### top-k-sum
+class Solution {
+    public int sumOfTopK(int[] scores, int k) {
+        PriorityQueue<Integer> heap = new PriorityQueue<>();
+        for (int s : scores) {
+            heap.add(s);
+            if (heap.size() > k) heap.poll();
+        }
+        int sum = 0;
+        for (int s : heap) sum += s;
+        return sum;
+    }
+}
+//### top-k-frequent
+class Solution {
+    public int[] topKFrequent(int[] nums, int k) {
+        Map<Integer, Integer> counts = new HashMap<>();
+        for (int x : nums) counts.merge(x, 1, Integer::sum);
+        List<Integer> values = new ArrayList<>(counts.keySet());
+        values.sort((a, b) -> counts.get(b).equals(counts.get(a)) ? Integer.compare(a, b) : Integer.compare(counts.get(b), counts.get(a)));
+        int[] result = new int[k];
+        for (int i = 0; i < k; i++) result[i] = values.get(i);
+        return result;
+    }
+}
+//### kth-smallest-in-lists
+class Solution {
+    public int kthSmallestInLists(int[][] lists, int k) {
+        PriorityQueue<int[]> heap = new PriorityQueue<>((a, b) -> Integer.compare(a[0], b[0]));
+        for (int i = 0; i < lists.length; i++) if (lists[i].length > 0) heap.add(new int[]{lists[i][0], i, 0});
+        int value = 0;
+        for (int step = 0; step < k; step++) {
+            int[] top = heap.poll();
+            value = top[0];
+            if (top[2] + 1 < lists[top[1]].length) heap.add(new int[]{lists[top[1]][top[2] + 1], top[1], top[2] + 1});
+        }
+        return value;
+    }
+}

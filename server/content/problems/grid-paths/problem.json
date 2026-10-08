@@ -1,0 +1,24 @@
+{
+  "slug": "grid-paths",
+  "title": "Grid Paths",
+  "concept": "dp",
+  "difficulty": "medium",
+  "statement": "A robot stands at the top-left cell of a grid and wants to reach the bottom-right cell. In `grid`, `0` means a free cell and `1` means a blocked cell. The robot may only move **one cell right or one cell down** at a time, and never enters a blocked cell.\n\nReturn the **number of different paths** from the top-left to the bottom-right cell. If either of those two cells is blocked, the answer is `0`.",
+  "constraints": [
+    "1 <= rows, cols <= 12 (every row has the same length)",
+    "grid[r][c] is 0 or 1"
+  ],
+  "signature": { "name": "count_paths", "params": [{ "name": "grid", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [[[0, 0, 0], [0, 1, 0], [0, 0, 0]]], "expected": 2, "explanation": "Go around the blocked centre cell, either above or below it." },
+    { "args": [[[0, 1], [0, 0]]], "expected": 1, "explanation": "Down then right is the only way." }
+  ],
+  "edgeTests": [[[[0]]], [[[1]]], [[[0, 0], [0, 0]]], [[[0, 0, 1]]], [[[1, 0], [0, 0]]], [[[0, 0], [0, 1]]]],
+  "expected": { "time": "O(rows * cols)", "space": "O(cols)" },
+  "hints": {
+    "nudge": "To arrive at a cell, the robot must have come from just two possible cells. Which ones?",
+    "pattern": "Dynamic programming on the grid: paths(cell) = paths(above) + paths(left).",
+    "pseudocode": "paths[0][0] = 1 if free else 0\nfor each cell (r, c) in row order:\n  if blocked: paths = 0\n  else: paths = (paths[r-1][c] if r > 0) + (paths[r][c-1] if c > 0)\nreturn paths[last][last]",
+    "walkthrough": "Exploring every path with recursion repeats the same sub-paths many times. The number of ways to reach a free cell is the ways to reach the cell above plus the ways to reach the cell to its left, because the robot's last move was either down or right. A blocked cell has 0 ways. Fill the grid row by row starting with the start cell set to 1 (or 0 if it is blocked); the bottom-right value is the answer. O(rows * cols) time. The biggest possible answer (12x12, nothing blocked) is 705,432, so it fits in an int."
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "remove-nth-from-end",
+  "title": "Remove From the End",
+  "concept": "linked_list",
+  "difficulty": "medium",
+  "statement": "You are given `head`, the first node of a singly linked list, and a number `n`. **Remove the `n`-th node counting from the end** of the list (the last node is the 1st from the end) and return the head of the resulting list. `n` is never larger than the length of the list. (In the examples the list is shown as the list of its values.)",
+  "constraints": [
+    "1 <= number of nodes <= 100000",
+    "1 <= n <= number of nodes",
+    "-1000000000 <= node value <= 1000000000"
+  ],
+  "signature": { "name": "remove_nth_from_end", "params": [{ "name": "head", "type": "ListNode" }, { "name": "n", "type": "int" }], "returns": "ListNode" },
+  "examples": [
+    { "args": [[1, 2, 3, 4, 5], 2], "expected": [1, 2, 3, 5], "explanation": "The 2nd node from the end is 4, so it is removed." },
+    { "args": [[1], 1], "expected": [], "explanation": "Removing the only node leaves an empty list." }
+  ],
+  "edgeTests": [[[1, 2], 1], [[1, 2], 2], [[1, 2, 3], 3], [[1, 2, 3], 1], [[5, 5, 5], 2]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "If you knew the length, you would know which node to remove. Can you find the right spot in a single pass?",
+    "pattern": "Two pointers with a gap of n nodes between them.",
+    "pseudocode": "dummy = node before head; fast = dummy; slow = dummy\nmove fast n steps forward\nwhile fast.next: fast = fast.next; slow = slow.next\nslow.next = slow.next.next\nreturn dummy.next",
+    "walkthrough": "Counting the length first and then walking works in two passes. For one pass, start two pointers at a dummy node placed before the head. Move the fast pointer n steps ahead. Now move both pointers together until fast is at the last node: slow then stands right before the node to remove (the gap of n keeps it n nodes behind). Link slow past the removed node. The dummy node makes removing the head work without a special case."
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "slug": "median-two-sorted",
+  "title": "Median of Two Sorted Lists",
+  "concept": "binary_search",
+  "difficulty": "hard",
+  "statement": "You are given two sorted lists, `first` and `second` (either may be empty, but not both). Imagine merging them into one sorted list of `n` numbers. Its **median** is the middle number if `n` is odd, or the average of the two middle numbers if `n` is even.\n\nTo avoid fractions, return **twice the median**: that is `2 * middle` for odd `n`, and `(left middle + right middle)` for even `n`.",
+  "constraints": [
+    "0 <= len(first), len(second) <= 100000, and together at least 1 number",
+    "-1000000 <= values <= 1000000, each list sorted in non-decreasing order"
+  ],
+  "signature": { "name": "median_times_two", "params": [{ "name": "first", "type": "int[]" }, { "name": "second", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 3], [2]], "expected": 4, "explanation": "Merged: 1, 2, 3. The median is 2, so twice the median is 4." },
+    { "args": [[1, 2], [3, 4]], "expected": 5, "explanation": "Merged: 1, 2, 3, 4. The median is (2 + 3) / 2 = 2.5, so twice the median is 5." }
+  ],
+  "edgeTests": [[[], [1]], [[2], []], [[1], [2]], [[1, 1], [1, 1]], [[1, 2, 3, 4, 5], [6]], [[-5, -3], [-4, 10, 20]]],
+  "expected": { "time": "O(log(min(n, m)))", "space": "O(1)" },
+  "hints": {
+    "nudge": "The median splits the merged list into a left half and a right half of (almost) equal size. How many numbers does each list contribute to the left half?",
+    "pattern": "Binary search on how many elements of the shorter list go to the left half.",
+    "pseudocode": "make a the shorter list; half = (n + m + 1) / 2\nbinary search i = how many from a go left; j = half - i from b\n  valid when a[i-1] <= b[j] and b[j-1] <= a[i]\n  if a[i-1] > b[j]: take fewer from a; else take more\nmedian from max(left parts) and min(right parts)",
+    "walkthrough": "Merging both lists is O(n + m). To do better, search for the dividing line of the merged order. If you take i numbers from the shorter list and j = half - i from the other for the left half, the split is correct when every left number is <= every right number; since each list is already sorted that only needs a[i-1] <= b[j] and b[j-1] <= a[i]. If a[i-1] > b[j] you took too many from a (decrease i); otherwise take more. Treat missing elements as minus and plus infinity at the ends. When a valid split is found, the median comes from the largest left value (odd total) or the average of the largest left and smallest right value (even total)."
+  }
+}

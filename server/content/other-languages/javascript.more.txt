@@ -1,0 +1,302 @@
+//### second-highest
+function secondHighest(scores) {
+  let first = -1, second = -1;
+  for (const x of scores) {
+    if (x > first) { second = first; first = x; }
+    else if (x < first && x > second) second = x;
+  }
+  return second;
+}
+//### best-streak-sum
+function bestStreakSum(daily) {
+  let current = daily[0], best = daily[0];
+  for (let i = 1; i < daily.length; i++) {
+    current = Math.max(daily[i], current + daily[i]);
+    best = Math.max(best, current);
+  }
+  return best;
+}
+//### first-unique-char
+function firstUniqueIndex(text) {
+  const count = new Array(26).fill(0);
+  for (const ch of text) count[ch.charCodeAt(0) - 97]++;
+  for (let i = 0; i < text.length; i++) {
+    if (count[text.charCodeAt(i) - 97] === 1) return i;
+  }
+  return -1;
+}
+//### subarray-sum-count
+function countWindows(readings, target) {
+  const seen = new Map([[0, 1]]);
+  let running = 0, count = 0;
+  for (const x of readings) {
+    running += x;
+    count += seen.get(running - target) || 0;
+    seen.set(running, (seen.get(running) || 0) + 1);
+  }
+  return count;
+}
+//### widest-fence
+function maxBannerArea(heights) {
+  let i = 0, j = heights.length - 1, best = 0;
+  while (i < j) {
+    best = Math.max(best, Math.min(heights[i], heights[j]) * (j - i));
+    if (heights[i] < heights[j]) i++; else j--;
+  }
+  return best;
+}
+//### peak-overlap
+function maxOverlap(talks) {
+  const starts = talks.map((t) => t[0]).sort((a, b) => a - b);
+  const ends = talks.map((t) => t[1]).sort((a, b) => a - b);
+  let i = 0, j = 0, running = 0, best = 0;
+  while (i < starts.length) {
+    if (starts[i] < ends[j]) { running++; i++; best = Math.max(best, running); }
+    else { running--; j++; }
+  }
+  return best;
+}
+//### longest-unique-run
+function longestUniqueRun(text) {
+  const last = new Array(26).fill(-1);
+  let start = 0, best = 0;
+  for (let i = 0; i < text.length; i++) {
+    const c = text.charCodeAt(i) - 97;
+    if (last[c] >= start) start = last[c] + 1;
+    last[c] = i;
+    best = Math.max(best, i - start + 1);
+  }
+  return best;
+}
+//### postfix-eval
+function evalPostfix(expr) {
+  const stack = [];
+  for (const token of expr.split(" ")) {
+    if (token === "+" || token === "-" || token === "*") {
+      const b = stack.pop();
+      const a = stack.pop();
+      stack.push(token === "+" ? a + b : token === "-" ? a - b : a * b);
+    } else {
+      stack.push(parseInt(token, 10));
+    }
+  }
+  return stack[0];
+}
+//### fair-capacity
+function minCapacity(packages, days) {
+  const daysNeeded = (cap) => {
+    let d = 1, load = 0;
+    for (const w of packages) {
+      if (load + w > cap) { d++; load = 0; }
+      load += w;
+    }
+    return d;
+  };
+  let lo = Math.max(...packages), hi = packages.reduce((a, b) => a + b, 0);
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+    if (daysNeeded(mid) <= days) hi = mid; else lo = mid + 1;
+  }
+  return lo;
+}
+//### subset-sum-count
+function countSelections(weights, target) {
+  const n = weights.length;
+  const go = (i, remaining) => {
+    if (remaining < 0) return 0;
+    if (i === n) return remaining === 0 ? 1 : 0;
+    return go(i + 1, remaining - weights[i]) + go(i + 1, remaining);
+  };
+  return go(0, target);
+}
+//### skip-neighbours
+function maxPrizes(prizes) {
+  let prev2 = 0, prev1 = 0;
+  for (const p of prizes) {
+    const current = Math.max(prev1, prev2 + p);
+    prev2 = prev1;
+    prev1 = current;
+  }
+  return prev1;
+}
+//### min-coins
+function fewestCoins(coins, amount) {
+  const inf = amount + 1;
+  const best = new Array(amount + 1).fill(inf);
+  best[0] = 0;
+  for (let a = 1; a <= amount; a++) {
+    for (const c of coins) {
+      if (c <= a && best[a - c] + 1 < best[a]) best[a] = best[a - c] + 1;
+    }
+  }
+  return best[amount] === inf ? -1 : best[amount];
+}
+//### grid-paths
+function countPaths(grid) {
+  const rows = grid.length, cols = grid[0].length;
+  const row = new Array(cols).fill(0);
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (grid[r][c] === 1) row[c] = 0;
+      else if (r === 0 && c === 0) row[c] = 1;
+      else if (c > 0) row[c] += row[c - 1];
+    }
+  }
+  return row[cols - 1];
+}
+//### cookie-match
+function maxHappy(needs, sizes) {
+  const n = [...needs].sort((a, b) => a - b);
+  const s = [...sizes].sort((a, b) => a - b);
+  let i = 0;
+  for (const c of s) {
+    if (i < n.length && c >= n[i]) i++;
+  }
+  return i;
+}
+//### max-non-overlap
+function maxJobs(jobs) {
+  const sorted = [...jobs].sort((a, b) => a[1] - b[1]);
+  let lastEnd = -1, count = 0;
+  for (const [start, end] of sorted) {
+    if (start >= lastEnd) { count++; lastEnd = end; }
+  }
+  return count;
+}
+//### kth-largest
+function kthLargest(scores, k) {
+  const heap = [];
+  const push = (v) => {
+    heap.push(v);
+    let i = heap.length - 1;
+    while (i > 0) {
+      const p = (i - 1) >> 1;
+      if (heap[p] <= heap[i]) break;
+      [heap[p], heap[i]] = [heap[i], heap[p]];
+      i = p;
+    }
+  };
+  const pop = () => {
+    const top = heap[0];
+    const last = heap.pop();
+    if (heap.length > 0) {
+      heap[0] = last;
+      let i = 0;
+      for (;;) {
+        const l = 2 * i + 1, r = l + 1;
+        let m = i;
+        if (l < heap.length && heap[l] < heap[m]) m = l;
+        if (r < heap.length && heap[r] < heap[m]) m = r;
+        if (m === i) break;
+        [heap[m], heap[i]] = [heap[i], heap[m]];
+        i = m;
+      }
+    }
+    return top;
+  };
+  for (const x of scores) {
+    push(x);
+    if (heap.length > k) pop();
+  }
+  return heap[0];
+}
+//### rope-join
+function minJoinCost(ropes) {
+  const heap = [];
+  const push = (v) => {
+    heap.push(v);
+    let i = heap.length - 1;
+    while (i > 0) {
+      const p = (i - 1) >> 1;
+      if (heap[p] <= heap[i]) break;
+      [heap[p], heap[i]] = [heap[i], heap[p]];
+      i = p;
+    }
+  };
+  const pop = () => {
+    const top = heap[0];
+    const last = heap.pop();
+    if (heap.length > 0) {
+      heap[0] = last;
+      let i = 0;
+      for (;;) {
+        const l = 2 * i + 1, r = l + 1;
+        let m = i;
+        if (l < heap.length && heap[l] < heap[m]) m = l;
+        if (r < heap.length && heap[r] < heap[m]) m = r;
+        if (m === i) break;
+        [heap[m], heap[i]] = [heap[i], heap[m]];
+        i = m;
+      }
+    }
+    return top;
+  };
+  for (const r of ropes) push(r);
+  let total = 0;
+  while (heap.length > 1) {
+    const a = pop(), b = pop();
+    total += a + b;
+    push(a + b);
+  }
+  return total;
+}
+//### connected-groups
+function countGroups(n, friendships) {
+  const parent = Array.from({ length: n }, (_, i) => i);
+  const find = (x) => {
+    while (parent[x] !== x) { parent[x] = parent[parent[x]]; x = parent[x]; }
+    return x;
+  };
+  let groups = n;
+  for (const [a, b] of friendships) {
+    const ra = find(a), rb = find(b);
+    if (ra !== rb) { parent[ra] = rb; groups--; }
+  }
+  return groups;
+}
+//### grid-islands
+function countIslands(grid) {
+  const rows = grid.length, cols = grid[0].length;
+  const seen = grid.map((row) => row.map(() => false));
+  let islands = 0;
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (grid[r][c] === 1 && !seen[r][c]) {
+        islands++;
+        seen[r][c] = true;
+        const stack = [[r, c]];
+        while (stack.length > 0) {
+          const [cr, cc] = stack.pop();
+          for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+            const nr = cr + dr, nc = cc + dc;
+            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && grid[nr][nc] === 1 && !seen[nr][nc]) {
+              seen[nr][nc] = true;
+              stack.push([nr, nc]);
+            }
+          }
+        }
+      }
+    }
+  }
+  return islands;
+}
+//### shortest-grid-path
+function shortestPath(grid) {
+  const rows = grid.length, cols = grid[0].length;
+  if (grid[0][0] === 1 || grid[rows - 1][cols - 1] === 1) return -1;
+  const dist = grid.map((row) => row.map(() => -1));
+  dist[0][0] = 0;
+  const queue = [[0, 0]];
+  for (let head = 0; head < queue.length; head++) {
+    const [r, c] = queue[head];
+    if (r === rows - 1 && c === cols - 1) return dist[r][c];
+    for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const nr = r + dr, nc = c + dc;
+      if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && grid[nr][nc] === 0 && dist[nr][nc] === -1) {
+        dist[nr][nc] = dist[r][c] + 1;
+        queue.push([nr, nc]);
+      }
+    }
+  }
+  return -1;
+}

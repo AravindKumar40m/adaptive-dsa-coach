@@ -1,0 +1,24 @@
+{
+  "slug": "remove-adjacent-dupes",
+  "title": "Pop the Pairs",
+  "concept": "stack_queue",
+  "difficulty": "easy",
+  "statement": "In `text`, whenever **two equal letters sit next to each other**, they pop and disappear. After a pair disappears, the letters on both sides may become neighbours and can pop too. Keep going until no two equal letters are adjacent.\n\nReturn the **remaining text** (it can be empty).",
+  "constraints": [
+    "1 <= len(text) <= 100000",
+    "text contains only lowercase letters a-z"
+  ],
+  "signature": { "name": "remove_pairs", "params": [{ "name": "text", "type": "string" }], "returns": "string" },
+  "examples": [
+    { "args": ["abbaca"], "expected": "ca", "explanation": "bb pops, then aa pops (they became neighbours), leaving ca." },
+    { "args": ["aa"], "expected": "", "explanation": "The pair pops and nothing is left." }
+  ],
+  "edgeTests": [["a"], ["ab"], ["aab"], ["abba"], ["abc"], ["azxxzy"], ["aaa"]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "When you read a letter, which letter does it have to be compared with?",
+    "pattern": "Use a stack of the letters that are still there.",
+    "pseudocode": "stack = []\nfor each ch: if stack not empty and top == ch: pop else: push ch\nreturn join(stack)",
+    "walkthrough": "Repeatedly scanning and deleting pairs can take O(n^2). With a stack, process the letters once: if the new letter equals the letter on top of the stack, they form a pair, so pop the top and skip the new letter; otherwise push it. The stack always holds the text with all pairs seen so far already removed. At the end the stack is the answer."
+  }
+}

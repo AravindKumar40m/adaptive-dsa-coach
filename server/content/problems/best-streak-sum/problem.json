@@ -1,0 +1,24 @@
+{
+  "slug": "best-streak-sum",
+  "title": "Best Streak Sum",
+  "concept": "arrays",
+  "difficulty": "medium",
+  "statement": "A trader recorded the profit or loss for every day in `daily`. A **streak** is any non-empty run of consecutive days.\n\nReturn the **largest total** that any single streak adds up to.",
+  "constraints": [
+    "1 <= len(daily) <= 100000",
+    "-1000 <= daily[i] <= 1000"
+  ],
+  "signature": { "name": "best_streak_sum", "params": [{ "name": "daily", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[3, -4, 5, -1, 2, -6, 4]], "expected": 6, "explanation": "The streak 5, -1, 2 adds up to 6." },
+    { "args": [[-3, -1, -2]], "expected": -1, "explanation": "Every day is a loss, so the best streak is the single day -1." }
+  ],
+  "edgeTests": [[[5]], [[-5]], [[0]], [[-1, -2, -3]], [[2, -1, 2, -1, 2]], [[1000, -1000, 1000]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Standing on day i, should the best streak ending here keep the earlier days or start fresh?",
+    "pattern": "Running best-ending-here value (Kadane's idea): drop the past when it is negative.",
+    "pseudocode": "current = daily[0]; best = daily[0]\nfor each x after the first:\n  current = max(x, current + x)\n  best = max(best, current)\nreturn best",
+    "walkthrough": "Checking every start and end is O(n^2). Instead track the best streak that ends exactly on the current day. Either it extends the previous streak (current + x) or starts over with just x, whichever is bigger. The answer is the largest value that 'current' ever takes. Start from the first element, not from 0, so an all-negative list still returns its largest (least negative) value."
+  }
+}

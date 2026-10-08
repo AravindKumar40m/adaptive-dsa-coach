@@ -1,0 +1,25 @@
+{
+  "slug": "subarray-sum-count",
+  "title": "Subarray Sum Count",
+  "concept": "hashing",
+  "difficulty": "medium",
+  "statement": "A sensor produced the readings in `readings` (they can be negative). A **window** is any non-empty run of consecutive readings.\n\nCount how many windows add up to exactly `target`. Windows at different positions count separately, even if they contain the same numbers.",
+  "constraints": [
+    "1 <= len(readings) <= 50000",
+    "-1000 <= readings[i] <= 1000",
+    "-1000000 <= target <= 1000000"
+  ],
+  "signature": { "name": "count_windows", "params": [{ "name": "readings", "type": "int[]" }, { "name": "target", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 2, 3], 3], "expected": 2, "explanation": "The windows [1, 2] and [3] both add up to 3." },
+    { "args": [[0, 0, 0], 0], "expected": 6, "explanation": "Every one of the 6 windows sums to 0." }
+  ],
+  "edgeTests": [[[5], 5], [[5], 4], [[1, -1, 1, -1], 0], [[2, 2, 2], 4], [[-1, -1, 1], -1], [[1, 2, 3], 100]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "A window's sum is the difference of two running totals. If you know the running total now, which earlier running total would make the window equal the target?",
+    "pattern": "Prefix sums stored in a hash map of counts.",
+    "pseudocode": "seen = {0: 1}; running = 0; count = 0\nfor each x:\n  running += x\n  count += seen.get(running - target, 0)\n  seen[running] = seen.get(running, 0) + 1\nreturn count",
+    "walkthrough": "Trying every start and end is O(n^2). Let running be the sum of the first i readings. A window from j+1 to i has sum running(i) - running(j). It equals the target exactly when running(j) = running(i) - target. So keep a map from each running total to how many times it appeared (starting with 0 appearing once, for windows that begin at the start) and add the count for running - target at every step. O(n) time and space. The answer can be up to about 1.25 billion, which still fits in a 32-bit int."
+  }
+}

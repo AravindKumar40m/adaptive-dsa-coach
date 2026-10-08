@@ -1,0 +1,24 @@
+{
+  "slug": "days-until-warmer",
+  "title": "Days Until Warmer",
+  "concept": "stack_queue",
+  "difficulty": "medium",
+  "statement": "`temps[i]` is the temperature on day `i`. For **each day**, find how many days you must wait until a **warmer** temperature arrives (strictly higher). If no later day is warmer, the answer for that day is `0`.\n\nReturn the list of waiting times, one number per day.",
+  "constraints": [
+    "1 <= len(temps) <= 100000",
+    "-100 <= temps[i] <= 100"
+  ],
+  "signature": { "name": "days_until_warmer", "params": [{ "name": "temps", "type": "int[]" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[73, 74, 75, 71, 69, 72, 76, 73]], "expected": [1, 1, 4, 2, 1, 1, 0, 0], "explanation": "Day 0 (73) waits 1 day for 74; day 2 (75) waits 4 days for 76; the last two days never see a warmer day." },
+    { "args": [[30, 40, 50, 60]], "expected": [1, 1, 1, 0], "explanation": "Each day is followed by a warmer one, except the last." }
+  ],
+  "edgeTests": [[[50]], [[60, 50, 40]], [[40, 40, 40]], [[40, 50, 40, 50]], [[-5, -10, 0]]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Days that are still waiting for a warmer day form a pattern: their temperatures never increase from first to last. Why?",
+    "pattern": "Monotonic stack of indices waiting for a warmer day.",
+    "pseudocode": "stack = []  (indices of days still waiting)\nfor i, t in temps:\n  while stack not empty and temps[top] < t: j = pop; result[j] = i - j\n  push i",
+    "walkthrough": "Checking all later days for each day is O(n^2). Keep a stack of day indices that have not found a warmer day yet. Their temperatures are non-increasing from bottom to top (otherwise a warmer one would already have resolved the earlier ones). When day i arrives with temperature t, it resolves every waiting day colder than t: pop them and record i - index as their waiting time. Then push i. Each day is pushed and popped once, so O(n). Days left on the stack get 0."
+  }
+}

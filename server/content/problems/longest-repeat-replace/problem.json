@@ -1,0 +1,25 @@
+{
+  "slug": "longest-repeat-replace",
+  "title": "Longest Run After Replacements",
+  "concept": "sliding_window",
+  "difficulty": "medium",
+  "statement": "You may change **at most `k` letters** of `text` into any other lowercase letters. After the changes, look for the longest stretch of consecutive letters that are **all the same letter**.\n\nReturn the **maximum possible length** of such a stretch.",
+  "constraints": [
+    "1 <= len(text) <= 100000",
+    "text contains only lowercase letters a-z",
+    "0 <= k <= len(text)"
+  ],
+  "signature": { "name": "longest_after_replace", "params": [{ "name": "text", "type": "string" }, { "name": "k", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": ["aababba", 1], "expected": 4, "explanation": "Take the stretch aaba (positions 0 to 3) and change its one b into an a: aaaa has length 4. No stretch of length 5 can be fixed with one change." },
+    { "args": ["abab", 2], "expected": 4, "explanation": "Change both a's (or both b's): the whole text becomes one letter." }
+  ],
+  "edgeTests": [["a", 0], ["a", 1], ["ab", 0], ["ab", 1], ["abc", 1], ["aaaa", 0], ["abcabc", 2]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "A stretch can become all one letter if the number of letters that are NOT the most common one inside it is at most k.",
+    "pattern": "Sliding window tracking the highest letter frequency inside the window.",
+    "pseudocode": "count = 26 zeros; left = 0; maxFreq = 0; best = 0\nfor right in 0..n-1:\n  count[text[right]]++; maxFreq = max(maxFreq, count[text[right]])\n  while (right - left + 1) - maxFreq > k: count[text[left]]--; left++\n  best = max(best, right - left + 1)",
+    "walkthrough": "For a window, the cheapest way to make it uniform is to keep its most frequent letter and replace the rest, which costs (window length - highest frequency). The window is valid when that cost is at most k. Expand the right end; if the window becomes invalid, move the left end forward. You never need to lower maxFreq when shrinking: a window only matters if it beats the best length so far, which requires a larger frequency. O(n) time, O(1) space."
+  }
+}

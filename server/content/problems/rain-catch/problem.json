@@ -1,0 +1,24 @@
+{
+  "slug": "rain-catch",
+  "title": "Rain Catch",
+  "concept": "arrays",
+  "difficulty": "hard",
+  "statement": "A row of walls stands side by side, each one unit wide; `heights[i]` is the height of wall `i`. After a rainstorm, water collects in the gaps between walls.\n\nA unit of water sits above wall `i` as long as there is a **taller-or-equal wall somewhere to its left AND somewhere to its right**; the water level there is the lower of the two best walls. Return the **total units of water** held by the whole row.",
+  "constraints": [
+    "1 <= len(heights) <= 100000",
+    "0 <= heights[i] <= 10000"
+  ],
+  "signature": { "name": "trapped_water", "params": [{ "name": "heights", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]], "expected": 6, "explanation": "Water fills the dips between the taller walls: 1 + 1 + 2 + 1 + 1 = 6 units." },
+    { "args": [[4, 2, 0, 3, 2, 5]], "expected": 9, "explanation": "The wide basin between the 4 and the 5 holds 9 units." }
+  ],
+  "edgeTests": [[[3]], [[1, 2]], [[2, 0, 2]], [[5, 4, 3, 2, 1]], [[1, 2, 3, 4, 5]], [[0, 0, 0]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "How much water sits above one single wall? It depends on the tallest wall on each side.",
+    "pattern": "Two pointers moving inward, always handling the side with the lower wall.",
+    "pseudocode": "left = 0; right = n-1; leftMax = 0; rightMax = 0; total = 0\nwhile left < right:\n  if h[left] < h[right]:\n    leftMax = max(leftMax, h[left]); total += leftMax - h[left]; left++\n  else:\n    rightMax = max(rightMax, h[right]); total += rightMax - h[right]; right--\nreturn total",
+    "walkthrough": "Above wall i the water level is min(tallest wall to the left, tallest wall to the right) and the water is that level minus h[i] (never below 0). Computing both maxima for every wall costs O(n^2). With two pointers you track the best wall seen from each end. Whichever end currently has the lower wall is the limiting side: its water level is decided by its own running maximum, because the other side is guaranteed to have something at least as tall. Add the water for that wall and move that pointer inward. O(n) time, O(1) space. The total can reach 1 billion, which fits in a 32-bit int."
+  }
+}

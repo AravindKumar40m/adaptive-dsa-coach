@@ -1,0 +1,25 @@
+{
+  "slug": "knapsack-01",
+  "title": "Pack the Backpack",
+  "concept": "dp",
+  "difficulty": "medium",
+  "statement": "A hiker can carry at most `capacity` kilograms. There are several items; item `i` weighs `weights[i]` kilograms and is worth `values[i]`. Each item can be taken **at most once**.\n\nReturn the **largest total value** the hiker can carry without going over the weight limit.",
+  "constraints": [
+    "1 <= len(weights) = len(values) <= 100",
+    "1 <= weights[i] <= 1000, 0 <= values[i] <= 1000",
+    "0 <= capacity <= 1000"
+  ],
+  "signature": { "name": "max_value", "params": [{ "name": "weights", "type": "int[]" }, { "name": "values", "type": "int[]" }, { "name": "capacity", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 3, 4, 5], [1, 4, 5, 7], 7], "expected": 9, "explanation": "Take the items weighing 3 and 4: value 4 + 5 = 9 (taking 5 + 1 would give only 8)." },
+    { "args": [[5], [10], 4], "expected": 0, "explanation": "The only item is too heavy." }
+  ],
+  "edgeTests": [[[2], [3], 2], [[1, 1], [5, 5], 0], [[1, 1, 1], [2, 3, 4], 2], [[3, 4, 5], [4, 5, 6], 8], [[10, 20, 30], [60, 100, 120], 50], [[2, 2, 2, 2], [1, 1, 1, 1], 100]],
+  "expected": { "time": "O(n * capacity)", "space": "O(capacity)" },
+  "hints": {
+    "nudge": "For each item you either take it or leave it. What do you need to know about the leftover capacity?",
+    "pattern": "Dynamic programming over capacity: best[c] = the best value using weight at most c.",
+    "pseudocode": "best = array of capacity+1 zeros\nfor each item (w, v):\n  for c from capacity down to w: best[c] = max(best[c], best[c - w] + v)\nreturn best[capacity]",
+    "walkthrough": "Trying every subset of items takes 2^n time. Let best[c] be the largest value achievable with total weight at most c, using the items processed so far. For a new item (w, v): for each capacity c >= w, you can either ignore the item (best[c]) or take it (best[c - w] + v). Update the capacities from LARGEST to SMALLEST so that best[c - w] still refers to the situation before this item (otherwise the item could be used twice). O(n * capacity) time, O(capacity) space."
+  }
+}

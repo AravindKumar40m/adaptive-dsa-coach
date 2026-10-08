@@ -1,0 +1,24 @@
+{
+  "slug": "min-window-cover",
+  "title": "Smallest Covering Window",
+  "concept": "strings",
+  "difficulty": "hard",
+  "statement": "You have a long `text` and a short word `need`. A **window** is a stretch of consecutive letters of `text`. A window **covers** `need` if it contains every letter of `need`, as many times as that letter appears in `need` (extra letters in the window are fine).\n\nReturn the **length of the shortest window that covers `need`**, or `0` if no window does.",
+  "constraints": [
+    "1 <= len(text), len(need) <= 100000",
+    "both strings contain only lowercase letters a-z"
+  ],
+  "signature": { "name": "min_cover_length", "params": [{ "name": "text", "type": "string" }, { "name": "need", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["adobecodebanc", "abc"], "expected": 4, "explanation": "The window banc contains a, b and c." },
+    { "args": ["a", "aa"], "expected": 0, "explanation": "The text has only one a, but two are needed." }
+  ],
+  "edgeTests": [["a", "a"], ["ab", "b"], ["abc", "abcd"], ["aabbcc", "abc"], ["bba", "ab"], ["xyz", "q"]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Grow a window to the right until it covers `need`. Then, how can you make it smaller without breaking it?",
+    "pattern": "Sliding window with letter counts: expand the right end, then shrink the left end while the window still covers.",
+    "pseudocode": "need counts; missing = len(need); left = 0; best = infinity\nfor right in 0..n-1:\n  if count[text[right]] > 0: missing--\n  count[text[right]]--\n  while missing == 0:\n    best = min(best, right - left + 1)\n    count[text[left]]++; if count[text[left]] > 0: missing++\n    left++\nreturn best (or 0)",
+    "walkthrough": "Checking every window is O(n^2) windows times a check. Use two pointers. Keep a table of how many of each letter are still needed (it can go negative for extras) and a counter 'missing' of letters not yet covered. Move right one letter at a time. Whenever missing reaches 0 the window covers need: record its length, then move left forward to try to shrink it (if you remove a letter that was needed, missing goes up again and you stop shrinking). Each pointer moves at most n times, so O(n)."
+  }
+}

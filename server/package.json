@@ -1,0 +1,37 @@
+{
+  "name": "adaptive-dsa-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch --env-file=../.env src/index.js",
+    "start": "node --env-file=../.env src/index.js",
+    "content:build": "python content/build.py",
+    "content:seed": "node --env-file=../.env scripts/seed.js",
+    "content:validate": "node --env-file=../.env scripts/validate-references.js",
+    "test:run-flow": "node --env-file=../.env scripts/test-run-flow.js",
+    "test:api": "node --env-file=../.env scripts/test-api.js",
+    "test:skill": "node scripts/test-skill.js",
+    "test:rating-flow": "node --env-file=../.env scripts/test-rating-flow.js",
+    "test:picker": "node scripts/test-picker.js",
+    "test:picker-flow": "node --env-file=../.env scripts/test-picker-flow.js",
+    "test:harness-types": "node --env-file=../.env scripts/test-harness-types.js",
+    "test:hints": "node --env-file=../.env scripts/test-hints.js",
+    "test:llm": "node scripts/test-llm.js",
+    "test:llm-flow": "node --env-file=../.env scripts/test-llm-flow.js",
+    "dev:fake-ai": "node scripts/dev-fake-ai.js",
+    "llm:live": "node --env-file=../.env scripts/llm-live-check.js",
+    "cleanup:tests": "node --env-file=../.env scripts/cleanup-test-data.js",
+    "test:auth": "node --env-file=../.env scripts/test-auth.js",
+    "orphans": "node --env-file=../.env scripts/count-orphans.js",
+    "reset-password": "node --env-file=../.env scripts/reset-password.js",
+    "test:google": "node --env-file=../.env scripts/test-google.js",
+    "dev:fake-google": "node --env-file=../.env scripts/dev-fake-google.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.132.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "mongoose": "^9.11.0"
+  }
+}

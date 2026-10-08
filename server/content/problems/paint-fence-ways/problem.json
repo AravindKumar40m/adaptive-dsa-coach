@@ -1,0 +1,24 @@
+{
+  "slug": "paint-fence-ways",
+  "title": "Paint the Fence",
+  "concept": "dp",
+  "difficulty": "medium",
+  "statement": "A fence has `posts` posts in a row and you have `colors` colors of paint. Every post gets exactly one color. The rule: **no three posts in a row may have the same color** (two in a row is fine).\n\nReturn the **number of different ways** to paint the fence.",
+  "constraints": [
+    "1 <= posts <= 10",
+    "1 <= colors <= 6"
+  ],
+  "signature": { "name": "fence_ways", "params": [{ "name": "posts", "type": "int" }, { "name": "colors", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [3, 2], "expected": 6, "explanation": "With 2 colors there are 8 ways to paint 3 posts, minus the 2 ways that use one color on all three." },
+    { "args": [2, 3], "expected": 9, "explanation": "Any pair of colors is allowed: 3 * 3." }
+  ],
+  "edgeTests": [[1, 1], [1, 5], [2, 1], [3, 1], [4, 2], [5, 3], [10, 6]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Look at the last two posts. Are they the same color or different? That decides what the next post may be.",
+    "pattern": "Dynamic programming with two counts: ways where the last two posts match, and ways where they differ.",
+    "pseudocode": "same = colors; diff = colors * (colors - 1)      // after 2 posts\nrepeat posts - 2 times: (same, diff) = (diff, (same + diff) * (colors - 1))\nreturn same + diff    // for posts == 1 the answer is just colors",
+    "walkthrough": "Count paintings by whether the last two posts have the same color. A new post can always get a color different from the previous post: (colors - 1) choices, from any painting. It can copy the previous post's color only if the previous two posts were different. So new_same = diff, new_diff = (same + diff) * (colors - 1). Start after two posts with same = colors and diff = colors * (colors - 1), and handle posts = 1 separately (the answer is colors). O(n) time. Checking all colors^posts paintings is only fine for tiny fences."
+  }
+}

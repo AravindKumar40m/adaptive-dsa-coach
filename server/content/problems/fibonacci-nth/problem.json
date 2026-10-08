@@ -1,0 +1,23 @@
+{
+  "slug": "fibonacci-nth",
+  "title": "Rabbit Numbers",
+  "concept": "recursion",
+  "difficulty": "easy",
+  "statement": "The **Fibonacci numbers** start with 0 and 1, and every next number is the sum of the two before it: `0, 1, 1, 2, 3, 5, 8, 13, ...`. In other words `F(0) = 0`, `F(1) = 1` and `F(n) = F(n-1) + F(n-2)`.\n\nReturn `F(n)`.",
+  "constraints": [
+    "0 <= n <= 40"
+  ],
+  "signature": { "name": "fibonacci_nth", "params": [{ "name": "n", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [6], "expected": 8, "explanation": "0, 1, 1, 2, 3, 5, 8: the number at position 6 is 8." },
+    { "args": [0], "expected": 0, "explanation": "F(0) is 0." }
+  ],
+  "edgeTests": [[1], [2], [10], [20], [30], [40]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Write F(n) in terms of smaller Fibonacci numbers. Does a straight translation into code recompute the same values many times?",
+    "pattern": "Recursion with memoization, or simply a loop that keeps the last two values.",
+    "pseudocode": "a = 0; b = 1\nrepeat n times: (a, b) = (b, a + b)\nreturn a",
+    "walkthrough": "The definition F(n) = F(n-1) + F(n-2) translates directly to a recursive function, but that function calls F(n-2) again inside F(n-1), so the number of calls grows exponentially (about 1.6^n): far too slow for n = 40. Remember each value once (memoization), or build up from the start: keep only the last two numbers and update them n times. O(n) time and O(1) space."
+  }
+}

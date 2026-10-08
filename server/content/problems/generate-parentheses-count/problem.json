@@ -1,0 +1,23 @@
+{
+  "slug": "generate-parentheses-count",
+  "title": "Count Valid Brackets",
+  "concept": "recursion",
+  "difficulty": "medium",
+  "statement": "A string of brackets is **well-formed** if every `(` is closed by a matching `)` that comes after it, so brackets close in the right order (for example `(()())` is well-formed, `())(` is not).\n\nReturn **how many different well-formed strings** can be made with exactly `n` pairs of brackets.",
+  "constraints": [
+    "0 <= n <= 12"
+  ],
+  "signature": { "name": "count_valid_brackets", "params": [{ "name": "n", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [3], "expected": 5, "explanation": "((())), (()()), (())(), ()(()), ()()()." },
+    { "args": [1], "expected": 1, "explanation": "Only ()." }
+  ],
+  "edgeTests": [[0], [2], [4], [5], [8], [12]],
+  "expected": { "time": "O(n^2)", "space": "O(n^2)" },
+  "hints": {
+    "nudge": "Think about the first '(' and the ')' that closes it. What can be inside, and what can follow?",
+    "pattern": "Recursion on the structure: a well-formed string is '(' + inside + ')' + rest.",
+    "pseudocode": "count(0) = 1\ncount(n) = sum over i from 0 to n-1 of count(i) * count(n - 1 - i)",
+    "walkthrough": "Every non-empty well-formed string starts with '(' whose matching ')' splits it into: an inside part (well-formed, using i pairs) and a rest (well-formed, using n-1-i pairs). Count the strings for each split and add them: count(n) = sum of count(i) * count(n-1-i). Remember small answers (memoization, or a table filled from 0 to n) so the work is O(n^2). Generating every one of the 2^(2n) strings and checking each is far too slow for n = 12."
+  }
+}

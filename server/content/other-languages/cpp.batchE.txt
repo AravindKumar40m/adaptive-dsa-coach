@@ -1,0 +1,144 @@
+//### reverse-list
+ListNode* reverse_list(ListNode* head) {
+    ListNode* prev = nullptr;
+    while (head != nullptr) {
+        ListNode* next = head->next;
+        head->next = prev;
+        prev = head;
+        head = next;
+    }
+    return prev;
+}
+//### middle-value
+int middle_value(ListNode* head) {
+    ListNode *slow = head, *fast = head;
+    while (fast != nullptr && fast->next != nullptr) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    return slow->val;
+}
+//### merge-two-lists
+ListNode* merge_lists(ListNode* first, ListNode* second) {
+    ListNode dummy(0);
+    ListNode* tail = &dummy;
+    while (first != nullptr && second != nullptr) {
+        if (first->val <= second->val) { tail->next = first; first = first->next; }
+        else { tail->next = second; second = second->next; }
+        tail = tail->next;
+    }
+    tail->next = first != nullptr ? first : second;
+    return dummy.next;
+}
+//### remove-nth-from-end
+ListNode* remove_nth_from_end(ListNode* head, int n) {
+    ListNode dummy(0, head);
+    ListNode *fast = &dummy, *slow = &dummy;
+    for (int i = 0; i < n; i++) fast = fast->next;
+    while (fast->next != nullptr) { fast = fast->next; slow = slow->next; }
+    slow->next = slow->next->next;
+    return dummy.next;
+}
+//### cycle-length
+int cycle_length(ListNode* head) {
+    ListNode *slow = head, *fast = head;
+    while (fast != nullptr && fast->next != nullptr) {
+        slow = slow->next;
+        fast = fast->next->next;
+        if (slow == fast) {
+            int count = 1;
+            ListNode* cur = slow->next;
+            while (cur != slow) { count++; cur = cur->next; }
+            return count;
+        }
+    }
+    return 0;
+}
+//### reverse-k-group
+ListNode* reverse_in_groups(ListNode* head, int k) {
+    ListNode dummy(0, head);
+    ListNode* group_prev = &dummy;
+    while (true) {
+        ListNode* kth = group_prev;
+        for (int i = 0; i < k; i++) {
+            kth = kth->next;
+            if (kth == nullptr) return dummy.next;
+        }
+        ListNode* group_next = kth->next;
+        ListNode *prev = group_next, *cur = group_prev->next;
+        while (cur != group_next) {
+            ListNode* next = cur->next;
+            cur->next = prev;
+            prev = cur;
+            cur = next;
+        }
+        ListNode* old_first = group_prev->next;
+        group_prev->next = kth;
+        group_prev = old_first;
+    }
+}
+//### sort-list
+static ListNode* merge_sorted_nodes(ListNode* a, ListNode* b) {
+    ListNode dummy(0);
+    ListNode* tail = &dummy;
+    while (a != nullptr && b != nullptr) {
+        if (a->val <= b->val) { tail->next = a; a = a->next; }
+        else { tail->next = b; b = b->next; }
+        tail = tail->next;
+    }
+    tail->next = a != nullptr ? a : b;
+    return dummy.next;
+}
+ListNode* sort_list(ListNode* head) {
+    if (head == nullptr || head->next == nullptr) return head;
+    ListNode *slow = head, *fast = head->next;
+    while (fast != nullptr && fast->next != nullptr) { slow = slow->next; fast = fast->next->next; }
+    ListNode* middle = slow->next;
+    slow->next = nullptr;
+    return merge_sorted_nodes(sort_list(head), sort_list(middle));
+}
+//### last-stone-weight
+int last_stone(vector<int>& stones) {
+    priority_queue<int> heap(stones.begin(), stones.end());
+    while (heap.size() > 1) {
+        int a = heap.top(); heap.pop();
+        int b = heap.top(); heap.pop();
+        if (a != b) heap.push(a - b);
+    }
+    return heap.empty() ? 0 : heap.top();
+}
+//### top-k-sum
+int sum_of_top_k(vector<int>& scores, int k) {
+    priority_queue<int, vector<int>, greater<int>> heap;
+    for (int s : scores) {
+        heap.push(s);
+        if ((int) heap.size() > k) heap.pop();
+    }
+    int sum = 0;
+    while (!heap.empty()) { sum += heap.top(); heap.pop(); }
+    return sum;
+}
+//### top-k-frequent
+vector<int> top_k_frequent(vector<int>& nums, int k) {
+    map<int, int> counts;
+    for (int x : nums) counts[x]++;
+    vector<int> values;
+    for (auto& kv : counts) values.push_back(kv.first);
+    sort(values.begin(), values.end(), [&](int a, int b) { return counts[a] != counts[b] ? counts[a] > counts[b] : a < b; });
+    values.resize(k);
+    return values;
+}
+//### kth-smallest-in-lists
+int kth_smallest_in_lists(vector<vector<int>>& lists, int k) {
+    typedef tuple<int, int, int> Item;
+    priority_queue<Item, vector<Item>, greater<Item>> heap;
+    for (int i = 0; i < (int) lists.size(); i++) if (!lists[i].empty()) heap.push(Item(lists[i][0], i, 0));
+    int value = 0;
+    for (int step = 0; step < k; step++) {
+        auto [v, i, j] = heap.top();
+        heap.pop();
+        value = v;
+        if (j + 1 < (int) lists[i].size()) heap.push(Item(lists[i][j + 1], i, j + 1));
+    }
+    return value;
+}

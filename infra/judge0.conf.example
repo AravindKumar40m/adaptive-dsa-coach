@@ -1,0 +1,20 @@
+# Copy to infra/judge0.conf and change the passwords. judge0.conf is gitignored.
+REDIS_HOST=judge0-redis
+REDIS_PASSWORD=change-me
+POSTGRES_HOST=judge0-db
+POSTGRES_DB=judge0
+POSTGRES_USER=judge0
+POSTGRES_PASSWORD=change-me
+
+# Limits per run (learners' code is untrusted)
+CPU_TIME_LIMIT=5
+MAX_CPU_TIME_LIMIT=15
+MEMORY_LIMIT=256000
+MAX_MEMORY_LIMIT=4000000
+ENABLE_NETWORK=false
+ALLOW_ENABLE_NETWORK=false
+
+# Docker Desktop uses cgroup v2, but Judge0 1.13.1's sandbox (isolate) only supports cgroup v1.
+# These two switches make Judge0 limit time/memory per process instead of via cgroups.
+ENABLE_PER_PROCESS_AND_THREAD_TIME_LIMIT=true
+ENABLE_PER_PROCESS_AND_THREAD_MEMORY_LIMIT=true

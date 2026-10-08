@@ -1,0 +1,24 @@
+{
+  "slug": "rope-join",
+  "title": "Rope Join",
+  "concept": "heaps",
+  "difficulty": "medium",
+  "statement": "You have several ropes with lengths `ropes[i]`. Joining two ropes into one costs the **sum of their lengths**, and the new rope can be joined again later. Repeat until only one rope is left.\n\nReturn the **smallest total cost** to join all the ropes into one. If there is only one rope, the cost is `0`.",
+  "constraints": [
+    "1 <= len(ropes) <= 50000",
+    "1 <= ropes[i] <= 1000"
+  ],
+  "signature": { "name": "min_join_cost", "params": [{ "name": "ropes", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[4, 3, 2, 6]], "expected": 29, "explanation": "Join 2+3=5, then 4+5=9, then 6+9=15. Total 5 + 9 + 15 = 29." },
+    { "args": [[5]], "expected": 0, "explanation": "Nothing to join." }
+  ],
+  "edgeTests": [[[1, 1]], [[10, 10, 10]], [[1, 2, 3, 4, 5]], [[1000, 1, 1, 1]], [[7, 7, 7, 7]]],
+  "expected": { "time": "O(n log n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Every time two ropes are joined, their lengths get paid again in all later joins that include the new rope. Which ropes should be joined first?",
+    "pattern": "Greedy with a min-heap: always join the two shortest ropes.",
+    "pseudocode": "heap = all ropes (min-heap); total = 0\nwhile size(heap) > 1:\n  a = pop(); b = pop()\n  total += a + b\n  push(a + b)\nreturn total",
+    "walkthrough": "A rope that is joined early is paid for again each time the resulting rope is joined later, so short ropes should be combined first and long ropes last. At each step take the two shortest ropes, pay their sum, and put the new rope back. You need quick access to the smallest items repeatedly, which is exactly a min-heap: O(log n) per push or pop and n - 1 joins, so O(n log n). The total can be a few hundred million, which still fits in a 32-bit int for n up to 50,000."
+  }
+}

@@ -1,0 +1,79 @@
+//### town-judge
+function findJudge(n, trust) {
+  const score = new Array(n + 1).fill(0);
+  for (const [a, b] of trust) { score[a]--; score[b]++; }
+  for (let person = 1; person <= n; person++) if (score[person] === n - 1) return person;
+  return -1;
+}
+//### find-center
+function starCenter(n, edges) {
+  const [a, b] = edges[0], [c, d] = edges[1];
+  return a === c || a === d ? a : b;
+}
+//### can-finish-courses
+function canFinish(n, prerequisites) {
+  const indegree = new Array(n).fill(0);
+  const needs = Array.from({ length: n }, () => []);
+  for (const [a, b] of prerequisites) { needs[b].push(a); indegree[a]++; }
+  const queue = [];
+  for (let c = 0; c < n; c++) if (indegree[c] === 0) queue.push(c);
+  let taken = 0;
+  for (let head = 0; head < queue.length; head++) {
+    taken++;
+    for (const x of needs[queue[head]]) if (--indegree[x] === 0) queue.push(x);
+  }
+  return taken === n;
+}
+//### rotting-oranges
+function minutesToRot(grid) {
+  const rows = grid.length, cols = grid[0].length;
+  const cells = grid.map((row) => [...row]);
+  const queue = [];
+  let fresh = 0;
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (cells[r][c] === 2) queue.push([r, c, 0]);
+      else if (cells[r][c] === 1) fresh++;
+    }
+  }
+  let minutes = 0;
+  for (let head = 0; head < queue.length; head++) {
+    const [r, c, t] = queue[head];
+    minutes = Math.max(minutes, t);
+    for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const nr = r + dr, nc = c + dc;
+      if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && cells[nr][nc] === 1) {
+        cells[nr][nc] = 2;
+        fresh--;
+        queue.push([nr, nc, t + 1]);
+      }
+    }
+  }
+  return fresh === 0 ? minutes : -1;
+}
+//### min-cost-path
+function cheapestRoute(n, roads, start, end) {
+  const INF = Infinity;
+  const dist = new Array(n).fill(INF);
+  const done = new Array(n).fill(false);
+  dist[start] = 0;
+  for (let round = 0; round < n; round++) {
+    let u = -1;
+    for (let i = 0; i < n; i++) if (!done[i] && (u === -1 || dist[i] < dist[u])) u = i;
+    if (u === -1 || dist[u] === INF) break;
+    done[u] = true;
+    for (const [from, to, cost] of roads) if (from === u && dist[u] + cost < dist[to]) dist[to] = dist[u] + cost;
+  }
+  return dist[end] === INF ? -1 : dist[end];
+}
+//### cheapest-with-stops
+function cheapestWithStops(n, flights, src, dst, k) {
+  let price = new Array(n).fill(Infinity);
+  price[src] = 0;
+  for (let round = 0; round <= k; round++) {
+    const next = [...price];
+    for (const [a, b, p] of flights) if (price[a] + p < next[b]) next[b] = price[a] + p;
+    price = next;
+  }
+  return price[dst] === Infinity ? -1 : price[dst];
+}

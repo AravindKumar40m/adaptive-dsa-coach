@@ -1,0 +1,96 @@
+//### peak-altitude
+function peakAltitude(changes) {
+  let best = 0, height = 0;
+  for (const c of changes) {
+    height += c;
+    best = Math.max(best, height);
+  }
+  return best;
+}
+//### clean-palindrome
+function isCleanPalindrome(text) {
+  const ok = (ch) => /[a-z0-9]/i.test(ch);
+  let i = 0, j = text.length - 1;
+  while (i < j) {
+    if (!ok(text[i])) i++;
+    else if (!ok(text[j])) j--;
+    else if (text[i].toLowerCase() !== text[j].toLowerCase()) return false;
+    else { i++; j--; }
+  }
+  return true;
+}
+//### first-repeat
+function firstRepeat(tickets) {
+  const seen = new Set();
+  for (const x of tickets) {
+    if (seen.has(x)) return x;
+    seen.add(x);
+  }
+  return -1;
+}
+//### pair-count
+function countPairs(prices, budget) {
+  const count = new Map();
+  let total = 0;
+  for (const p of prices) {
+    total += count.get(budget - p) || 0;
+    count.set(p, (count.get(p) || 0) + 1);
+  }
+  return total;
+}
+//### sorted-pair-sum
+function hasPairWithSum(scores, target) {
+  let i = 0, j = scores.length - 1;
+  while (i < j) {
+    const s = scores[i] + scores[j];
+    if (s === target) return true;
+    if (s < target) i++; else j--;
+  }
+  return false;
+}
+//### smallest-gap
+function smallestGap(finishTimes) {
+  const a = [...finishTimes].sort((x, y) => x - y);
+  let best = a[1] - a[0];
+  for (let i = 2; i < a.length; i++) best = Math.min(best, a[i] - a[i - 1]);
+  return best;
+}
+//### best-window
+function bestWindowSum(profits, k) {
+  let window = 0;
+  for (let i = 0; i < k; i++) window += profits[i];
+  let best = window;
+  for (let i = k; i < profits.length; i++) {
+    window += profits[i] - profits[i - k];
+    best = Math.max(best, window);
+  }
+  return best;
+}
+//### balanced-brackets
+function isBalanced(text) {
+  const match = { ")": "(", "]": "[", "}": "{" };
+  const stack = [];
+  for (const ch of text) {
+    if (ch === "(" || ch === "[" || ch === "{") stack.push(ch);
+    else if (stack.length === 0 || stack.pop() !== match[ch]) return false;
+  }
+  return stack.length === 0;
+}
+//### insert-position
+function insertPosition(ids, newId) {
+  let lo = 0, hi = ids.length;
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+    if (ids[mid] < newId) lo = mid + 1; else hi = mid;
+  }
+  return lo;
+}
+//### stair-ways
+function countWays(n) {
+  let a = 1, b = 0, c = 0;
+  for (let k = 0; k < n; k++) {
+    const d = a + b + c;
+    c = b; b = a; a = d;
+  }
+  return a;
+}

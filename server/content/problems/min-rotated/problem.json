@@ -1,0 +1,25 @@
+{
+  "slug": "min-rotated",
+  "title": "Smallest in a Rotated List",
+  "concept": "binary_search",
+  "difficulty": "medium",
+  "statement": "A list of **different** numbers was sorted from smallest to largest and then **rotated** (cut at some position, with the two parts swapped), so `[0, 1, 2, 4, 5, 6, 7]` can become `[4, 5, 6, 7, 0, 1, 2]`. It may also be left unrotated.\n\nReturn the **smallest number** in `nums`.",
+  "constraints": [
+    "1 <= len(nums) <= 100000",
+    "-1000000000 <= nums[i] <= 1000000000, all different",
+    "nums is a sorted list that was rotated by some amount"
+  ],
+  "signature": { "name": "min_in_rotated", "params": [{ "name": "nums", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[3, 4, 5, 1, 2]], "expected": 1, "explanation": "The list was [1, 2, 3, 4, 5] rotated." },
+    { "args": [[11, 13, 15, 17]], "expected": 11, "explanation": "Not rotated: the first value is the smallest." }
+  ],
+  "edgeTests": [[[7]], [[2, 1]], [[1, 2]], [[4, 5, 6, 7, 0, 1, 2]], [[5, 1, 2, 3, 4]], [[2, 3, 4, 5, 1]]],
+  "expected": { "time": "O(log n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Compare the middle element with the last one. What does it tell you about where the smallest number is?",
+    "pattern": "Binary search toward the rotation point.",
+    "pseudocode": "lo = 0; hi = n - 1\nwhile lo < hi:\n  mid = (lo + hi) / 2\n  if nums[mid] > nums[hi]: lo = mid + 1   // the drop is to the right of mid\n  else: hi = mid                           // mid could be the smallest\nreturn nums[lo]",
+    "walkthrough": "Taking the minimum of everything is O(n). The smallest value sits right after the 'drop' where the list falls from a large number to a small one. If nums[mid] is greater than nums[hi], the drop is somewhere to the right of mid, so the minimum is in (mid, hi]. Otherwise the part from mid to hi is sorted, so the minimum is at mid or to its left. Narrow the range until one element is left."
+  }
+}

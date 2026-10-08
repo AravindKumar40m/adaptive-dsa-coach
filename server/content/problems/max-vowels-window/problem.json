@@ -1,0 +1,24 @@
+{
+  "slug": "max-vowels-window",
+  "title": "Most Vowels in a Window",
+  "concept": "sliding_window",
+  "difficulty": "easy",
+  "statement": "Given a string `text` of lowercase letters and a length `k`, look at every stretch of exactly `k` consecutive letters.\n\nReturn the **largest number of vowels** (`a`, `e`, `i`, `o`, `u`) that any such stretch contains.",
+  "constraints": [
+    "1 <= k <= len(text) <= 100000",
+    "text contains only lowercase letters a-z"
+  ],
+  "signature": { "name": "max_vowels", "params": [{ "name": "text", "type": "string" }, { "name": "k", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": ["abciiidef", 3], "expected": 3, "explanation": "The stretch iii has three vowels." },
+    { "args": ["leetcode", 3], "expected": 2, "explanation": "For example eet or ode contain two vowels." }
+  ],
+  "edgeTests": [["a", 1], ["b", 1], ["aeiou", 2], ["bcdfg", 3], ["abcde", 5], ["aabaa", 2]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "When the stretch moves one letter to the right, which two letters change?",
+    "pattern": "Sliding window with a running count of vowels.",
+    "pseudocode": "count = vowels in the first k letters; best = count\nfor i from k to n-1:\n  if text[i] is a vowel: count++\n  if text[i-k] is a vowel: count--\n  best = max(best, count)",
+    "walkthrough": "Counting vowels in every stretch from scratch costs O(n*k). Keep the vowel count of the current window. When you slide right by one letter, add one if the new letter is a vowel and subtract one if the letter that dropped out was a vowel. Track the maximum. O(n) time."
+  }
+}

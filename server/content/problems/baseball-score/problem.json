@@ -1,0 +1,24 @@
+{
+  "slug": "baseball-score",
+  "title": "Scorekeeper",
+  "concept": "stack_queue",
+  "difficulty": "easy",
+  "statement": "A scorekeeper reads `ops`, a list of operations separated by single spaces, and keeps a record of scores:\n\n- a whole number (may be negative): add that score to the record;\n- `+`: add a new score equal to the sum of the **previous two** scores;\n- `D`: add a new score equal to **double the previous** score;\n- `C`: **cancel** (remove) the previous score from the record.\n\nReturn the **sum of all scores left in the record** after all operations. Every operation is valid (the scores it needs exist).",
+  "constraints": [
+    "1 <= number of operations <= 1000",
+    "numbers are between -30000 and 30000, and every value in the record stays within a 32-bit integer"
+  ],
+  "signature": { "name": "total_score", "params": [{ "name": "ops", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["5 2 C D +"], "expected": 30, "explanation": "Record: 5, 2 -> cancel 2: 5 -> D: 5, 10 -> +: 5, 10, 15. The sum is 30." },
+    { "args": ["5 -2 4 C D 9 + +"], "expected": 27, "explanation": "The record starts 5, -2, 4. C removes the 4. D adds -4. The number 9 is added. + adds 9 + (-4) = 5. + adds 5 + 9 = 14. The record 5, -2, -4, 9, 5, 14 sums to 27." }
+  ],
+  "edgeTests": [["7"], ["1 C"], ["3 D"], ["1 2 +"], ["-5 D"], ["4 5 C C 6"]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "The operations look at the most recent scores and sometimes remove the latest one.",
+    "pattern": "A stack of scores.",
+    "pseudocode": "stack = []\nfor each op:\n  number: push it\n  '+': push(top + second from top)\n  'D': push(2 * top)\n  'C': pop\nreturn sum of the stack",
+    "walkthrough": "Keep the record in a stack: its top is the previous score. A number is pushed. '+' pushes the sum of the top two (read them without removing). 'D' pushes twice the top. 'C' pops the top. When all operations are done, add up what is left in the stack. O(n)."
+  }
+}

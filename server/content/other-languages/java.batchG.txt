@@ -1,0 +1,130 @@
+//### max-depth
+class Solution {
+    public int maxDepth(TreeNode root) {
+        if (root == null) return 0;
+        return 1 + Math.max(maxDepth(root.left), maxDepth(root.right));
+    }
+}
+//### invert-tree
+class Solution {
+    public TreeNode invertTree(TreeNode root) {
+        if (root == null) return null;
+        TreeNode left = invertTree(root.left), right = invertTree(root.right);
+        root.left = right;
+        root.right = left;
+        return root;
+    }
+}
+//### same-tree
+class Solution {
+    public boolean isSameTree(TreeNode first, TreeNode second) {
+        if (first == null && second == null) return true;
+        if (first == null || second == null) return false;
+        return first.val == second.val && isSameTree(first.left, second.left) && isSameTree(first.right, second.right);
+    }
+}
+//### level-sums
+class Solution {
+    public int[] levelSums(TreeNode root) {
+        List<Integer> sums = new ArrayList<>();
+        if (root != null) {
+            Deque<TreeNode> queue = new ArrayDeque<>();
+            queue.add(root);
+            while (!queue.isEmpty()) {
+                int size = queue.size();
+                int total = 0;
+                for (int i = 0; i < size; i++) {
+                    TreeNode node = queue.poll();
+                    total += node.val;
+                    if (node.left != null) queue.add(node.left);
+                    if (node.right != null) queue.add(node.right);
+                }
+                sums.add(total);
+            }
+        }
+        int[] result = new int[sums.size()];
+        for (int i = 0; i < result.length; i++) result[i] = sums.get(i);
+        return result;
+    }
+}
+//### is-valid-bst
+class Solution {
+    private boolean check(TreeNode node, long low, long high) {
+        if (node == null) return true;
+        if (node.val <= low || node.val >= high) return false;
+        return check(node.left, low, node.val) && check(node.right, node.val, high);
+    }
+
+    public boolean isValidBst(TreeNode root) {
+        return check(root, Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+}
+//### lowest-common-ancestor
+class Solution {
+    private TreeNode find(TreeNode node, int p, int q) {
+        if (node == null || node.val == p || node.val == q) return node;
+        TreeNode left = find(node.left, p, q), right = find(node.right, p, q);
+        if (left != null && right != null) return node;
+        return left != null ? left : right;
+    }
+
+    public int lowestCommonAncestor(TreeNode root, int p, int q) {
+        return find(root, p, q).val;
+    }
+}
+//### tree-diameter
+class Solution {
+    private int best = 0;
+
+    private int height(TreeNode node) {
+        if (node == null) return 0;
+        int left = height(node.left), right = height(node.right);
+        best = Math.max(best, left + right);
+        return 1 + Math.max(left, right);
+    }
+
+    public int treeDiameter(TreeNode root) {
+        best = 0;
+        height(root);
+        return best;
+    }
+}
+//### max-path-sum
+class Solution {
+    private int best;
+
+    private int gain(TreeNode node) {
+        if (node == null) return 0;
+        int left = Math.max(0, gain(node.left)), right = Math.max(0, gain(node.right));
+        best = Math.max(best, node.val + left + right);
+        return node.val + Math.max(left, right);
+    }
+
+    public int maxPathSum(TreeNode root) {
+        best = Integer.MIN_VALUE;
+        gain(root);
+        return best;
+    }
+}
+//### build-tree-from-orders
+class Solution {
+    private Map<Integer, Integer> position = new HashMap<>();
+    private int next;
+
+    private TreeNode build(int[] preorder, int lo, int hi) {
+        if (lo > hi) return null;
+        int value = preorder[next++];
+        TreeNode node = new TreeNode(value);
+        int mid = position.get(value);
+        node.left = build(preorder, lo, mid - 1);
+        node.right = build(preorder, mid + 1, hi);
+        return node;
+    }
+
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        position = new HashMap<>();
+        next = 0;
+        for (int i = 0; i < inorder.length; i++) position.put(inorder[i], i);
+        return build(preorder, 0, inorder.length - 1);
+    }
+}

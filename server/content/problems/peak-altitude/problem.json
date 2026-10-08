@@ -1,0 +1,24 @@
+{
+  "slug": "peak-altitude",
+  "title": "Peak Altitude",
+  "concept": "arrays",
+  "difficulty": "easy",
+  "statement": "A hiker starts a trail at altitude `0`. The trail is split into segments, and `changes[i]` is the net altitude change over segment `i` (positive = climbing, negative = descending).\n\nReturn the **highest altitude** the hiker reaches at any point, including the starting altitude `0`.",
+  "constraints": [
+    "1 <= len(changes) <= 100000",
+    "-1000 <= changes[i] <= 1000"
+  ],
+  "signature": { "name": "peak_altitude", "params": [{ "name": "changes", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[-5, 1, 5, 0, -7]], "expected": 1, "explanation": "Altitudes are 0, -5, -4, 1, 1, -6. The highest is 1." },
+    { "args": [[-3, -2]], "expected": 0, "explanation": "The hiker only goes down, so the start (0) is the peak." }
+  ],
+  "edgeTests": [[[4]], [[0]], [[1000, -1000, 1000]], [[-1, 1, -1, 1]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Where is the hiker after segment 1? After segment 2? Try writing the altitudes for the first example.",
+    "pattern": "This is a running total (prefix sum): keep adding each change to the current altitude.",
+    "pseudocode": "height = 0; best = 0\nfor each change c: height = height + c; best = max(best, height)\nreturn best",
+    "walkthrough": "Start with height = 0 and best = 0 (the start counts). Walk through the list once, adding each change to height. After each step, if height is bigger than best, update best. One pass, no extra memory: O(n) time, O(1) space. Recomputing the sum from the start for every position also works but is O(n^2)."
+  }
+}

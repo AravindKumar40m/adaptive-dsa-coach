@@ -1,0 +1,25 @@
+{
+  "slug": "nearby-duplicate",
+  "title": "Nearby Duplicate",
+  "concept": "hashing",
+  "difficulty": "easy",
+  "statement": "A camera logs a number each second in `readings`. A repeat is **suspicious** if the same number appears at two different positions that are at most `k` apart.\n\nReturn `true` if there are two positions `i != j` with `readings[i] == readings[j]` and `|i - j| <= k`, otherwise `false`.",
+  "constraints": [
+    "1 <= len(readings) <= 100000",
+    "-1000000000 <= readings[i] <= 1000000000",
+    "0 <= k <= 100000"
+  ],
+  "signature": { "name": "has_nearby_duplicate", "params": [{ "name": "readings", "type": "int[]" }, { "name": "k", "type": "int" }], "returns": "bool" },
+  "examples": [
+    { "args": [[1, 2, 3, 1], 3], "expected": true, "explanation": "The 1s are at positions 0 and 3, which are 3 apart." },
+    { "args": [[1, 2, 3, 1, 2, 3], 2], "expected": false, "explanation": "Equal numbers are always 3 apart, which is more than 2." }
+  ],
+  "edgeTests": [[[1], 0], [[1, 1], 0], [[1, 1], 1], [[1, 0, 1, 1], 1], [[5, 6, 5], 1], [[5, 6, 5], 2]],
+  "expected": { "time": "O(n)", "space": "O(min(n, k))" },
+  "hints": {
+    "nudge": "When you see a number, what single piece of information about its last appearance is enough?",
+    "pattern": "Hash map from value to its most recent index.",
+    "pseudocode": "last = {}\nfor i, x in readings:\n  if x in last and i - last[x] <= k: return true\n  last[x] = i\nreturn false",
+    "walkthrough": "Comparing every pair within distance k costs O(n*k). Scan once and remember, for each value, the index where you last saw it. If the current value was seen before and the gap i - last is at most k, you found a suspicious repeat. Otherwise update the last index to i (only the closest earlier copy matters). O(n) time."
+  }
+}

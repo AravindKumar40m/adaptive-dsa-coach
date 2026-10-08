@@ -1,0 +1,24 @@
+{
+  "slug": "candy-distribution",
+  "title": "Fair Candy",
+  "concept": "greedy",
+  "difficulty": "hard",
+  "statement": "Children stand in a line and `ratings[i]` is how well child `i` behaved. A teacher hands out candy under two rules:\n\n- every child gets **at least 1** candy;\n- a child with a **higher rating than a neighbour** (the child directly left or right) must get **more candy than that neighbour**.\n\nReturn the **smallest total number of candies** the teacher needs.",
+  "constraints": [
+    "1 <= len(ratings) <= 50000",
+    "0 <= ratings[i] <= 100000"
+  ],
+  "signature": { "name": "min_candies", "params": [{ "name": "ratings", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 0, 2]], "expected": 5, "explanation": "Give 2, 1, 2 candies." },
+    { "args": [[1, 2, 2]], "expected": 4, "explanation": "Give 1, 2, 1: the last child is not higher than the middle one, so 1 candy is enough." }
+  ],
+  "edgeTests": [[[5]], [[1, 1, 1]], [[1, 2, 3, 4]], [[4, 3, 2, 1]], [[1, 3, 2, 2, 1]], [[1, 2, 87, 87, 87, 2, 1]]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Handle the left neighbour rule and the right neighbour rule separately, then combine them.",
+    "pattern": "Two passes: left to right, then right to left, taking the larger requirement.",
+    "pseudocode": "candies = [1] * n\nfor i from 1 to n-1: if ratings[i] > ratings[i-1]: candies[i] = candies[i-1] + 1\nfor i from n-2 down to 0: if ratings[i] > ratings[i+1]: candies[i] = max(candies[i], candies[i+1] + 1)\nreturn sum(candies)",
+    "walkthrough": "Fixing violations one at a time until nothing changes can take O(n^2). Instead split the rule in two. Pass 1, left to right: if a child is rated higher than the left neighbour, they need one more candy than that neighbour. Pass 2, right to left: if a child is rated higher than the right neighbour, they need one more than that neighbour, but never less than what pass 1 already required (take the max). Both rules then hold, and nobody gets more than needed. Add up the candies. The total can reach about 1.25 billion for 50,000 children, which fits in a 32-bit int."
+  }
+}

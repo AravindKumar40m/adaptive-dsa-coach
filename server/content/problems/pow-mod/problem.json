@@ -1,0 +1,25 @@
+{
+  "slug": "pow-mod",
+  "title": "Fast Power",
+  "concept": "recursion",
+  "difficulty": "easy",
+  "statement": "Compute `base` raised to the power `exp`, **modulo `m`** (the remainder after dividing by `m`). The exponent can be as large as a billion, so multiplying `base` by itself `exp` times is too slow.\n\nReturn `(base ^ exp) mod m`. Note that `base ^ 0 = 1`, and the remainder of 1 divided by 1 is 0.",
+  "constraints": [
+    "0 <= base <= 1000000000",
+    "0 <= exp <= 1000000000",
+    "1 <= m <= 30000"
+  ],
+  "signature": { "name": "power_mod", "params": [{ "name": "base", "type": "int" }, { "name": "exp", "type": "int" }, { "name": "m", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [2, 10, 1000], "expected": 24, "explanation": "2^10 = 1024, and 1024 mod 1000 = 24." },
+    { "args": [3, 0, 7], "expected": 1, "explanation": "Anything to the power 0 is 1." }
+  ],
+  "edgeTests": [[0, 0, 5], [0, 5, 7], [5, 3, 1], [7, 1, 100], [2, 30, 30000], [1000000000, 1000000000, 29999]],
+  "expected": { "time": "O(log exp)", "space": "O(log exp)" },
+  "hints": {
+    "nudge": "x^10 can be made from x^5: how many multiplications does it take to go from x^5 to x^10?",
+    "pattern": "Divide and conquer on the exponent: x^e = (x^(e/2))^2, times x when e is odd.",
+    "pseudocode": "power(e): if e == 0: return 1 % m\n  half = power(e / 2)\n  result = half * half % m\n  if e is odd: result = result * (base % m) % m\n  return result",
+    "walkthrough": "Repeated multiplication takes exp steps, up to a billion. Halving the exponent solves it in about 30 steps: compute x^(e/2) recursively, square it, and multiply by one more x if e is odd. Take the remainder after every multiplication so numbers never get large (every product is below m*m = 9 * 10^8, which fits in a 32-bit int). The base case e = 0 returns 1 mod m (which is 0 when m = 1)."
+  }
+}

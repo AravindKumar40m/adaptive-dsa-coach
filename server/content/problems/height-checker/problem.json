@@ -1,0 +1,24 @@
+{
+  "slug": "height-checker",
+  "title": "Line-Up Check",
+  "concept": "sorting",
+  "difficulty": "easy",
+  "statement": "Students stand in a line, `heights[i]` being the height of the student at position `i`. The teacher wants them standing in **non-decreasing order of height** (shortest first).\n\nReturn the **number of positions** where a student is NOT standing where they would be in the correctly ordered line.",
+  "constraints": [
+    "1 <= len(heights) <= 100000",
+    "1 <= heights[i] <= 100000"
+  ],
+  "signature": { "name": "count_misplaced", "params": [{ "name": "heights", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 1, 4, 2, 1, 3]], "expected": 3, "explanation": "The ordered line is 1 1 1 2 3 4; positions 2, 4 and 5 differ." },
+    { "args": [[5, 1, 2, 3, 4]], "expected": 5, "explanation": "Everyone is in the wrong place: the ordered line is 1 2 3 4 5." }
+  ],
+  "edgeTests": [[[1]], [[1, 2, 3]], [[3, 2, 1]], [[2, 2, 2]], [[1, 3, 2]]],
+  "expected": { "time": "O(n log n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "What would the correct line look like? Can you compare it with the current line?",
+    "pattern": "Sort a copy, then compare position by position.",
+    "pseudocode": "expected = sorted copy of heights\ncount positions i where heights[i] != expected[i]",
+    "walkthrough": "Make a sorted copy of the list; that is the correct line. Walk both lists together and count the positions where the values differ. Sorting costs O(n log n); counting sort would make it O(n + maxHeight) since heights are bounded."
+  }
+}

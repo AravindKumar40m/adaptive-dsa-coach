@@ -1,0 +1,25 @@
+{
+  "slug": "combination-sum-count",
+  "title": "Ways to Make the Total",
+  "concept": "backtracking",
+  "difficulty": "medium",
+  "statement": "A shop has coins of the values in `coins` (all different, and you have **as many coins of each value as you like**). Count how many **different combinations** of coins add up to exactly `target`. The order does not matter, so `2 + 3` and `3 + 2` are the same combination.\n\nReturn the number of combinations. Making `0` can be done in exactly 1 way (taking no coins).",
+  "constraints": [
+    "1 <= len(coins) <= 6",
+    "1 <= coins[i] <= 20, all different",
+    "0 <= target <= 150"
+  ],
+  "signature": { "name": "count_combinations", "params": [{ "name": "coins", "type": "int[]" }, { "name": "target", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 2, 5], 5], "expected": 4, "explanation": "5; 2+2+1; 2+1+1+1; 1+1+1+1+1." },
+    { "args": [[2], 3], "expected": 0, "explanation": "Twos can never add up to 3." }
+  ],
+  "edgeTests": [[[10], 10], [[1], 0], [[1, 2], 4], [[3, 5], 7], [[1, 2, 3], 6], [[7, 3, 2], 20]],
+  "expected": { "time": "O(len(coins) * target)", "space": "O(target)" },
+  "hints": {
+    "nudge": "To avoid counting the same combination in different orders, decide for each coin type how many you take, one type at a time.",
+    "pattern": "Backtracking over (which coin type you are at, remaining total): use this coin again, or move on to the next type. Then notice repeated subproblems.",
+    "pseudocode": "count(i, remaining):\n  if remaining == 0: return 1\n  if remaining < 0 or i == number of coin types: return 0\n  return count(i, remaining - coins[i]) + count(i + 1, remaining)",
+    "walkthrough": "Handle one coin type at a time: either take another coin of the current type (remaining shrinks, same type) or stop using this type and go to the next. Because you only ever move forward through the types, each combination is counted once. The plain recursion repeats the same (type, remaining) pairs many times, so remember the answers, or fill a table ways[sum]: for each coin value c, for sum from c to target, ways[sum] += ways[sum - c]."
+  }
+}

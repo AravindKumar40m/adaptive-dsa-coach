@@ -1,0 +1,24 @@
+{
+  "slug": "max-depth",
+  "title": "How Deep Is the Tree",
+  "concept": "trees",
+  "difficulty": "easy",
+  "statement": "You are given `root`, the top node of a **binary tree** (every node has a `val`, and a `left` and a `right` child that may be empty). An empty tree is passed as an empty `root`.\n\nReturn the **maximum depth**: the number of nodes along the longest path from the root down to a leaf. An empty tree has depth 0. (In the examples a tree is written level by level from the top; `null` marks a missing child.)",
+  "constraints": [
+    "0 <= number of nodes <= 10000",
+    "-1000000000 <= node value <= 1000000000"
+  ],
+  "signature": { "name": "max_depth", "params": [{ "name": "root", "type": "TreeNode" }], "returns": "int" },
+  "examples": [
+    { "args": [[3, 9, 20, null, null, 15, 7]], "expected": 3, "explanation": "The longest path is 3 -> 20 -> 15 (3 nodes)." },
+    { "args": [[1, null, 2]], "expected": 2, "explanation": "1 -> 2." }
+  ],
+  "edgeTests": [[[]], [[5]], [[1, 2]], [[1, 2, 3, 4, null, null, 5]], [[1, null, 2, null, 3, null, 4]]],
+  "expected": { "time": "O(n)", "space": "O(h)" },
+  "hints": {
+    "nudge": "The depth of a tree is related to the depths of its two subtrees. How?",
+    "pattern": "Recursion: depth(node) = 1 + max(depth(left), depth(right)).",
+    "pseudocode": "depth(node): if node is empty: return 0\n  return 1 + max(depth(node.left), depth(node.right))",
+    "walkthrough": "A tree is a root plus two smaller trees, so recursion fits: the depth of an empty tree is 0, and otherwise it is one more than the deeper of the two subtrees. Every node is visited once: O(n) time, and the recursion stack is as deep as the tree (O(h)). A level-by-level traversal (BFS) that counts levels gives the same answer."
+  }
+}

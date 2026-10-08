@@ -1,0 +1,104 @@
+//### town-judge
+class Solution {
+    public int findJudge(int n, int[][] trust) {
+        int[] score = new int[n + 1];
+        for (int[] t : trust) { score[t[0]]--; score[t[1]]++; }
+        for (int person = 1; person <= n; person++) if (score[person] == n - 1) return person;
+        return -1;
+    }
+}
+//### find-center
+class Solution {
+    public int starCenter(int n, int[][] edges) {
+        int a = edges[0][0], b = edges[0][1], c = edges[1][0], d = edges[1][1];
+        return a == c || a == d ? a : b;
+    }
+}
+//### can-finish-courses
+class Solution {
+    public boolean canFinish(int n, int[][] prerequisites) {
+        int[] indegree = new int[n];
+        List<List<Integer>> needs = new ArrayList<>();
+        for (int i = 0; i < n; i++) needs.add(new ArrayList<>());
+        for (int[] p : prerequisites) { needs.get(p[1]).add(p[0]); indegree[p[0]]++; }
+        Deque<Integer> queue = new ArrayDeque<>();
+        for (int c = 0; c < n; c++) if (indegree[c] == 0) queue.add(c);
+        int taken = 0;
+        while (!queue.isEmpty()) {
+            int c = queue.poll();
+            taken++;
+            for (int x : needs.get(c)) if (--indegree[x] == 0) queue.add(x);
+        }
+        return taken == n;
+    }
+}
+//### rotting-oranges
+class Solution {
+    public int minutesToRot(int[][] grid) {
+        int rows = grid.length, cols = grid[0].length;
+        int[][] cells = new int[rows][];
+        for (int r = 0; r < rows; r++) cells[r] = grid[r].clone();
+        Deque<int[]> queue = new ArrayDeque<>();
+        int fresh = 0;
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                if (cells[r][c] == 2) queue.add(new int[]{r, c, 0});
+                else if (cells[r][c] == 1) fresh++;
+            }
+        }
+        int minutes = 0;
+        int[] dr = {1, -1, 0, 0}, dc = {0, 0, 1, -1};
+        while (!queue.isEmpty()) {
+            int[] cur = queue.poll();
+            minutes = Math.max(minutes, cur[2]);
+            for (int d = 0; d < 4; d++) {
+                int nr = cur[0] + dr[d], nc = cur[1] + dc[d];
+                if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && cells[nr][nc] == 1) {
+                    cells[nr][nc] = 2;
+                    fresh--;
+                    queue.add(new int[]{nr, nc, cur[2] + 1});
+                }
+            }
+        }
+        return fresh == 0 ? minutes : -1;
+    }
+}
+//### min-cost-path
+class Solution {
+    public int cheapestRoute(int n, int[][] roads, int start, int end) {
+        List<List<int[]>> adjacent = new ArrayList<>();
+        for (int i = 0; i < n; i++) adjacent.add(new ArrayList<>());
+        for (int[] r : roads) adjacent.get(r[0]).add(new int[]{r[1], r[2]});
+        long[] dist = new long[n];
+        Arrays.fill(dist, Long.MAX_VALUE);
+        dist[start] = 0;
+        PriorityQueue<long[]> heap = new PriorityQueue<>((a, b) -> Long.compare(a[0], b[0]));
+        heap.add(new long[]{0, start});
+        while (!heap.isEmpty()) {
+            long[] top = heap.poll();
+            int u = (int) top[1];
+            if (top[0] > dist[u]) continue;
+            if (u == end) return (int) top[0];
+            for (int[] edge : adjacent.get(u)) {
+                long nd = top[0] + edge[1];
+                if (nd < dist[edge[0]]) { dist[edge[0]] = nd; heap.add(new long[]{nd, edge[0]}); }
+            }
+        }
+        return -1;
+    }
+}
+//### cheapest-with-stops
+class Solution {
+    public int cheapestWithStops(int n, int[][] flights, int src, int dst, int k) {
+        long INF = Long.MAX_VALUE / 4;
+        long[] price = new long[n];
+        Arrays.fill(price, INF);
+        price[src] = 0;
+        for (int round = 0; round <= k; round++) {
+            long[] next = price.clone();
+            for (int[] f : flights) if (price[f[0]] + f[2] < next[f[1]]) next[f[1]] = price[f[0]] + f[2];
+            price = next;
+        }
+        return price[dst] >= INF ? -1 : (int) price[dst];
+    }
+}

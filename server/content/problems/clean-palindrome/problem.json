@@ -1,0 +1,24 @@
+{
+  "slug": "clean-palindrome",
+  "title": "Clean Palindrome",
+  "concept": "strings",
+  "difficulty": "easy",
+  "statement": "A text is a **clean palindrome** if it reads the same forwards and backwards after you ignore everything that is not a letter or a digit, and ignore upper/lower case.\n\nReturn `true` if `text` is a clean palindrome, otherwise `false`. A text with no letters or digits at all counts as a clean palindrome.",
+  "constraints": [
+    "1 <= len(text) <= 100000",
+    "text contains printable ASCII characters only"
+  ],
+  "signature": { "name": "is_clean_palindrome", "params": [{ "name": "text", "type": "string" }], "returns": "bool" },
+  "examples": [
+    { "args": ["A man, a plan, a canal: Panama"], "expected": true, "explanation": "Ignoring symbols, spaces and case this is amanaplanacanalpanama, which is a palindrome." },
+    { "args": ["race a car"], "expected": false, "explanation": "raceacar reversed is racaecar." }
+  ],
+  "edgeTests": [[" "], ["a"], [".,"], ["0P"], ["ab  ba"], ["Ab,bA!"], ["abc"]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Which characters actually matter? Try crossing out the ones that do not in the first example.",
+    "pattern": "Two pointers: compare characters from both ends moving toward the middle.",
+    "pseudocode": "i = 0; j = len-1\nwhile i < j:\n  if text[i] is not a letter/digit: i++\n  else if text[j] is not a letter/digit: j--\n  else if lower(text[i]) != lower(text[j]): return false\n  else: i++; j--\nreturn true",
+    "walkthrough": "Building a cleaned copy and comparing it with its reverse works in O(n) time but uses O(n) extra space. With two pointers you skip symbols in place: move i right past non-alphanumeric characters, move j left past them, then compare the two characters ignoring case. If they ever differ the answer is false; if the pointers meet, it is true."
+  }
+}

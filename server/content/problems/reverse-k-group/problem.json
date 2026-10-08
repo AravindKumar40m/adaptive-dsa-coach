@@ -1,0 +1,25 @@
+{
+  "slug": "reverse-k-group",
+  "title": "Reverse in Groups",
+  "concept": "linked_list",
+  "difficulty": "hard",
+  "statement": "You are given `head`, the first node of a singly linked list, and a number `k`. Take the nodes **`k` at a time** from the start and reverse each group of `k` nodes. If fewer than `k` nodes remain at the end, leave them as they are.\n\nReturn the head of the new list. Re-link the existing nodes (do not create a new list of values). (In the examples the list is shown as the list of its values.)",
+  "constraints": [
+    "0 <= number of nodes <= 100000",
+    "1 <= k <= 100000",
+    "-1000000000 <= node value <= 1000000000"
+  ],
+  "signature": { "name": "reverse_in_groups", "params": [{ "name": "head", "type": "ListNode" }, { "name": "k", "type": "int" }], "returns": "ListNode" },
+  "examples": [
+    { "args": [[1, 2, 3, 4, 5], 2], "expected": [2, 1, 4, 3, 5], "explanation": "Groups (1,2) and (3,4) are reversed; the last node 5 is a short group and stays." },
+    { "args": [[1, 2, 3, 4, 5], 3], "expected": [3, 2, 1, 4, 5], "explanation": "Only the first 3 nodes form a full group." }
+  ],
+  "edgeTests": [[[], 3], [[1], 1], [[1, 2, 3], 1], [[1, 2, 3], 3], [[1, 2, 3], 4], [[1, 2, 3, 4, 5, 6], 2], [[1, 2, 3, 4, 5, 6, 7], 3]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Reversing a whole list is a known trick. Can you apply it to one group at a time, and reconnect the groups?",
+    "pattern": "Find the group's end, reverse just that group, and stitch it to the previous group and to the next one.",
+    "pseudocode": "dummy -> head; groupPrev = dummy\nloop:\n  kth = k nodes ahead of groupPrev; if there are fewer than k: stop\n  groupNext = kth.next\n  reverse the nodes between groupPrev.next and kth (the reversed group ends by pointing to groupNext)\n  groupPrev.next = kth; groupPrev = the old first node of the group (now the group's tail)",
+    "walkthrough": "For each group, first check there are k nodes left by walking k steps ahead (if not, stop and leave the rest untouched). Then reverse the group in place, but start the reversal with 'previous' = the node after the group, so the reversed group's last node automatically points to the rest of the list. Finally connect the node before the group to the group's new first node (the old kth node) and move on: the old first node of the group is now its tail and becomes the 'node before the next group'. A dummy node in front of the head removes special cases. O(n) time, O(1) space."
+  }
+}

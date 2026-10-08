@@ -1,0 +1,24 @@
+{
+  "slug": "reverse-list",
+  "title": "Reverse a Linked List",
+  "concept": "linked_list",
+  "difficulty": "easy",
+  "statement": "You are given `head`, the first node of a **singly linked list** (each node has a `val` and a `next` pointing to the following node; the last node's `next` is empty). An empty list is passed as an empty `head`.\n\nReverse the list and return the **new head**. (In the examples the list is shown as the list of its values.)",
+  "constraints": [
+    "0 <= number of nodes <= 100000",
+    "-1000000000 <= node value <= 1000000000"
+  ],
+  "signature": { "name": "reverse_list", "params": [{ "name": "head", "type": "ListNode" }], "returns": "ListNode" },
+  "examples": [
+    { "args": [[1, 2, 3, 4, 5]], "expected": [5, 4, 3, 2, 1], "explanation": "The order of the nodes is reversed." },
+    { "args": [[]], "expected": [], "explanation": "An empty list stays empty." }
+  ],
+  "edgeTests": [[[7]], [[1, 2]], [[1, 1, 1]], [[-1, 0, 1]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Each node's 'next' pointer has to point backwards instead of forwards. What do you need to remember so you do not lose the rest of the list?",
+    "pattern": "Walk the list with three pointers: previous, current, next.",
+    "pseudocode": "prev = null; cur = head\nwhile cur:\n  nxt = cur.next\n  cur.next = prev\n  prev = cur; cur = nxt\nreturn prev",
+    "walkthrough": "Copying the values into an array and rebuilding works but uses O(n) extra space. Instead reverse the links in place: before changing cur.next, save the next node, then point cur.next at the previous node and move both pointers forward. When cur becomes empty, prev is the old last node, which is the new head. O(n) time, O(1) space."
+  }
+}

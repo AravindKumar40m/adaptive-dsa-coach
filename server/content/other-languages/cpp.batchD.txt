@@ -1,0 +1,134 @@
+//### remove-adjacent-dupes
+string remove_pairs(string text) {
+    string stack;
+    for (char ch : text) {
+        if (!stack.empty() && stack.back() == ch) stack.pop_back();
+        else stack.push_back(ch);
+    }
+    return stack;
+}
+//### baseball-score
+int total_score(string ops) {
+    vector<int> stack;
+    int total = 0;
+    istringstream in(ops);
+    string op;
+    while (in >> op) {
+        if (op == "C") { total -= stack.back(); stack.pop_back(); continue; }
+        int value;
+        if (op == "+") value = stack[stack.size() - 1] + stack[stack.size() - 2];
+        else if (op == "D") value = 2 * stack.back();
+        else value = stoi(op);
+        stack.push_back(value);
+        total += value;
+    }
+    return total;
+}
+//### backspace-compare
+static string final_text(const string& s) {
+    string stack;
+    for (char ch : s) {
+        if (ch == '#') { if (!stack.empty()) stack.pop_back(); }
+        else stack.push_back(ch);
+    }
+    return stack;
+}
+bool same_after_backspaces(string first, string second) {
+    return final_text(first) == final_text(second);
+}
+//### days-until-warmer
+vector<int> days_until_warmer(vector<int>& temps) {
+    vector<int> result(temps.size(), 0);
+    vector<int> stack;
+    for (int i = 0; i < (int) temps.size(); i++) {
+        while (!stack.empty() && temps[stack.back()] < temps[i]) {
+            int j = stack.back();
+            stack.pop_back();
+            result[j] = i - j;
+        }
+        stack.push_back(i);
+    }
+    return result;
+}
+//### largest-rectangle
+int largest_rectangle(vector<int>& heights) {
+    vector<int> stack;
+    int best = 0, n = (int) heights.size();
+    for (int i = 0; i <= n; i++) {
+        int h = i == n ? 0 : heights[i];
+        while (!stack.empty() && heights[stack.back()] >= h) {
+            int height = heights[stack.back()];
+            stack.pop_back();
+            int left = stack.empty() ? -1 : stack.back();
+            best = max(best, height * (i - left - 1));
+        }
+        stack.push_back(i);
+    }
+    return best;
+}
+//### decode-nested
+string decode_message(string code) {
+    vector<pair<string, int>> stack;
+    string current;
+    int number = 0;
+    for (char ch : code) {
+        if (isdigit((unsigned char) ch)) number = number * 10 + (ch - '0');
+        else if (ch == '[') { stack.push_back({current, number}); current = ""; number = 0; }
+        else if (ch == ']') {
+            auto [previous, k] = stack.back();
+            stack.pop_back();
+            string repeated;
+            for (int i = 0; i < k; i++) repeated += current;
+            current = previous + repeated;
+        } else current += ch;
+    }
+    return current;
+}
+//### pow-mod
+static long long power_rec(long long base, int e, long long m) {
+    if (e == 0) return 1 % m;
+    long long half = power_rec(base, e / 2, m);
+    long long result = half * half % m;
+    if (e % 2 == 1) result = result * (base % m) % m;
+    return result;
+}
+int power_mod(int base, int exp, int m) {
+    return (int) power_rec(base, exp, m);
+}
+//### fibonacci-nth
+int fibonacci_nth(int n) {
+    int a = 0, b = 1;
+    for (int i = 0; i < n; i++) { int next = a + b; a = b; b = next; }
+    return a;
+}
+//### gcd-recursive
+int gcd_of(int a, int b) {
+    return b == 0 ? a : gcd_of(b, a % b);
+}
+//### generate-parentheses-count
+int count_valid_brackets(int n) {
+    vector<long long> ways(n + 1, 0);
+    ways[0] = 1;
+    for (int total = 1; total <= n; total++) {
+        for (int i = 0; i < total; i++) ways[total] += ways[i] * ways[total - 1 - i];
+    }
+    return (int) ways[n];
+}
+//### distinct-permutations
+static long long fact_of(int k) { return k <= 1 ? 1 : k * fact_of(k - 1); }
+int count_arrangements(string text) {
+    int counts[26] = {0};
+    for (char ch : text) counts[ch - 'a']++;
+    long long answer = fact_of((int) text.size());
+    for (int c : counts) answer /= fact_of(c);
+    return (int) answer;
+}
+//### integer-partitions
+int count_partitions(int n) {
+    vector<int> ways(n + 1, 0);
+    ways[0] = 1;
+    for (int part = 1; part <= n; part++) {
+        for (int s = part; s <= n; s++) ways[s] += ways[s - part];
+    }
+    return ways[n];
+}

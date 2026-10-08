@@ -1,0 +1,24 @@
+{
+  "slug": "skip-neighbours",
+  "title": "Skip Neighbours",
+  "concept": "dp",
+  "difficulty": "medium",
+  "statement": "A street has several stalls in a row, and stall `i` gives a prize worth `prizes[i]` coins. A rule says you may **not take prizes from two stalls that are next to each other**.\n\nReturn the **most coins** you can collect.",
+  "constraints": [
+    "1 <= len(prizes) <= 100000",
+    "0 <= prizes[i] <= 1000"
+  ],
+  "signature": { "name": "max_prizes", "params": [{ "name": "prizes", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[2, 7, 9, 3, 1]], "expected": 12, "explanation": "Take stalls 0, 2 and 4: 2 + 9 + 1 = 12." },
+    { "args": [[5, 1, 1, 5]], "expected": 10, "explanation": "Take the two 5s at the ends." }
+  ],
+  "edgeTests": [[[0]], [[9]], [[4, 5]], [[1, 1, 1, 1, 1]], [[10, 1, 1, 10]], [[0, 0, 0]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Look at the last stall. If you take it, what can you say about the stall before it? If you skip it?",
+    "pattern": "Dynamic programming over the stalls: best(i) depends only on best(i-1) and best(i-2).",
+    "pseudocode": "prev2 = 0; prev1 = 0\nfor each p in prizes:\n  current = max(prev1, prev2 + p)\n  prev2 = prev1; prev1 = current\nreturn prev1",
+    "walkthrough": "Let best(i) be the most coins using the first i stalls. For stall i you either skip it (best(i-1)) or take it, which forces you to skip stall i-1, giving prizes[i] + best(i-2). So best(i) = max(best(i-1), best(i-2) + prizes[i]). Trying every legal set of stalls by recursion is exponential. Because best(i) only needs the previous two values, you can keep just two variables: O(n) time, O(1) space."
+  }
+}

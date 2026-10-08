@@ -1,0 +1,23 @@
+{
+  "slug": "no-adjacent-ones",
+  "title": "Binary Strings Without Twin Ones",
+  "concept": "backtracking",
+  "difficulty": "easy",
+  "statement": "A binary string is made of the characters `0` and `1`. Count the binary strings of length exactly `n` that **never have two `1`s next to each other** (for example `0101` is fine, `0110` is not).\n\nReturn the number of such strings.",
+  "constraints": [
+    "1 <= n <= 30"
+  ],
+  "signature": { "name": "count_no_adjacent_ones", "params": [{ "name": "n", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [2], "expected": 3, "explanation": "00, 01 and 10 (11 is not allowed)." },
+    { "args": [3], "expected": 5, "explanation": "000, 001, 010, 100, 101." }
+  ],
+  "edgeTests": [[1], [4], [5], [10], [20], [30]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Build the string one character at a time. What does the last character you wrote decide about the next one?",
+    "pattern": "Backtracking: append 0 always, append 1 only when the last character is not 1. Then notice the same states repeat.",
+    "pseudocode": "count(remaining, lastWasOne):\n  if remaining == 0: return 1\n  total = count(remaining - 1, false)          // put a 0\n  if not lastWasOne: total += count(remaining - 1, true)   // put a 1\n  return total",
+    "walkthrough": "Checking all 2^n strings works for small n only. Building the string character by character is faster because you never extend a string that already has two adjacent ones: a 0 can always be added, a 1 only after a 0 (or at the start). The number of completions depends only on how many characters remain and whether the last one was a 1, so remember those answers (memoization) or keep two running counts: strings ending in 0 and strings ending in 1. Each step: new_zero = zero + one, new_one = zero. The answer for n = 30 is 2178309."
+  }
+}

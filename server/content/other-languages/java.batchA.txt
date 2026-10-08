@@ -1,0 +1,154 @@
+//### missing-number
+class Solution {
+    public int findMissing(int[] numbers) {
+        long sum = (long) numbers.length * (numbers.length + 1) / 2;
+        for (int x : numbers) sum -= x;
+        return (int) sum;
+    }
+}
+//### product-except-self
+class Solution {
+    public int[] productExceptSelf(int[] nums) {
+        int n = nums.length;
+        int[] result = new int[n];
+        int left = 1;
+        for (int i = 0; i < n; i++) { result[i] = left; left *= nums[i]; }
+        int right = 1;
+        for (int i = n - 1; i >= 0; i--) { result[i] *= right; right *= nums[i]; }
+        return result;
+    }
+}
+//### rotate-right
+class Solution {
+    public int[] rotateRight(int[] nums, int k) {
+        int n = nums.length;
+        k %= n;
+        int[] out = new int[n];
+        for (int i = 0; i < n; i++) out[(i + k) % n] = nums[i];
+        return out;
+    }
+}
+//### first-missing-positive
+class Solution {
+    public int firstMissingPositive(int[] numbers) {
+        int[] a = numbers.clone();
+        int n = a.length;
+        for (int i = 0; i < n; i++) {
+            while (a[i] >= 1 && a[i] <= n && a[a[i] - 1] != a[i]) {
+                int j = a[i] - 1;
+                int tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+            }
+        }
+        for (int i = 0; i < n; i++) if (a[i] != i + 1) return i + 1;
+        return n + 1;
+    }
+}
+//### rain-catch
+class Solution {
+    public int trappedWater(int[] heights) {
+        int left = 0, right = heights.length - 1, leftMax = 0, rightMax = 0, total = 0;
+        while (left < right) {
+            if (heights[left] < heights[right]) {
+                leftMax = Math.max(leftMax, heights[left]);
+                total += leftMax - heights[left];
+                left++;
+            } else {
+                rightMax = Math.max(rightMax, heights[right]);
+                total += rightMax - heights[right];
+                right--;
+            }
+        }
+        return total;
+    }
+}
+//### is-anagram
+class Solution {
+    public boolean isAnagram(String first, String second) {
+        if (first.length() != second.length()) return false;
+        int[] count = new int[26];
+        for (char ch : first.toCharArray()) count[ch - 'a']++;
+        for (char ch : second.toCharArray()) if (--count[ch - 'a'] < 0) return false;
+        return true;
+    }
+}
+//### compress-string
+class Solution {
+    public String compressText(String text) {
+        StringBuilder out = new StringBuilder();
+        int i = 0;
+        while (i < text.length()) {
+            int j = i;
+            while (j < text.length() && text.charAt(j) == text.charAt(i)) j++;
+            out.append(text.charAt(i)).append(j - i);
+            i = j;
+        }
+        return out.toString();
+    }
+}
+//### word-pattern-match
+class Solution {
+    public boolean followsPattern(String pattern, String sentence) {
+        String[] words = sentence.split(" ");
+        if (words.length != pattern.length()) return false;
+        Map<Character, String> letterToWord = new HashMap<>();
+        Map<String, Character> wordToLetter = new HashMap<>();
+        for (int i = 0; i < pattern.length(); i++) {
+            char letter = pattern.charAt(i);
+            String word = words[i];
+            if (letterToWord.containsKey(letter) && !letterToWord.get(letter).equals(word)) return false;
+            if (wordToLetter.containsKey(word) && wordToLetter.get(word) != letter) return false;
+            letterToWord.put(letter, word);
+            wordToLetter.put(word, letter);
+        }
+        return true;
+    }
+}
+//### longest-palindrome-part
+class Solution {
+    public int longestPalindromeLength(String text) {
+        int n = text.length(), best = 1;
+        for (int centre = 0; centre < 2 * n - 1; centre++) {
+            int lo = centre / 2, hi = lo + centre % 2;
+            while (lo >= 0 && hi < n && text.charAt(lo) == text.charAt(hi)) {
+                best = Math.max(best, hi - lo + 1);
+                lo--; hi++;
+            }
+        }
+        return best;
+    }
+}
+//### min-window-cover
+class Solution {
+    public int minCoverLength(String text, String need) {
+        int[] count = new int[26];
+        for (char ch : need.toCharArray()) count[ch - 'a']++;
+        int missing = need.length(), left = 0, best = 0;
+        for (int right = 0; right < text.length(); right++) {
+            int idx = text.charAt(right) - 'a';
+            if (count[idx] > 0) missing--;
+            count[idx]--;
+            while (missing == 0) {
+                if (best == 0 || right - left + 1 < best) best = right - left + 1;
+                int l = text.charAt(left) - 'a';
+                count[l]++;
+                if (count[l] > 0) missing++;
+                left++;
+            }
+        }
+        return best;
+    }
+}
+//### shortest-palindrome-extension
+class Solution {
+    public int charsToPrepend(String text) {
+        String s = text + "#" + new StringBuilder(text).reverse();
+        int[] fail = new int[s.length()];
+        for (int i = 1; i < s.length(); i++) {
+            int k = fail[i - 1];
+            while (k > 0 && s.charAt(i) != s.charAt(k)) k = fail[k - 1];
+            if (s.charAt(i) == s.charAt(k)) k++;
+            fail[i] = k;
+        }
+        return text.length() - fail[s.length() - 1];
+    }
+}

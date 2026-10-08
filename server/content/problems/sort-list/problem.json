@@ -1,0 +1,24 @@
+{
+  "slug": "sort-list",
+  "title": "Sort a Linked List",
+  "concept": "linked_list",
+  "difficulty": "hard",
+  "statement": "You are given `head`, the first node of a singly linked list (values in any order). Sort the list from **smallest to largest** and return the head of the sorted list. (In the examples the list is shown as the list of its values.)\n\nAim for `O(n log n)` time. A linked list has no random access, so think about which sorting method suits it.",
+  "constraints": [
+    "0 <= number of nodes <= 50000",
+    "-1000000000 <= node value <= 1000000000"
+  ],
+  "signature": { "name": "sort_list", "params": [{ "name": "head", "type": "ListNode" }], "returns": "ListNode" },
+  "examples": [
+    { "args": [[4, 2, 1, 3]], "expected": [1, 2, 3, 4], "explanation": "Sorted ascending." },
+    { "args": [[-1, 5, 3, 4, 0]], "expected": [-1, 0, 3, 4, 5], "explanation": "Negative values sort before positive ones." }
+  ],
+  "edgeTests": [[[]], [[1]], [[2, 1]], [[1, 1, 1]], [[3, 2, 1]], [[1, 2, 3]], [[5, -5, 5, -5]]],
+  "expected": { "time": "O(n log n)", "space": "O(log n)" },
+  "hints": {
+    "nudge": "Merging two sorted lists is easy and fast for linked lists. How can you split a list into two halves?",
+    "pattern": "Merge sort: split with slow/fast pointers, sort both halves recursively, merge them.",
+    "pseudocode": "sort(head): if head is empty or has one node: return head\n  find the middle with slow/fast; cut the list in two\n  return merge(sort(left), sort(right))",
+    "walkthrough": "Quick sort and heap sort rely on jumping to arbitrary positions, which a linked list does not allow. Merge sort fits well: find the middle node with slow and fast pointers, cut the list there, sort each half recursively, then merge the two sorted halves by splicing nodes (the same merge as for two sorted lists). Recursion depth is O(log n) and the total time is O(n log n)."
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "slug": "sorted-squares",
+  "title": "Sorted Squares",
+  "concept": "two_pointers",
+  "difficulty": "easy",
+  "statement": "`nums` is sorted from smallest to largest and may contain negative numbers. Square every number, then return the squares **sorted from smallest to largest**.",
+  "constraints": [
+    "1 <= len(nums) <= 100000",
+    "-10000 <= nums[i] <= 10000, sorted in non-decreasing order"
+  ],
+  "signature": { "name": "sorted_squares", "params": [{ "name": "nums", "type": "int[]" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[-4, -1, 0, 3, 10]], "expected": [0, 1, 9, 16, 100], "explanation": "The squares are 16, 1, 0, 9, 100; sorted: 0, 1, 9, 16, 100." },
+    { "args": [[-7, -3, 2, 3, 11]], "expected": [4, 9, 9, 49, 121], "explanation": "Squares sorted." }
+  ],
+  "edgeTests": [[[0]], [[-5]], [[3]], [[-3, 3]], [[-2, -1]], [[1, 2, 3]]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "The largest square is always at one of the two ends of the list. Which end?",
+    "pattern": "Two pointers from both ends, filling the answer from the back.",
+    "pseudocode": "i = 0; j = n-1\nfor pos from n-1 down to 0:\n  if |nums[i]| > |nums[j]|: result[pos] = nums[i]^2; i++\n  else: result[pos] = nums[j]^2; j--",
+    "walkthrough": "Squaring and sorting works in O(n log n). But the input is already sorted, so the biggest absolute values are at the two ends (a large negative on the left or a large positive on the right). Compare the absolute values at both ends, put the bigger square at the END of the result, and move that pointer inward. Repeat until the pointers cross. O(n) time."
+  }
+}

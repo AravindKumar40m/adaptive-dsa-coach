@@ -1,0 +1,118 @@
+//### no-adjacent-ones
+function countNoAdjacentOnes(n) {
+  let endsZero = 1, endsOne = 1;
+  for (let i = 1; i < n; i++) [endsZero, endsOne] = [endsZero + endsOne, endsZero];
+  return endsZero + endsOne;
+}
+//### combination-sum-count
+function countCombinations(coins, target) {
+  const ways = new Array(target + 1).fill(0);
+  ways[0] = 1;
+  for (const c of coins) for (let s = c; s <= target; s++) ways[s] += ways[s - c];
+  return ways[target];
+}
+//### palindrome-partitions
+function countPalindromeSplits(text) {
+  const n = text.length;
+  const isPal = (lo, hi) => {
+    while (lo < hi) { if (text[lo] !== text[hi]) return false; lo++; hi--; }
+    return true;
+  };
+  const ways = new Array(n + 1).fill(0);
+  ways[0] = 1;
+  for (let end = 1; end <= n; end++) {
+    for (let start = 0; start < end; start++) if (isPal(start, end - 1)) ways[end] += ways[start];
+  }
+  return ways[n];
+}
+//### n-queens-count
+function countQueens(n) {
+  const full = (1 << n) - 1;
+  const place = (cols, diag, anti) => {
+    if (cols === full) return 1;
+    let total = 0;
+    let free = full & ~(cols | diag | anti);
+    while (free) {
+      const bit = free & -free;
+      free -= bit;
+      total += place(cols | bit, ((diag | bit) << 1) & full, (anti | bit) >> 1);
+    }
+    return total;
+  };
+  return place(0, 0, 0);
+}
+//### partition-k-groups
+function canSplitEqual(nums, k) {
+  const total = nums.reduce((a, b) => a + b, 0);
+  if (total % k !== 0) return false;
+  const target = total / k;
+  const sorted = [...nums].sort((a, b) => b - a);
+  if (sorted[0] > target) return false;
+  const groups = new Array(k).fill(0);
+  const place = (i) => {
+    if (i === sorted.length) return true;
+    const tried = new Set();
+    for (let g = 0; g < k; g++) {
+      if (groups[g] + sorted[i] <= target && !tried.has(groups[g])) {
+        tried.add(groups[g]);
+        groups[g] += sorted[i];
+        if (place(i + 1)) return true;
+        groups[g] -= sorted[i];
+      }
+    }
+    return false;
+  };
+  return place(0);
+}
+//### min-cost-stairs
+function minCostClimb(cost) {
+  let prev2 = 0, prev1 = 0;
+  for (let i = 2; i <= cost.length; i++) {
+    const current = Math.min(prev1 + cost[i - 1], prev2 + cost[i - 2]);
+    prev2 = prev1;
+    prev1 = current;
+  }
+  return prev1;
+}
+//### paint-fence-ways
+function fenceWays(posts, colors) {
+  if (posts === 1) return colors;
+  let same = colors, diff = colors * (colors - 1);
+  for (let i = 0; i < posts - 2; i++) [same, diff] = [diff, (same + diff) * (colors - 1)];
+  return same + diff;
+}
+//### edit-distance
+function editDistance(source, target) {
+  let previous = Array.from({ length: target.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= source.length; i++) {
+    const current = [i];
+    for (let j = 1; j <= target.length; j++) {
+      if (source[i - 1] === target[j - 1]) current.push(previous[j - 1]);
+      else current.push(1 + Math.min(previous[j], current[j - 1], previous[j - 1]));
+    }
+    previous = current;
+  }
+  return previous[target.length];
+}
+//### knapsack-01
+function maxValue(weights, values, capacity) {
+  const best = new Array(capacity + 1).fill(0);
+  for (let i = 0; i < weights.length; i++) {
+    for (let c = capacity; c >= weights[i]; c--) best[c] = Math.max(best[c], best[c - weights[i]] + values[i]);
+  }
+  return best[capacity];
+}
+//### wildcard-match
+function wildcardMatch(text, pattern) {
+  const n = text.length, m = pattern.length;
+  const ok = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(false));
+  ok[0][0] = true;
+  for (let j = 1; j <= m; j++) if (pattern[j - 1] === "*") ok[0][j] = ok[0][j - 1];
+  for (let i = 1; i <= n; i++) {
+    for (let j = 1; j <= m; j++) {
+      if (pattern[j - 1] === "*") ok[i][j] = ok[i][j - 1] || ok[i - 1][j];
+      else ok[i][j] = ok[i - 1][j - 1] && (pattern[j - 1] === "?" || pattern[j - 1] === text[i - 1]);
+    }
+  }
+  return ok[n][m];
+}

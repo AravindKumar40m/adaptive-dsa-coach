@@ -1,0 +1,24 @@
+{
+  "slug": "next-permutation",
+  "title": "Next Arrangement",
+  "concept": "two_pointers",
+  "difficulty": "medium",
+  "statement": "Think of all the different ways to arrange the numbers of `nums`, listed in dictionary order (compare the first numbers, then the second, and so on). Return the arrangement that comes **right after** `nums` in that list.\n\nIf `nums` is already the last arrangement (the numbers are in descending order), wrap around and return the **first** arrangement (ascending order). The list can contain repeated numbers.",
+  "constraints": [
+    "1 <= len(nums) <= 100",
+    "0 <= nums[i] <= 100"
+  ],
+  "signature": { "name": "next_arrangement", "params": [{ "name": "nums", "type": "int[]" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[1, 2, 3]], "expected": [1, 3, 2], "explanation": "After 1 2 3 comes 1 3 2." },
+    { "args": [[3, 2, 1]], "expected": [1, 2, 3], "explanation": "3 2 1 is the last arrangement, so wrap around to the smallest." }
+  ],
+  "edgeTests": [[[1]], [[1, 1]], [[1, 1, 5]], [[1, 3, 2]], [[2, 3, 1]], [[1, 5, 1]], [[2, 2, 1, 1]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "To get the NEXT arrangement you change as little as possible, so you change a digit as far to the right as you can.",
+    "pattern": "Find the last place where the sequence goes up, swap with the next larger value on its right, then reverse the tail.",
+    "pseudocode": "i = n-2; while i >= 0 and nums[i] >= nums[i+1]: i--\nif i >= 0:\n  j = n-1; while nums[j] <= nums[i]: j--\n  swap(nums[i], nums[j])\nreverse(nums[i+1 .. n-1])",
+    "walkthrough": "Scan from the right for the first index i where nums[i] < nums[i+1]. Everything to the right of i is in descending order, i.e. already the largest possible arrangement of those numbers, so to go to the next arrangement you must increase position i. Choose the smallest number on the right that is still bigger than nums[i] (the rightmost one that is > nums[i], because the tail is descending), swap it with nums[i], then reverse the tail so it becomes the smallest possible (ascending). If no such i exists, the whole list is descending: reversing it gives the first arrangement."
+  }
+}

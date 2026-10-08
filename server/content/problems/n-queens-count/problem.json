@@ -1,0 +1,23 @@
+{
+  "slug": "n-queens-count",
+  "title": "Peaceful Queens",
+  "concept": "backtracking",
+  "difficulty": "hard",
+  "statement": "On an `n` by `n` chessboard you want to place `n` queens so that **no two queens attack each other**. A queen attacks every square in its own row, its own column, and along both diagonals.\n\nReturn the **number of different ways** to place the `n` queens.",
+  "constraints": [
+    "1 <= n <= 9"
+  ],
+  "signature": { "name": "count_queens", "params": [{ "name": "n", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [4], "expected": 2, "explanation": "A 4 x 4 board has exactly two peaceful arrangements (mirror images of each other)." },
+    { "args": [1], "expected": 1, "explanation": "One queen on a 1 x 1 board." }
+  ],
+  "edgeTests": [[2], [3], [5], [6], [7], [8], [9]],
+  "expected": { "time": "O(n!)", "space": "O(n)" },
+  "hints": {
+    "nudge": "There must be exactly one queen in each row. So place them row by row. For each row, which columns are still safe?",
+    "pattern": "Backtracking: place a queen in the next row in any safe column, recurse, then undo.",
+    "pseudocode": "place(row): if row == n: return 1\n  total = 0\n  for each column c that is not attacked (column, diagonal, anti-diagonal unused):\n    mark c; total += place(row + 1); unmark c\n  return total",
+    "walkthrough": "Trying every placement of n queens on n*n squares is hopeless, but one queen per row is forced, so place queens row by row. In each row try every column, skipping those attacked by the queens already placed: same column, same diagonal (row - col equal) or same anti-diagonal (row + col equal). Keep three sets (or bit masks) of used columns and diagonals so each check is O(1). When all n rows are filled, count one solution; then undo the last queen and try the next column (backtracking). The counts for n = 1..9 are 1, 0, 0, 2, 10, 4, 40, 92, 352."
+  }
+}

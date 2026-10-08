@@ -1,0 +1,24 @@
+{
+  "slug": "max-path-sum",
+  "title": "Best Path in a Tree",
+  "concept": "trees",
+  "difficulty": "hard",
+  "statement": "A **path** in a binary tree is a chain of connected nodes that goes up and/or down along parent-child links and visits each node at most once. It must contain at least one node, and it does **not** have to pass through the root.\n\nThe **sum of a path** is the sum of the values of its nodes (values can be negative). Given `root`, return the **largest path sum**. (In the examples a tree is written level by level from the top; `null` marks a missing child.)",
+  "constraints": [
+    "1 <= number of nodes <= 10000",
+    "-1000 <= node value <= 1000"
+  ],
+  "signature": { "name": "max_path_sum", "params": [{ "name": "root", "type": "TreeNode" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 2, 3]], "expected": 6, "explanation": "The path 2 -> 1 -> 3." },
+    { "args": [[-10, 9, 20, null, null, 15, 7]], "expected": 42, "explanation": "The path 15 -> 20 -> 7 does not use the root." }
+  ],
+  "edgeTests": [[[-3]], [[5]], [[-1, -2]], [[2, -1]], [[1, -2, 3]], [[-2, -1, -3]], [[1, 2, 3, 4, 5, 6, 7]]],
+  "expected": { "time": "O(n)", "space": "O(h)" },
+  "hints": {
+    "nudge": "A best path has a highest node. Through it, the path goes down into the left subtree and down into the right subtree. How much can each side add?",
+    "pattern": "Post-order recursion returning the best downward chain from each node, while updating a global best that bends at the node.",
+    "pseudocode": "best = -infinity\ngain(node): if node is empty: return 0\n  l = max(0, gain(node.left)); r = max(0, gain(node.right))\n  best = max(best, node.val + l + r)\n  return node.val + max(l, r)",
+    "walkthrough": "For each node as the top of a path, add the node's value and the best downward chain from each child, but only when that chain is positive (otherwise leave it out, so use max(0, chain)). That total is a candidate for the answer. The value passed up to the parent can use only one side: node.val + max(l, r), because a path cannot branch twice. Computing every chain again for every node would be O(n^2); one recursive pass does it in O(n). Start best at minus infinity (or the first value) because the answer can be negative."
+  }
+}

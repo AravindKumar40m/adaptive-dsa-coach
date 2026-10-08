@@ -1,0 +1,24 @@
+{
+  "slug": "level-sums",
+  "title": "Sum of Each Level",
+  "concept": "trees",
+  "difficulty": "medium",
+  "statement": "You are given `root`, the top node of a binary tree. The **levels** of a tree are the rows you get reading it from the top: level 0 is the root, level 1 holds the root's children, and so on.\n\nReturn a list with the **sum of the node values on each level**, from the top level down. An empty tree gives an empty list. (In the examples a tree is written level by level from the top; `null` marks a missing child.)",
+  "constraints": [
+    "0 <= number of nodes <= 10000",
+    "-1000 <= node value <= 1000"
+  ],
+  "signature": { "name": "level_sums", "params": [{ "name": "root", "type": "TreeNode" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[3, 9, 20, null, null, 15, 7]], "expected": [3, 29, 22], "explanation": "Level 0: 3. Level 1: 9 + 20 = 29. Level 2: 15 + 7 = 22." },
+    { "args": [[1]], "expected": [1], "explanation": "One level." }
+  ],
+  "edgeTests": [[[]], [[1, 2]], [[1, null, 2]], [[-1, -2, -3]], [[1, 2, 3, 4, 5, 6, 7]], [[1, 2, 3, 4, null, null, 5]]],
+  "expected": { "time": "O(n)", "space": "O(w)" },
+  "hints": {
+    "nudge": "You need to process the tree row by row. What data structure gives you 'first come, first served'?",
+    "pattern": "Breadth-first search (BFS) with a queue, handling one level at a time.",
+    "pseudocode": "queue = [root]\nwhile queue not empty:\n  size = len(queue); total = 0\n  repeat size times: node = pop front; total += node.val; push its children\n  append total to the result",
+    "walkthrough": "Visit the nodes level by level using a queue. At the start of each round the queue holds exactly the nodes of one level, so remember its size, then process that many nodes: add their values and put their children in the queue for the next round. Append the level's total to the result. O(n) time. A depth-first walk that adds each value into a table indexed by depth also works."
+  }
+}

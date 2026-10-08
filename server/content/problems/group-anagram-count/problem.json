@@ -1,0 +1,25 @@
+{
+  "slug": "group-anagram-count",
+  "title": "Anagram Groups",
+  "concept": "hashing",
+  "difficulty": "easy",
+  "statement": "A word list is given as one string, `words`, with the words separated by single spaces. Put two words in the same **group** if one is an anagram of the other (the same letters in a different order, or the same word twice).\n\nReturn the **number of groups**.",
+  "constraints": [
+    "1 <= number of words <= 10000",
+    "each word has 1 to 20 lowercase letters",
+    "words are separated by exactly one space (no leading or trailing space)"
+  ],
+  "signature": { "name": "count_anagram_groups", "params": [{ "name": "words", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["eat tea tan ate nat bat"], "expected": 3, "explanation": "Groups: {eat, tea, ate}, {tan, nat}, {bat}." },
+    { "args": ["a"], "expected": 1, "explanation": "One word, one group." }
+  ],
+  "edgeTests": [["a a a"], ["ab ba"], ["ab ac"], ["abc cab bca xyz"], ["listen silent enlist google"]],
+  "expected": { "time": "O(n * L log L)", "space": "O(n * L)" },
+  "hints": {
+    "nudge": "Two words are in the same group exactly when they share some 'signature'. What could that signature be?",
+    "pattern": "Use a hash set of canonical keys: the word's letters sorted.",
+    "pseudocode": "keys = empty set\nfor each word: keys.add(sorted letters of word joined)\nreturn size(keys)",
+    "walkthrough": "Comparing every pair of words is O(n^2) comparisons. Instead give each word a key that is identical for all its anagrams: sort its letters (eat, tea and ate all become aet). Put all keys in a set; the number of different keys is the number of groups. Sorting a word of length L costs O(L log L), so the whole thing is O(n * L log L)."
+  }
+}

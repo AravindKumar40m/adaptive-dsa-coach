@@ -1,0 +1,25 @@
+{
+  "slug": "cycle-length",
+  "title": "Length of the Loop",
+  "concept": "linked_list",
+  "difficulty": "medium",
+  "statement": "You are given `head`, the first node of a singly linked list. The list may contain a **loop**: the last node's `next` may point back to some earlier node instead of ending.\n\nReturn the **number of nodes in the loop**, or `0` if the list has no loop.\n\nIn the examples a list is written as `[values, pos]`: the list holds `values` in order, and the last node points back to the node at index `pos` (`pos = -1` means no loop).",
+  "constraints": [
+    "0 <= number of nodes <= 100000",
+    "-1000000000 <= node value <= 1000000000",
+    "-1 <= pos < number of nodes"
+  ],
+  "signature": { "name": "cycle_length", "params": [{ "name": "head", "type": "CycleList" }], "returns": "int" },
+  "examples": [
+    { "args": [[[3, 2, 0, -4], 1]], "expected": 3, "explanation": "The last node points back to the node with value 2, so the loop is 2, 0, -4: three nodes." },
+    { "args": [[[1, 2], -1]], "expected": 0, "explanation": "No loop." }
+  ],
+  "edgeTests": [[[[], -1]], [[[5], -1]], [[[5], 0]], [[[1, 2, 3], 0]], [[[1, 2, 3, 4, 5], 4]], [[[1, 2, 3, 4, 5], 2]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "How could you notice that you are walking in circles without remembering every node you saw?",
+    "pattern": "Floyd's tortoise and hare: a slow and a fast pointer meet inside a loop.",
+    "pseudocode": "slow = fast = head\nwhile fast and fast.next:\n  slow = slow.next; fast = fast.next.next\n  if slow == fast:\n    count = 1; cur = slow.next\n    while cur != slow: count++; cur = cur.next\n    return count\nreturn 0",
+    "walkthrough": "Storing visited nodes in a set finds the loop but uses O(n) memory. Instead move one pointer one step at a time and another two steps at a time. If the list ends, there is no loop (answer 0). If there is a loop the fast pointer eventually laps the slow one and they meet inside the loop. From the meeting node, walk once around the loop counting nodes until you return to it: that count is the loop length."
+  }
+}

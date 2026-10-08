@@ -1,0 +1,24 @@
+{
+  "slug": "max-profit-trades",
+  "title": "Stock Trading Days",
+  "concept": "greedy",
+  "difficulty": "easy",
+  "statement": "`prices[i]` is the price of a stock on day `i`. You may buy and sell as many times as you like, but you can hold **at most one share at a time** (sell before you buy again), and you may sell and buy again on the same day.\n\nReturn the **largest total profit** you can make.",
+  "constraints": [
+    "1 <= len(prices) <= 100000",
+    "0 <= prices[i] <= 10000"
+  ],
+  "signature": { "name": "max_profit", "params": [{ "name": "prices", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[7, 1, 5, 3, 6, 4]], "expected": 7, "explanation": "Buy at 1 and sell at 5 (profit 4), then buy at 3 and sell at 6 (profit 3)." },
+    { "args": [[7, 6, 4, 3, 1]], "expected": 0, "explanation": "The price only falls, so never trade." }
+  ],
+  "edgeTests": [[[5]], [[1, 2]], [[2, 1]], [[1, 2, 3, 4, 5]], [[3, 3, 3]], [[1, 5, 1, 5, 1, 5]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "A long rise from 1 to 5 earns the same as many small daily rises added together. Which days are worth trading?",
+    "pattern": "Greedy: collect every positive day-to-day price rise.",
+    "pseudocode": "profit = 0\nfor i from 1 to n-1: if prices[i] > prices[i-1]: profit += prices[i] - prices[i-1]\nreturn profit",
+    "walkthrough": "Trying all buy/sell choices is exponential. Notice that holding the stock through a rise from day i-1 to day i earns exactly that rise, and any profitable trade is the sum of its daily rises. So the best you can do is to be holding the stock on exactly the days when the price goes up the next day: add every positive difference prices[i] - prices[i-1] and skip the negative ones."
+  }
+}

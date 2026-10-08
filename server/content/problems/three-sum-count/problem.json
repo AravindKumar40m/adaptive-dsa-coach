@@ -1,0 +1,24 @@
+{
+  "slug": "three-sum-count",
+  "title": "Zero-Sum Triples",
+  "concept": "two_pointers",
+  "difficulty": "medium",
+  "statement": "Find all groups of **three numbers from `nums` that add up to 0**. Two groups are the same if they contain the same three values (the order does not matter), so `[-1, 0, 1]` and `[1, 0, -1]` count once. Each number in the list can be used at most once per group (by position).\n\nReturn the **number of different groups** (counted by their values).",
+  "constraints": [
+    "1 <= len(nums) <= 3000",
+    "-100000 <= nums[i] <= 100000"
+  ],
+  "signature": { "name": "count_zero_triples", "params": [{ "name": "nums", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[-1, 0, 1, 2, -1, -4]], "expected": 2, "explanation": "The groups are {-1, -1, 2} and {-1, 0, 1}." },
+    { "args": [[0, 0, 0, 0]], "expected": 1, "explanation": "Only the value group {0, 0, 0}, however many zeros there are." }
+  ],
+  "edgeTests": [[[1, 2, 3]], [[0]], [[-1, 1]], [[0, 0, 0]], [[-2, 0, 1, 1, 2]], [[-4, -2, -2, -2, 0, 1, 2, 2, 2, 3, 3, 4, 4, 6, 6]]],
+  "expected": { "time": "O(n^2)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Fix the smallest number of the group. Then the other two must add up to its negative, and the rest of the list is sorted...",
+    "pattern": "Sort, fix one number, then use two pointers for the other two. Skip repeated values.",
+    "pseudocode": "sort(nums); count = 0\nfor i in 0..n-3:\n  if i > 0 and nums[i] == nums[i-1]: continue\n  lo = i+1; hi = n-1\n  while lo < hi:\n    s = nums[i] + nums[lo] + nums[hi]\n    if s < 0: lo++ elif s > 0: hi--\n    else: count++; lo++; hi--; skip equal values on both sides",
+    "walkthrough": "Three nested loops are O(n^3). After sorting, fix the first value nums[i]; the other two must sum to -nums[i], which is a sorted pair-sum problem: move lo right when the sum is too small and hi left when it is too big. To count each value group once, skip a position if it equals the previous value at the same level (for i, and for lo/hi after finding a match). O(n^2) overall."
+  }
+}

@@ -1,0 +1,123 @@
+//### no-adjacent-ones
+int count_no_adjacent_ones(int n) {
+    int ends_zero = 1, ends_one = 1;
+    for (int i = 1; i < n; i++) { int z = ends_zero + ends_one; ends_one = ends_zero; ends_zero = z; }
+    return ends_zero + ends_one;
+}
+//### combination-sum-count
+int count_combinations(vector<int>& coins, int target) {
+    vector<long long> ways(target + 1, 0);
+    ways[0] = 1;
+    for (int c : coins) for (int s = c; s <= target; s++) ways[s] += ways[s - c];
+    return (int) ways[target];
+}
+//### palindrome-partitions
+static bool is_pal_range(const string& text, int lo, int hi) {
+    while (lo < hi) { if (text[lo] != text[hi]) return false; lo++; hi--; }
+    return true;
+}
+int count_palindrome_splits(string text) {
+    int n = (int) text.size();
+    vector<int> ways(n + 1, 0);
+    ways[0] = 1;
+    for (int end = 1; end <= n; end++) {
+        for (int start = 0; start < end; start++) if (is_pal_range(text, start, end - 1)) ways[end] += ways[start];
+    }
+    return ways[n];
+}
+//### n-queens-count
+static int queens_place(int cols, int diag, int anti, int full) {
+    if (cols == full) return 1;
+    int total = 0;
+    int free_cells = full & ~(cols | diag | anti);
+    while (free_cells) {
+        int bit = free_cells & -free_cells;
+        free_cells -= bit;
+        total += queens_place(cols | bit, ((diag | bit) << 1) & full, (anti | bit) >> 1, full);
+    }
+    return total;
+}
+int count_queens(int n) {
+    return queens_place(0, 0, 0, (1 << n) - 1);
+}
+//### partition-k-groups
+static bool split_place(const vector<int>& sorted_nums, vector<int>& groups, int target, size_t i) {
+    if (i == sorted_nums.size()) return true;
+    set<int> tried;
+    for (size_t g = 0; g < groups.size(); g++) {
+        if (groups[g] + sorted_nums[i] <= target && !tried.count(groups[g])) {
+            tried.insert(groups[g]);
+            groups[g] += sorted_nums[i];
+            if (split_place(sorted_nums, groups, target, i + 1)) return true;
+            groups[g] -= sorted_nums[i];
+        }
+    }
+    return false;
+}
+bool can_split_equal(vector<int>& nums, int k) {
+    int total = 0;
+    for (int x : nums) total += x;
+    if (total % k != 0) return false;
+    int target = total / k;
+    vector<int> sorted_nums = nums;
+    sort(sorted_nums.begin(), sorted_nums.end(), greater<int>());
+    if (sorted_nums[0] > target) return false;
+    vector<int> groups(k, 0);
+    return split_place(sorted_nums, groups, target, 0);
+}
+//### min-cost-stairs
+int min_cost_climb(vector<int>& cost) {
+    int prev2 = 0, prev1 = 0;
+    for (int i = 2; i <= (int) cost.size(); i++) {
+        int current = min(prev1 + cost[i - 1], prev2 + cost[i - 2]);
+        prev2 = prev1;
+        prev1 = current;
+    }
+    return prev1;
+}
+//### paint-fence-ways
+int fence_ways(int posts, int colors) {
+    if (posts == 1) return colors;
+    long long same = colors, diff = (long long) colors * (colors - 1);
+    for (int i = 0; i < posts - 2; i++) { long long next = (same + diff) * (colors - 1); same = diff; diff = next; }
+    return (int) (same + diff);
+}
+//### edit-distance
+int edit_distance(string source, string target) {
+    int m = (int) target.size();
+    vector<int> previous(m + 1);
+    for (int j = 0; j <= m; j++) previous[j] = j;
+    for (int i = 1; i <= (int) source.size(); i++) {
+        vector<int> current(m + 1);
+        current[0] = i;
+        for (int j = 1; j <= m; j++) {
+            if (source[i - 1] == target[j - 1]) current[j] = previous[j - 1];
+            else current[j] = 1 + min(previous[j], min(current[j - 1], previous[j - 1]));
+        }
+        previous = current;
+    }
+    return previous[m];
+}
+//### knapsack-01
+int max_value(vector<int>& weights, vector<int>& values, int capacity) {
+    vector<int> best(capacity + 1, 0);
+    for (size_t i = 0; i < weights.size(); i++) {
+        for (int c = capacity; c >= weights[i]; c--) best[c] = max(best[c], best[c - weights[i]] + values[i]);
+    }
+    return best[capacity];
+}
+//### wildcard-match
+bool wildcard_match(string text, string pattern) {
+    int n = (int) text.size(), m = (int) pattern.size();
+    vector<vector<char>> ok(n + 1, vector<char>(m + 1, 0));
+    ok[0][0] = 1;
+    for (int j = 1; j <= m; j++) if (pattern[j - 1] == '*') ok[0][j] = ok[0][j - 1];
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+            char p = pattern[j - 1];
+            if (p == '*') ok[i][j] = ok[i][j - 1] || ok[i - 1][j];
+            else ok[i][j] = ok[i - 1][j - 1] && (p == '?' || p == text[i - 1]);
+        }
+    }
+    return ok[n][m] != 0;
+}

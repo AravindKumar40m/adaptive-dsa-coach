@@ -1,0 +1,24 @@
+{
+  "slug": "search-sorted",
+  "title": "Find in a Sorted List",
+  "concept": "binary_search",
+  "difficulty": "easy",
+  "statement": "`nums` is sorted from smallest to largest and all its values are **different**. Return the **index** of `target` in `nums`, or `-1` if `target` is not in the list.",
+  "constraints": [
+    "1 <= len(nums) <= 100000",
+    "-1000000000 <= nums[i], target <= 1000000000, all nums different and sorted ascending"
+  ],
+  "signature": { "name": "find_index", "params": [{ "name": "nums", "type": "int[]" }, { "name": "target", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[-1, 0, 3, 5, 9, 12], 9], "expected": 4, "explanation": "9 is at index 4." },
+    { "args": [[-1, 0, 3, 5, 9, 12], 2], "expected": -1, "explanation": "2 is not in the list." }
+  ],
+  "edgeTests": [[[5], 5], [[5], 4], [[1, 2], 1], [[1, 2], 2], [[1, 2, 3, 4, 5], 6], [[1, 2, 3, 4, 5], 0]],
+  "expected": { "time": "O(log n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "After looking at the middle element, how many elements can you rule out?",
+    "pattern": "Classic binary search.",
+    "pseudocode": "lo = 0; hi = n - 1\nwhile lo <= hi:\n  mid = (lo + hi) / 2\n  if nums[mid] == target: return mid\n  if nums[mid] < target: lo = mid + 1 else: hi = mid - 1\nreturn -1",
+    "walkthrough": "Checking every element is O(n). Because the list is sorted, compare the middle element with the target: if it is equal you are done, if it is smaller the target can only be to the right, otherwise to the left. Each step halves the search range, so O(log n). Take care with the loop condition (lo <= hi) so a one-element range is still examined."
+  }
+}

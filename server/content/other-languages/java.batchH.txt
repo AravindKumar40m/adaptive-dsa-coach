@@ -1,0 +1,150 @@
+//### no-adjacent-ones
+class Solution {
+    public int countNoAdjacentOnes(int n) {
+        int endsZero = 1, endsOne = 1;
+        for (int i = 1; i < n; i++) { int z = endsZero + endsOne; endsOne = endsZero; endsZero = z; }
+        return endsZero + endsOne;
+    }
+}
+//### combination-sum-count
+class Solution {
+    public int countCombinations(int[] coins, int target) {
+        long[] ways = new long[target + 1];
+        ways[0] = 1;
+        for (int c : coins) for (int s = c; s <= target; s++) ways[s] += ways[s - c];
+        return (int) ways[target];
+    }
+}
+//### palindrome-partitions
+class Solution {
+    private boolean isPal(String text, int lo, int hi) {
+        while (lo < hi) { if (text.charAt(lo) != text.charAt(hi)) return false; lo++; hi--; }
+        return true;
+    }
+
+    public int countPalindromeSplits(String text) {
+        int n = text.length();
+        int[] ways = new int[n + 1];
+        ways[0] = 1;
+        for (int end = 1; end <= n; end++) {
+            for (int start = 0; start < end; start++) if (isPal(text, start, end - 1)) ways[end] += ways[start];
+        }
+        return ways[n];
+    }
+}
+//### n-queens-count
+class Solution {
+    private int place(int cols, int diag, int anti, int full) {
+        if (cols == full) return 1;
+        int total = 0;
+        int free = full & ~(cols | diag | anti);
+        while (free != 0) {
+            int bit = free & -free;
+            free -= bit;
+            total += place(cols | bit, ((diag | bit) << 1) & full, (anti | bit) >> 1, full);
+        }
+        return total;
+    }
+
+    public int countQueens(int n) {
+        return place(0, 0, 0, (1 << n) - 1);
+    }
+}
+//### partition-k-groups
+class Solution {
+    private int[] sorted;
+    private int[] groups;
+    private int target;
+
+    private boolean place(int i) {
+        if (i == sorted.length) return true;
+        Set<Integer> tried = new HashSet<>();
+        for (int g = 0; g < groups.length; g++) {
+            if (groups[g] + sorted[i] <= target && tried.add(groups[g])) {
+                groups[g] += sorted[i];
+                if (place(i + 1)) return true;
+                groups[g] -= sorted[i];
+            }
+        }
+        return false;
+    }
+
+    public boolean canSplitEqual(int[] nums, int k) {
+        int total = 0;
+        for (int x : nums) total += x;
+        if (total % k != 0) return false;
+        target = total / k;
+        sorted = nums.clone();
+        Arrays.sort(sorted);
+        for (int i = 0, j = sorted.length - 1; i < j; i++, j--) { int t = sorted[i]; sorted[i] = sorted[j]; sorted[j] = t; }
+        if (sorted[0] > target) return false;
+        groups = new int[k];
+        return place(0);
+    }
+}
+//### min-cost-stairs
+class Solution {
+    public int minCostClimb(int[] cost) {
+        int prev2 = 0, prev1 = 0;
+        for (int i = 2; i <= cost.length; i++) {
+            int current = Math.min(prev1 + cost[i - 1], prev2 + cost[i - 2]);
+            prev2 = prev1;
+            prev1 = current;
+        }
+        return prev1;
+    }
+}
+//### paint-fence-ways
+class Solution {
+    public int fenceWays(int posts, int colors) {
+        if (posts == 1) return colors;
+        long same = colors, diff = (long) colors * (colors - 1);
+        for (int i = 0; i < posts - 2; i++) { long next = (same + diff) * (colors - 1); same = diff; diff = next; }
+        return (int) (same + diff);
+    }
+}
+//### edit-distance
+class Solution {
+    public int editDistance(String source, String target) {
+        int m = target.length();
+        int[] previous = new int[m + 1];
+        for (int j = 0; j <= m; j++) previous[j] = j;
+        for (int i = 1; i <= source.length(); i++) {
+            int[] current = new int[m + 1];
+            current[0] = i;
+            for (int j = 1; j <= m; j++) {
+                if (source.charAt(i - 1) == target.charAt(j - 1)) current[j] = previous[j - 1];
+                else current[j] = 1 + Math.min(previous[j], Math.min(current[j - 1], previous[j - 1]));
+            }
+            previous = current;
+        }
+        return previous[m];
+    }
+}
+//### knapsack-01
+class Solution {
+    public int maxValue(int[] weights, int[] values, int capacity) {
+        int[] best = new int[capacity + 1];
+        for (int i = 0; i < weights.length; i++) {
+            for (int c = capacity; c >= weights[i]; c--) best[c] = Math.max(best[c], best[c - weights[i]] + values[i]);
+        }
+        return best[capacity];
+    }
+}
+//### wildcard-match
+class Solution {
+    public boolean wildcardMatch(String text, String pattern) {
+        int n = text.length(), m = pattern.length();
+        boolean[][] ok = new boolean[n + 1][m + 1];
+        ok[0][0] = true;
+        for (int j = 1; j <= m; j++) if (pattern.charAt(j - 1) == '*') ok[0][j] = ok[0][j - 1];
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                char p = pattern.charAt(j - 1);
+                if (p == '*') ok[i][j] = ok[i][j - 1] || ok[i - 1][j];
+                else ok[i][j] = ok[i - 1][j - 1] && (p == '?' || p == text.charAt(i - 1));
+            }
+        }
+        return ok[n][m];
+    }
+}

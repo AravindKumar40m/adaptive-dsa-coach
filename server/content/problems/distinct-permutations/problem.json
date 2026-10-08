@@ -1,0 +1,24 @@
+{
+  "slug": "distinct-permutations",
+  "title": "Distinct Arrangements",
+  "concept": "recursion",
+  "difficulty": "medium",
+  "statement": "You have a row of tiles, each showing a lowercase letter (`text`); some letters may repeat. You can arrange the tiles in a row in many ways, but two arrangements that look the same count only once (swapping two identical letters changes nothing).\n\nReturn the **number of different arrangements** of all the tiles.",
+  "constraints": [
+    "1 <= len(text) <= 12",
+    "text contains only lowercase letters a-z"
+  ],
+  "signature": { "name": "count_arrangements", "params": [{ "name": "text", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["aab"], "expected": 3, "explanation": "aab, aba, baa." },
+    { "args": ["abc"], "expected": 6, "explanation": "All six orders are different." }
+  ],
+  "edgeTests": [["a"], ["aa"], ["ab"], ["aaaa"], ["aabb"], ["abcdefghijkl"], ["aabbccddeeff"]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "If all letters were different there would be n! arrangements. What happens to that number when a letter appears twice?",
+    "pattern": "Count with a formula: divide by the number of ways to reorder identical letters. (Or recurse on 'which letter goes first', using letter counts.)",
+    "pseudocode": "answer = n!\nfor each letter that appears c times: answer = answer / c!\nreturn answer",
+    "walkthrough": "Listing every arrangement and removing duplicates works for tiny inputs but explodes quickly (12 letters give up to 479 million arrangements). Counting is easier: n! orders if all tiles were different, but each group of c identical tiles can be reordered among themselves in c! ways without changing the arrangement, so divide by c! for every letter. The recursive view gives the same count: choose the first letter among the distinct letters left, then count the arrangements of the rest. For n <= 12 every number involved fits in a 32-bit int (12! = 479001600)."
+  }
+}

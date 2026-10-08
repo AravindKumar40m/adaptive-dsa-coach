@@ -1,0 +1,25 @@
+{
+  "slug": "build-tree-from-orders",
+  "title": "Rebuild the Tree",
+  "concept": "trees",
+  "difficulty": "medium",
+  "statement": "Someone walked a binary tree whose node values are all **different** and wrote down two lists:\n\n- `preorder`: the values in the order **node, then left subtree, then right subtree**;\n- `inorder`: the values in the order **left subtree, then node, then right subtree**.\n\nRebuild the original tree from the two lists and return its root. Both lists contain the same values. An empty list means an empty tree. (In the examples the result is written level by level from the top; `null` marks a missing child.)",
+  "constraints": [
+    "0 <= len(preorder) = len(inorder) <= 10000",
+    "-1000000000 <= values <= 1000000000, all different",
+    "the two lists are valid traversals of the same tree"
+  ],
+  "signature": { "name": "build_tree", "params": [{ "name": "preorder", "type": "int[]" }, { "name": "inorder", "type": "int[]" }], "returns": "TreeNode" },
+  "examples": [
+    { "args": [[3, 9, 20, 15, 7], [9, 3, 15, 20, 7]], "expected": [3, 9, 20, null, null, 15, 7], "explanation": "3 is the root (first in preorder); in inorder, 9 is left of 3 and 15, 20, 7 are right of it." },
+    { "args": [[1], [1]], "expected": [1], "explanation": "A single node." }
+  ],
+  "edgeTests": [[[], []], [[2, 1], [1, 2]], [[2, 1], [2, 1]], [[1, 2, 3], [3, 2, 1]], [[1, 2, 3], [1, 2, 3]], [[4, 2, 1, 3, 6, 5, 7], [1, 2, 3, 4, 5, 6, 7]]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "The first value of the preorder list is always the root. Where is that value in the inorder list, and what does that tell you?",
+    "pattern": "Recursion that splits the inorder list around the root; a hash map finds the root's position at once.",
+    "pseudocode": "root = preorder[next]; next++\nmid = position of root in inorder (hash map)\nroot.left = build the part of inorder before mid\nroot.right = build the part of inorder after mid",
+    "walkthrough": "The first preorder value is the root. In the inorder list, everything left of the root's position belongs to the left subtree and everything right of it to the right subtree, and preorder visits the whole left subtree before the right one, so you can keep one running pointer into preorder. Recursively build the left part first, then the right part. Searching for the root in the inorder list each time costs O(n) per node (O(n^2) overall); a hash map from value to inorder position makes each lookup O(1), so the whole rebuild is O(n)."
+  }
+}

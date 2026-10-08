@@ -1,0 +1,25 @@
+{
+  "slug": "postfix-eval",
+  "title": "Postfix Calculator",
+  "concept": "stack_queue",
+  "difficulty": "medium",
+  "statement": "A calculator uses **postfix notation**: the operator comes after its two numbers. For example `3 4 +` means 3 + 4, and `2 3 4 * -` means 2 - (3 * 4).\n\nThe expression `expr` is a list of tokens separated by single spaces. A token is either a non-negative whole number or one of the operators `+`, `-`, `*`. The expression is always valid, and every intermediate result fits in a 32-bit integer.\n\nReturn the value of the expression.",
+  "constraints": [
+    "1 <= len(expr) <= 100000",
+    "tokens are separated by exactly one space; operators are + - *",
+    "the expression is valid and no value exceeds the 32-bit integer range"
+  ],
+  "signature": { "name": "eval_postfix", "params": [{ "name": "expr", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["3 4 + 2 *"], "expected": 14, "explanation": "(3 + 4) * 2 = 14." },
+    { "args": ["2 3 4 * -"], "expected": -10, "explanation": "3 * 4 = 12, then 2 - 12 = -10." }
+  ],
+  "edgeTests": [["7"], ["0 5 -"], ["10 20 +"], ["1 2 3 4 + + +"], ["9 8 - 7 -"], ["100 100 *"]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "When you read an operator, which two numbers does it use? Which numbers have you seen most recently?",
+    "pattern": "A stack of numbers: push numbers, pop two when you see an operator.",
+    "pseudocode": "stack = empty\nfor each token:\n  if token is a number: push it\n  else: b = pop(); a = pop(); push(a op b)\nreturn pop()",
+    "walkthrough": "Read the tokens left to right. A number is pushed onto the stack. An operator needs the two most recent numbers, which are on top of the stack: pop b (the right operand) then a (the left operand), compute a op b, and push the result back. Order matters for minus: it is a - b, not b - a. When the tokens run out, the single value left on the stack is the answer. O(n) time."
+  }
+}

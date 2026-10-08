@@ -1,0 +1,24 @@
+{
+  "slug": "four-sum-count",
+  "title": "Four Lists Sum to Zero",
+  "concept": "hashing",
+  "difficulty": "medium",
+  "statement": "You are given four lists of numbers, `first`, `second`, `third` and `fourth`, all of the same length `n`. Count the **tuples of positions `(i, j, k, l)`** (each from `0` to `n - 1`) such that\n\n`first[i] + second[j] + third[k] + fourth[l] == 0`.\n\nTuples with different positions count separately even if the numbers are equal.",
+  "constraints": [
+    "1 <= n <= 100 (all four lists have n numbers)",
+    "-1000000 <= each number <= 1000000"
+  ],
+  "signature": { "name": "count_zero_quads", "params": [{ "name": "first", "type": "int[]" }, { "name": "second", "type": "int[]" }, { "name": "third", "type": "int[]" }, { "name": "fourth", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 2], [-2, -1], [-1, 2], [0, 2]], "expected": 2, "explanation": "Tuple (0,0,0,1): 1 + (-2) + (-1) + 2 = 0. Tuple (1,1,0,0): 2 + (-1) + (-1) + 0 = 0. No other tuple works." },
+    { "args": [[0], [0], [0], [0]], "expected": 1, "explanation": "The only tuple sums to 0." }
+  ],
+  "edgeTests": [[[1], [1], [1], [1]], [[1, -1], [1, -1], [1, -1], [1, -1]], [[0, 0], [0, 0], [0, 0], [0, 0]], [[5], [-5], [3], [-3]]],
+  "expected": { "time": "O(n^2)", "space": "O(n^2)" },
+  "hints": {
+    "nudge": "Four loops cost n^4 steps. What if you combined the lists in pairs?",
+    "pattern": "Meet in the middle: hash map of all sums of the first two lists, then look up the negatives of sums of the other two.",
+    "pseudocode": "counts = {}\nfor a in first: for b in second: counts[a + b] += 1\ntotal = 0\nfor c in third: for d in fourth: total += counts.get(-(c + d), 0)\nreturn total",
+    "walkthrough": "The condition a + b + c + d = 0 is the same as a + b = -(c + d). Count how many times each sum a + b occurs (n^2 pairs). Then for every pair (c, d), add the number of earlier pairs whose sum equals -(c + d). That is two double loops instead of one quadruple loop: O(n^2) time and O(n^2) space. With n up to 100 the answer is at most 10^8, which fits in an int."
+  }
+}

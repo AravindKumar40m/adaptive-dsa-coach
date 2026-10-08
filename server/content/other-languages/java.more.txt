@@ -1,0 +1,303 @@
+//### second-highest
+class Solution {
+    public int secondHighest(int[] scores) {
+        int first = -1, second = -1;
+        for (int x : scores) {
+            if (x > first) { second = first; first = x; }
+            else if (x < first && x > second) second = x;
+        }
+        return second;
+    }
+}
+//### best-streak-sum
+class Solution {
+    public int bestStreakSum(int[] daily) {
+        int current = daily[0], best = daily[0];
+        for (int i = 1; i < daily.length; i++) {
+            current = Math.max(daily[i], current + daily[i]);
+            best = Math.max(best, current);
+        }
+        return best;
+    }
+}
+//### first-unique-char
+class Solution {
+    public int firstUniqueIndex(String text) {
+        int[] count = new int[26];
+        for (char ch : text.toCharArray()) count[ch - 'a']++;
+        for (int i = 0; i < text.length(); i++) {
+            if (count[text.charAt(i) - 'a'] == 1) return i;
+        }
+        return -1;
+    }
+}
+//### subarray-sum-count
+class Solution {
+    public int countWindows(int[] readings, int target) {
+        Map<Integer, Integer> seen = new HashMap<>();
+        seen.put(0, 1);
+        int running = 0, count = 0;
+        for (int x : readings) {
+            running += x;
+            count += seen.getOrDefault(running - target, 0);
+            seen.merge(running, 1, Integer::sum);
+        }
+        return count;
+    }
+}
+//### widest-fence
+class Solution {
+    public int maxBannerArea(int[] heights) {
+        int i = 0, j = heights.length - 1, best = 0;
+        while (i < j) {
+            best = Math.max(best, Math.min(heights[i], heights[j]) * (j - i));
+            if (heights[i] < heights[j]) i++; else j--;
+        }
+        return best;
+    }
+}
+//### peak-overlap
+class Solution {
+    public int maxOverlap(int[][] talks) {
+        int n = talks.length;
+        int[] starts = new int[n], ends = new int[n];
+        for (int k = 0; k < n; k++) { starts[k] = talks[k][0]; ends[k] = talks[k][1]; }
+        Arrays.sort(starts);
+        Arrays.sort(ends);
+        int i = 0, j = 0, running = 0, best = 0;
+        while (i < n) {
+            if (starts[i] < ends[j]) { running++; i++; best = Math.max(best, running); }
+            else { running--; j++; }
+        }
+        return best;
+    }
+}
+//### longest-unique-run
+class Solution {
+    public int longestUniqueRun(String text) {
+        int[] last = new int[26];
+        Arrays.fill(last, -1);
+        int start = 0, best = 0;
+        for (int i = 0; i < text.length(); i++) {
+            int c = text.charAt(i) - 'a';
+            if (last[c] >= start) start = last[c] + 1;
+            last[c] = i;
+            best = Math.max(best, i - start + 1);
+        }
+        return best;
+    }
+}
+//### postfix-eval
+class Solution {
+    public int evalPostfix(String expr) {
+        Deque<Integer> stack = new ArrayDeque<>();
+        for (String token : expr.split(" ")) {
+            if (token.equals("+") || token.equals("-") || token.equals("*")) {
+                int b = stack.pop();
+                int a = stack.pop();
+                stack.push(token.equals("+") ? a + b : token.equals("-") ? a - b : a * b);
+            } else {
+                stack.push(Integer.parseInt(token));
+            }
+        }
+        return stack.pop();
+    }
+}
+//### fair-capacity
+class Solution {
+    private int daysNeeded(int[] packages, int cap) {
+        int d = 1, load = 0;
+        for (int w : packages) {
+            if (load + w > cap) { d++; load = 0; }
+            load += w;
+        }
+        return d;
+    }
+
+    public int minCapacity(int[] packages, int days) {
+        int lo = 0, hi = 0;
+        for (int w : packages) { lo = Math.max(lo, w); hi += w; }
+        while (lo < hi) {
+            int mid = (lo + hi) >>> 1;
+            if (daysNeeded(packages, mid) <= days) hi = mid; else lo = mid + 1;
+        }
+        return lo;
+    }
+}
+//### subset-sum-count
+class Solution {
+    private int go(int[] weights, int i, int remaining) {
+        if (remaining < 0) return 0;
+        if (i == weights.length) return remaining == 0 ? 1 : 0;
+        return go(weights, i + 1, remaining - weights[i]) + go(weights, i + 1, remaining);
+    }
+
+    public int countSelections(int[] weights, int target) {
+        return go(weights, 0, target);
+    }
+}
+//### skip-neighbours
+class Solution {
+    public int maxPrizes(int[] prizes) {
+        int prev2 = 0, prev1 = 0;
+        for (int p : prizes) {
+            int current = Math.max(prev1, prev2 + p);
+            prev2 = prev1;
+            prev1 = current;
+        }
+        return prev1;
+    }
+}
+//### min-coins
+class Solution {
+    public int fewestCoins(int[] coins, int amount) {
+        int inf = amount + 1;
+        int[] best = new int[amount + 1];
+        Arrays.fill(best, inf);
+        best[0] = 0;
+        for (int a = 1; a <= amount; a++) {
+            for (int c : coins) {
+                if (c <= a && best[a - c] + 1 < best[a]) best[a] = best[a - c] + 1;
+            }
+        }
+        return best[amount] == inf ? -1 : best[amount];
+    }
+}
+//### grid-paths
+class Solution {
+    public int countPaths(int[][] grid) {
+        int rows = grid.length, cols = grid[0].length;
+        int[] row = new int[cols];
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                if (grid[r][c] == 1) row[c] = 0;
+                else if (r == 0 && c == 0) row[c] = 1;
+                else if (c > 0) row[c] += row[c - 1];
+            }
+        }
+        return row[cols - 1];
+    }
+}
+//### cookie-match
+class Solution {
+    public int maxHappy(int[] needs, int[] sizes) {
+        int[] n = needs.clone(), s = sizes.clone();
+        Arrays.sort(n);
+        Arrays.sort(s);
+        int i = 0;
+        for (int c : s) {
+            if (i < n.length && c >= n[i]) i++;
+        }
+        return i;
+    }
+}
+//### max-non-overlap
+class Solution {
+    public int maxJobs(int[][] jobs) {
+        int[][] sorted = jobs.clone();
+        Arrays.sort(sorted, (a, b) -> Integer.compare(a[1], b[1]));
+        int lastEnd = -1, count = 0;
+        for (int[] job : sorted) {
+            if (job[0] >= lastEnd) { count++; lastEnd = job[1]; }
+        }
+        return count;
+    }
+}
+//### kth-largest
+class Solution {
+    public int kthLargest(int[] scores, int k) {
+        PriorityQueue<Integer> heap = new PriorityQueue<>();
+        for (int x : scores) {
+            heap.add(x);
+            if (heap.size() > k) heap.poll();
+        }
+        return heap.peek();
+    }
+}
+//### rope-join
+class Solution {
+    public int minJoinCost(int[] ropes) {
+        PriorityQueue<Integer> heap = new PriorityQueue<>();
+        for (int r : ropes) heap.add(r);
+        int total = 0;
+        while (heap.size() > 1) {
+            int a = heap.poll(), b = heap.poll();
+            total += a + b;
+            heap.add(a + b);
+        }
+        return total;
+    }
+}
+//### connected-groups
+class Solution {
+    private int find(int[] parent, int x) {
+        while (parent[x] != x) { parent[x] = parent[parent[x]]; x = parent[x]; }
+        return x;
+    }
+
+    public int countGroups(int n, int[][] friendships) {
+        int[] parent = new int[n];
+        for (int i = 0; i < n; i++) parent[i] = i;
+        int groups = n;
+        for (int[] f : friendships) {
+            int ra = find(parent, f[0]), rb = find(parent, f[1]);
+            if (ra != rb) { parent[ra] = rb; groups--; }
+        }
+        return groups;
+    }
+}
+//### grid-islands
+class Solution {
+    public int countIslands(int[][] grid) {
+        int rows = grid.length, cols = grid[0].length;
+        boolean[][] seen = new boolean[rows][cols];
+        int[] dr = {1, -1, 0, 0}, dc = {0, 0, 1, -1};
+        int islands = 0;
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                if (grid[r][c] == 1 && !seen[r][c]) {
+                    islands++;
+                    seen[r][c] = true;
+                    Deque<int[]> stack = new ArrayDeque<>();
+                    stack.push(new int[]{r, c});
+                    while (!stack.isEmpty()) {
+                        int[] cur = stack.pop();
+                        for (int d = 0; d < 4; d++) {
+                            int nr = cur[0] + dr[d], nc = cur[1] + dc[d];
+                            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && grid[nr][nc] == 1 && !seen[nr][nc]) {
+                                seen[nr][nc] = true;
+                                stack.push(new int[]{nr, nc});
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return islands;
+    }
+}
+//### shortest-grid-path
+class Solution {
+    public int shortestPath(int[][] grid) {
+        int rows = grid.length, cols = grid[0].length;
+        if (grid[0][0] == 1 || grid[rows - 1][cols - 1] == 1) return -1;
+        int[][] dist = new int[rows][cols];
+        for (int[] row : dist) Arrays.fill(row, -1);
+        dist[0][0] = 0;
+        int[] dr = {1, -1, 0, 0}, dc = {0, 0, 1, -1};
+        Deque<int[]> queue = new ArrayDeque<>();
+        queue.add(new int[]{0, 0});
+        while (!queue.isEmpty()) {
+            int[] cur = queue.poll();
+            if (cur[0] == rows - 1 && cur[1] == cols - 1) return dist[cur[0]][cur[1]];
+            for (int d = 0; d < 4; d++) {
+                int nr = cur[0] + dr[d], nc = cur[1] + dc[d];
+                if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && grid[nr][nc] == 0 && dist[nr][nc] == -1) {
+                    dist[nr][nc] = dist[cur[0]][cur[1]] + 1;
+                    queue.add(new int[]{nr, nc});
+                }
+            }
+        }
+        return -1;
+    }
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "decode-nested",
+  "title": "Decode the Repeats",
+  "concept": "stack_queue",
+  "difficulty": "medium",
+  "statement": "A message is compressed with the rule `k[text]`, which means **`text` repeated `k` times**. Repeats can be nested: `3[a2[c]]` means `a`, then `cc`, repeated 3 times, which is `accaccacc`. Letters outside any brackets are copied as they are. The number `k` can have several digits.\n\nGiven the compressed `code`, return the **decoded message**. The input is always valid, and the decoded message is at most 100000 characters long.",
+  "constraints": [
+    "1 <= len(code) <= 1000",
+    "code contains lowercase letters, digits, [ and ]",
+    "1 <= k <= 300; the decoded text is at most 100000 characters long"
+  ],
+  "signature": { "name": "decode_message", "params": [{ "name": "code", "type": "string" }], "returns": "string" },
+  "examples": [
+    { "args": ["3[a]2[bc]"], "expected": "aaabcbc", "explanation": "aaa followed by bcbc." },
+    { "args": ["3[a2[c]]"], "expected": "accaccacc", "explanation": "Inside: a + cc = acc. Repeated 3 times: accaccacc." }
+  ],
+  "edgeTests": [["abc"], ["1[a]"], ["2[abc]3[cd]ef"], ["10[a]"], ["2[2[2[a]]]"], ["a2[b]c"]],
+  "expected": { "time": "O(output length)", "space": "O(output length)" },
+  "hints": {
+    "nudge": "When you reach a closing bracket, you need to know the text before the matching opening bracket and the number in front of it.",
+    "pattern": "Stack of (text so far, repeat count) pairs.",
+    "pseudocode": "stack = []; current = ''; number = 0\nfor ch in code:\n  digit: number = number*10 + digit\n  '[': push (current, number); current = ''; number = 0\n  ']': (prev, k) = pop; current = prev + current * k\n  letter: current += ch\nreturn current",
+    "walkthrough": "Scan left to right keeping the text of the current bracket level and the number just read. On '[', save the current text and the repeat count on a stack and start a fresh text for the inside. On ']', pop the saved text and count; the finished inside text repeated count times is appended to the saved text. Digits can have several characters, so build the number digit by digit. Letters just extend the current text. When the scan ends the current text is the answer."
+  }
+}

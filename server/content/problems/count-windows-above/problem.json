@@ -1,0 +1,25 @@
+{
+  "slug": "count-windows-above",
+  "title": "Strong Windows",
+  "concept": "sliding_window",
+  "difficulty": "easy",
+  "statement": "A shop recorded its sales `sales[i]` for each day. A **window** is `k` days in a row. A window is **strong** if its total sales are at least `limit`.\n\nReturn the **number of strong windows** (every position where a window of `k` days can start counts separately).",
+  "constraints": [
+    "1 <= k <= len(sales) <= 100000",
+    "0 <= sales[i] <= 10000",
+    "0 <= limit <= 1000000000"
+  ],
+  "signature": { "name": "count_strong_windows", "params": [{ "name": "sales", "type": "int[]" }, { "name": "k", "type": "int" }, { "name": "limit", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[2, 1, 4, 5, 3], 3, 10], "expected": 2, "explanation": "The windows add up to 7, 10 and 12; two of them are at least 10." },
+    { "args": [[1, 1, 1], 2, 5], "expected": 0, "explanation": "Both windows add up to 2." }
+  ],
+  "edgeTests": [[[5], 1, 5], [[5], 1, 6], [[0, 0, 0], 3, 0], [[1, 2, 3, 4], 4, 10], [[3, 3, 3, 3], 2, 6]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Moving from one window to the next only changes two days. Which two?",
+    "pattern": "Sliding window sum: add the new day, subtract the day that left.",
+    "pseudocode": "sum = sum of the first k; count = (sum >= limit)\nfor i from k to n-1: sum += sales[i] - sales[i-k]; if sum >= limit: count++\nreturn count",
+    "walkthrough": "Adding up k days for every window costs O(n*k). Compute the first window's sum once. Each time the window slides right by one day, add the new day and subtract the day that dropped out. Compare the running sum with the limit at each position. O(n) time, O(1) space."
+  }
+}

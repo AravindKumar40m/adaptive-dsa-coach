@@ -1,0 +1,26 @@
+{
+  "slug": "kth-smallest-in-lists",
+  "title": "Kth Smallest Across Sorted Lists",
+  "concept": "heaps",
+  "difficulty": "medium",
+  "statement": "You are given several lists of numbers, `lists`, and **each list is already sorted** from smallest to largest (a list may be empty). Imagine pouring all the numbers into one big sorted sequence (repeats count).\n\nReturn the **`k`-th smallest number** of that combined sequence, counting from 1.",
+  "constraints": [
+    "1 <= len(lists) <= 1000",
+    "0 <= total number of values <= 100000",
+    "1 <= k <= total number of values",
+    "-1000000000 <= values <= 1000000000, each inner list sorted in non-decreasing order"
+  ],
+  "signature": { "name": "kth_smallest_in_lists", "params": [{ "name": "lists", "type": "int[][]" }, { "name": "k", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[[1, 5, 9], [10, 11, 13], [12, 13, 15]], 8], "expected": 13, "explanation": "Combined: 1, 5, 9, 10, 11, 12, 13, 13, 15. The 8th is 13." },
+    { "args": [[[-5], [-5]], 2], "expected": -5, "explanation": "Both values are -5." }
+  ],
+  "edgeTests": [[[[1]], 1], [[[], [2, 3]], 2], [[[1, 2, 3]], 3], [[[1, 1, 1], [1, 1]], 4], [[[3], [1], [2]], 1], [[[3], [1], [2]], 3]],
+  "expected": { "time": "O(k log m)", "space": "O(m)" },
+  "hints": {
+    "nudge": "The smallest number overall is one of the first elements of the lists. After taking it, what is the next candidate?",
+    "pattern": "A min-heap holding the current front element of each list; pop k times.",
+    "pseudocode": "heap = [(list[0], list index, 0) for each non-empty list]\nrepeat k times: (value, i, j) = pop smallest; if j + 1 < len(list i): push (list i [j+1], i, j+1)\nreturn the last popped value",
+    "walkthrough": "Merging everything into one array and sorting costs O(N log N). Because every list is sorted, the next smallest number overall is always the front of some list. Keep a min-heap with one entry per list (its current front). Pop the smallest, then push the next element of that same list. After k pops, the last popped value is the k-th smallest. With m lists the heap holds at most m items, so each step costs O(log m) and the total is O(k log m)."
+  }
+}

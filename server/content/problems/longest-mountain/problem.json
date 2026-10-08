@@ -1,0 +1,24 @@
+{
+  "slug": "longest-mountain",
+  "title": "Longest Mountain",
+  "concept": "two_pointers",
+  "difficulty": "medium",
+  "statement": "A **mountain** in `heights` is a stretch of at least 3 consecutive values that **strictly rises to a peak and then strictly falls**: there is an index `p` in the stretch, not at either end, such that the values increase up to `p` and decrease after `p`.\n\nReturn the **length of the longest mountain**, or `0` if there is none.",
+  "constraints": [
+    "1 <= len(heights) <= 100000",
+    "0 <= heights[i] <= 10000"
+  ],
+  "signature": { "name": "longest_mountain", "params": [{ "name": "heights", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[2, 1, 4, 7, 3, 2, 5]], "expected": 5, "explanation": "The mountain 1, 4, 7, 3, 2 rises to 7 and then falls." },
+    { "args": [[2, 2, 2]], "expected": 0, "explanation": "No strict rise and fall." }
+  ],
+  "edgeTests": [[[1]], [[1, 2]], [[1, 2, 3]], [[3, 2, 1]], [[1, 3, 2]], [[0, 1, 0, 1, 0, 1, 0]], [[1, 2, 2, 1]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Every mountain has exactly one peak. How far does a mountain extend to the left and to the right of its peak?",
+    "pattern": "For each peak, walk outward down both slopes. The slopes of different peaks never overlap much, so it stays linear.",
+    "pseudocode": "for each i with h[i-1] < h[i] > h[i+1]:\n  l = i-1; while l > 0 and h[l-1] < h[l]: l--\n  r = i+1; while r < n-1 and h[r] > h[r+1]: r++\n  best = max(best, r - l + 1)",
+    "walkthrough": "A peak is an index strictly higher than both neighbours. From a peak, walk left while the values keep decreasing (going away from the peak) and walk right while they keep decreasing. The mountain spans from the left end to the right end. Equal neighbours stop the walk, which handles plateaus. Each element is walked over by at most one peak's slopes (the next peak starts after the right slope), so the total is O(n)."
+  }
+}

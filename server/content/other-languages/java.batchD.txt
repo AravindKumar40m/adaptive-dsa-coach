@@ -1,0 +1,162 @@
+//### remove-adjacent-dupes
+class Solution {
+    public String removePairs(String text) {
+        StringBuilder stack = new StringBuilder();
+        for (char ch : text.toCharArray()) {
+            int n = stack.length();
+            if (n > 0 && stack.charAt(n - 1) == ch) stack.deleteCharAt(n - 1);
+            else stack.append(ch);
+        }
+        return stack.toString();
+    }
+}
+//### baseball-score
+class Solution {
+    public int totalScore(String ops) {
+        Deque<Integer> stack = new ArrayDeque<>();
+        int total = 0;
+        for (String op : ops.split(" ")) {
+            if (op.equals("C")) { total -= stack.pop(); continue; }
+            int value;
+            if (op.equals("+")) {
+                int top = stack.pop();
+                int second = stack.peek();
+                stack.push(top);
+                value = top + second;
+            } else if (op.equals("D")) value = 2 * stack.peek();
+            else value = Integer.parseInt(op);
+            stack.push(value);
+            total += value;
+        }
+        return total;
+    }
+}
+//### backspace-compare
+class Solution {
+    private String finalText(String s) {
+        StringBuilder stack = new StringBuilder();
+        for (char ch : s.toCharArray()) {
+            if (ch == '#') { if (stack.length() > 0) stack.deleteCharAt(stack.length() - 1); }
+            else stack.append(ch);
+        }
+        return stack.toString();
+    }
+
+    public boolean sameAfterBackspaces(String first, String second) {
+        return finalText(first).equals(finalText(second));
+    }
+}
+//### days-until-warmer
+class Solution {
+    public int[] daysUntilWarmer(int[] temps) {
+        int[] result = new int[temps.length];
+        Deque<Integer> stack = new ArrayDeque<>();
+        for (int i = 0; i < temps.length; i++) {
+            while (!stack.isEmpty() && temps[stack.peek()] < temps[i]) {
+                int j = stack.pop();
+                result[j] = i - j;
+            }
+            stack.push(i);
+        }
+        return result;
+    }
+}
+//### largest-rectangle
+class Solution {
+    public int largestRectangle(int[] heights) {
+        Deque<Integer> stack = new ArrayDeque<>();
+        int best = 0;
+        for (int i = 0; i <= heights.length; i++) {
+            int h = i == heights.length ? 0 : heights[i];
+            while (!stack.isEmpty() && heights[stack.peek()] >= h) {
+                int height = heights[stack.pop()];
+                int left = stack.isEmpty() ? -1 : stack.peek();
+                best = Math.max(best, height * (i - left - 1));
+            }
+            stack.push(i);
+        }
+        return best;
+    }
+}
+//### decode-nested
+class Solution {
+    public String decodeMessage(String code) {
+        Deque<StringBuilder> texts = new ArrayDeque<>();
+        Deque<Integer> counts = new ArrayDeque<>();
+        StringBuilder current = new StringBuilder();
+        int number = 0;
+        for (char ch : code.toCharArray()) {
+            if (Character.isDigit(ch)) number = number * 10 + (ch - '0');
+            else if (ch == '[') { texts.push(current); counts.push(number); current = new StringBuilder(); number = 0; }
+            else if (ch == ']') {
+                StringBuilder previous = texts.pop();
+                int k = counts.pop();
+                for (int i = 0; i < k; i++) previous.append(current);
+                current = previous;
+            } else current.append(ch);
+        }
+        return current.toString();
+    }
+}
+//### pow-mod
+class Solution {
+    private long power(long base, int e, long m) {
+        if (e == 0) return 1 % m;
+        long half = power(base, e / 2, m);
+        long result = half * half % m;
+        if (e % 2 == 1) result = result * (base % m) % m;
+        return result;
+    }
+
+    public int powerMod(int base, int exp, int m) {
+        return (int) power(base, exp, m);
+    }
+}
+//### fibonacci-nth
+class Solution {
+    public int fibonacciNth(int n) {
+        int a = 0, b = 1;
+        for (int i = 0; i < n; i++) { int next = a + b; a = b; b = next; }
+        return a;
+    }
+}
+//### gcd-recursive
+class Solution {
+    public int gcdOf(int a, int b) {
+        return b == 0 ? a : gcdOf(b, a % b);
+    }
+}
+//### generate-parentheses-count
+class Solution {
+    public int countValidBrackets(int n) {
+        long[] ways = new long[n + 1];
+        ways[0] = 1;
+        for (int total = 1; total <= n; total++) {
+            for (int i = 0; i < total; i++) ways[total] += ways[i] * ways[total - 1 - i];
+        }
+        return (int) ways[n];
+    }
+}
+//### distinct-permutations
+class Solution {
+    private long factorial(int k) { return k <= 1 ? 1 : k * factorial(k - 1); }
+
+    public int countArrangements(String text) {
+        int[] counts = new int[26];
+        for (char ch : text.toCharArray()) counts[ch - 'a']++;
+        long answer = factorial(text.length());
+        for (int c : counts) answer /= factorial(c);
+        return (int) answer;
+    }
+}
+//### integer-partitions
+class Solution {
+    public int countPartitions(int n) {
+        int[] ways = new int[n + 1];
+        ways[0] = 1;
+        for (int part = 1; part <= n; part++) {
+            for (int s = part; s <= n; s++) ways[s] += ways[s - part];
+        }
+        return ways[n];
+    }
+}

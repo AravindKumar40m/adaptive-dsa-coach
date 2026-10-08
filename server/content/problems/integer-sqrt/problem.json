@@ -1,0 +1,23 @@
+{
+  "slug": "integer-sqrt",
+  "title": "Whole Square Root",
+  "concept": "binary_search",
+  "difficulty": "easy",
+  "statement": "Return the **whole-number part of the square root** of `n`: the largest whole number `r` such that `r * r <= n`. For example the square root of 8 is about 2.83, so the answer is 2.\n\nDo not use a built-in square root function.",
+  "constraints": [
+    "0 <= n <= 2147483647"
+  ],
+  "signature": { "name": "integer_sqrt", "params": [{ "name": "n", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [8], "expected": 2, "explanation": "2 * 2 = 4 <= 8 but 3 * 3 = 9 > 8." },
+    { "args": [16], "expected": 4, "explanation": "4 * 4 = 16 exactly." }
+  ],
+  "edgeTests": [[0], [1], [2], [3], [4], [99], [2147483647], [2147395600], [2147395599]],
+  "expected": { "time": "O(log n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "If you guess r, you can tell at once whether r is too big (r*r > n) or fine. What does that remind you of?",
+    "pattern": "Binary search on the answer between 0 and n.",
+    "pseudocode": "lo = 0; hi = min(n, 46341)\nwhile lo < hi:\n  mid = (lo + hi + 1) / 2\n  if mid * mid <= n: lo = mid else: hi = mid - 1\nreturn lo",
+    "walkthrough": "Trying r = 0, 1, 2, ... works but takes up to 46340 steps for large n. The condition 'r * r <= n' is true for small r and false for big r, so binary search finds the boundary in about 16 steps: if the middle guess fits, the answer is at least mid, otherwise it is smaller. Use the 'round up' middle (lo + hi + 1) / 2 so the loop always makes progress. Careful: mid * mid can exceed a 32-bit int, so use a 64-bit type or cap the search range at 46341 (46341 squared is already above 2^31 - 1)."
+  }
+}

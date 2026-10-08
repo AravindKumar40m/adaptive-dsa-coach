@@ -1,0 +1,24 @@
+{
+  "slug": "second-highest",
+  "title": "Second Highest",
+  "concept": "arrays",
+  "difficulty": "easy",
+  "statement": "A quiz had several rounds, and `scores[i]` is the score of round `i`. The runner-up score is the **second highest distinct score**.\n\nReturn the runner-up score. If there are fewer than two distinct scores, return `-1`.",
+  "constraints": [
+    "1 <= len(scores) <= 100000",
+    "0 <= scores[i] <= 1000"
+  ],
+  "signature": { "name": "second_highest", "params": [{ "name": "scores", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[7, 3, 9, 9, 5]], "expected": 7, "explanation": "The distinct scores are 9, 7, 5, 3. The second highest is 7." },
+    { "args": [[4, 4]], "expected": -1, "explanation": "Only one distinct score exists." }
+  ],
+  "edgeTests": [[[5]], [[1000, 0]], [[0, 0, 1]], [[3, 3, 2, 2]], [[1, 2, 3, 4, 5]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "You only ever need to remember the two best different values you have seen so far.",
+    "pattern": "Single pass keeping 'highest' and 'second highest' variables.",
+    "pseudocode": "first = -1; second = -1\nfor each x:\n  if x > first: second = first; first = x\n  else if x < first and x > second: second = x\nreturn second",
+    "walkthrough": "Sorting the distinct values works but costs O(n log n). One pass is enough: keep first and second, both starting at -1 (scores are never negative). A new value above first pushes the old first down to second. A value strictly between second and first becomes the new second. Equal values change nothing, which handles duplicates. If second is still -1 at the end, there was no runner-up."
+  }
+}

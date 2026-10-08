@@ -1,0 +1,24 @@
+{
+  "slug": "longest-unique-run",
+  "title": "Longest Unique Run",
+  "concept": "sliding_window",
+  "difficulty": "medium",
+  "statement": "Given a string `text` of lowercase letters, find the longest stretch of **consecutive characters in which no letter repeats**.\n\nReturn the length of that stretch.",
+  "constraints": [
+    "1 <= len(text) <= 100000",
+    "text contains only lowercase letters a-z"
+  ],
+  "signature": { "name": "longest_unique_run", "params": [{ "name": "text", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["abcbdea"], "expected": 5, "explanation": "The stretch cbdea has five different letters." },
+    { "args": ["aaaa"], "expected": 1, "explanation": "Any stretch longer than one letter repeats a." }
+  ],
+  "edgeTests": [["a"], ["ab"], ["abcdefghijklmnopqrstuvwxyz"], ["abba"], ["dvdf"], ["tmmzuxt"]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "If the current stretch has no repeats and the next letter is already inside it, how far must the start of the stretch move?",
+    "pattern": "Sliding window with a 'last seen position' table for each letter.",
+    "pseudocode": "last = table of -1; start = 0; best = 0\nfor i, ch in text:\n  if last[ch] >= start: start = last[ch] + 1\n  last[ch] = i\n  best = max(best, i - start + 1)\nreturn best",
+    "walkthrough": "Checking every start and end position costs at least O(n^2). Keep a window [start, i] with all different letters, plus the last index where each letter appeared. When the letter at i was last seen inside the window, jump start to just after that earlier copy, so the window is unique again. The window never moves backwards, so each position is processed once: O(n) time, and the table is 26 entries so O(1) space."
+  }
+}

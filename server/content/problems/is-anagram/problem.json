@@ -1,0 +1,24 @@
+{
+  "slug": "is-anagram",
+  "title": "Anagram Check",
+  "concept": "strings",
+  "difficulty": "easy",
+  "statement": "Two words are **anagrams** if one can be rearranged into the other, using every letter exactly once (for example `listen` and `silent`).\n\nReturn `true` if `first` and `second` are anagrams, otherwise `false`.",
+  "constraints": [
+    "1 <= len(first), len(second) <= 100000",
+    "both strings contain only lowercase letters a-z"
+  ],
+  "signature": { "name": "is_anagram", "params": [{ "name": "first", "type": "string" }, { "name": "second", "type": "string" }], "returns": "bool" },
+  "examples": [
+    { "args": ["listen", "silent"], "expected": true, "explanation": "Same letters, different order." },
+    { "args": ["rat", "car"], "expected": false, "explanation": "t and c differ." }
+  ],
+  "edgeTests": [["a", "a"], ["a", "b"], ["aab", "ab"], ["ab", "aab"], ["abc", "cab"], ["aabb", "abab"]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "What must be true about how many times each letter appears in the two words?",
+    "pattern": "Count the letters of one word and cancel them with the other.",
+    "pseudocode": "if len(first) != len(second): return false\ncount = 26 zeros\nfor ch in first: count[ch]++\nfor ch in second: count[ch]--; if count[ch] < 0: return false\nreturn true",
+    "walkthrough": "Sorting both words and comparing works in O(n log n). Counting is faster: if the lengths differ the answer is false. Otherwise add 1 to a counter for each letter of the first word and subtract 1 for each letter of the second; if no counter ever goes below zero (and the lengths are equal) they are anagrams. 26 counters means O(1) extra space."
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "slug": "longest-palindrome-part",
+  "title": "Longest Palindrome Inside",
+  "concept": "strings",
+  "difficulty": "medium",
+  "statement": "A **palindrome** reads the same forwards and backwards. Given `text`, look at every stretch of consecutive letters inside it.\n\nReturn the **length of the longest stretch that is a palindrome**.",
+  "constraints": [
+    "1 <= len(text) <= 1000",
+    "text contains only lowercase letters a-z"
+  ],
+  "signature": { "name": "longest_palindrome_length", "params": [{ "name": "text", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["babad"], "expected": 3, "explanation": "bab (or aba) reads the same both ways." },
+    { "args": ["cbbd"], "expected": 2, "explanation": "bb is the longest palindrome." }
+  ],
+  "edgeTests": [["a"], ["ab"], ["aaaa"], ["abcba"], ["abcd"], ["forgeeksskeegfor"]],
+  "expected": { "time": "O(n^2)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Every palindrome has a centre. Where can the centre be?",
+    "pattern": "Expand around each centre (one letter, or the gap between two letters).",
+    "pseudocode": "best = 1\nfor each centre c (n letters and n-1 gaps):\n  expand left and right while the letters match\n  best = max(best, length of that palindrome)\nreturn best",
+    "walkthrough": "Checking every substring costs O(n^3) (O(n^2) substrings, O(n) check each). Instead, a palindrome grows outward from its centre: for each of the 2n-1 possible centres (a letter for odd lengths, a gap between letters for even lengths), keep expanding while the two end letters are equal. Each expansion is at most O(n), so O(n^2) overall with O(1) space."
+  }
+}

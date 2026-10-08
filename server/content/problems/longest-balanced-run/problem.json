@@ -1,0 +1,24 @@
+{
+  "slug": "longest-balanced-run",
+  "title": "Longest Balanced Run",
+  "concept": "hashing",
+  "difficulty": "medium",
+  "statement": "A switch log `bits` contains only `0` (off) and `1` (on). A stretch of consecutive entries is **balanced** if it has the **same number of 0s and 1s**.\n\nReturn the **length of the longest balanced stretch**, or `0` if there is none.",
+  "constraints": [
+    "1 <= len(bits) <= 100000",
+    "bits[i] is 0 or 1"
+  ],
+  "signature": { "name": "longest_balanced", "params": [{ "name": "bits", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[0, 1]], "expected": 2, "explanation": "One 0 and one 1." },
+    { "args": [[0, 0, 1, 0, 0, 0, 1, 1]], "expected": 6, "explanation": "Positions 2 to 7 (1, 0, 0, 0, 1, 1) hold three 0s and three 1s." }
+  ],
+  "edgeTests": [[[0]], [[1, 1, 1]], [[0, 1, 0]], [[1, 0, 1, 0, 1, 0]], [[0, 0, 0, 1, 1, 1]], [[1, 1, 0]]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Count each 1 as +1 and each 0 as -1. What does a balanced stretch look like in the running total?",
+    "pattern": "Prefix sums with a hash map of the first index where each total was seen.",
+    "pseudocode": "first = {0: -1}; total = 0; best = 0\nfor i, b in bits:\n  total += 1 if b == 1 else -1\n  if total in first: best = max(best, i - first[total])\n  else: first[total] = i\nreturn best",
+    "walkthrough": "Checking every stretch is O(n^2). Treat 1 as +1 and 0 as -1 and keep a running total. A stretch from j+1 to i is balanced exactly when the total after i equals the total after j. So remember the FIRST index where each total appeared (the empty prefix has total 0 at index -1). When the same total shows up again at i, the stretch since the first time has length i - first[total]. Keep the maximum. Never overwrite the first index, so stretches are as long as possible."
+  }
+}

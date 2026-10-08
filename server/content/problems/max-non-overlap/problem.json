@@ -1,0 +1,25 @@
+{
+  "slug": "max-non-overlap",
+  "title": "Max Non-Overlapping Jobs",
+  "concept": "greedy",
+  "difficulty": "medium",
+  "statement": "A single machine can run one job at a time. `jobs[i] = [start, end]` means job `i` occupies the machine from time `start` up to, but **not including**, time `end`. Two jobs can both be chosen if one ends exactly when the other starts.\n\nReturn the **largest number of jobs** you can choose so that no two chosen jobs overlap.",
+  "constraints": [
+    "1 <= len(jobs) <= 100000",
+    "jobs[i] has exactly two numbers [start, end]",
+    "0 <= start < end <= 1000000000"
+  ],
+  "signature": { "name": "max_jobs", "params": [{ "name": "jobs", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [[[1, 3], [2, 4], [3, 5], [4, 6]]], "expected": 2, "explanation": "For example [1,3] and [3,5]. Three jobs would need two of the overlapping ones." },
+    { "args": [[[1, 10], [2, 3], [4, 5], [6, 7]]], "expected": 3, "explanation": "Skip the long job and take the three short ones." }
+  ],
+  "edgeTests": [[[[0, 1]]], [[[1, 5], [1, 5], [1, 5]]], [[[1, 2], [2, 3], [3, 4]]], [[[1, 100], [2, 3]]], [[[5, 6], [1, 2], [3, 4]]]],
+  "expected": { "time": "O(n log n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Of all jobs, which one leaves the machine free again the soonest? Is it ever a mistake to pick it?",
+    "pattern": "Greedy by earliest finishing time.",
+    "pseudocode": "sort jobs by end time\nlastEnd = -infinity; count = 0\nfor each job in that order:\n  if job.start >= lastEnd: count++; lastEnd = job.end\nreturn count",
+    "walkthrough": "Trying every subset of jobs is exponential. A greedy rule works: always take the job that finishes earliest among those that fit, because it leaves the most room for the rest. Sort by end time, then scan: take a job if it starts at or after the end of the last job you took. Sorting by start time or by length does NOT work (a long job that starts early can block many short ones). O(n log n) for the sort."
+  }
+}

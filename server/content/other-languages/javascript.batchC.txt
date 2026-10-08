@@ -1,0 +1,116 @@
+//### merge-sorted-arrays
+function mergeSorted(first, second) {
+  const result = [];
+  let i = 0, j = 0;
+  while (i < first.length && j < second.length) {
+    if (first[i] <= second[j]) result.push(first[i++]);
+    else result.push(second[j++]);
+  }
+  while (i < first.length) result.push(first[i++]);
+  while (j < second.length) result.push(second[j++]);
+  return result;
+}
+//### height-checker
+function countMisplaced(heights) {
+  const ordered = [...heights].sort((a, b) => a - b);
+  let count = 0;
+  for (let i = 0; i < heights.length; i++) if (heights[i] !== ordered[i]) count++;
+  return count;
+}
+//### max-product-three
+function maxProductOfThree(nums) {
+  const a = [...nums].sort((x, y) => x - y);
+  const n = a.length;
+  return Math.max(a[n - 1] * a[n - 2] * a[n - 3], a[0] * a[1] * a[n - 1]);
+}
+//### largest-number
+function largestNumber(nums) {
+  const words = nums.map(String);
+  words.sort((a, b) => (a + b > b + a ? -1 : a + b < b + a ? 1 : 0));
+  const result = words.join("");
+  return result[0] === "0" ? "0" : result;
+}
+//### count-inversions
+function countInversions(nums) {
+  const a = [...nums];
+  const buf = new Array(a.length).fill(0);
+  const sort = (lo, hi) => {
+    if (hi - lo < 2) return 0;
+    const mid = (lo + hi) >> 1;
+    let count = sort(lo, mid) + sort(mid, hi);
+    let i = lo, j = mid, k = lo;
+    while (i < mid && j < hi) {
+      if (a[i] <= a[j]) buf[k++] = a[i++];
+      else { buf[k++] = a[j++]; count += mid - i; }
+    }
+    while (i < mid) buf[k++] = a[i++];
+    while (j < hi) buf[k++] = a[j++];
+    for (let t = lo; t < hi; t++) a[t] = buf[t];
+    return count;
+  };
+  return sort(0, a.length);
+}
+//### count-windows-above
+function countStrongWindows(sales, k, limit) {
+  let window = 0;
+  for (let i = 0; i < k; i++) window += sales[i];
+  let count = window >= limit ? 1 : 0;
+  for (let i = k; i < sales.length; i++) {
+    window += sales[i] - sales[i - k];
+    if (window >= limit) count++;
+  }
+  return count;
+}
+//### max-vowels-window
+function maxVowels(text, k) {
+  const isVowel = (ch) => "aeiou".includes(ch);
+  let count = 0;
+  for (let i = 0; i < k; i++) if (isVowel(text[i])) count++;
+  let best = count;
+  for (let i = k; i < text.length; i++) {
+    if (isVowel(text[i])) count++;
+    if (isVowel(text[i - k])) count--;
+    best = Math.max(best, count);
+  }
+  return best;
+}
+//### min-subarray-len
+function minDaysToReach(deposits, target) {
+  let left = 0, total = 0, best = 0;
+  for (let right = 0; right < deposits.length; right++) {
+    total += deposits[right];
+    while (total >= target) {
+      if (best === 0 || right - left + 1 < best) best = right - left + 1;
+      total -= deposits[left++];
+    }
+  }
+  return best;
+}
+//### longest-repeat-replace
+function longestAfterReplace(text, k) {
+  const count = new Array(26).fill(0);
+  let left = 0, maxFreq = 0, best = 0;
+  for (let right = 0; right < text.length; right++) {
+    const idx = text.charCodeAt(right) - 97;
+    count[idx]++;
+    maxFreq = Math.max(maxFreq, count[idx]);
+    while (right - left + 1 - maxFreq > k) {
+      count[text.charCodeAt(left) - 97]--;
+      left++;
+    }
+    best = Math.max(best, right - left + 1);
+  }
+  return best;
+}
+//### window-max-total
+function windowMaxTotal(temps, k) {
+  const window = [];
+  let head = 0, total = 0;
+  for (let i = 0; i < temps.length; i++) {
+    while (window.length > head && temps[window[window.length - 1]] <= temps[i]) window.pop();
+    window.push(i);
+    if (window[head] <= i - k) head++;
+    if (i >= k - 1) total += temps[window[head]];
+  }
+  return total;
+}

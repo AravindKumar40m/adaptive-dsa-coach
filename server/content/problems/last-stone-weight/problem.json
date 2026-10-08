@@ -1,0 +1,24 @@
+{
+  "slug": "last-stone-weight",
+  "title": "Last Stone Standing",
+  "concept": "heaps",
+  "difficulty": "easy",
+  "statement": "You have a pile of stones with weights `stones[i]`. Each round, take the **two heaviest stones** and smash them together:\n\n- if they weigh the same, both are destroyed;\n- otherwise the lighter one is destroyed and the heavier one loses that much weight (it stays in the pile with the difference).\n\nRepeat until at most one stone is left. Return the **weight of the last stone**, or `0` if no stones are left.",
+  "constraints": [
+    "1 <= len(stones) <= 100000",
+    "1 <= stones[i] <= 1000"
+  ],
+  "signature": { "name": "last_stone", "params": [{ "name": "stones", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[2, 7, 4, 1, 8, 1]], "expected": 1, "explanation": "8 and 7 give 1; 4 and 2 give 2; 2 and 1 give 1; 1 and 1 cancel; one stone of weight 1 is left." },
+    { "args": [[1]], "expected": 1, "explanation": "A single stone is already the last one." }
+  ],
+  "edgeTests": [[[5, 5]], [[3, 7]], [[1, 1, 1]], [[10, 4, 4, 2]], [[9, 3, 2, 10]]],
+  "expected": { "time": "O(n log n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Every round you need the two largest values, and the pile changes after each smash. What structure gives you the maximum quickly?",
+    "pattern": "A max-heap (priority queue).",
+    "pseudocode": "heap = all stones (max-heap)\nwhile size > 1:\n  a = pop max; b = pop max\n  if a != b: push (a - b)\nreturn top or 0",
+    "walkthrough": "Sorting the pile again after every smash costs O(n log n) per round, O(n^2 log n) overall. A max-heap gives the largest element in O(log n) and lets you insert the leftover in O(log n). Pop the two largest, push their difference if it is non-zero, and repeat until at most one stone remains. In languages with only a min-heap (like Python's heapq), store negative weights."
+  }
+}

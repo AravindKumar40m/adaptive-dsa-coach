@@ -1,0 +1,23 @@
+{
+  "slug": "integer-partitions",
+  "title": "Ways to Split a Number",
+  "concept": "recursion",
+  "difficulty": "hard",
+  "statement": "A **partition** of a number `n` is a way to write it as a sum of positive whole numbers, where the **order does not matter** (so `1 + 3` and `3 + 1` are the same partition). For example 4 has five partitions: `4`, `3 + 1`, `2 + 2`, `2 + 1 + 1`, `1 + 1 + 1 + 1`.\n\nReturn the **number of partitions** of `n`.",
+  "constraints": [
+    "1 <= n <= 60"
+  ],
+  "signature": { "name": "count_partitions", "params": [{ "name": "n", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [4], "expected": 5, "explanation": "4, 3+1, 2+2, 2+1+1, 1+1+1+1." },
+    { "args": [5], "expected": 7, "explanation": "5, 4+1, 3+2, 3+1+1, 2+2+1, 2+1+1+1, 1+1+1+1+1." }
+  ],
+  "edgeTests": [[1], [2], [3], [10], [30], [60]],
+  "expected": { "time": "O(n^2)", "space": "O(n)" },
+  "hints": {
+    "nudge": "To avoid counting the same sum in a different order, decide the largest part first. Or decide the allowed part sizes one by one.",
+    "pattern": "Recursion with two parameters: count(remaining, biggest allowed part), then remember the answers.",
+    "pseudocode": "count(n, maxPart): if n == 0: return 1; if n < 0 or maxPart == 0: return 0\n  return count(n - maxPart, maxPart) + count(n, maxPart - 1)   // use maxPart or don't",
+    "walkthrough": "Let count(n, m) be the number of partitions of n using parts of size at most m. Either the largest part is exactly m (leaving count(n - m, m)) or all parts are smaller (count(n, m - 1)). Plain recursion repeats the same (n, m) pairs again and again, so remember the results (memoization), or fill a table where ways[s] is the number of partitions of s: for each part size p from 1 to n, for s from p to n, ways[s] += ways[s - p]. O(n^2) time. The largest answer (n = 60) is 966467."
+  }
+}

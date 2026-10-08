@@ -1,0 +1,24 @@
+{
+  "slug": "shortest-grid-path",
+  "title": "Shortest Maze Path",
+  "concept": "graphs",
+  "difficulty": "medium",
+  "statement": "A maze is a grid where `0` is an open cell and `1` is a wall. You start at the top-left cell and want to reach the bottom-right cell. In one move you can step **up, down, left or right** into an open cell (never into a wall, never outside the grid).\n\nReturn the **fewest moves** needed. If it is impossible (including when the start or the end is a wall), return `-1`. If the grid is a single open cell, the answer is `0`.",
+  "constraints": [
+    "1 <= rows, cols <= 100 (every row has the same length)",
+    "grid[r][c] is 0 or 1"
+  ],
+  "signature": { "name": "shortest_path", "params": [{ "name": "grid", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [[[0, 0, 0], [1, 1, 0], [0, 0, 0]]], "expected": 4, "explanation": "Right, right, down, down." },
+    { "args": [[[0, 1], [1, 0]]], "expected": -1, "explanation": "Both neighbours of the start are walls." }
+  ],
+  "edgeTests": [[[[0]]], [[[1]]], [[[0, 0, 0, 0]]], [[[0, 1, 0], [0, 1, 0], [0, 0, 0]]], [[[0, 0], [0, 1]]], [[[1, 0], [0, 0]]]],
+  "expected": { "time": "O(rows * cols)", "space": "O(rows * cols)" },
+  "hints": {
+    "nudge": "All moves cost the same. If you explore outward from the start one step at a time, when will you first reach each cell?",
+    "pattern": "Breadth-first search (BFS) on the grid.",
+    "pseudocode": "if start or end is a wall: return -1\nqueue = [(0, 0)]; dist[0][0] = 0\nwhile queue not empty:\n  (r, c) = pop front\n  if (r, c) is the end: return dist[r][c]\n  for each open unvisited neighbour: dist[nr][nc] = dist[r][c] + 1; push it\nreturn -1",
+    "walkthrough": "Trying every path (depth-first with backtracking) is exponential. Because every move costs 1, a breadth-first search visits cells in order of distance from the start: first all cells 1 move away, then 2 moves away, and so on. So the first time BFS reaches the end cell, that distance is the minimum. Use a queue, a visited marker (or distance table) so no cell is queued twice, and check the four neighbours. If the queue empties without reaching the end, return -1. O(rows * cols) time."
+  }
+}

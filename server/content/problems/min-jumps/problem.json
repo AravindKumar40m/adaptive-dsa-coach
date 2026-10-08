@@ -1,0 +1,25 @@
+{
+  "slug": "min-jumps",
+  "title": "Fewest Jumps to the End",
+  "concept": "greedy",
+  "difficulty": "medium",
+  "statement": "You stand on the first square of a row of squares. `jumps[i]` is the **maximum** number of squares you can jump forward from square `i` (any shorter distance is allowed too). The last square can always be reached.\n\nReturn the **minimum number of jumps** needed to get from the first square to the last one. If there is only one square the answer is `0`.",
+  "constraints": [
+    "1 <= len(jumps) <= 100000",
+    "0 <= jumps[i] <= 1000",
+    "the last square is always reachable"
+  ],
+  "signature": { "name": "min_jumps", "params": [{ "name": "jumps", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[2, 3, 1, 1, 4]], "expected": 2, "explanation": "Jump 1 step (to index 1), then 3 steps to the last square." },
+    { "args": [[2, 3, 0, 1, 4]], "expected": 2, "explanation": "Same idea: 0 -> 1 -> 4." }
+  ],
+  "edgeTests": [[[0]], [[5]], [[1, 1, 1, 1]], [[4, 1, 1, 1, 1]], [[1, 2, 3]], [[3, 2, 1, 1, 1]], [[2, 1, 1, 1, 1]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Think in 'rounds': after 1 jump you can be anywhere in some range; after 2 jumps in a bigger range...",
+    "pattern": "Greedy / BFS by levels: track the end of the range reachable with the current number of jumps, and the farthest you could get with one more.",
+    "pseudocode": "jumps_used = 0; range_end = 0; farthest = 0\nfor i in 0..n-2:\n  farthest = max(farthest, i + jumps[i])\n  if i == range_end: jumps_used++; range_end = farthest\nreturn jumps_used",
+    "walkthrough": "A table of the fewest jumps to every square costs O(n^2). Instead process the squares in 'rounds'. All squares reachable with k jumps form a range ending at range_end. While scanning that range, record the farthest square any of them can reach (farthest). When you pass the end of the current range you must take one more jump, and the new range ends at farthest. Count how many times this happens before reaching the last square. One pass: O(n) time, O(1) space."
+  }
+}

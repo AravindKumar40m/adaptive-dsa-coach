@@ -1,0 +1,141 @@
+//### group-anagram-count
+class Solution {
+    public int countAnagramGroups(String words) {
+        Set<String> keys = new HashSet<>();
+        for (String w : words.split(" ")) {
+            char[] c = w.toCharArray();
+            Arrays.sort(c);
+            keys.add(new String(c));
+        }
+        return keys.size();
+    }
+}
+//### nearby-duplicate
+class Solution {
+    public boolean hasNearbyDuplicate(int[] readings, int k) {
+        Map<Integer, Integer> last = new HashMap<>();
+        for (int i = 0; i < readings.length; i++) {
+            Integer prev = last.get(readings[i]);
+            if (prev != null && i - prev <= k) return true;
+            last.put(readings[i], i);
+        }
+        return false;
+    }
+}
+//### longest-consecutive-run
+class Solution {
+    public int longestConsecutive(int[] nums) {
+        Set<Integer> values = new HashSet<>();
+        for (int x : nums) values.add(x);
+        int best = 0;
+        for (int x : values) {
+            if (!values.contains(x - 1)) {
+                int length = 1;
+                while (values.contains(x + length)) length++;
+                best = Math.max(best, length);
+            }
+        }
+        return best;
+    }
+}
+//### four-sum-count
+class Solution {
+    public int countZeroQuads(int[] first, int[] second, int[] third, int[] fourth) {
+        Map<Integer, Integer> sums = new HashMap<>();
+        for (int a : first) for (int b : second) sums.merge(a + b, 1, Integer::sum);
+        int total = 0;
+        for (int c : third) for (int d : fourth) total += sums.getOrDefault(-(c + d), 0);
+        return total;
+    }
+}
+//### longest-balanced-run
+class Solution {
+    public int longestBalanced(int[] bits) {
+        Map<Integer, Integer> first = new HashMap<>();
+        first.put(0, -1);
+        int total = 0, best = 0;
+        for (int i = 0; i < bits.length; i++) {
+            total += bits[i] == 1 ? 1 : -1;
+            Integer seen = first.get(total);
+            if (seen != null) best = Math.max(best, i - seen);
+            else first.put(total, i);
+        }
+        return best;
+    }
+}
+//### remove-duplicates-length
+class Solution {
+    public int countDistinctSorted(int[] ids) {
+        int count = 1;
+        for (int i = 1; i < ids.length; i++) if (ids[i] != ids[i - 1]) count++;
+        return count;
+    }
+}
+//### sorted-squares
+class Solution {
+    public int[] sortedSquares(int[] nums) {
+        int n = nums.length;
+        int[] result = new int[n];
+        int i = 0, j = n - 1;
+        for (int pos = n - 1; pos >= 0; pos--) {
+            if (Math.abs(nums[i]) > Math.abs(nums[j])) { result[pos] = nums[i] * nums[i]; i++; }
+            else { result[pos] = nums[j] * nums[j]; j--; }
+        }
+        return result;
+    }
+}
+//### three-sum-count
+class Solution {
+    public int countZeroTriples(int[] nums) {
+        int[] a = nums.clone();
+        Arrays.sort(a);
+        int n = a.length, count = 0;
+        for (int i = 0; i < n - 2; i++) {
+            if (i > 0 && a[i] == a[i - 1]) continue;
+            int lo = i + 1, hi = n - 1;
+            while (lo < hi) {
+                int s = a[i] + a[lo] + a[hi];
+                if (s < 0) lo++;
+                else if (s > 0) hi--;
+                else {
+                    count++; lo++; hi--;
+                    while (lo < hi && a[lo] == a[lo - 1]) lo++;
+                    while (lo < hi && a[hi] == a[hi + 1]) hi--;
+                }
+            }
+        }
+        return count;
+    }
+}
+//### longest-mountain
+class Solution {
+    public int longestMountain(int[] heights) {
+        int n = heights.length, best = 0;
+        for (int i = 1; i < n - 1; i++) {
+            if (heights[i - 1] < heights[i] && heights[i] > heights[i + 1]) {
+                int left = i - 1, right = i + 1;
+                while (left > 0 && heights[left - 1] < heights[left]) left--;
+                while (right < n - 1 && heights[right] > heights[right + 1]) right++;
+                best = Math.max(best, right - left + 1);
+            }
+        }
+        return best;
+    }
+}
+//### next-permutation
+class Solution {
+    public int[] nextArrangement(int[] nums) {
+        int[] a = nums.clone();
+        int n = a.length;
+        int i = n - 2;
+        while (i >= 0 && a[i] >= a[i + 1]) i--;
+        if (i >= 0) {
+            int j = n - 1;
+            while (a[j] <= a[i]) j--;
+            int t = a[i]; a[i] = a[j]; a[j] = t;
+        }
+        int lo = i + 1, hi = n - 1;
+        while (lo < hi) { int t = a[lo]; a[lo] = a[hi]; a[hi] = t; lo++; hi--; }
+        return a;
+    }
+}

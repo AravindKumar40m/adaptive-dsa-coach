@@ -1,0 +1,24 @@
+{
+  "slug": "is-valid-bst",
+  "title": "Is It a Search Tree",
+  "concept": "trees",
+  "difficulty": "medium",
+  "statement": "A **binary search tree** (BST) is a binary tree where, for every node, **all** values in its left subtree are **smaller** than the node's value and **all** values in its right subtree are **larger** (no equal values allowed).\n\nGiven `root`, return `true` if the tree is a valid BST, otherwise `false`. An empty tree is valid. (In the examples a tree is written level by level from the top; `null` marks a missing child.)",
+  "constraints": [
+    "0 <= number of nodes <= 10000",
+    "-1000000000 <= node value <= 1000000000"
+  ],
+  "signature": { "name": "is_valid_bst", "params": [{ "name": "root", "type": "TreeNode" }], "returns": "bool" },
+  "examples": [
+    { "args": [[2, 1, 3]], "expected": true, "explanation": "1 < 2 < 3." },
+    { "args": [[5, 1, 4, null, null, 3, 6]], "expected": false, "explanation": "The node 3 sits in the right subtree of 5 but is smaller than 5." }
+  ],
+  "edgeTests": [[[]], [[1]], [[2, 2]], [[2, 1, 2]], [[10, 5, 15, null, null, 6, 20]], [[3, 1, 5, 0, 2, 4, 6]]],
+  "expected": { "time": "O(n)", "space": "O(h)" },
+  "hints": {
+    "nudge": "Checking only a node against its two children is not enough. Each node must also respect the nodes ABOVE it. What range of values is allowed for a node?",
+    "pattern": "Pass down an allowed range (low, high) while recursing; or check that an in-order walk is strictly increasing.",
+    "pseudocode": "check(node, low, high): if node is empty: return true\n  if node.val <= low or node.val >= high: return false\n  return check(node.left, low, node.val) and check(node.right, node.val, high)\ncall check(root, -infinity, +infinity)",
+    "walkthrough": "A node that is fine compared with its parent can still break the rule for a grandparent (like the 3 in the second example). So carry a range down the tree: the left child must be below the parent's value (and above the lower bound inherited so far), the right child must be above it (and below the inherited upper bound). Any value outside its range makes the tree invalid. Another method: an in-order walk (left, node, right) of a valid BST produces strictly increasing values. Both are O(n)."
+  }
+}

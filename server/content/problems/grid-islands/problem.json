@@ -1,0 +1,24 @@
+{
+  "slug": "grid-islands",
+  "title": "Count the Islands",
+  "concept": "graphs",
+  "difficulty": "medium",
+  "statement": "A map is a grid where `1` is land and `0` is water. An **island** is a group of land cells connected **up, down, left or right** (not diagonally).\n\nReturn the **number of islands** in the map.",
+  "constraints": [
+    "1 <= rows, cols <= 50 (every row has the same length)",
+    "grid[r][c] is 0 or 1"
+  ],
+  "signature": { "name": "count_islands", "params": [{ "name": "grid", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [[[1, 1, 0], [0, 0, 1], [1, 0, 1]]], "expected": 3, "explanation": "Top-left pair, right-side pair, and the single bottom-left cell." },
+    { "args": [[[1, 0], [0, 1]]], "expected": 2, "explanation": "The two land cells only touch diagonally, so they are separate islands." }
+  ],
+  "edgeTests": [[[[0]]], [[[1]]], [[[1, 1], [1, 1]]], [[[0, 0], [0, 0]]], [[[1, 0, 1, 0, 1]]], [[[1], [0], [1]]]],
+  "expected": { "time": "O(rows * cols)", "space": "O(rows * cols)" },
+  "hints": {
+    "nudge": "When you find a land cell, how can you make sure you never count the rest of its island again?",
+    "pattern": "Flood fill: BFS or DFS from each unvisited land cell, marking everything it reaches.",
+    "pseudocode": "islands = 0\nfor each cell (r, c):\n  if grid[r][c] is land and not visited:\n    islands++\n    flood(r, c): visit every land cell reachable up/down/left/right",
+    "walkthrough": "Scan the grid. The first time you meet a land cell that is not visited, you have found a new island: add one, then flood-fill from that cell, marking every connected land cell as visited (use a stack or queue; for a 50x50 grid recursion also works). Later cells of the same island are already visited so they are not counted again. Each cell is visited a constant number of times, so O(rows * cols) time."
+  }
+}

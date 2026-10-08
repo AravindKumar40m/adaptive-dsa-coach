@@ -1,0 +1,25 @@
+{
+  "slug": "connected-groups",
+  "title": "Connected Groups",
+  "concept": "graphs",
+  "difficulty": "medium",
+  "statement": "A social app has `n` users numbered `0` to `n - 1`. Each entry `friendships[i] = [a, b]` means users `a` and `b` are friends (friendship goes both ways). Two users are in the **same group** if they are friends, or friends of friends, and so on.\n\nReturn the **number of groups**. A user with no friends is a group of one.",
+  "constraints": [
+    "1 <= n <= 100000",
+    "0 <= len(friendships) <= 100000",
+    "each friendship is [a, b] with 0 <= a, b < n (a pair may repeat, and a may equal b)"
+  ],
+  "signature": { "name": "count_groups", "params": [{ "name": "n", "type": "int" }, { "name": "friendships", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [5, [[0, 1], [1, 2], [3, 4]]], "expected": 2, "explanation": "Users {0, 1, 2} and users {3, 4}." },
+    { "args": [4, []], "expected": 4, "explanation": "Nobody is friends with anyone, so every user is a group." }
+  ],
+  "edgeTests": [[1, []], [3, [[0, 0]]], [3, [[0, 1], [1, 0], [0, 1]]], [4, [[0, 1], [1, 2], [2, 3]]], [6, [[0, 5], [1, 4], [2, 3]]]],
+  "expected": { "time": "O(n + m)", "space": "O(n)" },
+  "hints": {
+    "nudge": "If you start from one user and keep visiting friends, which users will you reach? What do you call that set?",
+    "pattern": "Graph traversal (BFS or DFS), or union-find that merges friends into one group.",
+    "pseudocode": "union-find: parent[i] = i; groups = n\nfor each [a, b]: if find(a) != find(b): union them; groups--\nreturn groups",
+    "walkthrough": "Think of users as nodes and friendships as edges. Count connected components. With union-find: start with n groups. For each friendship, if the two users are in different groups, merge them and reduce the count by one. Duplicate friendships and self-friendships do nothing because their endpoints are already in the same group. With path compression this is nearly O(n + m). A BFS or DFS from every unvisited user also works and counts how many times you have to start a new search."
+  }
+}

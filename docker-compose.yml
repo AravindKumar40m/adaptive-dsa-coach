@@ -1,0 +1,40 @@
+# Local dev stack: MongoDB + self-hosted Judge0 (the sandbox that runs learner code).
+# Start: docker compose up -d      Stop: docker compose down
+services:
+  mongo:
+    image: mongo:7
+    ports: ["27017:27017"]
+    volumes: [mongo_data:/data/db]
+    restart: unless-stopped
+
+  judge0-server:
+    image: judge0/judge0:1.13.1
+    volumes: ["./infra/judge0.conf:/judge0.conf:ro"]
+    ports: ["2358:2358"]
+    privileged: true   # Judge0 needs this to sandbox code with `isolate`
+    depends_on: [judge0-db, judge0-redis]
+    restart: unless-stopped
+
+  judge0-worker:
+    image: judge0/judge0:1.13.1
+    command: ["./scripts/workers"]
+    volumes: ["./infra/judge0.conf:/judge0.conf:ro"]
+    privileged: true
+    depends_on: [judge0-db, judge0-redis]
+    restart: unless-stopped
+
+  judge0-db:
+    image: postgres:16.2
+    env_file: ./infra/judge0.conf
+    volumes: [judge0_pg:/var/lib/postgresql/data]
+    restart: unless-stopped
+
+  judge0-redis:
+    image: redis:7.2.4
+    command: ["bash", "-c", 'docker-entrypoint.sh --appendonly no --requirepass "$$REDIS_PASSWORD"']
+    env_file: ./infra/judge0.conf
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
+  judge0_pg:

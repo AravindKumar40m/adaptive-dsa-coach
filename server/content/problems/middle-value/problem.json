@@ -1,0 +1,24 @@
+{
+  "slug": "middle-value",
+  "title": "Middle of the List",
+  "concept": "linked_list",
+  "difficulty": "easy",
+  "statement": "You are given `head`, the first node of a singly linked list with at least one node.\n\nReturn the **value of the middle node**. If the list has an even number of nodes there are two middle nodes: return the value of the **second** one. (In the examples the list is shown as the list of its values.)",
+  "constraints": [
+    "1 <= number of nodes <= 100000",
+    "-1000000000 <= node value <= 1000000000"
+  ],
+  "signature": { "name": "middle_value", "params": [{ "name": "head", "type": "ListNode" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 2, 3, 4, 5]], "expected": 3, "explanation": "The middle of five nodes is the third." },
+    { "args": [[1, 2, 3, 4, 5, 6]], "expected": 4, "explanation": "Two middles (3 and 4): return the second." }
+  ],
+  "edgeTests": [[[9]], [[1, 2]], [[1, 2, 3]], [[5, 5, 5, 5]], [[-1, -2, -3, -4]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "A list has no index, so you cannot jump to the middle. What if one pointer walked twice as fast as another?",
+    "pattern": "Slow and fast pointers.",
+    "pseudocode": "slow = head; fast = head\nwhile fast and fast.next:\n  slow = slow.next; fast = fast.next.next\nreturn slow.val",
+    "walkthrough": "You could count the nodes and walk n/2 steps (two passes). A single pass uses two pointers: slow moves one node at a time, fast moves two. When fast reaches the end, slow has covered half the distance, so it stands on the middle. For an even number of nodes the loop ends one step later, leaving slow on the second middle, exactly what the problem asks."
+  }
+}

@@ -1,0 +1,123 @@
+//### group-anagram-count
+int count_anagram_groups(string words) {
+    set<string> keys;
+    istringstream in(words);
+    string w;
+    while (in >> w) {
+        sort(w.begin(), w.end());
+        keys.insert(w);
+    }
+    return (int) keys.size();
+}
+//### nearby-duplicate
+bool has_nearby_duplicate(vector<int>& readings, int k) {
+    unordered_map<int, int> last;
+    for (int i = 0; i < (int) readings.size(); i++) {
+        auto it = last.find(readings[i]);
+        if (it != last.end() && i - it->second <= k) return true;
+        last[readings[i]] = i;
+    }
+    return false;
+}
+//### longest-consecutive-run
+int longest_consecutive(vector<int>& nums) {
+    unordered_set<int> values(nums.begin(), nums.end());
+    int best = 0;
+    for (int x : values) {
+        if (!values.count(x - 1)) {
+            int length = 1;
+            while (values.count(x + length)) length++;
+            best = max(best, length);
+        }
+    }
+    return best;
+}
+//### four-sum-count
+int count_zero_quads(vector<int>& first, vector<int>& second, vector<int>& third, vector<int>& fourth) {
+    unordered_map<int, int> sums;
+    for (int a : first) for (int b : second) sums[a + b]++;
+    int total = 0;
+    for (int c : third) for (int d : fourth) {
+        auto it = sums.find(-(c + d));
+        if (it != sums.end()) total += it->second;
+    }
+    return total;
+}
+//### longest-balanced-run
+int longest_balanced(vector<int>& bits) {
+    unordered_map<int, int> first;
+    first[0] = -1;
+    int total = 0, best = 0;
+    for (int i = 0; i < (int) bits.size(); i++) {
+        total += bits[i] == 1 ? 1 : -1;
+        auto it = first.find(total);
+        if (it != first.end()) best = max(best, i - it->second);
+        else first[total] = i;
+    }
+    return best;
+}
+//### remove-duplicates-length
+int count_distinct_sorted(vector<int>& ids) {
+    int count = 1;
+    for (size_t i = 1; i < ids.size(); i++) if (ids[i] != ids[i - 1]) count++;
+    return count;
+}
+//### sorted-squares
+vector<int> sorted_squares(vector<int>& nums) {
+    int n = (int) nums.size();
+    vector<int> result(n);
+    int i = 0, j = n - 1;
+    for (int pos = n - 1; pos >= 0; pos--) {
+        if (abs(nums[i]) > abs(nums[j])) { result[pos] = nums[i] * nums[i]; i++; }
+        else { result[pos] = nums[j] * nums[j]; j--; }
+    }
+    return result;
+}
+//### three-sum-count
+int count_zero_triples(vector<int>& nums) {
+    vector<int> a = nums;
+    sort(a.begin(), a.end());
+    int n = (int) a.size(), count = 0;
+    for (int i = 0; i < n - 2; i++) {
+        if (i > 0 && a[i] == a[i - 1]) continue;
+        int lo = i + 1, hi = n - 1;
+        while (lo < hi) {
+            int s = a[i] + a[lo] + a[hi];
+            if (s < 0) lo++;
+            else if (s > 0) hi--;
+            else {
+                count++; lo++; hi--;
+                while (lo < hi && a[lo] == a[lo - 1]) lo++;
+                while (lo < hi && a[hi] == a[hi + 1]) hi--;
+            }
+        }
+    }
+    return count;
+}
+//### longest-mountain
+int longest_mountain(vector<int>& heights) {
+    int n = (int) heights.size(), best = 0;
+    for (int i = 1; i < n - 1; i++) {
+        if (heights[i - 1] < heights[i] && heights[i] > heights[i + 1]) {
+            int left = i - 1, right = i + 1;
+            while (left > 0 && heights[left - 1] < heights[left]) left--;
+            while (right < n - 1 && heights[right] > heights[right + 1]) right++;
+            best = max(best, right - left + 1);
+        }
+    }
+    return best;
+}
+//### next-permutation
+vector<int> next_arrangement(vector<int>& nums) {
+    vector<int> a = nums;
+    int n = (int) a.size();
+    int i = n - 2;
+    while (i >= 0 && a[i] >= a[i + 1]) i--;
+    if (i >= 0) {
+        int j = n - 1;
+        while (a[j] <= a[i]) j--;
+        swap(a[i], a[j]);
+    }
+    reverse(a.begin() + i + 1, a.end());
+    return a;
+}

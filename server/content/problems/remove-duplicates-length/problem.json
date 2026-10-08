@@ -1,0 +1,24 @@
+{
+  "slug": "remove-duplicates-length",
+  "title": "Distinct in a Sorted List",
+  "concept": "two_pointers",
+  "difficulty": "easy",
+  "statement": "A librarian keeps `ids` sorted from smallest to largest, but some IDs were entered more than once.\n\nReturn **how many different IDs** the list contains.",
+  "constraints": [
+    "1 <= len(ids) <= 100000",
+    "-1000000000 <= ids[i] <= 1000000000, sorted in non-decreasing order"
+  ],
+  "signature": { "name": "count_distinct_sorted", "params": [{ "name": "ids", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 1, 2]], "expected": 2, "explanation": "The IDs 1 and 2." },
+    { "args": [[0, 0, 1, 1, 1, 2, 2, 3, 3, 4]], "expected": 5, "explanation": "The IDs 0, 1, 2, 3 and 4." }
+  ],
+  "edgeTests": [[[7]], [[5, 5, 5, 5]], [[1, 2, 3]], [[-3, -3, 0, 0, 4]], [[1, 1, 2, 3, 3]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "The list is sorted, so equal IDs sit side by side. When does a new ID begin?",
+    "pattern": "Compare each element with the previous one (a slow pointer marks the last distinct value).",
+    "pseudocode": "count = 1\nfor i from 1 to n-1: if ids[i] != ids[i-1]: count++\nreturn count",
+    "walkthrough": "You do not need a set: because the list is sorted, all copies of a value are next to each other. A new distinct value starts exactly where an element differs from the one before it. Count those starts, plus the first element. One pass, O(1) space."
+  }
+}

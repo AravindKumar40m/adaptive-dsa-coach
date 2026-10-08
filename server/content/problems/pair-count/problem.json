@@ -1,0 +1,25 @@
+{
+  "slug": "pair-count",
+  "title": "Pair Count",
+  "concept": "hashing",
+  "difficulty": "medium",
+  "statement": "A shop has `prices`. A customer wants to buy exactly two different items whose prices add up to exactly `budget`.\n\nCount how many pairs of positions `(i, j)` with `i < j` satisfy `prices[i] + prices[j] == budget`. Two items with the same price at different positions count as different pairs.",
+  "constraints": [
+    "2 <= len(prices) <= 50000",
+    "-1000000 <= prices[i] <= 1000000",
+    "-2000000 <= budget <= 2000000"
+  ],
+  "signature": { "name": "count_pairs", "params": [{ "name": "prices", "type": "int[]" }, { "name": "budget", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[2, 4, 3, 3, 1, 5], 6], "expected": 3, "explanation": "The pairs are (2,4), (3,3) and (1,5)." },
+    { "args": [[1, 1, 1, 1], 2], "expected": 6, "explanation": "Any two of the four items work: 4 choose 2 = 6." }
+  ],
+  "edgeTests": [[[1, 2], 10], [[0, 0], 0], [[-3, 3, 0], 0], [[5, 5, 5], 10], [[1, 2, 3], 6]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "For one price p, which exact price would complete the pair? How could you check that quickly?",
+    "pattern": "Hash map of counts: how many times each price has appeared so far.",
+    "pseudocode": "count = {}; total = 0\nfor each p in prices:\n  total = total + count.get(budget - p, 0)\n  count[p] = count.get(p, 0) + 1\nreturn total",
+    "walkthrough": "Checking every pair is O(n^2), too slow for 50,000 items. Scan left to right keeping a map from price to how many times you have seen it. For the current price p, every earlier item priced budget - p forms a valid pair with it, so add that count to the total. Then record p. Each pair is counted exactly once, when its second item is reached. O(n) time, O(n) space. The result can be over a billion, but fits in a 32-bit int for n <= 50,000."
+  }
+}

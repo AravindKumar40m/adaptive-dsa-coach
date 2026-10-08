@@ -1,0 +1,140 @@
+//### merge-sorted-arrays
+class Solution {
+    public int[] mergeSorted(int[] first, int[] second) {
+        int[] result = new int[first.length + second.length];
+        int i = 0, j = 0, k = 0;
+        while (i < first.length && j < second.length) result[k++] = first[i] <= second[j] ? first[i++] : second[j++];
+        while (i < first.length) result[k++] = first[i++];
+        while (j < second.length) result[k++] = second[j++];
+        return result;
+    }
+}
+//### height-checker
+class Solution {
+    public int countMisplaced(int[] heights) {
+        int[] ordered = heights.clone();
+        Arrays.sort(ordered);
+        int count = 0;
+        for (int i = 0; i < heights.length; i++) if (heights[i] != ordered[i]) count++;
+        return count;
+    }
+}
+//### max-product-three
+class Solution {
+    public int maxProductOfThree(int[] nums) {
+        int[] a = nums.clone();
+        Arrays.sort(a);
+        int n = a.length;
+        return Math.max(a[n - 1] * a[n - 2] * a[n - 3], a[0] * a[1] * a[n - 1]);
+    }
+}
+//### largest-number
+class Solution {
+    public String largestNumber(int[] nums) {
+        String[] words = new String[nums.length];
+        for (int i = 0; i < nums.length; i++) words[i] = String.valueOf(nums[i]);
+        Arrays.sort(words, (a, b) -> (b + a).compareTo(a + b));
+        StringBuilder sb = new StringBuilder();
+        for (String w : words) sb.append(w);
+        String result = sb.toString();
+        return result.charAt(0) == '0' ? "0" : result;
+    }
+}
+//### count-inversions
+class Solution {
+    private long sort(int[] a, int[] buf, int lo, int hi) {
+        if (hi - lo < 2) return 0;
+        int mid = (lo + hi) >>> 1;
+        long count = sort(a, buf, lo, mid) + sort(a, buf, mid, hi);
+        int i = lo, j = mid, k = lo;
+        while (i < mid && j < hi) {
+            if (a[i] <= a[j]) buf[k++] = a[i++];
+            else { buf[k++] = a[j++]; count += mid - i; }
+        }
+        while (i < mid) buf[k++] = a[i++];
+        while (j < hi) buf[k++] = a[j++];
+        for (int t = lo; t < hi; t++) a[t] = buf[t];
+        return count;
+    }
+
+    public int countInversions(int[] nums) {
+        int[] a = nums.clone();
+        return (int) sort(a, new int[a.length], 0, a.length);
+    }
+}
+//### count-windows-above
+class Solution {
+    public int countStrongWindows(int[] sales, int k, int limit) {
+        long window = 0;
+        for (int i = 0; i < k; i++) window += sales[i];
+        int count = window >= limit ? 1 : 0;
+        for (int i = k; i < sales.length; i++) {
+            window += sales[i] - sales[i - k];
+            if (window >= limit) count++;
+        }
+        return count;
+    }
+}
+//### max-vowels-window
+class Solution {
+    private boolean isVowel(char ch) { return "aeiou".indexOf(ch) >= 0; }
+
+    public int maxVowels(String text, int k) {
+        int count = 0;
+        for (int i = 0; i < k; i++) if (isVowel(text.charAt(i))) count++;
+        int best = count;
+        for (int i = k; i < text.length(); i++) {
+            if (isVowel(text.charAt(i))) count++;
+            if (isVowel(text.charAt(i - k))) count--;
+            best = Math.max(best, count);
+        }
+        return best;
+    }
+}
+//### min-subarray-len
+class Solution {
+    public int minDaysToReach(int[] deposits, int target) {
+        int left = 0, best = 0;
+        long total = 0;
+        for (int right = 0; right < deposits.length; right++) {
+            total += deposits[right];
+            while (total >= target) {
+                if (best == 0 || right - left + 1 < best) best = right - left + 1;
+                total -= deposits[left++];
+            }
+        }
+        return best;
+    }
+}
+//### longest-repeat-replace
+class Solution {
+    public int longestAfterReplace(String text, int k) {
+        int[] count = new int[26];
+        int left = 0, maxFreq = 0, best = 0;
+        for (int right = 0; right < text.length(); right++) {
+            int idx = text.charAt(right) - 'a';
+            count[idx]++;
+            maxFreq = Math.max(maxFreq, count[idx]);
+            while (right - left + 1 - maxFreq > k) {
+                count[text.charAt(left) - 'a']--;
+                left++;
+            }
+            best = Math.max(best, right - left + 1);
+        }
+        return best;
+    }
+}
+//### window-max-total
+class Solution {
+    public int windowMaxTotal(int[] temps, int k) {
+        Deque<Integer> window = new ArrayDeque<>();
+        long total = 0;
+        for (int i = 0; i < temps.length; i++) {
+            while (!window.isEmpty() && temps[window.peekLast()] <= temps[i]) window.pollLast();
+            window.addLast(i);
+            if (window.peekFirst() <= i - k) window.pollFirst();
+            if (i >= k - 1) total += temps[window.peekFirst()];
+        }
+        return (int) total;
+    }
+}

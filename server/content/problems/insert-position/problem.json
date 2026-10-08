@@ -1,0 +1,25 @@
+{
+  "slug": "insert-position",
+  "title": "Insert Position",
+  "concept": "binary_search",
+  "difficulty": "easy",
+  "statement": "A library keeps its book IDs in a list `ids` sorted from smallest to largest (duplicates are allowed). A new book arrives with ID `new_id`.\n\nReturn the **index of the first position** where `new_id` can be inserted so the list stays sorted, that is, the index of the first element that is greater than or equal to `new_id`. If every ID is smaller, return `len(ids)`.",
+  "constraints": [
+    "1 <= len(ids) <= 100000",
+    "-1000000000 <= ids[i], new_id <= 1000000000",
+    "ids is sorted in non-decreasing order"
+  ],
+  "signature": { "name": "insert_position", "params": [{ "name": "ids", "type": "int[]" }, { "name": "new_id", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 3, 5, 6], 5], "expected": 2, "explanation": "5 is already at index 2, which is the first element >= 5." },
+    { "args": [[1, 3, 5, 6], 2], "expected": 1, "explanation": "2 goes between 1 and 3." }
+  ],
+  "edgeTests": [[[1, 3, 5, 6], 7], [[1, 3, 5, 6], 0], [[2, 2, 2], 2], [[2, 2, 2], 3], [[4], 4], [[4], 1]],
+  "expected": { "time": "O(log n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "The list is sorted. After checking the middle element, how many elements can you rule out at once?",
+    "pattern": "Binary search for the first element that is >= the target.",
+    "pseudocode": "lo = 0; hi = len(ids)\nwhile lo < hi:\n  mid = (lo + hi) // 2\n  if ids[mid] < new_id: lo = mid + 1\n  else: hi = mid\nreturn lo",
+    "walkthrough": "A linear scan is O(n). Because the list is sorted, keep a search range [lo, hi). Look at the middle: if it is smaller than new_id, the answer must be to its right, so set lo = mid + 1; otherwise the middle could be the answer, so set hi = mid. The range halves each step. When lo == hi, that is the first index with ids[index] >= new_id (or len(ids) if none). O(log n) time."
+  }
+}

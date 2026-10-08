@@ -1,0 +1,24 @@
+{
+  "slug": "widest-fence",
+  "title": "Widest Fence",
+  "concept": "two_pointers",
+  "difficulty": "medium",
+  "statement": "A farmer has posts of different heights standing in a row, `heights[i]` being the height of post `i`. He stretches a banner between two different posts `i < j`. The banner can only be as tall as the shorter post, so the banner's area is `min(heights[i], heights[j]) * (j - i)`.\n\nReturn the **largest banner area** he can get.",
+  "constraints": [
+    "2 <= len(heights) <= 100000",
+    "0 <= heights[i] <= 10000"
+  ],
+  "signature": { "name": "max_banner_area", "params": [{ "name": "heights", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[3, 9, 2, 6, 5]], "expected": 15, "explanation": "Posts 1 and 4: min(9, 5) * 3 = 15." },
+    { "args": [[4, 4]], "expected": 4, "explanation": "The only pair: min(4, 4) * 1 = 4." }
+  ],
+  "edgeTests": [[[0, 0]], [[1, 2]], [[5, 1, 1, 1, 5]], [[10000, 10000, 10000]], [[1, 2, 3, 4, 5, 6]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Start with the two posts farthest apart. Which post should you give up on if you want a better banner?",
+    "pattern": "Two pointers from both ends, always moving the shorter post inward.",
+    "pseudocode": "i = 0; j = n-1; best = 0\nwhile i < j:\n  best = max(best, min(h[i], h[j]) * (j - i))\n  if h[i] < h[j]: i++ else: j--\nreturn best",
+    "walkthrough": "Trying every pair is O(n^2). Start with the widest banner (first and last post). The height is limited by the shorter post, so keeping that short post and moving the other pointer inward can only make the banner narrower without raising its height limit. The only move that can help is discarding the shorter post. So move the pointer at the shorter post inward, record the best area at each step, and stop when the pointers meet. O(n) time, O(1) space. The area can reach 1 billion, which still fits in a 32-bit int."
+  }
+}

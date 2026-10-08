@@ -1,0 +1,24 @@
+{
+  "slug": "jump-reach",
+  "title": "Can You Reach the End",
+  "concept": "greedy",
+  "difficulty": "medium",
+  "statement": "You stand on the first square of a row of squares. `jumps[i]` is the **maximum** number of squares you can jump forward from square `i` (you may jump any shorter distance too, including 1).\n\nReturn `true` if you can reach the **last** square, otherwise `false`.",
+  "constraints": [
+    "1 <= len(jumps) <= 100000",
+    "0 <= jumps[i] <= 100000"
+  ],
+  "signature": { "name": "can_reach_end", "params": [{ "name": "jumps", "type": "int[]" }], "returns": "bool" },
+  "examples": [
+    { "args": [[2, 3, 1, 1, 4]], "expected": true, "explanation": "Jump 1 step to index 1, then 3 steps to the end." },
+    { "args": [[3, 2, 1, 0, 4]], "expected": false, "explanation": "Every route ends on index 3, where the jump length is 0." }
+  ],
+  "edgeTests": [[[0]], [[1]], [[0, 1]], [[1, 0]], [[2, 0, 0]], [[1, 1, 1, 0]], [[4, 0, 0, 0, 0]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "You do not need to know the exact path, only how far you could possibly get.",
+    "pattern": "Greedy: track the farthest index reachable so far.",
+    "pseudocode": "farthest = 0\nfor i in 0..n-1:\n  if i > farthest: return false\n  farthest = max(farthest, i + jumps[i])\nreturn true",
+    "walkthrough": "Exploring every path (or a table of reachable squares) can be O(n^2). Instead keep the farthest square you can reach from anything you have visited. Walk through the squares in order: if you arrive at a square beyond the farthest reachable one, you are stuck, so the answer is false. Otherwise update the farthest with i + jumps[i]. If you get through the whole row, the end is reachable."
+  }
+}

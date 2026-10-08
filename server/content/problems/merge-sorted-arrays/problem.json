@@ -1,0 +1,24 @@
+{
+  "slug": "merge-sorted-arrays",
+  "title": "Merge Two Sorted Lists",
+  "concept": "sorting",
+  "difficulty": "easy",
+  "statement": "Two shelves hold books numbered in increasing order: `first` and `second` (both sorted from smallest to largest, either may be empty but not both).\n\nReturn **one sorted list** containing all the numbers from both.",
+  "constraints": [
+    "0 <= len(first), len(second) <= 100000, and at least one is not empty",
+    "-1000000000 <= values <= 1000000000, each list sorted in non-decreasing order"
+  ],
+  "signature": { "name": "merge_sorted", "params": [{ "name": "first", "type": "int[]" }, { "name": "second", "type": "int[]" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[1, 3, 5], [2, 4, 6]], "expected": [1, 2, 3, 4, 5, 6], "explanation": "Take the smaller front number each time." },
+    { "args": [[], [7]], "expected": [7], "explanation": "One shelf is empty." }
+  ],
+  "edgeTests": [[[1], []], [[1, 1], [1]], [[5, 6], [1, 2]], [[1, 2], [5, 6]], [[-3, 0, 4], [-3, 0, 4]]],
+  "expected": { "time": "O(n + m)", "space": "O(n + m)" },
+  "hints": {
+    "nudge": "Both lists are already sorted. Where is the smallest remaining number?",
+    "pattern": "Two pointers, one per list, always taking the smaller front value.",
+    "pseudocode": "i = 0; j = 0; result = []\nwhile i < n and j < m:\n  if first[i] <= second[j]: append first[i]; i++ else: append second[j]; j++\nappend the rest of whichever list is left",
+    "walkthrough": "Concatenating and sorting costs O((n+m) log(n+m)) and ignores that the lists are sorted. Instead compare the two front elements, take the smaller, and advance that list's pointer. When one list runs out, copy what remains of the other. Every element is handled once: O(n + m). This is the 'merge' step of merge sort."
+  }
+}

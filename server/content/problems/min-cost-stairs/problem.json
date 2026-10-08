@@ -1,0 +1,24 @@
+{
+  "slug": "min-cost-stairs",
+  "title": "Cheapest Way Up the Stairs",
+  "concept": "dp",
+  "difficulty": "easy",
+  "statement": "A staircase has steps numbered from 0, and `cost[i]` is the price you pay **when you step on step `i`**. After paying you may climb **one or two steps**. You may start on step 0 or on step 1. The top of the staircase is one step past the last step (arriving there costs nothing).\n\nReturn the **minimum total price** to reach the top.",
+  "constraints": [
+    "2 <= len(cost) <= 1000",
+    "0 <= cost[i] <= 999"
+  ],
+  "signature": { "name": "min_cost_climb", "params": [{ "name": "cost", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[10, 15, 20]], "expected": 15, "explanation": "Start on step 1 (pay 15), then climb two steps to the top." },
+    { "args": [[1, 100, 1, 1, 1, 100, 1, 1, 100, 1]], "expected": 6, "explanation": "Step on steps 0, 2, 4, 6, 7 and 9 (each costs 1) and skip all three steps that cost 100: total 6." }
+  ],
+  "edgeTests": [[[0, 0]], [[5, 1]], [[1, 5]], [[3, 3, 3]], [[1, 2, 3, 4, 5, 6]], [[10, 1, 10, 1, 10, 1]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "To be about to step on step i, you came from step i-1 (and paid for it) or from step i-2 (and paid for it). Which is cheaper?",
+    "pattern": "Dynamic programming over positions: best(i) = min(best(i-1) + cost[i-1], best(i-2) + cost[i-2]).",
+    "pseudocode": "prev2 = 0; prev1 = 0      // best(0) and best(1): you may start on step 0 or 1 for free\nfor i from 2 to n:\n  current = min(prev1 + cost[i-1], prev2 + cost[i-2])\n  prev2 = prev1; prev1 = current\nreturn prev1              // best(n) = the top",
+    "walkthrough": "Let best(i) be the cheapest total to be standing at position i, meaning 'about to step on step i'. Positions 0 and 1 cost nothing because you may start on either step. To reach position i you came from position i-1 by paying cost[i-1], or from position i-2 by paying cost[i-2], so best(i) = min of those two. The answer is best(n), the top. Plain recursion tries every route (exponential); a table, or just the last two values, does it in O(n)."
+  }
+}

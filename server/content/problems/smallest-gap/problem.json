@@ -1,0 +1,24 @@
+{
+  "slug": "smallest-gap",
+  "title": "Smallest Gap",
+  "concept": "sorting",
+  "difficulty": "medium",
+  "statement": "A race has several runners, and `finish_times[i]` is the finishing time of runner `i`.\n\nReturn the **smallest difference** between the finishing times of any two different runners. If two runners tied, the answer is `0`.",
+  "constraints": [
+    "2 <= len(finish_times) <= 100000",
+    "0 <= finish_times[i] <= 1000000000"
+  ],
+  "signature": { "name": "smallest_gap", "params": [{ "name": "finish_times", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[9, 4, 15, 6]], "expected": 2, "explanation": "Sorted: 4, 6, 9, 15. The closest pair is 4 and 6." },
+    { "args": [[10, 3, 10]], "expected": 0, "explanation": "Two runners finished at time 10." }
+  ],
+  "edgeTests": [[[0, 1000000000]], [[7, 7]], [[1, 100, 50, 51]], [[5, 4, 3, 2, 1]]],
+  "expected": { "time": "O(n log n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Look at the first example: the closest pair ended up next to each other once the times were in order. Is that a coincidence?",
+    "pattern": "Sort first, then only compare neighbours.",
+    "pseudocode": "sort(finish_times)\nbest = infinity\nfor i from 1 to n-1: best = min(best, finish_times[i] - finish_times[i-1])\nreturn best",
+    "walkthrough": "Comparing every pair is O(n^2). After sorting, the two closest values must be adjacent: if some value sat between them, it would be even closer to one of them. So sort (O(n log n)), then scan once comparing each element with the previous one and keep the minimum difference. Total O(n log n)."
+  }
+}

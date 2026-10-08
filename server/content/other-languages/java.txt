@@ -1,0 +1,123 @@
+//### peak-altitude
+class Solution {
+    public int peakAltitude(int[] changes) {
+        int best = 0, height = 0;
+        for (int c : changes) {
+            height += c;
+            best = Math.max(best, height);
+        }
+        return best;
+    }
+}
+//### clean-palindrome
+class Solution {
+    public boolean isCleanPalindrome(String text) {
+        int i = 0, j = text.length() - 1;
+        while (i < j) {
+            char a = text.charAt(i), b = text.charAt(j);
+            if (!Character.isLetterOrDigit(a)) i++;
+            else if (!Character.isLetterOrDigit(b)) j--;
+            else if (Character.toLowerCase(a) != Character.toLowerCase(b)) return false;
+            else { i++; j--; }
+        }
+        return true;
+    }
+}
+//### first-repeat
+class Solution {
+    public int firstRepeat(int[] tickets) {
+        Set<Integer> seen = new HashSet<>();
+        for (int x : tickets) {
+            if (!seen.add(x)) return x;
+        }
+        return -1;
+    }
+}
+//### pair-count
+class Solution {
+    public int countPairs(int[] prices, int budget) {
+        Map<Integer, Integer> count = new HashMap<>();
+        int total = 0;
+        for (int p : prices) {
+            total += count.getOrDefault(budget - p, 0);
+            count.merge(p, 1, Integer::sum);
+        }
+        return total;
+    }
+}
+//### sorted-pair-sum
+class Solution {
+    public boolean hasPairWithSum(int[] scores, int target) {
+        int i = 0, j = scores.length - 1;
+        while (i < j) {
+            long s = (long) scores[i] + scores[j];
+            if (s == target) return true;
+            if (s < target) i++; else j--;
+        }
+        return false;
+    }
+}
+//### smallest-gap
+import java.util.*;
+
+public class Solution {
+    public int smallestGap(int[] finishTimes) {
+        int[] a = finishTimes.clone();
+        Arrays.sort(a);
+        int best = a[1] - a[0];
+        for (int i = 2; i < a.length; i++) best = Math.min(best, a[i] - a[i - 1]);
+        return best;
+    }
+}
+//### best-window
+class Solution {
+    public int bestWindowSum(int[] profits, int k) {
+        int window = 0;
+        for (int i = 0; i < k; i++) window += profits[i];
+        int best = window;
+        for (int i = k; i < profits.length; i++) {
+            window += profits[i] - profits[i - k];
+            best = Math.max(best, window);
+        }
+        return best;
+    }
+}
+//### balanced-brackets
+class Solution {
+    public boolean isBalanced(String text) {
+        char[] stack = new char[text.length()];
+        int top = 0;
+        for (char ch : text.toCharArray()) {
+            if (ch == '(' || ch == '[' || ch == '{') {
+                stack[top++] = ch;
+            } else {
+                if (top == 0) return false;
+                char open = stack[--top];
+                if ((ch == ')' && open != '(') || (ch == ']' && open != '[') || (ch == '}' && open != '{')) return false;
+            }
+        }
+        return top == 0;
+    }
+}
+//### insert-position
+class Solution {
+    public int insertPosition(int[] ids, int newId) {
+        int lo = 0, hi = ids.length;
+        while (lo < hi) {
+            int mid = (lo + hi) >>> 1;
+            if (ids[mid] < newId) lo = mid + 1; else hi = mid;
+        }
+        return lo;
+    }
+}
+//### stair-ways
+class Solution {
+    public int countWays(int n) {
+        int a = 1, b = 0, c = 0;
+        for (int k = 0; k < n; k++) {
+            int d = a + b + c;
+            c = b; b = a; a = d;
+        }
+        return a;
+    }
+}

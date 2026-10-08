@@ -1,0 +1,24 @@
+{
+  "slug": "backspace-compare",
+  "title": "Typed With Backspaces",
+  "concept": "stack_queue",
+  "difficulty": "easy",
+  "statement": "Two people type text into an editor. In each string, the character `#` means **backspace**: it deletes the letter just before it (if there is one). Backspacing on an empty text does nothing.\n\nReturn `true` if `first` and `second` produce the **same final text**, otherwise `false`.",
+  "constraints": [
+    "1 <= len(first), len(second) <= 100000",
+    "each string contains lowercase letters and the character #"
+  ],
+  "signature": { "name": "same_after_backspaces", "params": [{ "name": "first", "type": "string" }, { "name": "second", "type": "string" }], "returns": "bool" },
+  "examples": [
+    { "args": ["ab#c", "ad#c"], "expected": true, "explanation": "Both become ac." },
+    { "args": ["a#c", "b"], "expected": false, "explanation": "The first becomes c, the second is b." }
+  ],
+  "edgeTests": [["ab##", "c#d#"], ["#", "#"], ["a", "a#"], ["###a", "a"], ["abc", "abc"], ["a##b", "b"]],
+  "expected": { "time": "O(n + m)", "space": "O(1)" },
+  "hints": {
+    "nudge": "How would you compute the final text of ONE string?",
+    "pattern": "A stack: push letters, pop on a backspace. (For O(1) space, scan both strings from the end and skip deleted letters.)",
+    "pseudocode": "final(s): stack = []; for ch in s: if ch == '#': pop if not empty else push ch; return stack\nreturn final(first) == final(second)",
+    "walkthrough": "Build the final text of each string with a stack: a letter is pushed, a '#' pops the top if there is one. Then compare the two results. That uses O(n + m) extra space. To use O(1) space, walk both strings from the right: keep a count of pending backspaces, skip letters that are erased, and compare the next surviving letters one by one."
+  }
+}

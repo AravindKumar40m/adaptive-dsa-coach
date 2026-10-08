@@ -1,0 +1,96 @@
+//### max-depth
+function maxDepth(root) {
+  if (root === null) return 0;
+  return 1 + Math.max(maxDepth(root.left), maxDepth(root.right));
+}
+//### invert-tree
+function invertTree(root) {
+  if (root === null) return null;
+  const left = invertTree(root.left), right = invertTree(root.right);
+  root.left = right;
+  root.right = left;
+  return root;
+}
+//### same-tree
+function isSameTree(first, second) {
+  if (first === null && second === null) return true;
+  if (first === null || second === null) return false;
+  return first.val === second.val && isSameTree(first.left, second.left) && isSameTree(first.right, second.right);
+}
+//### level-sums
+function levelSums(root) {
+  if (root === null) return [];
+  const result = [];
+  let level = [root];
+  while (level.length > 0) {
+    let total = 0;
+    const next = [];
+    for (const node of level) {
+      total += node.val;
+      if (node.left !== null) next.push(node.left);
+      if (node.right !== null) next.push(node.right);
+    }
+    result.push(total);
+    level = next;
+  }
+  return result;
+}
+//### is-valid-bst
+function isValidBst(root) {
+  const check = (node, low, high) => {
+    if (node === null) return true;
+    if (node.val <= low || node.val >= high) return false;
+    return check(node.left, low, node.val) && check(node.right, node.val, high);
+  };
+  return check(root, -Infinity, Infinity);
+}
+//### lowest-common-ancestor
+function lowestCommonAncestor(root, p, q) {
+  const find = (node) => {
+    if (node === null || node.val === p || node.val === q) return node;
+    const left = find(node.left), right = find(node.right);
+    if (left !== null && right !== null) return node;
+    return left !== null ? left : right;
+  };
+  return find(root).val;
+}
+//### tree-diameter
+function treeDiameter(root) {
+  let best = 0;
+  const height = (node) => {
+    if (node === null) return 0;
+    const left = height(node.left), right = height(node.right);
+    best = Math.max(best, left + right);
+    return 1 + Math.max(left, right);
+  };
+  height(root);
+  return best;
+}
+//### max-path-sum
+function maxPathSum(root) {
+  let best = -Infinity;
+  const gain = (node) => {
+    if (node === null) return 0;
+    const left = Math.max(0, gain(node.left)), right = Math.max(0, gain(node.right));
+    best = Math.max(best, node.val + left + right);
+    return node.val + Math.max(left, right);
+  };
+  gain(root);
+  return best;
+}
+//### build-tree-from-orders
+function buildTree(preorder, inorder) {
+  const position = new Map();
+  inorder.forEach((v, i) => position.set(v, i));
+  let next = 0;
+  const build = (lo, hi) => {
+    if (lo > hi) return null;
+    const value = preorder[next++];
+    const node = new TreeNode(value, null, null);
+    const mid = position.get(value);
+    node.left = build(lo, mid - 1);
+    node.right = build(mid + 1, hi);
+    return node;
+  };
+  return build(0, inorder.length - 1);
+}

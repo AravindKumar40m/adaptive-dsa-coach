@@ -1,0 +1,24 @@
+{
+  "slug": "lemonade-change",
+  "title": "Lemonade Stand",
+  "concept": "greedy",
+  "difficulty": "easy",
+  "statement": "A lemonade costs **5** dollars. Customers queue up and each buys one lemonade, paying with a 5, 10 or 20 dollar bill (`bills[i]` is what customer `i` pays). You start with **no money at all**, and you must give each customer the correct change using the bills you have received so far.\n\nReturn `true` if you can give correct change to **every** customer, otherwise `false`.",
+  "constraints": [
+    "1 <= len(bills) <= 100000",
+    "bills[i] is 5, 10 or 20"
+  ],
+  "signature": { "name": "can_give_change", "params": [{ "name": "bills", "type": "int[]" }], "returns": "bool" },
+  "examples": [
+    { "args": [[5, 5, 5, 10, 20]], "expected": true, "explanation": "Give 5 back to the 10, then 10 + 5 to the 20." },
+    { "args": [[5, 5, 10, 10, 20]], "expected": false, "explanation": "The two 10s used up both 5s as change, so before the 20 you hold two 10s and no 5s. You cannot make 15 from two 10s." }
+  ],
+  "edgeTests": [[[5]], [[10]], [[20]], [[5, 10]], [[5, 5, 5, 20]], [[5, 5, 10, 20]], [[5, 10, 10]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Change for 15 can be one 10 plus one 5, or three 5s. Which way keeps you safer for the future customers?",
+    "pattern": "Greedy: keep count of 5s and 10s, and prefer giving a 10 before 5s.",
+    "pseudocode": "fives = 0; tens = 0\nfor bill in bills:\n  5: fives++\n  10: if fives == 0: return false; fives--; tens++\n  20: if tens > 0 and fives > 0: tens--; fives-- elif fives >= 3: fives -= 3 else: return false\nreturn true",
+    "walkthrough": "You only ever need to remember how many 5s and 10s you hold (a 20 is never given back as change). A 5 needs no change. A 10 needs one 5. A 20 needs 15: you can give a 10 and a 5, or three 5s. Since 5s are the more flexible bill (they can serve 10s and 20s alike), use the 10 first when you can, saving your 5s. If you cannot give the exact change at some point, the answer is false."
+  }
+}

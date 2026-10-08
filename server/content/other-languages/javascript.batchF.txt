@@ -1,0 +1,114 @@
+//### integer-sqrt
+function integerSqrt(n) {
+  let lo = 0, hi = Math.min(n, 46341);
+  while (lo < hi) {
+    const mid = Math.floor((lo + hi + 1) / 2);
+    if (mid * mid <= n) lo = mid; else hi = mid - 1;
+  }
+  return lo;
+}
+//### search-sorted
+function findIndex(nums, target) {
+  let lo = 0, hi = nums.length - 1;
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1;
+    if (nums[mid] === target) return mid;
+    if (nums[mid] < target) lo = mid + 1; else hi = mid - 1;
+  }
+  return -1;
+}
+//### search-rotated
+function searchRotated(nums, target) {
+  let lo = 0, hi = nums.length - 1;
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1;
+    if (nums[mid] === target) return mid;
+    if (nums[lo] <= nums[mid]) {
+      if (nums[lo] <= target && target < nums[mid]) hi = mid - 1; else lo = mid + 1;
+    } else {
+      if (nums[mid] < target && target <= nums[hi]) lo = mid + 1; else hi = mid - 1;
+    }
+  }
+  return -1;
+}
+//### mountain-peak
+function peakIndex(heights) {
+  let lo = 0, hi = heights.length - 1;
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+    if (heights[mid] < heights[mid + 1]) lo = mid + 1; else hi = mid;
+  }
+  return lo;
+}
+//### min-rotated
+function minInRotated(nums) {
+  let lo = 0, hi = nums.length - 1;
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+    if (nums[mid] > nums[hi]) lo = mid + 1; else hi = mid;
+  }
+  return nums[lo];
+}
+//### median-two-sorted
+function medianTimesTwo(first, second) {
+  const [a, b] = first.length <= second.length ? [first, second] : [second, first];
+  const m = a.length, n = b.length, half = Math.floor((m + n + 1) / 2);
+  let lo = 0, hi = m;
+  while (lo <= hi) {
+    const i = (lo + hi) >> 1, j = half - i;
+    const aLeft = i > 0 ? a[i - 1] : -Infinity, aRight = i < m ? a[i] : Infinity;
+    const bLeft = j > 0 ? b[j - 1] : -Infinity, bRight = j < n ? b[j] : Infinity;
+    if (aLeft <= bRight && bLeft <= aRight) {
+      if ((m + n) % 2 === 1) return 2 * Math.max(aLeft, bLeft);
+      return Math.max(aLeft, bLeft) + Math.min(aRight, bRight);
+    }
+    if (aLeft > bRight) hi = i - 1; else lo = i + 1;
+  }
+  return 0;
+}
+//### max-profit-trades
+function maxProfit(prices) {
+  let profit = 0;
+  for (let i = 1; i < prices.length; i++) if (prices[i] > prices[i - 1]) profit += prices[i] - prices[i - 1];
+  return profit;
+}
+//### lemonade-change
+function canGiveChange(bills) {
+  let fives = 0, tens = 0;
+  for (const bill of bills) {
+    if (bill === 5) fives++;
+    else if (bill === 10) {
+      if (fives === 0) return false;
+      fives--; tens++;
+    } else if (tens > 0 && fives > 0) { tens--; fives--; }
+    else if (fives >= 3) fives -= 3;
+    else return false;
+  }
+  return true;
+}
+//### jump-reach
+function canReachEnd(jumps) {
+  let farthest = 0;
+  for (let i = 0; i < jumps.length; i++) {
+    if (i > farthest) return false;
+    farthest = Math.max(farthest, i + jumps[i]);
+  }
+  return true;
+}
+//### min-jumps
+function minJumps(jumps) {
+  let used = 0, rangeEnd = 0, farthest = 0;
+  for (let i = 0; i < jumps.length - 1; i++) {
+    farthest = Math.max(farthest, i + jumps[i]);
+    if (i === rangeEnd) { used++; rangeEnd = farthest; }
+  }
+  return used;
+}
+//### candy-distribution
+function minCandies(ratings) {
+  const n = ratings.length;
+  const candies = new Array(n).fill(1);
+  for (let i = 1; i < n; i++) if (ratings[i] > ratings[i - 1]) candies[i] = candies[i - 1] + 1;
+  for (let i = n - 2; i >= 0; i--) if (ratings[i] > ratings[i + 1]) candies[i] = Math.max(candies[i], candies[i + 1] + 1);
+  return candies.reduce((x, y) => x + y, 0);
+}

@@ -1,0 +1,115 @@
+//### group-anagram-count
+function countAnagramGroups(words) {
+  const keys = new Set();
+  for (const w of words.split(" ")) keys.add(w.split("").sort().join(""));
+  return keys.size;
+}
+//### nearby-duplicate
+function hasNearbyDuplicate(readings, k) {
+  const last = new Map();
+  for (let i = 0; i < readings.length; i++) {
+    const x = readings[i];
+    if (last.has(x) && i - last.get(x) <= k) return true;
+    last.set(x, i);
+  }
+  return false;
+}
+//### longest-consecutive-run
+function longestConsecutive(nums) {
+  const values = new Set(nums);
+  let best = 0;
+  for (const x of values) {
+    if (!values.has(x - 1)) {
+      let length = 1;
+      while (values.has(x + length)) length++;
+      best = Math.max(best, length);
+    }
+  }
+  return best;
+}
+//### four-sum-count
+function countZeroQuads(first, second, third, fourth) {
+  const sums = new Map();
+  for (const a of first) for (const b of second) sums.set(a + b, (sums.get(a + b) || 0) + 1);
+  let total = 0;
+  for (const c of third) for (const d of fourth) total += sums.get(-(c + d)) || 0;
+  return total;
+}
+//### longest-balanced-run
+function longestBalanced(bits) {
+  const first = new Map([[0, -1]]);
+  let total = 0, best = 0;
+  for (let i = 0; i < bits.length; i++) {
+    total += bits[i] === 1 ? 1 : -1;
+    if (first.has(total)) best = Math.max(best, i - first.get(total));
+    else first.set(total, i);
+  }
+  return best;
+}
+//### remove-duplicates-length
+function countDistinctSorted(ids) {
+  let count = 1;
+  for (let i = 1; i < ids.length; i++) if (ids[i] !== ids[i - 1]) count++;
+  return count;
+}
+//### sorted-squares
+function sortedSquares(nums) {
+  const n = nums.length;
+  const result = new Array(n).fill(0);
+  let i = 0, j = n - 1;
+  for (let pos = n - 1; pos >= 0; pos--) {
+    if (Math.abs(nums[i]) > Math.abs(nums[j])) { result[pos] = nums[i] * nums[i]; i++; }
+    else { result[pos] = nums[j] * nums[j]; j--; }
+  }
+  return result;
+}
+//### three-sum-count
+function countZeroTriples(nums) {
+  const a = [...nums].sort((x, y) => x - y);
+  const n = a.length;
+  let count = 0;
+  for (let i = 0; i < n - 2; i++) {
+    if (i > 0 && a[i] === a[i - 1]) continue;
+    let lo = i + 1, hi = n - 1;
+    while (lo < hi) {
+      const s = a[i] + a[lo] + a[hi];
+      if (s < 0) lo++;
+      else if (s > 0) hi--;
+      else {
+        count++; lo++; hi--;
+        while (lo < hi && a[lo] === a[lo - 1]) lo++;
+        while (lo < hi && a[hi] === a[hi + 1]) hi--;
+      }
+    }
+  }
+  return count;
+}
+//### longest-mountain
+function longestMountain(heights) {
+  const n = heights.length;
+  let best = 0;
+  for (let i = 1; i < n - 1; i++) {
+    if (heights[i - 1] < heights[i] && heights[i] > heights[i + 1]) {
+      let left = i - 1, right = i + 1;
+      while (left > 0 && heights[left - 1] < heights[left]) left--;
+      while (right < n - 1 && heights[right] > heights[right + 1]) right++;
+      best = Math.max(best, right - left + 1);
+    }
+  }
+  return best;
+}
+//### next-permutation
+function nextArrangement(nums) {
+  const a = [...nums];
+  const n = a.length;
+  let i = n - 2;
+  while (i >= 0 && a[i] >= a[i + 1]) i--;
+  if (i >= 0) {
+    let j = n - 1;
+    while (a[j] <= a[i]) j--;
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  let lo = i + 1, hi = n - 1;
+  while (lo < hi) { [a[lo], a[hi]] = [a[hi], a[lo]]; lo++; hi--; }
+  return a;
+}

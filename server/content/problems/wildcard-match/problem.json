@@ -1,0 +1,24 @@
+{
+  "slug": "wildcard-match",
+  "title": "Wildcard Match",
+  "concept": "dp",
+  "difficulty": "hard",
+  "statement": "A **pattern** can contain lowercase letters and two wildcards:\n\n- `?` matches **any single letter**,\n- `*` matches **any sequence of letters**, including an empty sequence.\n\nThe pattern must match the **whole** `text`, not just a part of it. Return `true` if `pattern` matches `text`, otherwise `false`. Either string may be empty.",
+  "constraints": [
+    "0 <= len(text), len(pattern) <= 1000",
+    "text contains only lowercase letters; pattern contains lowercase letters, ? and *"
+  ],
+  "signature": { "name": "wildcard_match", "params": [{ "name": "text", "type": "string" }, { "name": "pattern", "type": "string" }], "returns": "bool" },
+  "examples": [
+    { "args": ["aa", "a"], "expected": false, "explanation": "The pattern covers only one letter." },
+    { "args": ["adceb", "*a*b"], "expected": true, "explanation": "The first * matches the empty string, a matches a, the second * matches dce, and b matches b." }
+  ],
+  "edgeTests": [["", ""], ["", "*"], ["", "?"], ["a", ""], ["aa", "*"], ["cb", "?a"], ["abc", "a?c"], ["abc", "*c"], ["abc", "a*c*"], ["acdcb", "a*c?b"]],
+  "expected": { "time": "O(n * m)", "space": "O(n * m)" },
+  "hints": {
+    "nudge": "Look at the last character of the pattern. What are the cases: letter, ?, or *?",
+    "pattern": "Dynamic programming on prefixes: match(i, j) = does the first i letters of text match the first j pattern characters?",
+    "pseudocode": "match(0, 0) = true; match(0, j) = match(0, j-1) if pattern[j-1] == '*' else false\nmatch(i, j):\n  if pattern[j-1] == '*': match(i, j-1) or match(i-1, j)      // * matches nothing, or one more letter\n  else: match(i-1, j-1) and (pattern[j-1] == '?' or pattern[j-1] == text[i-1])",
+    "walkthrough": "A `*` makes plain recursion branch a lot, so remember the results for each pair (i, j): match(i, j) says whether the first i text letters match the first j pattern characters. For an ordinary letter or `?`, the last characters must fit and the earlier parts must match: match(i-1, j-1). For `*`, either it matches nothing (match(i, j-1)) or it swallows one more text letter (match(i-1, j)). The base cases: two empty prefixes match, and an empty text matches only a run of `*`. A table of (n + 1) * (m + 1) booleans gives O(n * m)."
+  }
+}

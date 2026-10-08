@@ -1,0 +1,24 @@
+{
+  "slug": "largest-number",
+  "title": "Largest Joined Number",
+  "concept": "sorting",
+  "difficulty": "medium",
+  "statement": "You may write the numbers of `nums` one after another in **any order** to form one long number. For example `[10, 2]` can make `102` or `210`.\n\nReturn the **largest number you can form**, as a string (it can be too big for an integer). If the largest number is made only of zeros, return `\"0\"`.",
+  "constraints": [
+    "1 <= len(nums) <= 100",
+    "0 <= nums[i] <= 1000000000"
+  ],
+  "signature": { "name": "largest_number", "params": [{ "name": "nums", "type": "int[]" }], "returns": "string" },
+  "examples": [
+    { "args": [[10, 2]], "expected": "210", "explanation": "210 is bigger than 102." },
+    { "args": [[3, 30, 34, 5, 9]], "expected": "9534330", "explanation": "Order 9, 5, 34, 3, 30." }
+  ],
+  "edgeTests": [[[0]], [[0, 0]], [[1]], [[20, 1]], [[121, 12]], [[824, 8247]]],
+  "expected": { "time": "O(n log n * L)", "space": "O(n * L)" },
+  "hints": {
+    "nudge": "Sorting by the numbers' own values does not work (3 should come before 30). Compare two numbers by what they make when glued together.",
+    "pattern": "Sort with a custom comparison: a goes before b if a followed by b is bigger than b followed by a.",
+    "pseudocode": "convert numbers to strings\nsort so that a comes first when (a + b) > (b + a)\njoin; if the result starts with '0', return '0'",
+    "walkthrough": "For two numbers a and b, the best order is the one where the glued text a+b is larger than b+a (compare them as text, they have equal length). This pairwise rule is consistent, so sorting by it gives the overall best order. Join the sorted strings. If the first piece is '0', every number was 0, so return just '0'. Trying every arrangement is n! and only feasible for tiny inputs."
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "slug": "fair-capacity",
+  "title": "Fair Capacity",
+  "concept": "binary_search",
+  "difficulty": "medium",
+  "statement": "A warehouse must ship `packages` **in the given order**. Each day one truck leaves and carries a run of consecutive packages whose total weight is at most the truck's capacity. A package cannot be split.\n\nAll packages must be shipped within `days` days. Return the **smallest truck capacity** that makes this possible.",
+  "constraints": [
+    "1 <= days <= len(packages) <= 100000",
+    "1 <= packages[i] <= 500"
+  ],
+  "signature": { "name": "min_capacity", "params": [{ "name": "packages", "type": "int[]" }, { "name": "days", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[4, 2, 7, 1, 5], 2], "expected": 13, "explanation": "Day 1: 4 + 2 + 7 = 13. Day 2: 1 + 5 = 6. A truck of 12 cannot do it in two days." },
+    { "args": [[3, 3, 3], 3], "expected": 3, "explanation": "One package per day needs capacity 3 at least." }
+  ],
+  "edgeTests": [[[5], 1], [[1, 2, 3, 4, 5], 1], [[1, 2, 3, 4, 5], 5], [[10, 10, 10, 10], 2], [[7, 2, 5, 10, 8], 2]],
+  "expected": { "time": "O(n log(sum))", "space": "O(1)" },
+  "hints": {
+    "nudge": "Suppose someone tells you a capacity. Can you quickly check whether it is enough? What happens to that check as the capacity grows?",
+    "pattern": "Binary search on the answer: the check 'can we ship within `days` with this capacity?' is false for small capacities and true for large ones.",
+    "pseudocode": "lo = max(packages); hi = sum(packages)\nwhile lo < hi:\n  mid = (lo + hi) // 2\n  if canShip(mid): hi = mid else: lo = mid + 1\nreturn lo\n\ncanShip(cap): days_used = 1; load = 0\n  for w in packages: if load + w > cap: days_used++; load = 0\n    load += w\n  return days_used <= days",
+    "walkthrough": "The answer is at least the heaviest package (it has to fit on some truck) and at most the total weight (one truck, one day). Trying every capacity in that range works but is slow. Notice monotonicity: if capacity c is enough, then any larger capacity is enough too. So binary search the capacity. To test a capacity, simulate greedily: fill the current day until the next package would exceed the capacity, then start a new day. If the days needed are within the limit, the capacity works, so try smaller; otherwise try larger. Each check is O(n) and there are O(log(sum)) checks."
+  }
+}

@@ -1,0 +1,120 @@
+//### merge-sorted-arrays
+vector<int> merge_sorted(vector<int>& first, vector<int>& second) {
+    vector<int> result;
+    size_t i = 0, j = 0;
+    while (i < first.size() && j < second.size()) {
+        if (first[i] <= second[j]) result.push_back(first[i++]);
+        else result.push_back(second[j++]);
+    }
+    while (i < first.size()) result.push_back(first[i++]);
+    while (j < second.size()) result.push_back(second[j++]);
+    return result;
+}
+//### height-checker
+int count_misplaced(vector<int>& heights) {
+    vector<int> ordered = heights;
+    sort(ordered.begin(), ordered.end());
+    int count = 0;
+    for (size_t i = 0; i < heights.size(); i++) if (heights[i] != ordered[i]) count++;
+    return count;
+}
+//### max-product-three
+int max_product_of_three(vector<int>& nums) {
+    vector<int> a = nums;
+    sort(a.begin(), a.end());
+    int n = (int) a.size();
+    return max(a[n - 1] * a[n - 2] * a[n - 3], a[0] * a[1] * a[n - 1]);
+}
+//### largest-number
+string largest_number(vector<int>& nums) {
+    vector<string> words;
+    for (int x : nums) words.push_back(to_string(x));
+    sort(words.begin(), words.end(), [](const string& a, const string& b) { return a + b > b + a; });
+    string result;
+    for (auto& w : words) result += w;
+    return result[0] == '0' ? "0" : result;
+}
+//### count-inversions
+static long long inv_sort(vector<int>& a, vector<int>& buf, int lo, int hi) {
+    if (hi - lo < 2) return 0;
+    int mid = lo + (hi - lo) / 2;
+    long long count = inv_sort(a, buf, lo, mid) + inv_sort(a, buf, mid, hi);
+    int i = lo, j = mid, k = lo;
+    while (i < mid && j < hi) {
+        if (a[i] <= a[j]) buf[k++] = a[i++];
+        else { buf[k++] = a[j++]; count += mid - i; }
+    }
+    while (i < mid) buf[k++] = a[i++];
+    while (j < hi) buf[k++] = a[j++];
+    for (int t = lo; t < hi; t++) a[t] = buf[t];
+    return count;
+}
+int count_inversions(vector<int>& nums) {
+    vector<int> a = nums, buf(nums.size());
+    return (int) inv_sort(a, buf, 0, (int) a.size());
+}
+//### count-windows-above
+int count_strong_windows(vector<int>& sales, int k, int limit) {
+    long long window = 0;
+    for (int i = 0; i < k; i++) window += sales[i];
+    int count = window >= limit ? 1 : 0;
+    for (int i = k; i < (int) sales.size(); i++) {
+        window += sales[i] - sales[i - k];
+        if (window >= limit) count++;
+    }
+    return count;
+}
+//### max-vowels-window
+int max_vowels(string text, int k) {
+    auto is_vowel = [](char ch) { return ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u'; };
+    int count = 0;
+    for (int i = 0; i < k; i++) if (is_vowel(text[i])) count++;
+    int best = count;
+    for (int i = k; i < (int) text.size(); i++) {
+        if (is_vowel(text[i])) count++;
+        if (is_vowel(text[i - k])) count--;
+        best = max(best, count);
+    }
+    return best;
+}
+//### min-subarray-len
+int min_days_to_reach(vector<int>& deposits, int target) {
+    int left = 0, best = 0;
+    long long total = 0;
+    for (int right = 0; right < (int) deposits.size(); right++) {
+        total += deposits[right];
+        while (total >= target) {
+            if (best == 0 || right - left + 1 < best) best = right - left + 1;
+            total -= deposits[left++];
+        }
+    }
+    return best;
+}
+//### longest-repeat-replace
+int longest_after_replace(string text, int k) {
+    int count[26] = {0};
+    int left = 0, max_freq = 0, best = 0;
+    for (int right = 0; right < (int) text.size(); right++) {
+        int idx = text[right] - 'a';
+        count[idx]++;
+        max_freq = max(max_freq, count[idx]);
+        while (right - left + 1 - max_freq > k) {
+            count[text[left] - 'a']--;
+            left++;
+        }
+        best = max(best, right - left + 1);
+    }
+    return best;
+}
+//### window-max-total
+int window_max_total(vector<int>& temps, int k) {
+    deque<int> window;
+    long long total = 0;
+    for (int i = 0; i < (int) temps.size(); i++) {
+        while (!window.empty() && temps[window.back()] <= temps[i]) window.pop_back();
+        window.push_back(i);
+        if (window.front() <= i - k) window.pop_front();
+        if (i >= k - 1) total += temps[window.front()];
+    }
+    return (int) total;
+}

@@ -1,0 +1,24 @@
+{
+  "slug": "kth-largest",
+  "title": "Kth Largest",
+  "concept": "heaps",
+  "difficulty": "medium",
+  "statement": "A leaderboard has scores in `scores` (duplicates allowed, each entry counts). If you sorted them from highest to lowest, the **k-th largest** is the score at position `k` (counting from 1).\n\nReturn the k-th largest score.",
+  "constraints": [
+    "1 <= k <= len(scores) <= 100000",
+    "-1000000000 <= scores[i] <= 1000000000"
+  ],
+  "signature": { "name": "kth_largest", "params": [{ "name": "scores", "type": "int[]" }, { "name": "k", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[3, 2, 1, 5, 6, 4], 2], "expected": 5, "explanation": "Sorted high to low: 6, 5, 4, 3, 2, 1. The 2nd is 5." },
+    { "args": [[3, 2, 3, 1, 2, 4, 5, 5, 6], 4], "expected": 4, "explanation": "Sorted high to low: 6, 5, 5, 4, ... The 4th is 4 (duplicates count)." }
+  ],
+  "edgeTests": [[[7], 1], [[2, 2, 2], 3], [[-1, -5, -3], 2], [[1, 2, 3, 4, 5], 5], [[1, 2, 3, 4, 5], 1]],
+  "expected": { "time": "O(n log k)", "space": "O(k)" },
+  "hints": {
+    "nudge": "You do not need the whole list in order, only the top k scores. Which of those k is the smallest?",
+    "pattern": "A min-heap that never holds more than k items.",
+    "pseudocode": "heap = empty min-heap\nfor each x in scores:\n  push x\n  if size(heap) > k: pop the smallest\nreturn the smallest in heap (top)",
+    "walkthrough": "Sorting everything is O(n log n) and works. A min-heap of size k does better when k is small: push each score, and whenever the heap grows beyond k, remove its smallest item. After all scores are processed, the heap contains the k largest, and its smallest element (the top) is exactly the k-th largest. Each push or pop costs O(log k), so O(n log k) overall. Java: PriorityQueue. C++: priority_queue with greater<int>. Python: heapq. JavaScript has no built-in heap, so write a small one or sort."
+  }
+}

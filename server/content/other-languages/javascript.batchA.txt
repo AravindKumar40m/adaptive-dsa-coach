@@ -1,0 +1,130 @@
+//### missing-number
+function findMissing(numbers) {
+  const n = numbers.length;
+  let sum = n * (n + 1) / 2;
+  for (const x of numbers) sum -= x;
+  return sum;
+}
+//### product-except-self
+function productExceptSelf(nums) {
+  const n = nums.length;
+  const result = new Array(n).fill(1);
+  let left = 1;
+  for (let i = 0; i < n; i++) { result[i] = left; left *= nums[i]; }
+  let right = 1;
+  for (let i = n - 1; i >= 0; i--) { result[i] *= right; right *= nums[i]; }
+  return result.map((v) => v + 0); // turns -0 into 0
+}
+//### rotate-right
+function rotateRight(nums, k) {
+  const n = nums.length;
+  k %= n;
+  return nums.slice(n - k).concat(nums.slice(0, n - k));
+}
+//### first-missing-positive
+function firstMissingPositive(numbers) {
+  const a = [...numbers];
+  const n = a.length;
+  for (let i = 0; i < n; i++) {
+    while (a[i] >= 1 && a[i] <= n && a[a[i] - 1] !== a[i]) {
+      const j = a[i] - 1;
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+  }
+  for (let i = 0; i < n; i++) if (a[i] !== i + 1) return i + 1;
+  return n + 1;
+}
+//### rain-catch
+function trappedWater(heights) {
+  let left = 0, right = heights.length - 1, leftMax = 0, rightMax = 0, total = 0;
+  while (left < right) {
+    if (heights[left] < heights[right]) {
+      leftMax = Math.max(leftMax, heights[left]);
+      total += leftMax - heights[left];
+      left++;
+    } else {
+      rightMax = Math.max(rightMax, heights[right]);
+      total += rightMax - heights[right];
+      right--;
+    }
+  }
+  return total;
+}
+//### is-anagram
+function isAnagram(first, second) {
+  if (first.length !== second.length) return false;
+  const count = new Array(26).fill(0);
+  for (const ch of first) count[ch.charCodeAt(0) - 97]++;
+  for (const ch of second) if (--count[ch.charCodeAt(0) - 97] < 0) return false;
+  return true;
+}
+//### compress-string
+function compressText(text) {
+  const out = [];
+  let i = 0;
+  while (i < text.length) {
+    let j = i;
+    while (j < text.length && text[j] === text[i]) j++;
+    out.push(text[i] + (j - i));
+    i = j;
+  }
+  return out.join("");
+}
+//### word-pattern-match
+function followsPattern(pattern, sentence) {
+  const words = sentence.split(" ");
+  if (words.length !== pattern.length) return false;
+  const letterToWord = new Map(), wordToLetter = new Map();
+  for (let i = 0; i < pattern.length; i++) {
+    const letter = pattern[i], word = words[i];
+    if (letterToWord.has(letter) && letterToWord.get(letter) !== word) return false;
+    if (wordToLetter.has(word) && wordToLetter.get(word) !== letter) return false;
+    letterToWord.set(letter, word);
+    wordToLetter.set(word, letter);
+  }
+  return true;
+}
+//### longest-palindrome-part
+function longestPalindromeLength(text) {
+  const n = text.length;
+  let best = 1;
+  for (let centre = 0; centre < 2 * n - 1; centre++) {
+    let lo = centre >> 1, hi = lo + (centre & 1);
+    while (lo >= 0 && hi < n && text[lo] === text[hi]) {
+      best = Math.max(best, hi - lo + 1);
+      lo--; hi++;
+    }
+  }
+  return best;
+}
+//### min-window-cover
+function minCoverLength(text, need) {
+  const count = new Array(26).fill(0);
+  for (const ch of need) count[ch.charCodeAt(0) - 97]++;
+  let missing = need.length, left = 0, best = 0;
+  for (let right = 0; right < text.length; right++) {
+    const idx = text.charCodeAt(right) - 97;
+    if (count[idx] > 0) missing--;
+    count[idx]--;
+    while (missing === 0) {
+      if (best === 0 || right - left + 1 < best) best = right - left + 1;
+      const l = text.charCodeAt(left) - 97;
+      count[l]++;
+      if (count[l] > 0) missing++;
+      left++;
+    }
+  }
+  return best;
+}
+//### shortest-palindrome-extension
+function charsToPrepend(text) {
+  const s = text + "#" + text.split("").reverse().join("");
+  const fail = new Array(s.length).fill(0);
+  for (let i = 1; i < s.length; i++) {
+    let k = fail[i - 1];
+    while (k > 0 && s[i] !== s[k]) k = fail[k - 1];
+    if (s[i] === s[k]) k++;
+    fail[i] = k;
+  }
+  return text.length - fail[s.length - 1];
+}

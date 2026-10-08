@@ -1,0 +1,24 @@
+{
+  "slug": "merge-two-lists",
+  "title": "Merge Two Linked Lists",
+  "concept": "linked_list",
+  "difficulty": "easy",
+  "statement": "You are given `first` and `second`, the heads of two singly linked lists, each **sorted from smallest to largest**. Either list may be empty.\n\nMerge them into **one sorted linked list** by splicing the nodes together, and return its head. (In the examples each list is shown as the list of its values.)",
+  "constraints": [
+    "0 <= number of nodes in each list <= 50000",
+    "-1000000000 <= node value <= 1000000000, each list sorted in non-decreasing order"
+  ],
+  "signature": { "name": "merge_lists", "params": [{ "name": "first", "type": "ListNode" }, { "name": "second", "type": "ListNode" }], "returns": "ListNode" },
+  "examples": [
+    { "args": [[1, 2, 4], [1, 3, 4]], "expected": [1, 1, 2, 3, 4, 4], "explanation": "Take the smaller front value each time." },
+    { "args": [[], []], "expected": [], "explanation": "Two empty lists merge into an empty list." }
+  ],
+  "edgeTests": [[[1], []], [[], [2]], [[5], [1]], [[1, 1], [1, 1]], [[1, 3, 5], [2, 4, 6, 8]]],
+  "expected": { "time": "O(n + m)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Compare the two front nodes. Which one comes first in the merged list?",
+    "pattern": "Two pointers plus a dummy head node, linking the smaller node each time.",
+    "pseudocode": "dummy = new node; tail = dummy\nwhile first and second:\n  if first.val <= second.val: tail.next = first; first = first.next\n  else: tail.next = second; second = second.next\n  tail = tail.next\ntail.next = first or second\nreturn dummy.next",
+    "walkthrough": "Pick the smaller of the two front nodes, attach it to the end of the result, and advance in that list. A temporary 'dummy' node at the start avoids special cases for the first node. When one list runs out, attach the remaining nodes of the other list in one step (they are already sorted). Nodes are re-linked, not copied: O(1) extra space and O(n + m) time."
+  }
+}

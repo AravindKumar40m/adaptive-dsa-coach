@@ -1,0 +1,24 @@
+{
+  "slug": "compress-string",
+  "title": "Run-Length Compress",
+  "concept": "strings",
+  "difficulty": "medium",
+  "statement": "**Run-length encoding** replaces every run of the same letter by the letter followed by the length of the run. For example `aaabcc` becomes `a3b1c2` (a run of length 1 is still written, as `b1`).\n\nReturn the run-length encoding of `text`.",
+  "constraints": [
+    "1 <= len(text) <= 100000",
+    "text contains only lowercase letters a-z"
+  ],
+  "signature": { "name": "compress_text", "params": [{ "name": "text", "type": "string" }], "returns": "string" },
+  "examples": [
+    { "args": ["aaabcc"], "expected": "a3b1c2", "explanation": "Three a's, one b, two c's." },
+    { "args": ["z"], "expected": "z1", "explanation": "A single letter is a run of length 1." }
+  ],
+  "edgeTests": [["aaaaaaaaaaaa"], ["abcd"], ["aabbaa"], ["ab"], ["bbbbbbbbbbbbbbbbbbbbc"]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Walk through the text. When does a run end?",
+    "pattern": "Two pointers (or a counter) scanning runs, building the result in a list.",
+    "pseudocode": "result = []; i = 0\nwhile i < n:\n  j = i\n  while j < n and text[j] == text[i]: j++\n  result.append(text[i] + str(j - i))\n  i = j\nreturn join(result)",
+    "walkthrough": "Start at the first letter and extend j while the letters are equal; the run length is j - i. Append the letter and the length, then continue from j. Every character is visited once, so O(n). Build the answer with a list or string builder instead of repeated string concatenation, which can be O(n^2) in some languages. Remember the count can have several digits (for example a12)."
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "slug": "largest-rectangle",
+  "title": "Largest Rectangle in a Skyline",
+  "concept": "stack_queue",
+  "difficulty": "hard",
+  "statement": "A skyline is made of buildings standing side by side, each one unit wide; `heights[i]` is the height of building `i`. A rectangle drawn inside the skyline must cover **consecutive** buildings, and its height can be at most the height of the shortest building it covers.\n\nReturn the **area of the largest rectangle** that fits.",
+  "constraints": [
+    "1 <= len(heights) <= 100000",
+    "0 <= heights[i] <= 10000"
+  ],
+  "signature": { "name": "largest_rectangle", "params": [{ "name": "heights", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[2, 1, 5, 6, 2, 3]], "expected": 10, "explanation": "The buildings of heights 5 and 6 side by side give a rectangle of height 5 and width 2: area 10." },
+    { "args": [[2, 4]], "expected": 4, "explanation": "Either the tall one alone (4) or both at height 2 (4)." }
+  ],
+  "edgeTests": [[[0]], [[7]], [[1, 1, 1, 1]], [[6, 5, 4, 3, 2, 1]], [[1, 2, 3, 4, 5, 6]], [[2, 0, 2]]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "For each building, how far can a rectangle of exactly that building's height stretch left and right?",
+    "pattern": "Monotonic stack of increasing heights: pop when a shorter building appears, and compute the rectangle that ends there.",
+    "pseudocode": "stack of indices with increasing heights; append a final bar of height 0\nfor i, h in heights:\n  while stack not empty and heights[top] >= h:\n    height = heights[pop]; left = stack top (or -1); width = i - left - 1; best = max(best, height * width)\n  push i",
+    "walkthrough": "For each building, the widest rectangle using its full height reaches left and right until a shorter building. Finding those limits by scanning is O(n^2). Keep a stack of indices whose heights increase. When a shorter bar arrives it ends the rectangles of the taller bars on the stack: pop each one; its height is the popped bar's height, its right limit is the current index, and its left limit is the new top of the stack (or the start). Area = height * (right - left - 1). Adding a zero-height bar at the end flushes the stack. O(n) time."
+  }
+}

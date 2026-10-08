@@ -1,0 +1,24 @@
+{
+  "slug": "first-unique-char",
+  "title": "First Unique Character",
+  "concept": "strings",
+  "difficulty": "easy",
+  "statement": "Given a string `text` of lowercase letters, find the first character that appears **exactly once** in the whole string.\n\nReturn its index (counting from 0). If every character repeats, return `-1`.",
+  "constraints": [
+    "1 <= len(text) <= 100000",
+    "text contains only lowercase letters a-z"
+  ],
+  "signature": { "name": "first_unique_index", "params": [{ "name": "text", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["swiss"], "expected": 1, "explanation": "s appears 3 times, w appears once at index 1." },
+    { "args": ["abab"], "expected": -1, "explanation": "Both letters repeat." }
+  ],
+  "edgeTests": [["a"], ["aa"], ["aab"], ["baa"], ["abcabc"], ["zzzyx"]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Before you can say a letter is unique, what do you need to know about the whole string?",
+    "pattern": "Two passes: count every letter, then scan again for the first count of 1.",
+    "pseudocode": "count = array of 26 zeros\nfor each ch: count[ch] += 1\nfor i from 0 to n-1: if count[text[i]] == 1: return i\nreturn -1",
+    "walkthrough": "Checking each character against all others is O(n^2). Count the letters first: one pass filling a table of 26 counters. Then walk the string from the left and return the first index whose letter has count 1. Two passes, O(n) time, and the table is a fixed 26 entries so extra space is O(1)."
+  }
+}

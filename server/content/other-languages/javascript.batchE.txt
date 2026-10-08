@@ -1,0 +1,129 @@
+//### reverse-list
+function reverseList(head) {
+  let prev = null;
+  while (head !== null) {
+    const next = head.next;
+    head.next = prev;
+    prev = head;
+    head = next;
+  }
+  return prev;
+}
+//### middle-value
+function middleValue(head) {
+  let slow = head, fast = head;
+  while (fast !== null && fast.next !== null) {
+    slow = slow.next;
+    fast = fast.next.next;
+  }
+  return slow.val;
+}
+//### merge-two-lists
+function mergeLists(first, second) {
+  const dummy = new ListNode(0, null);
+  let tail = dummy;
+  while (first !== null && second !== null) {
+    if (first.val <= second.val) { tail.next = first; first = first.next; }
+    else { tail.next = second; second = second.next; }
+    tail = tail.next;
+  }
+  tail.next = first !== null ? first : second;
+  return dummy.next;
+}
+//### remove-nth-from-end
+function removeNthFromEnd(head, n) {
+  const dummy = new ListNode(0, head);
+  let fast = dummy, slow = dummy;
+  for (let i = 0; i < n; i++) fast = fast.next;
+  while (fast.next !== null) { fast = fast.next; slow = slow.next; }
+  slow.next = slow.next.next;
+  return dummy.next;
+}
+//### cycle-length
+function cycleLength(head) {
+  let slow = head, fast = head;
+  while (fast !== null && fast.next !== null) {
+    slow = slow.next;
+    fast = fast.next.next;
+    if (slow === fast) {
+      let count = 1, cur = slow.next;
+      while (cur !== slow) { count++; cur = cur.next; }
+      return count;
+    }
+  }
+  return 0;
+}
+//### reverse-k-group
+function reverseInGroups(head, k) {
+  const dummy = new ListNode(0, head);
+  let groupPrev = dummy;
+  for (;;) {
+    let kth = groupPrev;
+    for (let i = 0; i < k; i++) {
+      kth = kth.next;
+      if (kth === null) return dummy.next;
+    }
+    const groupNext = kth.next;
+    let prev = groupNext, cur = groupPrev.next;
+    while (cur !== groupNext) {
+      const next = cur.next;
+      cur.next = prev;
+      prev = cur;
+      cur = next;
+    }
+    const oldFirst = groupPrev.next;
+    groupPrev.next = kth;
+    groupPrev = oldFirst;
+  }
+}
+//### sort-list
+function sortList(head) {
+  const merge = (a, b) => {
+    const dummy = new ListNode(0, null);
+    let tail = dummy;
+    while (a !== null && b !== null) {
+      if (a.val <= b.val) { tail.next = a; a = a.next; }
+      else { tail.next = b; b = b.next; }
+      tail = tail.next;
+    }
+    tail.next = a !== null ? a : b;
+    return dummy.next;
+  };
+  const sort = (h) => {
+    if (h === null || h.next === null) return h;
+    let slow = h, fast = h.next;
+    while (fast !== null && fast.next !== null) { slow = slow.next; fast = fast.next.next; }
+    const middle = slow.next;
+    slow.next = null;
+    return merge(sort(h), sort(middle));
+  };
+  return sort(head);
+}
+//### last-stone-weight
+function lastStone(stones) {
+  const pile = [...stones].sort((a, b) => a - b);
+  while (pile.length > 1) {
+    const a = pile.pop(), b = pile.pop();
+    if (a !== b) { pile.push(a - b); pile.sort((x, y) => x - y); }
+  }
+  return pile.length ? pile[0] : 0;
+}
+//### top-k-sum
+function sumOfTopK(scores, k) {
+  return [...scores].sort((a, b) => b - a).slice(0, k).reduce((x, y) => x + y, 0);
+}
+//### top-k-frequent
+function topKFrequent(nums, k) {
+  const counts = new Map();
+  for (const x of nums) counts.set(x, (counts.get(x) || 0) + 1);
+  const values = [...counts.keys()];
+  values.sort((a, b) => counts.get(b) - counts.get(a) || a - b);
+  return values.slice(0, k);
+}
+//### kth-smallest-in-lists
+function kthSmallestInLists(lists, k) {
+  const all = [];
+  for (const row of lists) for (const x of row) all.push(x);
+  all.sort((a, b) => a - b);
+  return all[k - 1];
+}

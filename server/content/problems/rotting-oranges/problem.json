@@ -1,0 +1,24 @@
+{
+  "slug": "rotting-oranges",
+  "title": "Spreading Rot",
+  "concept": "graphs",
+  "difficulty": "medium",
+  "statement": "A crate is a grid. In `grid`, `0` is an empty cell, `1` is a **fresh** orange and `2` is a **rotten** orange. Every minute, each fresh orange that is **directly next to** (up, down, left or right) a rotten orange becomes rotten.\n\nReturn the **number of minutes** until no fresh orange is left. If some fresh orange can never rot, return `-1`. If there are no fresh oranges at the start, the answer is `0`.",
+  "constraints": [
+    "1 <= rows, cols <= 10 (every row has the same length)",
+    "grid[r][c] is 0, 1 or 2"
+  ],
+  "signature": { "name": "minutes_to_rot", "params": [{ "name": "grid", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [[[2, 1, 1], [1, 1, 0], [0, 1, 1]]], "expected": 4, "explanation": "The rot spreads outward from the top-left corner and reaches the last orange after 4 minutes." },
+    { "args": [[[2, 1, 1], [0, 1, 1], [1, 0, 1]]], "expected": -1, "explanation": "The orange in the bottom-left corner is cut off by empty cells." }
+  ],
+  "edgeTests": [[[[0]]], [[[1]]], [[[2]]], [[[0, 2]]], [[[2, 1]]], [[[1, 2, 1]]], [[[2, 0, 1]]], [[[2, 2], [1, 1]]]],
+  "expected": { "time": "O(rows * cols)", "space": "O(rows * cols)" },
+  "hints": {
+    "nudge": "All rotten oranges start spreading at the same time. In what order do the fresh oranges rot?",
+    "pattern": "Multi-source breadth-first search: start the queue with ALL rotten oranges and spread level by level.",
+    "pseudocode": "queue = all rotten cells (time 0); fresh = number of fresh oranges\nwhile queue: cell, t = pop front\n  for each neighbour that is fresh: make it rotten; fresh--; push (neighbour, t + 1); minutes = t + 1\nreturn minutes if fresh == 0 else -1",
+    "walkthrough": "Simulating minute by minute and scanning the whole grid each minute works but is slow for big grids. A breadth-first search from all rotten oranges at once visits cells in the order they rot: level 1 is the fresh neighbours of the rotten ones (rot at minute 1), level 2 their neighbours, and so on. Count the fresh oranges at the start and decrease the count whenever one rots. The last level reached is the answer; if some fresh oranges are never reached (fresh > 0 at the end), return -1."
+  }
+}

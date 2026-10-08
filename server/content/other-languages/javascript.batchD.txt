@@ -1,0 +1,124 @@
+//### remove-adjacent-dupes
+function removePairs(text) {
+  const stack = [];
+  for (const ch of text) {
+    if (stack.length > 0 && stack[stack.length - 1] === ch) stack.pop();
+    else stack.push(ch);
+  }
+  return stack.join("");
+}
+//### baseball-score
+function totalScore(ops) {
+  const stack = [];
+  let total = 0;
+  for (const op of ops.split(" ")) {
+    if (op === "C") { total -= stack.pop(); continue; }
+    let value;
+    if (op === "+") value = stack[stack.length - 1] + stack[stack.length - 2];
+    else if (op === "D") value = 2 * stack[stack.length - 1];
+    else value = parseInt(op, 10);
+    stack.push(value);
+    total += value;
+  }
+  return total;
+}
+//### backspace-compare
+function sameAfterBackspaces(first, second) {
+  const final = (s) => {
+    const stack = [];
+    for (const ch of s) {
+      if (ch === "#") stack.pop();
+      else stack.push(ch);
+    }
+    return stack.join("");
+  };
+  return final(first) === final(second);
+}
+//### days-until-warmer
+function daysUntilWarmer(temps) {
+  const result = new Array(temps.length).fill(0);
+  const stack = [];
+  for (let i = 0; i < temps.length; i++) {
+    while (stack.length > 0 && temps[stack[stack.length - 1]] < temps[i]) {
+      const j = stack.pop();
+      result[j] = i - j;
+    }
+    stack.push(i);
+  }
+  return result;
+}
+//### largest-rectangle
+function largestRectangle(heights) {
+  const stack = [];
+  let best = 0;
+  for (let i = 0; i <= heights.length; i++) {
+    const h = i === heights.length ? 0 : heights[i];
+    while (stack.length > 0 && heights[stack[stack.length - 1]] >= h) {
+      const height = heights[stack.pop()];
+      const left = stack.length > 0 ? stack[stack.length - 1] : -1;
+      best = Math.max(best, height * (i - left - 1));
+    }
+    stack.push(i);
+  }
+  return best;
+}
+//### decode-nested
+function decodeMessage(code) {
+  const stack = [];
+  let current = "", number = 0;
+  for (const ch of code) {
+    if (ch >= "0" && ch <= "9") number = number * 10 + (ch.charCodeAt(0) - 48);
+    else if (ch === "[") { stack.push([current, number]); current = ""; number = 0; }
+    else if (ch === "]") { const [previous, k] = stack.pop(); current = previous + current.repeat(k); }
+    else current += ch;
+  }
+  return current;
+}
+//### pow-mod
+function powerMod(base, exp, m) {
+  const power = (e) => {
+    if (e === 0) return 1 % m;
+    const half = power(Math.floor(e / 2));
+    let result = (half * half) % m;
+    if (e % 2 === 1) result = (result * (base % m)) % m;
+    return result;
+  };
+  return power(exp);
+}
+//### fibonacci-nth
+function fibonacciNth(n) {
+  let a = 0, b = 1;
+  for (let i = 0; i < n; i++) { [a, b] = [b, a + b]; }
+  return a;
+}
+//### gcd-recursive
+function gcdOf(a, b) {
+  return b === 0 ? a : gcdOf(b, a % b);
+}
+//### generate-parentheses-count
+function countValidBrackets(n) {
+  const ways = new Array(n + 1).fill(0);
+  ways[0] = 1;
+  for (let total = 1; total <= n; total++) {
+    for (let i = 0; i < total; i++) ways[total] += ways[i] * ways[total - 1 - i];
+  }
+  return ways[n];
+}
+//### distinct-permutations
+function countArrangements(text) {
+  const factorial = (k) => (k <= 1 ? 1 : k * factorial(k - 1));
+  const counts = new Map();
+  for (const ch of text) counts.set(ch, (counts.get(ch) || 0) + 1);
+  let answer = factorial(text.length);
+  for (const c of counts.values()) answer /= factorial(c);
+  return answer;
+}
+//### integer-partitions
+function countPartitions(n) {
+  const ways = new Array(n + 1).fill(0);
+  ways[0] = 1;
+  for (let part = 1; part <= n; part++) {
+    for (let s = part; s <= n; s++) ways[s] += ways[s - part];
+  }
+  return ways[n];
+}

@@ -1,0 +1,23 @@
+{
+  "slug": "stair-ways",
+  "title": "Stair Ways",
+  "concept": "recursion",
+  "difficulty": "medium",
+  "statement": "A robot must climb a staircase with `n` steps. In one move it can climb **1, 2 or 3 steps**. Different orders of moves count as different ways (climbing 1 then 2 is different from 2 then 1).\n\nReturn the number of distinct ways the robot can reach exactly step `n`.",
+  "constraints": [
+    "1 <= n <= 30"
+  ],
+  "signature": { "name": "count_ways", "params": [{ "name": "n", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [3], "expected": 4, "explanation": "1+1+1, 1+2, 2+1 and 3." },
+    { "args": [4], "expected": 7, "explanation": "The last move was 1, 2 or 3 steps, so ways(4) = ways(3) + ways(2) + ways(1) = 4 + 2 + 1." }
+  ],
+  "edgeTests": [[1], [2], [5], [10], [20], [30]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Think about the robot's very last move. What step could it have been on just before that?",
+    "pattern": "Recursion with overlapping subproblems: ways(n) = ways(n-1) + ways(n-2) + ways(n-3). Remember the answers you have already computed (memoization or a loop).",
+    "pseudocode": "a = ways(0) = 1; b = ways(-1) = 0; c = ways(-2) = 0\nrepeat n times: (a, b, c) = (a + b + c, a, b)\nreturn a",
+    "walkthrough": "The last move was 1, 2 or 3 steps, so ways(n) = ways(n-1) + ways(n-2) + ways(n-3), with ways(0) = 1 and ways(negative) = 0. Writing this directly as recursion recomputes the same values again and again and takes exponential time (too slow for n = 30). Fix it by storing results in a table (memoization), or compute upward from 0 to n keeping only the last three values: O(n) time, O(1) space."
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "slug": "first-repeat",
+  "title": "First Repeat",
+  "concept": "hashing",
+  "difficulty": "easy",
+  "statement": "A scanner reads ticket numbers one by one. The moment it sees a number it has already read, it raises an alarm.\n\nGiven `tickets`, return the number that triggers the **first alarm** (the value whose second appearance comes earliest in the list). If no number repeats, return `-1`.",
+  "constraints": [
+    "1 <= len(tickets) <= 100000",
+    "0 <= tickets[i] <= 1000"
+  ],
+  "signature": { "name": "first_repeat", "params": [{ "name": "tickets", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[3, 1, 4, 1, 3]], "expected": 1, "explanation": "The second 1 (index 3) appears before the second 3 (index 4)." },
+    { "args": [[5, 6, 7]], "expected": -1, "explanation": "No number repeats." }
+  ],
+  "edgeTests": [[[0]], [[0, 0]], [[1, 2, 3, 3, 2, 1]], [[1000, 1000]], [[2, 1, 2, 1]]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "As you read the list left to right, what would you need to remember to notice a repeat?",
+    "pattern": "Use a hash set of the numbers seen so far (checking membership is O(1) on average).",
+    "pseudocode": "seen = empty set\nfor each x in tickets:\n  if x in seen: return x\n  add x to seen\nreturn -1",
+    "walkthrough": "Comparing every number with all earlier ones is O(n^2). Instead keep a set of values you have already read. For each new value, if it is in the set you have found the first repeat, because you scan in order and stop at the first hit. Otherwise add it and continue. Return -1 after the loop. O(n) time, O(n) space."
+  }
+}

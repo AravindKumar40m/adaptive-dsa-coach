@@ -1,0 +1,62 @@
+/* "Lamplight": a quiet study desk. Warm ink-brown by night, warm paper by day, one amber accent.
+   Every colour in the app comes from these variables, so a theme is just a set of values. */
+:root {
+  --font-ui: "Inter Variable", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-read: "Source Serif 4 Variable", Georgia, "Times New Roman", serif;
+  --font-code: "JetBrains Mono Variable", ui-monospace, "Cascadia Code", Consolas, monospace;
+
+  --radius-s: 6px;
+  --radius: 10px;
+  --radius-l: 14px;
+  --topbar-h: 52px;
+}
+
+:root, :root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #14110e;            /* the page */
+  --bg-raised: #1a1612;     /* bars, cards */
+  --bg-sunken: #100e0b;     /* wells: code, inputs */
+  --bg-hover: #221d17;
+  --line: #2c261f;
+  --line-strong: #3b332a;
+  --text: #ece4d6;
+  --text-dim: #b0a593;
+  --text-faint: #867b69;
+  --accent: #e9a23b;        /* lamp light */
+  --accent-hover: #f2b559;
+  --accent-ink: #1a1206;    /* text on top of the accent */
+  --accent-soft: rgba(233, 162, 59, 0.12);
+  --accent-text: #efb255;   /* accent used as text colour */
+  --ok: #94b87a;  --ok-soft: rgba(148, 184, 122, 0.14);
+  --warn: #dcaa4c; --warn-soft: rgba(220, 170, 76, 0.14);
+  --bad: #de7a68; --bad-soft: rgba(222, 122, 104, 0.14);
+  --info: #86aebf;
+  --easy: #94b87a; --medium: #dcaa4c; --hard: #de7a68;
+  --shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+  --focus: #f2b559;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f6f1e6;
+  --bg-raised: #fffcf5;
+  --bg-sunken: #efe8d8;
+  --bg-hover: #f0e9d9;
+  --line: #e2d9c5;
+  --line-strong: #cfc4ab;
+  --text: #251f16;
+  --text-dim: #5b5242;
+  --text-faint: #867c68;
+  --accent: #a85a06;
+  --accent-hover: #934e05;
+  --accent-ink: #fffaf0;
+  --accent-soft: rgba(168, 90, 6, 0.09);
+  --accent-text: #9a5205;
+  --ok: #4a7632;  --ok-soft: rgba(74, 118, 50, 0.12);
+  --warn: #8f6208; --warn-soft: rgba(143, 98, 8, 0.12);
+  --bad: #b04630; --bad-soft: rgba(176, 70, 48, 0.1);
+  --info: #25677f;
+  --easy: #4a7632; --medium: #8f6208; --hard: #b04630;
+  --shadow: 0 8px 28px rgba(60, 40, 10, 0.16);
+  --focus: #a85a06;
+}

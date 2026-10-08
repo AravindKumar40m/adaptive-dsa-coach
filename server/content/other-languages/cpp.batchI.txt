@@ -1,0 +1,90 @@
+//### town-judge
+int find_judge(int n, vector<vector<int>>& trust) {
+    vector<int> score(n + 1, 0);
+    for (auto& t : trust) { score[t[0]]--; score[t[1]]++; }
+    for (int person = 1; person <= n; person++) if (score[person] == n - 1) return person;
+    return -1;
+}
+//### find-center
+int star_center(int n, vector<vector<int>>& edges) {
+    int a = edges[0][0], b = edges[0][1], c = edges[1][0], d = edges[1][1];
+    return (a == c || a == d) ? a : b;
+}
+//### can-finish-courses
+bool can_finish(int n, vector<vector<int>>& prerequisites) {
+    vector<int> indegree(n, 0);
+    vector<vector<int>> needs(n);
+    for (auto& p : prerequisites) { needs[p[1]].push_back(p[0]); indegree[p[0]]++; }
+    queue<int> q;
+    for (int c = 0; c < n; c++) if (indegree[c] == 0) q.push(c);
+    int taken = 0;
+    while (!q.empty()) {
+        int c = q.front();
+        q.pop();
+        taken++;
+        for (int x : needs[c]) if (--indegree[x] == 0) q.push(x);
+    }
+    return taken == n;
+}
+//### rotting-oranges
+int minutes_to_rot(vector<vector<int>>& grid) {
+    int rows = (int) grid.size(), cols = (int) grid[0].size();
+    vector<vector<int>> cells = grid;
+    queue<tuple<int, int, int>> q;
+    int fresh = 0;
+    for (int r = 0; r < rows; r++) {
+        for (int c = 0; c < cols; c++) {
+            if (cells[r][c] == 2) q.push(make_tuple(r, c, 0));
+            else if (cells[r][c] == 1) fresh++;
+        }
+    }
+    int minutes = 0;
+    int dr[4] = {1, -1, 0, 0}, dc[4] = {0, 0, 1, -1};
+    while (!q.empty()) {
+        auto [r, c, t] = q.front();
+        q.pop();
+        minutes = max(minutes, t);
+        for (int d = 0; d < 4; d++) {
+            int nr = r + dr[d], nc = c + dc[d];
+            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && cells[nr][nc] == 1) {
+                cells[nr][nc] = 2;
+                fresh--;
+                q.push(make_tuple(nr, nc, t + 1));
+            }
+        }
+    }
+    return fresh == 0 ? minutes : -1;
+}
+//### min-cost-path
+int cheapest_route(int n, vector<vector<int>>& roads, int start, int end) {
+    vector<vector<pair<int, int>>> adjacent(n);
+    for (auto& r : roads) adjacent[r[0]].push_back({r[1], r[2]});
+    const long long INF = LLONG_MAX / 4;
+    vector<long long> dist(n, INF);
+    dist[start] = 0;
+    priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<pair<long long, int>>> heap;
+    heap.push({0, start});
+    while (!heap.empty()) {
+        auto [d, u] = heap.top();
+        heap.pop();
+        if (d > dist[u]) continue;
+        if (u == end) return (int) d;
+        for (auto& edge : adjacent[u]) {
+            long long nd = d + edge.second;
+            if (nd < dist[edge.first]) { dist[edge.first] = nd; heap.push({nd, edge.first}); }
+        }
+    }
+    return -1;
+}
+//### cheapest-with-stops
+int cheapest_with_stops(int n, vector<vector<int>>& flights, int src, int dst, int k) {
+    const long long INF = LLONG_MAX / 4;
+    vector<long long> price(n, INF);
+    price[src] = 0;
+    for (int round = 0; round <= k; round++) {
+        vector<long long> next = price;
+        for (auto& f : flights) if (price[f[0]] + f[2] < next[f[1]]) next[f[1]] = price[f[0]] + f[2];
+        price = next;
+    }
+    return price[dst] >= INF ? -1 : (int) price[dst];
+}

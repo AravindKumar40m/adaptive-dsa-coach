@@ -1,0 +1,24 @@
+{
+  "slug": "shortest-palindrome-extension",
+  "title": "Palindrome Front Patch",
+  "concept": "strings",
+  "difficulty": "hard",
+  "statement": "You may add letters **only to the front** of `text`. What is the **fewest letters** you must add so that the result becomes a palindrome (reads the same forwards and backwards)?\n\nReturn that number. A text that is already a palindrome needs `0`.",
+  "constraints": [
+    "1 <= len(text) <= 100000",
+    "text contains only lowercase letters a-z"
+  ],
+  "signature": { "name": "chars_to_prepend", "params": [{ "name": "text", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["aacecaaa"], "expected": 1, "explanation": "Add one a in front to get aaacecaaa." },
+    { "args": ["abcd"], "expected": 3, "explanation": "Add dcb in front to get dcbabcd." }
+  ],
+  "edgeTests": [["a"], ["aa"], ["ab"], ["aba"], ["abb"], ["abab"]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "If the first k letters already form a palindrome, you only need to mirror the other n - k letters. Which k do you want?",
+    "pattern": "Find the longest palindrome that starts at index 0 (a palindromic prefix). KMP's failure function finds it in linear time.",
+    "pseudocode": "s = text + '#' + reverse(text)\ncompute the prefix function of s\nlongest = last value of the prefix function\nreturn len(text) - longest",
+    "walkthrough": "Whatever you prepend is the reverse of the part of the text after some palindromic prefix. So you want the LONGEST palindromic prefix: the answer is n minus its length. Testing every prefix costs O(n^2). Trick: build s = text + '#' + reverse(text). A prefix of text that equals a suffix of reverse(text) is exactly a palindromic prefix of text. The KMP prefix (failure) function of s, at its last position, gives the longest such prefix in O(n)."
+  }
+}

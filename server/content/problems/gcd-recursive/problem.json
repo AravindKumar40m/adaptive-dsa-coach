@@ -1,0 +1,23 @@
+{
+  "slug": "gcd-recursive",
+  "title": "Greatest Common Divisor",
+  "concept": "recursion",
+  "difficulty": "easy",
+  "statement": "The **greatest common divisor** of two whole numbers is the largest number that divides both of them without a remainder. For example the greatest common divisor of 12 and 18 is 6.\n\nReturn the greatest common divisor of `a` and `b`. At least one of them is positive, and the greatest common divisor of `0` and `x` is `x`.",
+  "constraints": [
+    "0 <= a, b <= 1000000000, not both 0"
+  ],
+  "signature": { "name": "gcd_of", "params": [{ "name": "a", "type": "int" }, { "name": "b", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [12, 18], "expected": 6, "explanation": "6 divides both, and nothing bigger does." },
+    { "args": [7, 13], "expected": 1, "explanation": "7 and 13 share only the divisor 1." }
+  ],
+  "edgeTests": [[0, 5], [5, 0], [10, 10], [1, 1000000000], [48, 36], [1000000000, 999999999], [17, 34]],
+  "expected": { "time": "O(log min(a, b))", "space": "O(log min(a, b))" },
+  "hints": {
+    "nudge": "A number that divides both a and b also divides a - b. And a mod b?",
+    "pattern": "Euclid's algorithm: gcd(a, b) = gcd(b, a mod b), and gcd(a, 0) = a.",
+    "pseudocode": "gcd(a, b): if b == 0: return a\n  return gcd(b, a % b)",
+    "walkthrough": "Trying every candidate from min(a, b) down to 1 can take up to a billion steps. Euclid noticed that any common divisor of a and b also divides the remainder a mod b, so gcd(a, b) = gcd(b, a mod b). The second number shrinks quickly (at least by half every two steps), so the recursion has about 40 levels at most. The base case is b = 0, where the answer is a."
+  }
+}

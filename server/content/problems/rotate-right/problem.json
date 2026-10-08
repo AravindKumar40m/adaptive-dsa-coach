@@ -1,0 +1,25 @@
+{
+  "slug": "rotate-right",
+  "title": "Rotate Right",
+  "concept": "arrays",
+  "difficulty": "medium",
+  "statement": "A carousel has seats holding the numbers in `nums`. When it turns once, every number moves one seat to the right, and the last number wraps around to the first seat.\n\nReturn the list after the carousel turns `k` times. `k` can be larger than the length of the list.",
+  "constraints": [
+    "1 <= len(nums) <= 100000",
+    "-1000000000 <= nums[i] <= 1000000000",
+    "0 <= k <= 1000000000"
+  ],
+  "signature": { "name": "rotate_right", "params": [{ "name": "nums", "type": "int[]" }, { "name": "k", "type": "int" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[1, 2, 3, 4, 5, 6, 7], 3], "expected": [5, 6, 7, 1, 2, 3, 4], "explanation": "The last 3 numbers move to the front." },
+    { "args": [[-1, -100, 3, 99], 2], "expected": [3, 99, -1, -100], "explanation": "Two turns move 3 and 99 to the front." }
+  ],
+  "edgeTests": [[[1], 5], [[1, 2], 0], [[1, 2, 3], 3], [[1, 2, 3], 4], [[1, 2, 3, 4], 1000000000]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Turning n times (the list length) brings everything back. So how many turns really matter?",
+    "pattern": "Use k mod n, then reverse parts of the list.",
+    "pseudocode": "k = k % n\nreverse the whole list\nreverse the first k elements\nreverse the remaining n - k elements",
+    "walkthrough": "Doing k single turns costs O(n*k), far too slow for k up to a billion. First reduce k to k % n, since n turns change nothing. Then the answer is the last k elements followed by the first n - k elements. In place, you can get this with three reversals: reverse everything, then reverse the first k, then reverse the rest. O(n) time, O(1) extra space."
+  }
+}

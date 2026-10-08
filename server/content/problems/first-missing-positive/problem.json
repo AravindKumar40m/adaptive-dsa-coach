@@ -1,0 +1,24 @@
+{
+  "slug": "first-missing-positive",
+  "title": "First Missing Positive",
+  "concept": "arrays",
+  "difficulty": "hard",
+  "statement": "A clerk numbers invoices starting from 1. Given a list `numbers` (it can contain zeros, negatives and repeats), find the **smallest positive whole number that is not in the list**.",
+  "constraints": [
+    "1 <= len(numbers) <= 100000",
+    "-1000000000 <= numbers[i] <= 1000000000"
+  ],
+  "signature": { "name": "first_missing_positive", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 2, 0]], "expected": 3, "explanation": "1 and 2 are present, 3 is not." },
+    { "args": [[3, 4, -1, 1]], "expected": 2, "explanation": "1 is present but 2 is not." }
+  ],
+  "edgeTests": [[[7, 8, 9, 11, 12]], [[1]], [[2]], [[-5]], [[1, 1, 1]], [[2, 1, 3, 5, 4]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "With n numbers, the answer can only be one of 1, 2, ..., n+1. Why?",
+    "pattern": "Use the list itself as a table: put each value v (1 <= v <= n) at index v-1.",
+    "pseudocode": "for i in 0..n-1:\n  while 1 <= a[i] <= n and a[a[i]-1] != a[i]: swap a[i] with a[a[i]-1]\nfor i in 0..n-1: if a[i] != i+1: return i+1\nreturn n+1",
+    "walkthrough": "A set makes this easy in O(n) time but O(n) space. To use O(1) extra space, note the answer is at most n+1 (there are only n numbers). So only values 1..n matter. Rearrange the list so that value v sits at position v-1 by swapping (ignore values out of range and duplicates). Then scan: the first position i where a[i] != i+1 means i+1 is missing. If every position is right, the answer is n+1."
+  }
+}

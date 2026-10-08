@@ -1,0 +1,25 @@
+{
+  "slug": "word-pattern-match",
+  "title": "Word Pattern",
+  "concept": "strings",
+  "difficulty": "medium",
+  "statement": "A `pattern` is a string of lowercase letters, and a `sentence` is words separated by single spaces. The sentence **follows the pattern** if you can give every pattern letter its own word so that replacing each letter by its word produces the sentence, and **different letters get different words**.\n\nReturn `true` if the sentence follows the pattern, otherwise `false`. If the pattern and the sentence have different numbers of items, the answer is `false`.",
+  "constraints": [
+    "1 <= len(pattern) <= 1000",
+    "pattern contains only lowercase letters",
+    "sentence is lowercase words separated by exactly one space (no leading or trailing space)"
+  ],
+  "signature": { "name": "follows_pattern", "params": [{ "name": "pattern", "type": "string" }, { "name": "sentence", "type": "string" }], "returns": "bool" },
+  "examples": [
+    { "args": ["abba", "dog cat cat dog"], "expected": true, "explanation": "a = dog, b = cat." },
+    { "args": ["abba", "dog dog dog dog"], "expected": false, "explanation": "a and b would both be dog, but different letters need different words." }
+  ],
+  "edgeTests": [["a", "dog"], ["ab", "dog"], ["aaaa", "dog cat cat dog"], ["abc", "x y x"], ["ab", "x x"], ["abab", "x y x y"]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "The matching has to work in both directions: letter to word and word to letter.",
+    "pattern": "Two hash maps (or one map checked both ways).",
+    "pseudocode": "words = sentence.split(' '); if len(words) != len(pattern): return false\nletterToWord = {}; wordToLetter = {}\nfor each i: if letterToWord has pattern[i] and it differs from words[i]: return false\n  if wordToLetter has words[i] and it differs from pattern[i]: return false\n  record both\nreturn true",
+    "walkthrough": "Split the sentence into words; if the counts differ, the answer is false. Remember which word each letter stands for, and which letter each word stands for. For every position, the letter must map to the same word as before (if it has one), and the word must map back to the same letter as before. A one-way map is not enough: 'ab' with 'dog dog' would wrongly pass. O(n) time."
+  }
+}

@@ -1,0 +1,102 @@
+//### peak-altitude
+int peak_altitude(vector<int>& changes) {
+    int best = 0, height = 0;
+    for (int c : changes) {
+        height += c;
+        best = max(best, height);
+    }
+    return best;
+}
+//### clean-palindrome
+bool is_clean_palindrome(string text) {
+    int i = 0, j = (int) text.size() - 1;
+    while (i < j) {
+        if (!isalnum((unsigned char) text[i])) i++;
+        else if (!isalnum((unsigned char) text[j])) j--;
+        else if (tolower((unsigned char) text[i]) != tolower((unsigned char) text[j])) return false;
+        else { i++; j--; }
+    }
+    return true;
+}
+//### first-repeat
+int first_repeat(vector<int>& tickets) {
+    unordered_set<int> seen;
+    for (int x : tickets) {
+        if (seen.count(x)) return x;
+        seen.insert(x);
+    }
+    return -1;
+}
+//### pair-count
+int count_pairs(vector<int>& prices, int budget) {
+    unordered_map<int, int> count;
+    int total = 0;
+    for (int p : prices) {
+        auto it = count.find(budget - p);
+        if (it != count.end()) total += it->second;
+        count[p]++;
+    }
+    return total;
+}
+//### sorted-pair-sum
+bool has_pair_with_sum(vector<int>& scores, int target) {
+    int i = 0, j = (int) scores.size() - 1;
+    while (i < j) {
+        long long s = (long long) scores[i] + scores[j];
+        if (s == target) return true;
+        if (s < target) i++; else j--;
+    }
+    return false;
+}
+//### smallest-gap
+int smallest_gap(vector<int>& finish_times) {
+    vector<int> a = finish_times;
+    sort(a.begin(), a.end());
+    int best = a[1] - a[0];
+    for (size_t i = 2; i < a.size(); i++) best = min(best, a[i] - a[i - 1]);
+    return best;
+}
+//### best-window
+int best_window_sum(vector<int>& profits, int k) {
+    int window = 0;
+    for (int i = 0; i < k; i++) window += profits[i];
+    int best = window;
+    for (int i = k; i < (int) profits.size(); i++) {
+        window += profits[i] - profits[i - k];
+        best = max(best, window);
+    }
+    return best;
+}
+//### balanced-brackets
+bool is_balanced(string text) {
+    string stack;
+    for (char ch : text) {
+        if (ch == '(' || ch == '[' || ch == '{') {
+            stack.push_back(ch);
+        } else {
+            if (stack.empty()) return false;
+            char open = stack.back();
+            stack.pop_back();
+            if ((ch == ')' && open != '(') || (ch == ']' && open != '[') || (ch == '}' && open != '{')) return false;
+        }
+    }
+    return stack.empty();
+}
+//### insert-position
+int insert_position(vector<int>& ids, int new_id) {
+    int lo = 0, hi = (int) ids.size();
+    while (lo < hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (ids[mid] < new_id) lo = mid + 1; else hi = mid;
+    }
+    return lo;
+}
+//### stair-ways
+int count_ways(int n) {
+    int a = 1, b = 0, c = 0;
+    for (int k = 0; k < n; k++) {
+        int d = a + b + c;
+        c = b; b = a; a = d;
+    }
+    return a;
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "town-judge",
+  "title": "Find the Town Judge",
+  "concept": "graphs",
+  "difficulty": "easy",
+  "statement": "In a town of `n` people numbered `1` to `n`, there may be a secret **judge**. If the judge exists:\n\n1. the judge trusts **nobody**;\n2. **everybody else** (all `n - 1` other people) trusts the judge;\n3. there is only one person who fits 1 and 2.\n\nEach entry `trust[i] = [a, b]` means person `a` trusts person `b`. Return the **label of the judge**, or `-1` if there is none.",
+  "constraints": [
+    "1 <= n <= 1000",
+    "0 <= len(trust) <= 10000",
+    "each pair [a, b] has a != b, 1 <= a, b <= n, and no pair appears twice"
+  ],
+  "signature": { "name": "find_judge", "params": [{ "name": "n", "type": "int" }, { "name": "trust", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [3, [[1, 3], [2, 3]]], "expected": 3, "explanation": "Persons 1 and 2 trust 3, and 3 trusts nobody." },
+    { "args": [3, [[1, 3], [2, 3], [3, 1]]], "expected": -1, "explanation": "Person 3 trusts person 1, so 3 cannot be the judge." }
+  ],
+  "edgeTests": [[1, []], [2, [[1, 2]]], [2, [[2, 1]]], [2, []], [3, [[1, 2], [2, 3]]], [4, [[1, 3], [1, 4], [2, 3], [2, 4], [4, 3]]]],
+  "expected": { "time": "O(n + m)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Think of 'a trusts b' as an arrow from a to b. What do the arrows look like around the judge?",
+    "pattern": "Count incoming and outgoing arrows for every person (in-degree and out-degree).",
+    "pseudocode": "score = array of n+1 zeros\nfor each [a, b]: score[a]--; score[b]++\nfor person 1..n: if score[person] == n - 1: return person\nreturn -1",
+    "walkthrough": "The judge has n - 1 arrows pointing at them and none leaving. Give each person a score: +1 for every person who trusts them, -1 for every person they trust. The judge's score is exactly n - 1, and nobody else can reach that (anyone who trusts somebody loses at least a point). One pass over the trust list fills the scores, a second pass over the people finds the judge. O(n + m)."
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "slug": "edit-distance",
+  "title": "Fewest Edits",
+  "concept": "dp",
+  "difficulty": "hard",
+  "statement": "You may change the word `source` using three kinds of edit, each costing **one operation**:\n\n- **insert** a letter anywhere,\n- **delete** a letter,\n- **replace** a letter by another letter.\n\nReturn the **fewest operations** needed to turn `source` into `target`. Either word may be empty.",
+  "constraints": [
+    "0 <= len(source), len(target) <= 500",
+    "both words contain only lowercase letters a-z"
+  ],
+  "signature": { "name": "edit_distance", "params": [{ "name": "source", "type": "string" }, { "name": "target", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["horse", "ros"], "expected": 3, "explanation": "horse -> rorse (replace h by r) -> rose (delete r) -> ros (delete e)." },
+    { "args": ["intention", "execution"], "expected": 5, "explanation": "Delete, replace, replace, replace, insert: five edits." }
+  ],
+  "edgeTests": [["", ""], ["", "abc"], ["abc", ""], ["abc", "abc"], ["abc", "abd"], ["kitten", "sitting"], ["sunday", "saturday"]],
+  "expected": { "time": "O(n * m)", "space": "O(m)" },
+  "hints": {
+    "nudge": "Compare the last letters of the two words. If they are equal, what is left to do? If not, what are your three choices?",
+    "pattern": "Dynamic programming on pairs of prefixes: dist(i, j) = edit distance between the first i letters of source and the first j letters of target.",
+    "pseudocode": "dist(0, j) = j; dist(i, 0) = i\nif source[i-1] == target[j-1]: dist(i, j) = dist(i-1, j-1)\nelse: dist(i, j) = 1 + min(dist(i-1, j), dist(i, j-1), dist(i-1, j-1))   // delete, insert, replace",
+    "walkthrough": "Let dist(i, j) be the answer for the first i letters of source and first j letters of target. If one prefix is empty you must insert or delete everything of the other. Otherwise look at the last letters: if they match, no edit is needed there, so dist(i, j) = dist(i-1, j-1). If they differ, pick the best of three edits: delete the source's letter (dist(i-1, j)), insert the target's letter (dist(i, j-1)) or replace one letter by the other (dist(i-1, j-1)), each costing 1. Plain recursion repeats many subproblems; filling the table row by row takes O(n * m) time, and keeping only the previous row needs O(m) space."
+  }
+}

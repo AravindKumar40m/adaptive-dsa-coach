@@ -1,0 +1,24 @@
+{
+  "slug": "same-tree",
+  "title": "Are the Trees Identical",
+  "concept": "trees",
+  "difficulty": "easy",
+  "statement": "You are given `first` and `second`, the roots of two binary trees. Two trees are **identical** if they have exactly the same shape and every pair of matching nodes holds the same value.\n\nReturn `true` if the trees are identical, otherwise `false`. (In the examples a tree is written level by level from the top; `null` marks a missing child.)",
+  "constraints": [
+    "0 <= number of nodes in each tree <= 10000",
+    "-1000000000 <= node value <= 1000000000"
+  ],
+  "signature": { "name": "is_same_tree", "params": [{ "name": "first", "type": "TreeNode" }, { "name": "second", "type": "TreeNode" }], "returns": "bool" },
+  "examples": [
+    { "args": [[1, 2, 3], [1, 2, 3]], "expected": true, "explanation": "Same shape and values." },
+    { "args": [[1, 2], [1, null, 2]], "expected": false, "explanation": "The 2 is a left child in one tree and a right child in the other." }
+  ],
+  "edgeTests": [[[], []], [[], [1]], [[1], [1]], [[1], [2]], [[1, 2, 3], [1, 3, 2]], [[1, 2, 3, 4], [1, 2, 3]]],
+  "expected": { "time": "O(n)", "space": "O(h)" },
+  "hints": {
+    "nudge": "Two trees are the same if their roots match AND their left subtrees match AND their right subtrees match.",
+    "pattern": "Recursion that compares both trees at the same time.",
+    "pseudocode": "same(a, b): if both empty: return true\n  if only one is empty: return false\n  return a.val == b.val and same(a.left, b.left) and same(a.right, b.right)",
+    "walkthrough": "Compare the two trees node by node. If both nodes are missing, that part matches. If only one is missing, the shapes differ, so the answer is false. If both exist, their values must be equal and both the left subtrees and the right subtrees must be identical, which is the same question on smaller trees. Each node pair is compared once: O(n)."
+  }
+}

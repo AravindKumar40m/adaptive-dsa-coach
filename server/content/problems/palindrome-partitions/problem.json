@@ -1,0 +1,24 @@
+{
+  "slug": "palindrome-partitions",
+  "title": "Palindrome Cuts",
+  "concept": "backtracking",
+  "difficulty": "medium",
+  "statement": "Cut the string `text` into **pieces of consecutive letters** (the pieces together must give back the whole text, in order). A cutting is **good** if **every piece is a palindrome** (reads the same forwards and backwards). For example `aab` can be cut as `a|a|b` or `aa|b`, both good.\n\nReturn the **number of good cuttings**.",
+  "constraints": [
+    "1 <= len(text) <= 16",
+    "text contains only lowercase letters a-z"
+  ],
+  "signature": { "name": "count_palindrome_splits", "params": [{ "name": "text", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["aab"], "expected": 2, "explanation": "a|a|b and aa|b." },
+    { "args": ["aaa"], "expected": 4, "explanation": "a|a|a, a|aa, aa|a, aaa." }
+  ],
+  "edgeTests": [["a"], ["ab"], ["aba"], ["abc"], ["aaaaaaaaaaaaaaaa"], ["abacaba"]],
+  "expected": { "time": "O(n^2)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Choose where the first piece ends. It must be a palindrome. What is left to cut afterwards?",
+    "pattern": "Backtracking over the end of the next piece; or dynamic programming over prefixes.",
+    "pseudocode": "ways[0] = 1\nfor end in 1..n:\n  for start in 0..end-1:\n    if text[start..end) is a palindrome: ways[end] += ways[start]\nreturn ways[n]",
+    "walkthrough": "Recursive version: from a start position, try every end position; if the piece is a palindrome, count the good cuttings of the rest. That recomputes the same suffixes, but with n <= 16 it is still fast. A faster idea: let ways[i] be the number of good cuttings of the first i letters. The last piece covers letters start..i-1; if it is a palindrome, it adds ways[start]. So ways[i] = sum of ways[start] over palindromic pieces ending at i. O(n^2) pieces, each checked in O(n)."
+  }
+}

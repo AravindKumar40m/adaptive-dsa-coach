@@ -1,0 +1,25 @@
+{
+  "slug": "sorted-pair-sum",
+  "title": "Sorted Pair Sum",
+  "concept": "two_pointers",
+  "difficulty": "easy",
+  "statement": "You are given `scores` sorted from smallest to largest (duplicates allowed) and a number `target`.\n\nReturn `true` if there are two **different positions** `i != j` with `scores[i] + scores[j] == target`, otherwise `false`.",
+  "constraints": [
+    "1 <= len(scores) <= 100000",
+    "-1000000000 <= scores[i] <= 1000000000 and scores is sorted in non-decreasing order",
+    "-1000000000 <= target <= 1000000000"
+  ],
+  "signature": { "name": "has_pair_with_sum", "params": [{ "name": "scores", "type": "int[]" }, { "name": "target", "type": "int" }], "returns": "bool" },
+  "examples": [
+    { "args": [[1, 3, 4, 8, 11], 12], "expected": true, "explanation": "4 + 8 = 12." },
+    { "args": [[1, 3, 4, 8, 11], 2], "expected": false, "explanation": "There is only one 1, and a position cannot be used twice." }
+  ],
+  "edgeTests": [[[5], 10], [[2, 2], 4], [[-4, -1, 0, 7], 3], [[1, 2, 3], 7], [[-5, 5], 0]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "The list is sorted. If the smallest and largest values add up to too much, which one should you drop?",
+    "pattern": "Two pointers, one at each end, moving inward.",
+    "pseudocode": "i = 0; j = len-1\nwhile i < j:\n  s = scores[i] + scores[j]\n  if s == target: return true\n  if s < target: i++ else: j--\nreturn false",
+    "walkthrough": "Trying every pair is O(n^2). Because the list is sorted, put one pointer at the smallest value and one at the largest. If their sum is too small, the left value can never reach the target with any remaining partner, so move i right. If the sum is too large, the right value is too big for every remaining partner, so move j left. Each step discards one position, so it is O(n) time with O(1) space."
+  }
+}

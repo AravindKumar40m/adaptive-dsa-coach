@@ -1,0 +1,24 @@
+{
+  "slug": "top-k-sum",
+  "title": "Sum of the Top Scores",
+  "concept": "heaps",
+  "difficulty": "easy",
+  "statement": "A game keeps every player's score in `scores` (repeats allowed, each entry counts). The prize pool is the **sum of the `k` highest scores**.\n\nReturn that sum.",
+  "constraints": [
+    "1 <= k <= len(scores) <= 100000",
+    "-1000 <= scores[i] <= 1000"
+  ],
+  "signature": { "name": "sum_of_top_k", "params": [{ "name": "scores", "type": "int[]" }, { "name": "k", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[3, 1, 5, 2, 4], 2], "expected": 9, "explanation": "The two highest are 5 and 4." },
+    { "args": [[-1, -2, -3], 1], "expected": -1, "explanation": "The highest score is -1." }
+  ],
+  "edgeTests": [[[7], 1], [[2, 2, 2], 2], [[1, 2, 3], 3], [[5, -5, 5, -5], 3], [[10, 9, 8, 7, 6], 1]],
+  "expected": { "time": "O(n log k)", "space": "O(k)" },
+  "hints": {
+    "nudge": "You never need all scores in order, only the best k. Which of the best k is the weakest?",
+    "pattern": "A min-heap holding at most k scores.",
+    "pseudocode": "heap = empty min-heap\nfor each score: push it; if size > k: pop the smallest\nreturn sum of the heap",
+    "walkthrough": "Sorting the whole list costs O(n log n). A min-heap of size k does better when k is small: push each score and, whenever the heap holds more than k scores, remove the smallest. The scores left are exactly the k largest. Add them up. Each heap operation costs O(log k)."
+  }
+}

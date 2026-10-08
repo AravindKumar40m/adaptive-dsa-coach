@@ -1,0 +1,24 @@
+{
+  "slug": "count-inversions",
+  "title": "Count Out-of-Order Pairs",
+  "concept": "sorting",
+  "difficulty": "hard",
+  "statement": "In the list `nums`, a pair of positions `(i, j)` with `i < j` is **out of order** if `nums[i] > nums[j]` (a bigger number comes first).\n\nReturn the **number of out-of-order pairs**. A sorted list has 0; a list in descending order has the most.",
+  "constraints": [
+    "1 <= len(nums) <= 50000",
+    "-1000000000 <= nums[i] <= 1000000000"
+  ],
+  "signature": { "name": "count_inversions", "params": [{ "name": "nums", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[2, 4, 1, 3, 5]], "expected": 3, "explanation": "The pairs (2,1), (4,1) and (4,3)." },
+    { "args": [[5, 4, 3, 2, 1]], "expected": 10, "explanation": "Every pair is out of order: 5 choose 2 = 10." }
+  ],
+  "edgeTests": [[[1]], [[1, 2, 3]], [[3, 3, 3]], [[2, 1]], [[1, 3, 2, 3, 1]]],
+  "expected": { "time": "O(n log n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Checking every pair is O(n^2). Merge sort compares elements from two halves; can it count at the same time?",
+    "pattern": "Merge sort with counting while merging.",
+    "pseudocode": "count(lo, hi): if hi - lo < 2: return 0\n  mid = (lo + hi) / 2; total = count(lo, mid) + count(mid, hi)\n  merge the sorted halves; whenever right[j] < left[i]: total += (number of left items still waiting)\n  return total",
+    "walkthrough": "Split the list in half, count the out-of-order pairs inside each half (recursively, which also sorts each half), then count the pairs where the bigger number is in the left half and the smaller in the right. While merging two sorted halves, if the next right element is smaller than the current left element, it is smaller than ALL remaining left elements, so add that remaining count at once. Total O(n log n). The answer for n = 50,000 can reach 1.25 billion, which fits in a 32-bit int."
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "slug": "invert-tree",
+  "title": "Mirror the Tree",
+  "concept": "trees",
+  "difficulty": "easy",
+  "statement": "You are given `root`, the top node of a binary tree. **Mirror the tree**: swap the left and right children of every node, all the way down.\n\nReturn the root of the mirrored tree. (In the examples a tree is written level by level from the top; `null` marks a missing child.)",
+  "constraints": [
+    "0 <= number of nodes <= 10000",
+    "-1000000000 <= node value <= 1000000000"
+  ],
+  "signature": { "name": "invert_tree", "params": [{ "name": "root", "type": "TreeNode" }], "returns": "TreeNode" },
+  "examples": [
+    { "args": [[4, 2, 7, 1, 3, 6, 9]], "expected": [4, 7, 2, 9, 6, 3, 1], "explanation": "Every pair of children is swapped, at every level." },
+    { "args": [[2, 1, 3]], "expected": [2, 3, 1], "explanation": "Swap the two children of the root." }
+  ],
+  "edgeTests": [[[]], [[1]], [[1, 2]], [[1, null, 2]], [[1, 2, 3, 4, null, null, 5]]],
+  "expected": { "time": "O(n)", "space": "O(h)" },
+  "hints": {
+    "nudge": "Mirroring a tree means mirroring its left part and right part, and then swapping them.",
+    "pattern": "Recursion on the two subtrees.",
+    "pseudocode": "invert(node): if node is empty: return empty\n  node.left, node.right = invert(node.right), invert(node.left)\n  return node",
+    "walkthrough": "For each node, the mirrored version has the mirrored right subtree on the left and the mirrored left subtree on the right. Recursively mirror both children, then swap them (or build a new node with the swapped, mirrored children). Each node is handled once: O(n) time, O(h) recursion depth."
+  }
+}

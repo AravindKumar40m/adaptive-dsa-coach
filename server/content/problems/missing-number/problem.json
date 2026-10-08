@@ -1,0 +1,24 @@
+{
+  "slug": "missing-number",
+  "title": "Missing Number",
+  "concept": "arrays",
+  "difficulty": "easy",
+  "statement": "A box should contain tickets numbered `0, 1, 2, ..., n`, but one ticket is lost, so only `n` tickets are left in `numbers`, all different.\n\nReturn the **number of the lost ticket**.",
+  "constraints": [
+    "1 <= len(numbers) <= 100000",
+    "numbers contains n different values taken from 0..n, where n = len(numbers)"
+  ],
+  "signature": { "name": "find_missing", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[3, 0, 1]], "expected": 2, "explanation": "The tickets 0..3 should all be there; 2 is missing." },
+    { "args": [[0, 1]], "expected": 2, "explanation": "0 and 1 are present, so the lost ticket is the last one, 2." }
+  ],
+  "edgeTests": [[[0]], [[1]], [[0, 1, 2]], [[1, 2, 3]], [[5, 3, 0, 1, 2]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "You know exactly which numbers should be there. What is their total?",
+    "pattern": "Compare an expected total with the actual total.",
+    "pseudocode": "expected = n * (n + 1) / 2\nreturn expected - sum(numbers)",
+    "walkthrough": "Checking each possible ticket against the whole list is O(n^2). The numbers 0..n add up to n*(n+1)/2. The list contains all of them except one, so the missing ticket is the expected total minus the actual total of the list. One pass, O(1) extra space."
+  }
+}

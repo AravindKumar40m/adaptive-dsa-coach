@@ -1,0 +1,25 @@
+{
+  "slug": "subset-sum-count",
+  "title": "Subset Sum Count",
+  "concept": "backtracking",
+  "difficulty": "medium",
+  "statement": "A chef has `weights`, the weights of several ingredients (all positive). A **selection** is any choice of ingredients, picked by position, so two ingredients with the same weight at different positions are different choices. The empty selection is allowed.\n\nCount how many selections have a total weight of exactly `target`.",
+  "constraints": [
+    "1 <= len(weights) <= 15",
+    "1 <= weights[i] <= 20",
+    "0 <= target <= 300"
+  ],
+  "signature": { "name": "count_selections", "params": [{ "name": "weights", "type": "int[]" }, { "name": "target", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 2, 3, 4, 5], 5], "expected": 3, "explanation": "The selections are {5}, {1, 4} and {2, 3}." },
+    { "args": [[2, 2], 2], "expected": 2, "explanation": "Either ingredient alone works, and they are counted separately." }
+  ],
+  "edgeTests": [[[1], 0], [[1], 1], [[1], 2], [[3, 4], 0], [[5, 5, 5], 10], [[1, 2, 3], 100]],
+  "expected": { "time": "O(2^n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "For each ingredient you have exactly two choices. What does each choice do to the remaining target?",
+    "pattern": "Backtracking: take it or leave it, recursing on the rest, and stop early when you can no longer succeed.",
+    "pseudocode": "count(i, remaining):\n  if remaining < 0: return 0\n  if i == n: return 1 if remaining == 0 else 0\n  return count(i + 1, remaining - weights[i]) + count(i + 1, remaining)\n\nanswer = count(0, target)",
+    "walkthrough": "Every selection is a yes/no decision per ingredient, so there are 2^n selections. You can write a recursive function count(i, remaining): if i is past the last ingredient, the selection is valid only if remaining is exactly 0. Otherwise add the ways when you take ingredient i (remaining - weights[i]) and the ways when you skip it. Because all weights are positive, you can prune: once remaining goes below 0, stop. With n up to 15 this is fast enough (at most 32768 selections)."
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "top-k-frequent",
+  "title": "Most Frequent Values",
+  "concept": "heaps",
+  "difficulty": "medium",
+  "statement": "Given the list `nums`, find the **`k` values that appear most often**.\n\nReturn them as a list ordered from the **most frequent to the least frequent**. If two values appear the same number of times, the **smaller value comes first**. `k` is never larger than the number of different values in `nums`.",
+  "constraints": [
+    "1 <= len(nums) <= 100000",
+    "-1000000000 <= nums[i] <= 1000000000",
+    "1 <= k <= number of different values in nums"
+  ],
+  "signature": { "name": "top_k_frequent", "params": [{ "name": "nums", "type": "int[]" }, { "name": "k", "type": "int" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[1, 1, 1, 2, 2, 3], 2], "expected": [1, 2], "explanation": "1 appears 3 times, 2 appears twice, 3 once." },
+    { "args": [[4, 4, 5, 5, 6], 2], "expected": [4, 5], "explanation": "4 and 5 both appear twice; the smaller value 4 comes first." }
+  ],
+  "edgeTests": [[[1], 1], [[3, 3, 2, 2, 1, 1], 3], [[-1, -1, -2], 2], [[5, 6, 7], 3], [[9, 9, 9, 8, 8, 7], 1]],
+  "expected": { "time": "O(n log k)", "space": "O(n)" },
+  "hints": {
+    "nudge": "First count how often every value appears. Then you need the k best (count, value) pairs.",
+    "pattern": "Hash map of counts, then a min-heap of size k over (count, value) pairs.",
+    "pseudocode": "counts = frequency map\nheap = min-heap ordered by (count, -value)\nfor each (value, count): push; if size > k: pop the smallest\nresult = heap contents sorted best first",
+    "walkthrough": "Count the values with a hash map: O(n). Sorting all distinct values by (count descending, value ascending) and taking k works in O(d log d). A heap of size k does O(d log k): keep the k best pairs, where 'worse' means smaller count, or equal count with a larger value, so the heap's smallest element (the worst of the best k) is the one to drop. At the end sort the k survivors from best to worst."
+  }
+}

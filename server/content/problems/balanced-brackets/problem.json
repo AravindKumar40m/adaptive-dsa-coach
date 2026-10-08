@@ -1,0 +1,24 @@
+{
+  "slug": "balanced-brackets",
+  "title": "Balanced Brackets",
+  "concept": "stack_queue",
+  "difficulty": "medium",
+  "statement": "A code editor wants to check if the brackets in a line are matched. The text contains only the characters `(`, `)`, `[`, `]`, `{` and `}`.\n\nIt is **balanced** if every opening bracket is closed by the same kind of bracket, and brackets are closed in the correct order (the most recently opened one must be closed first).\n\nReturn `true` if `text` is balanced, otherwise `false`.",
+  "constraints": [
+    "1 <= len(text) <= 100000",
+    "text contains only the characters ()[]{}"
+  ],
+  "signature": { "name": "is_balanced", "params": [{ "name": "text", "type": "string" }], "returns": "bool" },
+  "examples": [
+    { "args": ["{[()]}"], "expected": true, "explanation": "Each bracket closes the most recent open one." },
+    { "args": ["([)]"], "expected": false, "explanation": "The ) arrives while [ is the most recent open bracket." }
+  ],
+  "edgeTests": [["("], [")"], ["()[]{}"], ["(("], ["(()"], ["}{"], ["[({})]"], ["(]"]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "When a closing bracket arrives, which earlier opening bracket must it match?",
+    "pattern": "Use a stack: last in, first out.",
+    "pseudocode": "stack = empty\nfor each ch in text:\n  if ch is an opener: push ch\n  else: if stack is empty or top is not the matching opener: return false; pop\nreturn stack is empty",
+    "walkthrough": "Push every opening bracket. When you see a closing bracket, the stack's top must be its matching opener; if the stack is empty or the top is a different kind, the text is unbalanced. Pop on a match. At the end the stack must be empty, otherwise some bracket was never closed. Repeatedly deleting '()' '[]' '{}' pairs also works but is O(n^2) in the worst case."
+  }
+}
