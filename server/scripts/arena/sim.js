@@ -5,7 +5,7 @@
 //      and does NOT HURT when it does not: that is what the different "worlds" are for.
 // Each world switches behaviours on or off. Everything is seeded, so a run can be repeated exactly.
 import { readFileSync } from "node:fs";
-import { pickNext } from "../../src/picker.js";
+import { pickNext } from "../../src/recommend/picker.js";
 import { DAY_MS, SCALE, sigmoid } from "../../src/kt/index.js";
 
 const content = JSON.parse(readFileSync(new URL("../../content/build/content.json", import.meta.url), "utf8"));

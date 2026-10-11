@@ -1,11 +1,11 @@
 import Editor from "@monaco-editor/react";
 import { useEffect, useRef, useState } from "react";
-import { api } from "../api.js";
-import { ActivityTracker } from "../activityTracker.js";
-import { loadDraft, removeDraft, saveDraft, useSplit } from "../hooks.js";
-import { Play, Reset, Send } from "../icons.jsx";
-import { EDITOR_OPTIONS, defineLamplightThemes } from "../monacoTheme.js";
-import { LANGUAGES } from "../ui.jsx";
+import { api } from "../lib/api.js";
+import { ActivityTracker } from "../lib/activityTracker.js";
+import { loadDraft, removeDraft, saveDraft, useSplit } from "../lib/hooks.js";
+import { Play, Reset, Send } from "../components/icons.jsx";
+import { EDITOR_OPTIONS, defineLamplightThemes } from "../lib/monacoTheme.js";
+import { LANGUAGES } from "../components/ui.jsx";
 import { ConsolePane } from "./ConsolePane.jsx";
 import { HelpPane } from "./HelpPane.jsx";
 import { ProblemPane } from "./ProblemPane.jsx";

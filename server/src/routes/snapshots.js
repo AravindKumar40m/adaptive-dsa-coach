@@ -1,11 +1,11 @@
 import { createHash } from "node:crypto";
 import { Router } from "express";
-import { LANGUAGES } from "../languages.js";
+import { LANGUAGES } from "../grading/languages.js";
 import { CodeSnapshot } from "../models/CodeSnapshot.js";
 import { Problem } from "../models/Problem.js";
-import { makeLimiter } from "../rateLimit.js";
-import { touchSession } from "../sessions.js";
-import { LOGGING_VERSION } from "../versions.js";
+import { makeLimiter } from "../core/rateLimit.js";
+import { touchSession } from "../logging/sessions.js";
+import { LOGGING_VERSION } from "../core/versions.js";
 
 const router = Router();
 const MAX_CODE_CHARS = 20000;

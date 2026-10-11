@@ -1,4 +1,4 @@
-import { DifficultyBadge, Inline, prettyConcept } from "../ui.jsx";
+import { DifficultyBadge, Inline, prettyConcept } from "../components/ui.jsx";
 import { Confidence, SkipWithReason } from "./Feedback.jsx";
 
 export function ProblemPane({ problem, why, onSkip, skipLabel, disabled, solved, confidence, onConfidence, showConfidence }) {

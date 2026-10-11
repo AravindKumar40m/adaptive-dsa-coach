@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { Concept } from "../models/Concept.js";
 import { Problem } from "../models/Problem.js";
-import { LANGUAGES } from "../languages.js";
-import { starterCode } from "../harness.js";
+import { LANGUAGES } from "../grading/languages.js";
+import { starterCode } from "../grading/harness.js";
 
 const router = Router();
 

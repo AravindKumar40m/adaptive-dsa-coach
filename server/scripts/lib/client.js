@@ -1,6 +1,6 @@
 // Helper for the HTTP tests: creates a temporary account (email ends in @example.test) and talks to the API as that person.
 // Every user it makes must be removed with user.deleteAccount() (the tests do this in a finally block);
-// scripts/cleanup-test-data.js removes any left behind by a crashed test.
+// scripts/tools/cleanup-test-data.js removes any left behind by a crashed test.
 import { randomBytes } from "node:crypto";
 
 export async function newUser(base, { ai = false, recording = true } = {}) {

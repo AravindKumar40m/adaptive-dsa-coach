@@ -3,7 +3,7 @@
 **Short version:** the new recommender is built, tested and switchable, but in simulation it is **not clearly better than today's picker**, so **today's picker (v1) stays the default**. The optional self-assessment is live and collects data we can test on real learners.
 
 ## What was built
-**Recommender v2** (`server/src/recommender2.js`, pure functions). Scores every open problem on five things and picks with softmax weights, so each candidate has a logged probability:
+**Recommender v2** (`server/src/recommend/recommender2.js`, pure functions). Scores every open problem on five things and picks with softmax weights, so each candidate has a logged probability:
 | part | meaning | weight |
 |---|---|---|
 | fit | is the chance of success near the aim? The aim follows a session arc (warm-up 80%, core 65%, stretch 50%) and recent results (easier after 2 failures, a little harder after 3 wins) | 1.0 |

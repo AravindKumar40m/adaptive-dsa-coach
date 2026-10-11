@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { randomBytes, randomUUID } from "node:crypto";
 import { config } from "../config.js";
-import { parseCookies, publicUser, sha256, startSession } from "../auth.js";
-import { CONSENT_VERSION } from "../consent.js";
-import { GoogleAuthError, authorizeUrl, exchangeCode, googleEnabled, newAttempt } from "../google.js";
-import { makeLimiter } from "../rateLimit.js";
+import { parseCookies, publicUser, sha256, startSession } from "../auth/auth.js";
+import { CONSENT_VERSION } from "../privacy/consent.js";
+import { GoogleAuthError, authorizeUrl, exchangeCode, googleEnabled, newAttempt } from "../auth/google.js";
+import { makeLimiter } from "../core/rateLimit.js";
 import { ConsentEvent } from "../models/ConsentEvent.js";
 import { PendingSignup } from "../models/PendingSignup.js";
 import { Session } from "../models/Session.js";

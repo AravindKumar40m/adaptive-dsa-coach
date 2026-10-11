@@ -84,6 +84,7 @@ Full field lists and the table-to-model map: `docs/training-data-schema.md`.
 ## Repository layout (so far)
 
 - `server/` Express API, `client/` React + Monaco, `infra/` Judge0 config, `docker-compose.yml` (Mongo + Judge0). Progress is tracked in the "Project log" section at the bottom.
+- **Folder map (reorganised Day 5; the full table is in README.md "Where things are").** `server/src/` = `routes/ models/ core/ auth/ privacy/ grading/ skill/ recommend/ help/ logging/ kt/` (+ `index.js`, `config.js`); `server/scripts/` = `tests/ tools/ dev/ content/ arena/ lib/`; `client/src/` = `pages/ components/ lib/ workspace/ styles/` (+ `App.jsx`, `main.jsx`). **Log entries below that name files use the paths from the day they were written**: look a file up by its name in the README map. Put new files in the folder for their job instead of at the top of `src/`.
 - NOTE: the three `docs/` files below are referenced by the original plan but have not been supplied yet (`docs/` is empty). Ask the user for them before relying on them.
 
 - `docs/feasibility-study.md` : full study (market, idea, scoring, metrics, architecture, roadmap, risks, sources).

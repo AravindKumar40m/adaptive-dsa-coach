@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Arrow } from "../icons.jsx";
-import { VERDICTS, describeActual, prettyConcept } from "../ui.jsx";
+import { Arrow } from "../components/icons.jsx";
+import { VERDICTS, describeActual, prettyConcept } from "../components/ui.jsx";
 import { RateProblem } from "./Feedback.jsx";
 
 const MIN = 700, MAX = 1500; // the ruler's range; ratings outside it are pinned to the ends

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { api, setSessionLostHandler } from "./api.js";
-import { consumeAuthQuery } from "./authQuery.js";
-import { AuthScreen, ConsentGate } from "./Auth.jsx";
-import { Shell } from "./Shell.jsx";
+import { api, setSessionLostHandler } from "./lib/api.js";
+import { consumeAuthQuery } from "./lib/authQuery.js";
+import { AuthScreen, ConsentGate } from "./pages/Auth.jsx";
+import { Shell } from "./pages/Shell.jsx";
 
 // The part you open first: decides between login, "please agree again" and the coach.
 export default function App() {

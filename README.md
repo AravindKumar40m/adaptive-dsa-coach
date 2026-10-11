@@ -9,6 +9,30 @@ See `CLAUDE.md` for the idea and decisions.
 - `infra/`   Judge0 config (`judge0.conf` is gitignored; `judge0.conf.example` is the template).
 - `docker-compose.yml`  MongoDB + self-hosted Judge0 (the sandbox that runs learner code).
 - `data/synthetic/`  synthetic learner data for later model testing.
+- `docs/`  data dictionary and the model / recommender write-ups with their results.
+
+### Where things are (reorganised on Day 5; one folder per job)
+**`server/src/`** (the API; `index.js` starts it, `config.js` reads the settings)
+
+| Folder | What it holds |
+|---|---|
+| `routes/` | the HTTP endpoints (one file per area) |
+| `models/` | the MongoDB collections (one file each) |
+| `core/` | `db` connection, `rateLimit`, `metrics` (timings), `versions` (version tags on log rows) |
+| `auth/` | `auth` (accounts, sessions, the login guard) and `google` sign-in |
+| `privacy/` | `consent` (the wording and its version) and `erase` (delete my data) |
+| `grading/` | `grader` (calls Judge0), `harness` (builds the hidden test program per language), `languages`, `errors` (mistake classifier) |
+| `skill/` | `skill` (the Elo maths), `rating` (applies it), `learnerState`, `history` (solve history) |
+| `recommend/` | `picker` (v1), `recommender2` (v2), `policy` (v1/v2/ab switch), `review` (spaced review) |
+| `help/` | `hints` (the ladder), `llm` (AI explanation), `struggle` (nudge rule), `nudge` (nudge, database side) |
+| `logging/` | `activity` (work pattern), `codeSignals`, `logSignals`, `sessions` |
+| `kt/` | the new knowledge model (shadow mode) |
+
+**`server/scripts/`**: `tests/` (every `test-*.js`, run with `npm run test:...`), `tools/` (owner tools: cleanup, orphans, reset-password, logs-summary, metrics-report, llm-live-check), `dev/` (fake AI, fake Google, dev-db-poke), `content/` (seed, validate-references), `arena/` (model and policy simulations), `lib/` (helpers shared by the scripts). **`server/content/`** holds the problems, tests and the Python build tools.
+
+**`client/src/`**: `pages/` (Auth, Path, Placement, Problems, Shell), `components/` (TopBar, SkillMap, icons, ui), `lib/` (api, hooks, activityTracker, monacoTheme, authQuery), `workspace/` (the practice screen), `styles/`. `App.jsx` and `main.jsx` stay at the top.
+
+Old entries in the CLAUDE.md project log use the paths from the day they were written (for example `server/src/grader.js` is now `server/src/grading/grader.js`); this map says where each file is today.
 
 ## Run it (3 terminals)
 1. `docker compose up -d`  (first time pulls a few GB; Judge0 takes about a minute to start). Our MongoDB is published on **host port 27018** (only on this PC), not 27017, so it cannot clash with a MongoDB installed on Windows; `MONGO_URI` in `.env` points at it.
@@ -24,7 +48,7 @@ Copy `.env.example` to `.env`. Never commit `.env` or `infra/judge0.conf`.
 - Docker Desktop uses cgroup v2; Judge0 1.13.1 only supports v1. `infra/judge0.conf` therefore sets
   `ENABLE_PER_PROCESS_AND_THREAD_*=true` so it runs without cgroups. Time limits still work (infinite loops are killed).
 - Without cgroups the memory limit is per-process address space, so Node needs ~1 GB and Java ~4 GB
-  (see `server/src/languages.js`). It is a ceiling on virtual memory, not real RAM use.
+  (see `server/src/grading/languages.js`). It is a ceiling on virtual memory, not real RAM use.
 - Always call Judge0 with `base64_encoded=true` (compiler error text is not valid UTF-8).
 - For production, use a Linux host with cgroup v1 (or a newer Judge0/isolate) and proper per-run memory limits.
 - Verified 2026-10-06: Python, JavaScript, Java and C++ all run; infinite loop = Time Limit Exceeded; division by zero = Runtime Error.
@@ -49,13 +73,13 @@ Add a problem: copy a folder, edit both files, run the three commands above.
 - `GET /api/problems/:slug` also returns `starters` (starter code per language).
 - `DELETE /api/learners/:learnerId/data` deletes everything logged about that learner.
 - Every run/submit is saved in the `submissions` collection (code, verdict, per-test results, time).
-- How it works: `server/src/harness.js` wraps the learner's function in a hidden program per language, `server/src/grader.js` runs it in Judge0
+- How it works: `server/src/grading/harness.js` wraps the learner's function in a hidden program per language, `server/src/grading/grader.js` runs it in Judge0
   and reads one marked result line per test. The learner writes only the function (Python/C++ snake_case name, JS/Java camelCase, Java inside `class Solution`).
 - Tests (from `server/`, need MongoDB + Judge0; `test:api` also needs `npm run dev` running):
   `npm run content:validate` (all 51 reference solutions, 4 languages), `npm run test:run-flow` (bad code gets the right verdict in every language), `npm run test:api` (HTTP level).
 
 ## Skill rating (step 4)
-Per-concept Elo, start 1000. Only **Submit** changes a rating. Maths in `server/src/skill.js` (pure functions), database side in `server/src/rating.js`.
+Per-concept Elo, start 1000. Only **Submit** changes a rating. Maths in `server/src/skill/skill.js` (pure functions), database side in `server/src/skill/rating.js`.
 - `E = 1 / (1 + 10^((difficulty - rating)/400))`, `rating += K * (S - E)`, K = 40 for the first 10 counted attempts on a concept then 16, problem difficulty `-= 4 * (S - E)`.
 - `S` today = correctness (accepted = 1, otherwise 0.4 x share of tests passed) and efficiency (fewer failed attempts, less time; only when accepted). Optimality and independence are not measurable yet, so the other weights are rescaled.
 - Not counted: Run, compile errors, resubmitting a solved problem, failed submits after the first 3 on a problem.
@@ -70,7 +94,7 @@ Extra-language solutions live in `server/content/other-languages/<lang>.txt` and
 `npm run content:build` also checks that each stored Python solution works on its own (no helpers from outside the function).
 
 ## Problem picker (step 5)
-`server/src/picker.js` (pure logic) + `server/src/routes/skills.js` (HTTP) + `server/src/learnerState.js` (loads a learner's data).
+`server/src/recommend/picker.js` (pure logic) + `server/src/routes/skills.js` (HTTP) + `server/src/skill/learnerState.js` (loads a learner's data).
 - A concept is **solid** when the learner solved min(2, its number of problems) of them; concepts with no problems count as solid. A concept is **unlocked** when all its prerequisites are solid.
 - Pick: among unlocked, unsolved problems whose expected success is 50-80% (target 65%), take the weakest concept (lowest rating), then the problem closest to 65%. If none fits, take the closest problem anywhere.
 - `GET /api/learners/:id/next[?exclude=slug1,slug2]` returns `{problem, expectedSuccess, mode (weakest|closest), reason, repeated}` or `{done: true}`.
@@ -82,7 +106,7 @@ Extra-language solutions live in `server/content/other-languages/<lang>.txt` and
 41 easy, 60 medium, 19 hard; every one of the 16 concepts has 6 to 9 problems. 2,626 tests; 623 reference solutions (Python brute/better/optimal + JavaScript, Java and C++), all verified through the real harness.
 - Types: parameters `int`, `int[]`, `int[][]`, `string`, `ListNode`, `CycleList`, `TreeNode`; returns `int`, `bool`, `int[]`, `string`, `ListNode`, `TreeNode`. Linked lists and trees are shown as plain lists in the statements (trees level by level with `null`); the harness builds the real nodes in each language.
 - Add a problem: create `server/content/problems/<slug>/{problem.json,solutions.py}` and add the optimal solution to `server/content/other-languages/<lang>.<batch>.txt` (one section per slug, `//### <slug>`).
-- Check content (from `server/`): `npm run content:build` (agreement checks), `python content/check_quality.py` (test variety), `npm run content:seed`, `npm run content:validate` (all) or `node --env-file=../.env scripts/validate-references.js slug1,slug2` (some).
+- Check content (from `server/`): `npm run content:build` (agreement checks), `python content/check_quality.py` (test variety), `npm run content:seed`, `npm run content:validate` (all) or `node --env-file=../.env scripts/content/validate-references.js slug1,slug2` (some).
 - More tests: `npm run test:harness-types` (every type in all four languages, needs Judge0 only).
 
 ## Hints and AI feedback (Day 3)
@@ -98,7 +122,7 @@ Everything about a learner now needs a login. Problems and concepts stay public.
 - **Sign-up** (`POST /api/auth/signup`): email + password (10 to 128 characters, must not contain the email name) and the **required** recording consent. The AI consent is a separate, optional box. Passwords are stored only as scrypt hashes. The login is an `HttpOnly`, `SameSite=Lax` cookie (`Secure` in production); the database stores only a hash of the cookie value; sessions last 30 days (`SESSION_DAYS`).
 - **Other routes:** `POST /api/auth/login`, `/auth/logout`, `GET /auth/me`, `GET /api/consent` (the exact wording and its version), `POST /auth/consent` (change the recording or AI choice), `DELETE /auth/account` (needs the password; removes the account and everything recorded).
 - **Who you are is decided by the cookie**, never by what the browser says: a `learnerId` that is not yours is refused (403), and when none is sent the session's own id is used.
-- **Consent is versioned** (`server/src/consent.js`, `CONSENT_VERSION`). If you change the wording, change the version: everyone must agree again, and until then nothing is recorded (run/submit/hint are refused with `needsConsent`; reading and deleting your own data still works). Every agree/withdraw is logged in `consentevents`.
+- **Consent is versioned** (`server/src/privacy/consent.js`, `CONSENT_VERSION`). If you change the wording, change the version: everyone must agree again, and until then nothing is recorded (run/submit/hint are refused with `needsConsent`; reading and deleting your own data still works). Every agree/withdraw is logged in `consentevents`.
 - **AI explanations** need the learner's own opt-in (Account menu); without it `/api/feedback` answers 403 and nothing is sent to Anthropic.
 - **Protection:** wrong-password tries are limited per email+IP (10 per 15 minutes, `AUTH_LOGIN_ATTEMPTS`), sign-ups per IP per hour (`AUTH_SIGNUPS_PER_HOUR`, 200 in development, 10 in production); unknown email and wrong password look identical (also in timing); POSTs whose `Origin` is another website are refused, and there is no CORS, so other sites cannot read answers. The Vite proxy in `client/vite.config.js` must keep `changeOrigin: false` for this check to work.
 - **Forgot password:** there is no email service yet. The owner runs `npm run reset-password -- someone@example.com` in `server/`: it prints a temporary password and ends all of that person's logins.
@@ -122,7 +146,7 @@ Off by default: the "Continue with Google" button appears only when `GOOGLE_CLIE
 3. **Credentials** -> *Create credentials* -> **OAuth client ID** -> type **Web application**. Under **Authorized redirect URIs** add exactly `http://localhost:5173/api/auth/google/callback` (add your real site's address later). No "JavaScript origins" are needed.
 4. Copy the **Client ID** and **Client secret** into `.env` as `GOOGLE_CLIENT_ID=` and `GOOGLE_CLIENT_SECRET=` (see `.env.example`). Restart the API (`npm run dev` in `server/`). If the redirect address differs from the default, also set `GOOGLE_REDIRECT_URI` (it must match the console character for character).
 
-**How it works:** the standard server-side "authorization code" flow with PKCE, `state` and `nonce` (`server/src/google.js`, `routes/google.js`). The page links to `/api/auth/google/start`; Google sends the person back to `/api/auth/google/callback`; the server swaps the one-time code for an ID token using the client secret, checks issuer, audience, expiry, nonce and `email_verified`, and uses Google's permanent id (`sub`) plus the email.
+**How it works:** the standard server-side "authorization code" flow with PKCE, `state` and `nonce` (`server/src/auth/google.js`, `routes/google.js`). The page links to `/api/auth/google/start`; Google sends the person back to `/api/auth/google/callback`; the server swaps the one-time code for an ID token using the client secret, checks issuer, audience, expiry, nonce and `email_verified`, and uses Google's permanent id (`sub`) plus the email.
 - **Returning person:** logged straight in.
 - **New person:** NO account is created yet. A pending row (Google id + email, 15 minutes, `PendingSignup`) and a cookie hold them while the page shows the consent text ("One last step"); the account is created only when they agree (`POST /api/auth/google/complete`). The optional AI box is on that screen too.
 - **Same email as a password account:** Google has proven who owns the address, so the accounts are linked (same learner, nothing duplicated), the **old password is switched off and its logins ended** (otherwise someone who pre-registered the email with their own password could keep access), and a note is shown. To give such a person a password again, use `npm run reset-password`.
@@ -139,7 +163,7 @@ Step 1 of the plan to improve the knowledge curve and the recommendations (see C
 - **Work pattern** sent by the page with each Run/Submit: time to first keystroke, characters typed / deleted / pasted, number and size of pastes, active and idle time, language switches, resets (totals only; never keystrokes or pasted text). Validated and clamped on the server.
 - **Learner feedback:** an optional confidence chip (1-5) before the first run, "too easy / just right / too hard" and thumbs up/down after a Submit, and a reason when skipping. `POST /api/problem-event`, read back by `GET /api/learners/:id/problem-state/:slug`.
 - **Recommendation log** (`recommendationevents`): each pick with the candidates considered, the pool sizes, the rules version, and the probability of the pick. A pick is reused while the learner's state is unchanged (revisiting the Path no longer reshuffles it or logs it twice). **Variety picks:** with probability `PICKER_EXPLORE_RATE` (default 0.1; 0 turns it off) the picker takes a random problem from the 50-80% window instead of the top choice, and says so ("A little variety..."). This is what lets a future model be evaluated on the log.
-- **Sessions** (a gap over 30 minutes starts a new one) and **version tags** (`server/src/versions.js`) are written on log rows.
+- **Sessions** (a gap over 30 minutes starts a new one) and **version tags** (`server/src/core/versions.js`) are written on log rows.
 - **Consent:** the wording now lists these signals and the version was bumped to 2026-10-09, so everyone sees the "agree again" screen once.
 - Tools: `npm run logs:summary` (how much of each signal has been captured), tests `test:signals` (pure helpers) and `test:logging` (end to end; starts two extra API copies on ports 4103 and 4104).
 - Not done yet (deliberately): code snapshots, per-test timing, running the reference solutions on large inputs for an optimality score. Those are next steps.
@@ -162,8 +186,8 @@ Step 3 of the plan. Write-up and numbers: `docs/recommender-v2.md`; raw simulato
 ## Batch 1: snapshots, struggle nudge, spaced review, "why", observability (Day 5)
 Plain-words write-up in the CLAUDE.md log (Day 5). Every new field is in `docs/data-dictionary.md`.
 - **Code snapshots:** the editor sends the learner's code about every 30 seconds when it changed (and when they switch language or problem) to `POST /api/snapshot` (`server/src/routes/snapshots.js`, collection `codesnapshots`). Identical code is not stored twice; at most 400 per learner and problem. Raw material for later "how did the solution grow" studies; nothing uses it yet.
-- **Struggle nudge:** after a failed Run/Submit the server may add a `nudge` to the response ("Stuck for a while? A small hint might help: level 1 (Nudge)"). Rule in `server/src/struggle.js`: at least 3 failed attempts, at least half the expected time, no progress, hint level under 2, at most 2 per problem and 10 minutes apart. It never reveals a hint by itself and never appears while the learner types.
-- **Spaced review:** `server/src/review.js`. A topic becomes due 1 day after the first solve, then 3, 7, 14 and 30 days after each clean review. The picker offers a due topic as a "Review" (a fresh problem about 78% likely to be solved, or a repeat when none is left), never more than 1 review in 3 recommendations. `PICKER_REVIEW=off` turns it off. v1 picker only: recommender v2 has its own review term.
+- **Struggle nudge:** after a failed Run/Submit the server may add a `nudge` to the response ("Stuck for a while? A small hint might help: level 1 (Nudge)"). Rule in `server/src/help/struggle.js`: at least 3 failed attempts, at least half the expected time, no progress, hint level under 2, at most 2 per problem and 10 minutes apart. It never reveals a hint by itself and never appears while the learner types.
+- **Spaced review:** `server/src/recommend/review.js`. A topic becomes due 1 day after the first solve, then 3, 7, 14 and 30 days after each clean review. The picker offers a due topic as a "Review" (a fresh problem about 78% likely to be solved, or a repeat when none is left), never more than 1 review in 3 recommendations. `PICKER_REVIEW=off` turns it off. v1 picker only: recommender v2 has its own review term.
 - **"Why this problem?"** The reason text now mentions the learner's last solve in that topic (how long ago, failed attempts, hint level) and, for reviews, why it is due. The Path page shows a "Review" badge.
 - **Observability:** every API request, Judge0 call, AI call and a once-a-minute MongoDB ping is timed into `metricevents` (kept 14 days, scrambled learner id). Read it with `npm run metrics` (add `-- --days 30` for a longer window): slow routes, failures and how many people they hit, Judge0 queue overhead, plus first-attempt success, completion, hint use, day-1/day-7 retention, sessions per week, reviews and nudges.
 - **Tests (from `server/`):** `test:review` and `test:struggle` need no services; `test:batch1-flow` needs MongoDB and Judge0 (it starts two extra API copies on 4109 and 4110).

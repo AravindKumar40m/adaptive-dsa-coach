@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { randomUUID } from "node:crypto";
 import { config } from "../config.js";
-import { EMAIL_PATTERN, MIN_PASSWORD, burnPasswordTime, endSession, hashPassword, publicUser, startSession, verifyPassword } from "../auth.js";
-import { CONSENT_TEXT, CONSENT_VERSION } from "../consent.js";
-import { eraseLearnerData } from "../erase.js";
-import { makeLimiter } from "../rateLimit.js";
+import { EMAIL_PATTERN, MIN_PASSWORD, burnPasswordTime, endSession, hashPassword, publicUser, startSession, verifyPassword } from "../auth/auth.js";
+import { CONSENT_TEXT, CONSENT_VERSION } from "../privacy/consent.js";
+import { eraseLearnerData } from "../privacy/erase.js";
+import { makeLimiter } from "../core/rateLimit.js";
 import { ConsentEvent } from "../models/ConsentEvent.js";
 import { Session } from "../models/Session.js";
 import { User } from "../models/User.js";

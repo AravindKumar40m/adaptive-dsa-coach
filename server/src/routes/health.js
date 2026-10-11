@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { config } from "../config.js";
-import { dbConnected } from "../db.js";
+import { dbConnected } from "../core/db.js";
 
 const router = Router();
 

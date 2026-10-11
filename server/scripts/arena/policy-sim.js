@@ -8,8 +8,8 @@
 // Learners are generated from their own random streams, so every policy faces exactly the same people (a paired comparison).
 import { buildCatalog, createModel, DAY_MS, SCALE, sigmoid } from "../../src/kt/index.js";
 import { SHADOW_PARAMS } from "../../src/kt/params.js";
-import { pickNext } from "../../src/picker.js";
-import { WEIGHTS, pickNextV2, slotFor } from "../../src/recommender2.js";
+import { pickNext } from "../../src/recommend/picker.js";
+import { WEIGHTS, pickNextV2, slotFor } from "../../src/recommend/recommender2.js";
 import { CONCEPTS, FLOOR, GUESS, MAX_ATTEMPTS, PROBLEMS, SLIP, WORLDS, rng, taggedProblems } from "./sim.js";
 
 export const LEARN_RULES = {

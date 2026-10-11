@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ThumbDown, ThumbUp } from "../icons.jsx";
+import { ThumbDown, ThumbUp } from "../components/icons.jsx";
 
 const FEEL = [["too_easy", "Too easy"], ["just_right", "Just right"], ["too_hard", "Too hard"]];
 const SKIP = [["too_hard", "Too hard"], ["too_easy", "Too easy"], ["not_interested", "Not interested"], ["other", "Other"]];

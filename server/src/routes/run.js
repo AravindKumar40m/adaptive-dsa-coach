@@ -1,18 +1,18 @@
 import { Router } from "express";
-import { LANGUAGES } from "../languages.js";
-import { gradeCode } from "../grader.js";
-import { decodeValue } from "../harness.js";
+import { LANGUAGES } from "../grading/languages.js";
+import { gradeCode } from "../grading/grader.js";
+import { decodeValue } from "../grading/harness.js";
 import { Problem } from "../models/Problem.js";
 import { TestCase } from "../models/TestCase.js";
 import { Submission } from "../models/Submission.js";
-import { eraseLearnerData } from "../erase.js";
-import { applySubmission, priorHistory, secondsSince } from "../rating.js";
-import { sanitizeActivity } from "../activity.js";
-import { collectSignals } from "../logSignals.js";
-import { maybeNudge } from "../nudge.js";
-import { touchSession } from "../sessions.js";
+import { eraseLearnerData } from "../privacy/erase.js";
+import { applySubmission, priorHistory, secondsSince } from "../skill/rating.js";
+import { sanitizeActivity } from "../logging/activity.js";
+import { collectSignals } from "../logging/logSignals.js";
+import { maybeNudge } from "../help/nudge.js";
+import { touchSession } from "../logging/sessions.js";
 import { recordShadow } from "../kt/shadow.js";
-import { LOGGING_VERSION, SCORING_VERSION } from "../versions.js";
+import { LOGGING_VERSION, SCORING_VERSION } from "../core/versions.js";
 
 const router = Router();
 

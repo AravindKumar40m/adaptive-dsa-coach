@@ -1,7 +1,7 @@
 // What happens to v2 when ONE setting is changed at a time? A sanity check on the design (is a weight badly chosen?), not a tuning
 // session: settings are NOT picked from this to claim a win (that would just overfit my simulator).   npm run policies:sensitivity
 import { POLICIES, simulatePolicy, v2 } from "./policy-sim.js";
-import { WEIGHTS } from "../../src/recommender2.js";
+import { WEIGHTS } from "../../src/recommend/recommender2.js";
 
 const seeds = [11, 12], learners = 200;
 const world = "W4-realistic";

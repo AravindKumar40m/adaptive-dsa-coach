@@ -2,15 +2,15 @@
 
 Everything the platform records about a learner, why, and which part of the consent text covers it.
 Keep this file in step with the code: when a field is added or removed, change it here, and if the meaning of "what we
-record" changes, update `server/src/consent.js` and bump `CONSENT_VERSION` (everyone then agrees again).
+record" changes, update `server/src/privacy/consent.js` and bump `CONSENT_VERSION` (everyone then agrees again).
 
 Rules: nothing is recorded outside the editor. We never record keystrokes, the text of a paste, clipboard contents,
 window focus, mouse movement or anything from other pages or apps. Learning data is stored under a random `learnerId`;
 the email address lives only in `users`. All learning data is deleted by "Delete my learning data"; everything including
-the account by "Delete my account" (`server/src/erase.js`).
+the account by "Delete my account" (`server/src/privacy/erase.js`).
 
 Version tags written on rows: `LOGGING_VERSION = log-3`, `SCORING_VERSION = score-1`, `PICKER_VERSION = picker-3`, `REVIEW_VERSION = review-1`
-(`server/src/versions.js`). Change a tag whenever that part's behaviour changes, so analysis can tell which rules produced a row.
+(`server/src/core/versions.js`). Change a tag whenever that part's behaviour changes, so analysis can tell which rules produced a row.
 
 ## Accounts (not learning data)
 | Collection | Fields | Why |
@@ -61,7 +61,7 @@ Each hint level opened (`kind: ladder`) and each AI explanation (`kind: feedback
 
 Recommender v2 rows (`policy: v2`, `pickerVersion: rec-2.0`) add: `v2` {slot (warmup / core / stretch), target (aimed chance of success), score, parts {fit, info, weak, review, variety}, warmup}, and per candidate `score` and `parts`; `propensity` is the softmax probability of the pick and `explored` means it was not the top score. `policy` is `v1` for today's picker.
 
-**Spaced review (v1 picker, `server/src/review.js`, `PICKER_REVIEW=off` disables it).** The schedule is computed from the learner's accepted Submits, not stored: the first solve in a topic makes it due after 1 day; a clean solve made after the due time (at most hint level 2 and 2 failed submits) moves it one stage up (3, 7, 14, then every 30 days); an unclean one repeats the same wait; a solve before the due time is extra practice and changes nothing. A due topic gets a fresh problem about 78% likely to be solved (never under 55%), or a problem solved before if none is left. Never more than 1 review in 3 recommendations. Review picks have `propensity 1` and `explored false`. The reason text of ordinary picks now also states facts about the learner's last solve in that topic.
+**Spaced review (v1 picker, `server/src/recommend/review.js`, `PICKER_REVIEW=off` disables it).** The schedule is computed from the learner's accepted Submits, not stored: the first solve in a topic makes it due after 1 day; a clean solve made after the due time (at most hint level 2 and 2 failed submits) moves it one stage up (3, 7, 14, then every 30 days); an unclean one repeats the same wait; a solve before the due time is extra practice and changes nothing. A due topic gets a fresh problem about 78% likely to be solved (never under 55%), or a problem solved before if none is left. Never more than 1 review in 3 recommendations. Review picks have `propensity 1` and `explored false`. The reason text of ordinary picks now also states facts about the learner's last solve in that topic.
 
 Variety picks: with probability `PICKER_EXPLORE_RATE` (default 0.1) the picker takes a problem uniformly from ALL problems in the 50-80% window instead of the top choice. `propensity = (1 - rate) * [is the top choice] + rate / n`. With these two numbers a later model can be scored on this log ("inverse propensity" evaluation).
 
@@ -73,7 +73,7 @@ Variety picks: with probability `PICKER_EXPLORE_RATE` (default 0.1) the picker t
 | confidence | 1-5 | "how confident are you that you can solve this?" (asked before the first run, optional) |
 | feel | too_easy / just_right / too_hard | after a Submit (optional) |
 | liked | true / false | after a Submit (optional) |
-| nudge_shown | {rule: struggle-1, level, failedAttempts, secondsSpent, expectedSeconds, noProgress, helpLevel, shown} | written by the SERVER only: after a failed Run/Submit it suggested a hint (rule in `server/src/struggle.js`: at least 3 failed attempts, at least half the expected time, no progress, hint level under 2, at most 2 per problem and 10 minutes apart). A browser cannot create this kind. |
+| nudge_shown | {rule: struggle-1, level, failedAttempts, secondsSpent, expectedSeconds, noProgress, helpLevel, shown} | written by the SERVER only: after a failed Run/Submit it suggested a hint (rule in `server/src/help/struggle.js`: at least 3 failed attempts, at least half the expected time, no progress, hint level under 2, at most 2 per problem and 10 minutes apart). A browser cannot create this kind. |
 | nudge_taken / nudge_dismissed | hints / not_now | the learner's answer to the suggestion. "Open the hints" only opens the Hints tab: nothing is revealed (and no score is lost) until they press Reveal. |
 Also: recommendationId (opened / skipped), sessionId. The latest row of a kind wins when read back.
 

@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { makeLimiter } from "../rateLimit.js";
+import { makeLimiter } from "../core/rateLimit.js";
 import { Problem } from "../models/Problem.js";
 import { Submission } from "../models/Submission.js";
 import { ProblemEvent, PROBLEM_EVENT_KINDS } from "../models/ProblemEvent.js";
 import { RecommendationEvent } from "../models/RecommendationEvent.js";
-import { touchSession } from "../sessions.js";
+import { touchSession } from "../logging/sessions.js";
 
 const router = Router();
 const limiter = makeLimiter(400, 3600 * 1000); // events per learner per hour: far above real use, stops floods

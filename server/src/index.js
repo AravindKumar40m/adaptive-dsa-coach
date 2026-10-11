@@ -1,7 +1,7 @@
 import express from "express";
 import { config } from "./config.js";
-import { connectDb } from "./db.js";
-import { guardLearner, loadUser, sameOriginOnly } from "./auth.js";
+import { connectDb } from "./core/db.js";
+import { guardLearner, loadUser, sameOriginOnly } from "./auth/auth.js";
 import health from "./routes/health.js";
 import auth from "./routes/auth.js";
 import google from "./routes/google.js";
@@ -12,7 +12,7 @@ import hints from "./routes/hints.js";
 import events from "./routes/events.js";
 import placement from "./routes/placement.js";
 import snapshots from "./routes/snapshots.js";
-import { startMongoPing, timeRequests } from "./metrics.js";
+import { startMongoPing, timeRequests } from "./core/metrics.js";
 
 const app = express();
 // No open CORS: the page and the API live on one address (the dev proxy / the production server), and the session

@@ -1,4 +1,4 @@
-import { Bulb, Check, Lock, Spark } from "../icons.jsx";
+import { Bulb, Check, Lock, Spark } from "../components/icons.jsx";
 
 // The four hint levels, one at a time, plus the optional AI explanation.
 const LEVELS = ["Nudge", "Pattern", "Pseudocode", "Walkthrough"];
