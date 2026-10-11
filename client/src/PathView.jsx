@@ -1,8 +1,11 @@
 import { SkillMap } from "./SkillMap.jsx";
 import { Arrow } from "./icons.jsx";
 import { DifficultyBadge, greeting, prettyConcept } from "./ui.jsx";
+import { SkipWithReason } from "./workspace/Feedback.jsx";
 
-export function PathView({ user, skills, problems, recommendation, onStart, onSkip, busy }) {
+const SLOT_LABEL = { warmup: "Warm-up", core: "Core", stretch: "Stretch" };
+
+export function PathView({ user, placement, skills, problems, recommendation, onStart, onSkip, busy }) {
   const solved = skills?.solvedProblems?.length ?? 0;
   const unlocked = skills ? skills.skills.filter((s) => s.unlocked && s.total > 0).length : 0;
   const topics = skills ? skills.skills.filter((s) => s.total > 0).length : 0;
@@ -25,6 +28,7 @@ export function PathView({ user, skills, problems, recommendation, onStart, onSk
                 <div className="meta">
                   <span className="badge">{prettyConcept(rec.problem.concept)}</span>
                   <DifficultyBadge level={rec.problem.difficulty} />
+                  {rec.slot && <span className="badge badge-accent">{SLOT_LABEL[rec.slot]}</span>}
                 </div>
                 <p className="why">{rec.reason}</p>
                 <div className="expected" title="How likely we think you are to solve it, from your rating and the problem's current difficulty">
@@ -35,7 +39,7 @@ export function PathView({ user, skills, problems, recommendation, onStart, onSk
               </div>
               <div className="actions">
                 <button className="btn btn-primary btn-lg" onClick={() => onStart(rec.problem.slug)}>Start this problem <Arrow /></button>
-                <button className="btn" onClick={onSkip} disabled={busy}>Show me another</button>
+                <SkipWithReason label="Show me another" className="btn" onSkip={onSkip} disabled={busy} />
               </div>
             </>
           ) : (
@@ -46,6 +50,16 @@ export function PathView({ user, skills, problems, recommendation, onStart, onSk
             </div>
           )}
         </section>
+
+        {placement && !placement.done && (
+          <section className="card" style={{ marginTop: 14, padding: "14px 18px", display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap", justifyContent: "space-between" }} aria-label="Optional self-assessment">
+            <div style={{ maxWidth: "62ch" }}>
+              <strong>Tell us where you are (1 minute, optional)</strong>
+              <div className="muted" style={{ fontSize: 13.5 }}>Rate each topic and the first problems will fit you a bit better. It is only a rough starting guess: real results always win.</div>
+            </div>
+            <a className="btn" href="#/placement">Start</a>
+          </section>
+        )}
 
         <div className="stats">
           <div className="card stat"><b>{solved}<span className="faint" style={{ fontSize: 15, fontWeight: 400 }}> / {problems.length}</span></b><span>problems solved</span></div>
@@ -62,6 +76,8 @@ export function PathView({ user, skills, problems, recommendation, onStart, onSk
           </div>
         </div>
         {skills ? <SkillMap skills={skills.skills.filter((s) => s.total > 0)} startRating={skills.startRating} onOpen={(c) => (window.location.hash = `#/problems?concept=${c}`)} /> : <div className="card empty">Loading...</div>}
+
+        {placement?.done && <p className="footnote" style={{ marginTop: 20 }}>You filled in the self-assessment. <a href="#/placement">Update it</a></p>}
 
         <p className="footnote">
           Ratings start at {skills?.startRating ?? 1000} in every topic and move only when you press Submit. Run never changes them.

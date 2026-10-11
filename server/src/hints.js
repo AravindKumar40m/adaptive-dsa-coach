@@ -25,10 +25,10 @@ export async function revealedHints(learnerId, problem) {
 }
 
 /** Reveal the next ladder level (never skips ahead). Returns the same shape as revealedHints plus `isNew`. */
-export async function revealNext(learnerId, problem) {
+export async function revealNext(learnerId, problem, sessionId) {
   const before = await revealedHints(learnerId, problem);
   if (before.next === null) return { ...before, isNew: false };
   const step = LADDER[before.next - 1];
-  await HintEvent.create({ learnerId, problem: problem.slug, kind: "ladder", level: step.level, source: "stored", text: problem.hints[step.key] });
+  await HintEvent.create({ learnerId, problem: problem.slug, kind: "ladder", level: step.level, source: "stored", text: problem.hints[step.key], sessionId });
   return { ...(await revealedHints(learnerId, problem)), isNew: true };
 }

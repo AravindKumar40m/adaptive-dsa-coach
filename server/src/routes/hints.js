@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import Anthropic from "@anthropic-ai/sdk";
 import { config } from "../config.js";
 import { aiConsentCurrent } from "../auth.js";
+import { touchSession } from "../sessions.js";
 import { FEEDBACK_LEVEL, revealNext, revealedHints } from "../hints.js";
 import { explainResult, llmConfigured, summarizeResult } from "../llm.js";
 import { makeLimiter } from "../rateLimit.js";
@@ -39,7 +40,7 @@ router.post("/hint", async (req, res, next) => {
     if (!ID_PATTERN.test(learnerId ?? "")) return res.status(400).json({ error: "learnerId must be 8-64 letters, digits or dashes" });
     const problem = await Problem.findOne({ slug }).select("slug hints").lean();
     if (!problem) return res.status(404).json({ error: "problem not found" });
-    res.json({ ...(await revealNext(learnerId, problem)), maxLevel: 4, note: PENALTY_NOTE });
+    res.json({ ...(await revealNext(learnerId, problem, await touchSession(learnerId).catch(() => null))), maxLevel: 4, note: PENALTY_NOTE });
   } catch (err) {
     next(err);
   }
@@ -77,7 +78,7 @@ router.post("/feedback", async (req, res, next) => {
       source = "llm";
       await AiFeedbackCache.updateOne({ key }, { $setOnInsert: { key, text } }, { upsert: true });
     }
-    await HintEvent.create({ learnerId, problem: slug, kind: "feedback", level: FEEDBACK_LEVEL, source, text });
+    await HintEvent.create({ learnerId, problem: slug, kind: "feedback", level: FEEDBACK_LEVEL, source, text, sessionId: await touchSession(learnerId).catch(() => null) });
     res.json({ text, source, note: PENALTY_NOTE });
   } catch (err) {
     next(err);

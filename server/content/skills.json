@@ -1,0 +1,1874 @@
+{
+ "backspace-compare": {
+  "skills": [
+   {
+    "concept": "stack_queue",
+    "weight": 0.7
+   },
+   {
+    "concept": "strings",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "strings": [
+    "input: the problem takes a string"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "balanced-brackets": {
+  "skills": [
+   {
+    "concept": "stack_queue",
+    "weight": 0.7
+   },
+   {
+    "concept": "strings",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "strings": [
+    "input: the problem takes a string"
+   ]
+  },
+  "ignoredWeakEvidence": [
+   "hashing"
+  ]
+ },
+ "baseball-score": {
+  "skills": [
+   {
+    "concept": "stack_queue",
+    "weight": 0.7
+   },
+   {
+    "concept": "strings",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "strings": [
+    "input: the problem takes a string"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "best-streak-sum": {
+  "skills": [
+   {
+    "concept": "arrays",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "best-window": {
+  "skills": [
+   {
+    "concept": "sliding_window",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "build-tree-from-orders": {
+  "skills": [
+   {
+    "concept": "trees",
+    "weight": 0.6
+   },
+   {
+    "concept": "recursion",
+    "weight": 0.2
+   },
+   {
+    "concept": "hashing",
+    "weight": 0.2
+   }
+  ],
+  "evidence": {
+   "recursion": [
+    "code: optimal() has a function (build) that calls itself",
+    "hint: the pattern hint names it"
+   ],
+   "hashing": [
+    "code(weak): optimal() uses a dict / set",
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "can-finish-courses": {
+  "skills": [
+   {
+    "concept": "graphs",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": [
+   "stack_queue"
+  ]
+ },
+ "candy-distribution": {
+  "skills": [
+   {
+    "concept": "greedy",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "cheapest-with-stops": {
+  "skills": [
+   {
+    "concept": "graphs",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "clean-palindrome": {
+  "skills": [
+   {
+    "concept": "strings",
+    "weight": 0.7
+   },
+   {
+    "concept": "two_pointers",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "two_pointers": [
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "combination-sum-count": {
+  "skills": [
+   {
+    "concept": "backtracking",
+    "weight": 0.6
+   },
+   {
+    "concept": "dp",
+    "weight": 0.2
+   },
+   {
+    "concept": "recursion",
+    "weight": 0.2
+   }
+  ],
+  "evidence": {
+   "dp": [
+    "code: better() memoizes or fills a dp table",
+    "hint: the pattern hint names it"
+   ],
+   "recursion": [
+    "code: better() has a function (go) that calls itself",
+    "hint: the nudge/walkthrough mentions it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "compress-string": {
+  "skills": [
+   {
+    "concept": "strings",
+    "weight": 0.6
+   },
+   {
+    "concept": "hashing",
+    "weight": 0.2
+   },
+   {
+    "concept": "two_pointers",
+    "weight": 0.2
+   }
+  ],
+  "evidence": {
+   "hashing": [
+    "hint: the pattern hint names it"
+   ],
+   "two_pointers": [
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "connected-groups": {
+  "skills": [
+   {
+    "concept": "graphs",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "cookie-match": {
+  "skills": [
+   {
+    "concept": "greedy",
+    "weight": 0.7
+   },
+   {
+    "concept": "sorting",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "sorting": [
+    "code: optimal() sorts the data",
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "count-inversions": {
+  "skills": [
+   {
+    "concept": "sorting",
+    "weight": 0.7
+   },
+   {
+    "concept": "recursion",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "recursion": [
+    "code: optimal() has a function (sort) that calls itself",
+    "hint: the nudge/walkthrough mentions it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "count-windows-above": {
+  "skills": [
+   {
+    "concept": "sliding_window",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "cycle-length": {
+  "skills": [
+   {
+    "concept": "linked_list",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "days-until-warmer": {
+  "skills": [
+   {
+    "concept": "stack_queue",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "decode-nested": {
+  "skills": [
+   {
+    "concept": "stack_queue",
+    "weight": 0.7
+   },
+   {
+    "concept": "strings",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "strings": [
+    "input: the problem takes a string"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "distinct-permutations": {
+  "skills": [
+   {
+    "concept": "recursion",
+    "weight": 0.6
+   },
+   {
+    "concept": "strings",
+    "weight": 0.2
+   },
+   {
+    "concept": "sorting",
+    "weight": 0.2
+   }
+  ],
+  "evidence": {
+   "strings": [
+    "input: the problem takes a string"
+   ],
+   "sorting": [
+    "code: better() sorts the data"
+   ]
+  },
+  "ignoredWeakEvidence": [
+   "dp"
+  ]
+ },
+ "edit-distance": {
+  "skills": [
+   {
+    "concept": "dp",
+    "weight": 0.6
+   },
+   {
+    "concept": "recursion",
+    "weight": 0.2
+   },
+   {
+    "concept": "strings",
+    "weight": 0.2
+   }
+  ],
+  "evidence": {
+   "recursion": [
+    "code: better() has a function (go) that calls itself",
+    "hint: the nudge/walkthrough mentions it"
+   ],
+   "strings": [
+    "input: the problem takes a string"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "fair-capacity": {
+  "skills": [
+   {
+    "concept": "binary_search",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "fibonacci-nth": {
+  "skills": [
+   {
+    "concept": "recursion",
+    "weight": 0.7
+   },
+   {
+    "concept": "dp",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "dp": [
+    "code: better() memoizes or fills a dp table",
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "find-center": {
+  "skills": [
+   {
+    "concept": "graphs",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "first-missing-positive": {
+  "skills": [
+   {
+    "concept": "arrays",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": [
+   "hashing"
+  ]
+ },
+ "first-repeat": {
+  "skills": [
+   {
+    "concept": "hashing",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "first-unique-char": {
+  "skills": [
+   {
+    "concept": "strings",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "four-sum-count": {
+  "skills": [
+   {
+    "concept": "hashing",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "gcd-recursive": {
+  "skills": [
+   {
+    "concept": "recursion",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "generate-parentheses-count": {
+  "skills": [
+   {
+    "concept": "recursion",
+    "weight": 0.7
+   },
+   {
+    "concept": "dp",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "dp": [
+    "code: better() memoizes or fills a dp table",
+    "hint: the nudge/walkthrough mentions it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "grid-islands": {
+  "skills": [
+   {
+    "concept": "graphs",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": [
+   "recursion",
+   "stack_queue"
+  ]
+ },
+ "grid-paths": {
+  "skills": [
+   {
+    "concept": "dp",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": [
+   "recursion"
+  ]
+ },
+ "group-anagram-count": {
+  "skills": [
+   {
+    "concept": "hashing",
+    "weight": 0.6
+   },
+   {
+    "concept": "sorting",
+    "weight": 0.2
+   },
+   {
+    "concept": "strings",
+    "weight": 0.2
+   }
+  ],
+  "evidence": {
+   "sorting": [
+    "code: optimal() sorts the data",
+    "hint: the pattern hint names it"
+   ],
+   "strings": [
+    "input: the problem takes a string"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "height-checker": {
+  "skills": [
+   {
+    "concept": "sorting",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "insert-position": {
+  "skills": [
+   {
+    "concept": "binary_search",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": [
+   "sorting"
+  ]
+ },
+ "integer-partitions": {
+  "skills": [
+   {
+    "concept": "recursion",
+    "weight": 0.7
+   },
+   {
+    "concept": "dp",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "dp": [
+    "code: better() memoizes or fills a dp table",
+    "hint: the nudge/walkthrough mentions it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "integer-sqrt": {
+  "skills": [
+   {
+    "concept": "binary_search",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "invert-tree": {
+  "skills": [
+   {
+    "concept": "trees",
+    "weight": 0.7
+   },
+   {
+    "concept": "recursion",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "recursion": [
+    "code: optimal() has a function (optimal) that calls itself",
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "is-anagram": {
+  "skills": [
+   {
+    "concept": "strings",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": [
+   "hashing",
+   "sorting"
+  ]
+ },
+ "is-valid-bst": {
+  "skills": [
+   {
+    "concept": "trees",
+    "weight": 0.7
+   },
+   {
+    "concept": "recursion",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "recursion": [
+    "code: optimal() has a function (check) that calls itself"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "jump-reach": {
+  "skills": [
+   {
+    "concept": "greedy",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "knapsack-01": {
+  "skills": [
+   {
+    "concept": "dp",
+    "weight": 0.7
+   },
+   {
+    "concept": "recursion",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "recursion": [
+    "code: better() has a function (go) that calls itself"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "kth-largest": {
+  "skills": [
+   {
+    "concept": "heaps",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": [
+   "sorting"
+  ]
+ },
+ "kth-smallest-in-lists": {
+  "skills": [
+   {
+    "concept": "heaps",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": [
+   "sorting"
+  ]
+ },
+ "largest-number": {
+  "skills": [
+   {
+    "concept": "sorting",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "largest-rectangle": {
+  "skills": [
+   {
+    "concept": "stack_queue",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": [
+   "two_pointers"
+  ]
+ },
+ "last-stone-weight": {
+  "skills": [
+   {
+    "concept": "heaps",
+    "weight": 0.7
+   },
+   {
+    "concept": "stack_queue",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "stack_queue": [
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": [
+   "sorting"
+  ]
+ },
+ "lemonade-change": {
+  "skills": [
+   {
+    "concept": "greedy",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "level-sums": {
+  "skills": [
+   {
+    "concept": "trees",
+    "weight": 0.6
+   },
+   {
+    "concept": "stack_queue",
+    "weight": 0.2
+   },
+   {
+    "concept": "graphs",
+    "weight": 0.2
+   }
+  ],
+  "evidence": {
+   "stack_queue": [
+    "hint: the pattern hint names it"
+   ],
+   "graphs": [
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "longest-balanced-run": {
+  "skills": [
+   {
+    "concept": "hashing",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "longest-consecutive-run": {
+  "skills": [
+   {
+    "concept": "hashing",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": [
+   "sorting"
+  ]
+ },
+ "longest-mountain": {
+  "skills": [
+   {
+    "concept": "two_pointers",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "longest-palindrome-part": {
+  "skills": [
+   {
+    "concept": "strings",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "longest-repeat-replace": {
+  "skills": [
+   {
+    "concept": "sliding_window",
+    "weight": 0.7
+   },
+   {
+    "concept": "strings",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "strings": [
+    "input: the problem takes a string"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "longest-unique-run": {
+  "skills": [
+   {
+    "concept": "sliding_window",
+    "weight": 0.7
+   },
+   {
+    "concept": "strings",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "strings": [
+    "input: the problem takes a string"
+   ]
+  },
+  "ignoredWeakEvidence": [
+   "hashing"
+  ]
+ },
+ "lowest-common-ancestor": {
+  "skills": [
+   {
+    "concept": "trees",
+    "weight": 0.7
+   },
+   {
+    "concept": "recursion",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "recursion": [
+    "code: optimal() has a function (find) that calls itself",
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "max-depth": {
+  "skills": [
+   {
+    "concept": "trees",
+    "weight": 0.7
+   },
+   {
+    "concept": "recursion",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "recursion": [
+    "code: optimal() has a function (optimal) that calls itself",
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": [
+   "graphs",
+   "stack_queue"
+  ]
+ },
+ "max-non-overlap": {
+  "skills": [
+   {
+    "concept": "greedy",
+    "weight": 0.7
+   },
+   {
+    "concept": "sorting",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "sorting": [
+    "code: optimal() sorts the data",
+    "hint: the nudge/walkthrough mentions it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "max-path-sum": {
+  "skills": [
+   {
+    "concept": "trees",
+    "weight": 0.7
+   },
+   {
+    "concept": "recursion",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "recursion": [
+    "code: optimal() has a function (gain) that calls itself",
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "max-product-three": {
+  "skills": [
+   {
+    "concept": "sorting",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "max-profit-trades": {
+  "skills": [
+   {
+    "concept": "greedy",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "max-vowels-window": {
+  "skills": [
+   {
+    "concept": "sliding_window",
+    "weight": 0.7
+   },
+   {
+    "concept": "strings",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "strings": [
+    "input: the problem takes a string"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "median-two-sorted": {
+  "skills": [
+   {
+    "concept": "binary_search",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": [
+   "sorting"
+  ]
+ },
+ "merge-sorted-arrays": {
+  "skills": [
+   {
+    "concept": "sorting",
+    "weight": 0.7
+   },
+   {
+    "concept": "two_pointers",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "two_pointers": [
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "merge-two-lists": {
+  "skills": [
+   {
+    "concept": "linked_list",
+    "weight": 0.7
+   },
+   {
+    "concept": "two_pointers",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "two_pointers": [
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": [
+   "sorting"
+  ]
+ },
+ "middle-value": {
+  "skills": [
+   {
+    "concept": "linked_list",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": [
+   "two_pointers"
+  ]
+ },
+ "min-coins": {
+  "skills": [
+   {
+    "concept": "dp",
+    "weight": 0.7
+   },
+   {
+    "concept": "recursion",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "recursion": [
+    "code: better() has a function (go) that calls itself",
+    "hint: the nudge/walkthrough mentions it"
+   ]
+  },
+  "ignoredWeakEvidence": [
+   "greedy"
+  ]
+ },
+ "min-cost-path": {
+  "skills": [
+   {
+    "concept": "graphs",
+    "weight": 0.6
+   },
+   {
+    "concept": "heaps",
+    "weight": 0.2
+   },
+   {
+    "concept": "stack_queue",
+    "weight": 0.2
+   }
+  ],
+  "evidence": {
+   "heaps": [
+    "code: optimal() uses a heap",
+    "hint: the pattern hint names it"
+   ],
+   "stack_queue": [
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "min-cost-stairs": {
+  "skills": [
+   {
+    "concept": "dp",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": [
+   "recursion"
+  ]
+ },
+ "min-jumps": {
+  "skills": [
+   {
+    "concept": "greedy",
+    "weight": 0.7
+   },
+   {
+    "concept": "graphs",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "graphs": [
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "min-rotated": {
+  "skills": [
+   {
+    "concept": "binary_search",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": [
+   "sorting"
+  ]
+ },
+ "min-subarray-len": {
+  "skills": [
+   {
+    "concept": "sliding_window",
+    "weight": 0.7
+   },
+   {
+    "concept": "two_pointers",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "two_pointers": [
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "min-window-cover": {
+  "skills": [
+   {
+    "concept": "strings",
+    "weight": 0.7
+   },
+   {
+    "concept": "sliding_window",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "sliding_window": [
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": [
+   "hashing",
+   "two_pointers"
+  ]
+ },
+ "missing-number": {
+  "skills": [
+   {
+    "concept": "arrays",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "mountain-peak": {
+  "skills": [
+   {
+    "concept": "binary_search",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "n-queens-count": {
+  "skills": [
+   {
+    "concept": "backtracking",
+    "weight": 0.7
+   },
+   {
+    "concept": "recursion",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "recursion": [
+    "code: optimal() has a function (place) that calls itself",
+    "code: better() has a function (place) that calls itself"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "nearby-duplicate": {
+  "skills": [
+   {
+    "concept": "hashing",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "next-permutation": {
+  "skills": [
+   {
+    "concept": "two_pointers",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "no-adjacent-ones": {
+  "skills": [
+   {
+    "concept": "backtracking",
+    "weight": 0.6
+   },
+   {
+    "concept": "dp",
+    "weight": 0.2
+   },
+   {
+    "concept": "recursion",
+    "weight": 0.2
+   }
+  ],
+  "evidence": {
+   "dp": [
+    "code: better() memoizes or fills a dp table",
+    "hint: the nudge/walkthrough mentions it"
+   ],
+   "recursion": [
+    "code: better() has a function (go) that calls itself"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "paint-fence-ways": {
+  "skills": [
+   {
+    "concept": "dp",
+    "weight": 0.7
+   },
+   {
+    "concept": "recursion",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "recursion": [
+    "code: better() has a function (go) that calls itself"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "pair-count": {
+  "skills": [
+   {
+    "concept": "hashing",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "palindrome-partitions": {
+  "skills": [
+   {
+    "concept": "backtracking",
+    "weight": 0.6
+   },
+   {
+    "concept": "strings",
+    "weight": 0.2
+   },
+   {
+    "concept": "dp",
+    "weight": 0.2
+   }
+  ],
+  "evidence": {
+   "strings": [
+    "input: the problem takes a string"
+   ],
+   "dp": [
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": [
+   "recursion"
+  ]
+ },
+ "partition-k-groups": {
+  "skills": [
+   {
+    "concept": "backtracking",
+    "weight": 0.6
+   },
+   {
+    "concept": "sorting",
+    "weight": 0.2
+   },
+   {
+    "concept": "recursion",
+    "weight": 0.2
+   }
+  ],
+  "evidence": {
+   "sorting": [
+    "code: optimal() sorts the data"
+   ],
+   "recursion": [
+    "code: optimal() has a function (place) that calls itself"
+   ]
+  },
+  "ignoredWeakEvidence": [
+   "dp",
+   "hashing"
+  ]
+ },
+ "peak-altitude": {
+  "skills": [
+   {
+    "concept": "arrays",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "peak-overlap": {
+  "skills": [
+   {
+    "concept": "sorting",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "postfix-eval": {
+  "skills": [
+   {
+    "concept": "stack_queue",
+    "weight": 0.7
+   },
+   {
+    "concept": "strings",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "strings": [
+    "input: the problem takes a string"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "pow-mod": {
+  "skills": [
+   {
+    "concept": "recursion",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": [
+   "binary_search"
+  ]
+ },
+ "product-except-self": {
+  "skills": [
+   {
+    "concept": "arrays",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "rain-catch": {
+  "skills": [
+   {
+    "concept": "arrays",
+    "weight": 0.7
+   },
+   {
+    "concept": "two_pointers",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "two_pointers": [
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "remove-adjacent-dupes": {
+  "skills": [
+   {
+    "concept": "stack_queue",
+    "weight": 0.7
+   },
+   {
+    "concept": "strings",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "strings": [
+    "input: the problem takes a string"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "remove-duplicates-length": {
+  "skills": [
+   {
+    "concept": "two_pointers",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": [
+   "sorting"
+  ]
+ },
+ "remove-nth-from-end": {
+  "skills": [
+   {
+    "concept": "linked_list",
+    "weight": 0.7
+   },
+   {
+    "concept": "two_pointers",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "two_pointers": [
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "reverse-k-group": {
+  "skills": [
+   {
+    "concept": "linked_list",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "reverse-list": {
+  "skills": [
+   {
+    "concept": "linked_list",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "rope-join": {
+  "skills": [
+   {
+    "concept": "heaps",
+    "weight": 0.7
+   },
+   {
+    "concept": "greedy",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "greedy": [
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "rotate-right": {
+  "skills": [
+   {
+    "concept": "arrays",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "rotting-oranges": {
+  "skills": [
+   {
+    "concept": "graphs",
+    "weight": 0.7
+   },
+   {
+    "concept": "stack_queue",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "stack_queue": [
+    "code: optimal() uses a deque / queue",
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "same-tree": {
+  "skills": [
+   {
+    "concept": "trees",
+    "weight": 0.7
+   },
+   {
+    "concept": "recursion",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "recursion": [
+    "code: optimal() has a function (optimal) that calls itself",
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "search-rotated": {
+  "skills": [
+   {
+    "concept": "binary_search",
+    "weight": 0.7
+   },
+   {
+    "concept": "sorting",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "sorting": [
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "search-sorted": {
+  "skills": [
+   {
+    "concept": "binary_search",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": [
+   "sorting"
+  ]
+ },
+ "second-highest": {
+  "skills": [
+   {
+    "concept": "arrays",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": [
+   "sorting"
+  ]
+ },
+ "shortest-grid-path": {
+  "skills": [
+   {
+    "concept": "graphs",
+    "weight": 0.7
+   },
+   {
+    "concept": "stack_queue",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "stack_queue": [
+    "code: optimal() uses a deque / queue",
+    "hint: the nudge/walkthrough mentions it"
+   ]
+  },
+  "ignoredWeakEvidence": [
+   "backtracking",
+   "hashing"
+  ]
+ },
+ "shortest-palindrome-extension": {
+  "skills": [
+   {
+    "concept": "strings",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "skip-neighbours": {
+  "skills": [
+   {
+    "concept": "dp",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": [
+   "hashing",
+   "recursion"
+  ]
+ },
+ "smallest-gap": {
+  "skills": [
+   {
+    "concept": "sorting",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "sort-list": {
+  "skills": [
+   {
+    "concept": "linked_list",
+    "weight": 0.6
+   },
+   {
+    "concept": "recursion",
+    "weight": 0.2
+   },
+   {
+    "concept": "sorting",
+    "weight": 0.2
+   }
+  ],
+  "evidence": {
+   "recursion": [
+    "code: optimal() has a function (sort) that calls itself",
+    "hint: the pattern hint names it"
+   ],
+   "sorting": [
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": [
+   "heaps"
+  ]
+ },
+ "sorted-pair-sum": {
+  "skills": [
+   {
+    "concept": "two_pointers",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": [
+   "sorting"
+  ]
+ },
+ "sorted-squares": {
+  "skills": [
+   {
+    "concept": "two_pointers",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": [
+   "sorting"
+  ]
+ },
+ "stair-ways": {
+  "skills": [
+   {
+    "concept": "recursion",
+    "weight": 0.7
+   },
+   {
+    "concept": "dp",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "dp": [
+    "code: better() memoizes or fills a dp table",
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "subarray-sum-count": {
+  "skills": [
+   {
+    "concept": "hashing",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": [
+   "sliding_window"
+  ]
+ },
+ "subset-sum-count": {
+  "skills": [
+   {
+    "concept": "backtracking",
+    "weight": 0.7
+   },
+   {
+    "concept": "recursion",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "recursion": [
+    "code: optimal() has a function (go) that calls itself",
+    "hint: the nudge/walkthrough mentions it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "three-sum-count": {
+  "skills": [
+   {
+    "concept": "two_pointers",
+    "weight": 0.7
+   },
+   {
+    "concept": "sorting",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "sorting": [
+    "code: optimal() sorts the data",
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "top-k-frequent": {
+  "skills": [
+   {
+    "concept": "heaps",
+    "weight": 0.6
+   },
+   {
+    "concept": "hashing",
+    "weight": 0.2
+   },
+   {
+    "concept": "sorting",
+    "weight": 0.2
+   }
+  ],
+  "evidence": {
+   "hashing": [
+    "code(weak): optimal() uses a dict / set",
+    "hint: the pattern hint names it"
+   ],
+   "sorting": [
+    "code: optimal() sorts the data",
+    "hint: the nudge/walkthrough mentions it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "top-k-sum": {
+  "skills": [
+   {
+    "concept": "heaps",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": [
+   "sorting"
+  ]
+ },
+ "town-judge": {
+  "skills": [
+   {
+    "concept": "graphs",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "tree-diameter": {
+  "skills": [
+   {
+    "concept": "trees",
+    "weight": 0.7
+   },
+   {
+    "concept": "recursion",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "recursion": [
+    "code: optimal() has a function (height) that calls itself",
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "widest-fence": {
+  "skills": [
+   {
+    "concept": "two_pointers",
+    "weight": 1.0
+   }
+  ],
+  "evidence": {},
+  "ignoredWeakEvidence": []
+ },
+ "wildcard-match": {
+  "skills": [
+   {
+    "concept": "dp",
+    "weight": 0.6
+   },
+   {
+    "concept": "recursion",
+    "weight": 0.2
+   },
+   {
+    "concept": "strings",
+    "weight": 0.2
+   }
+  ],
+  "evidence": {
+   "recursion": [
+    "code: better() has a function (go) that calls itself",
+    "hint: the nudge/walkthrough mentions it"
+   ],
+   "strings": [
+    "input: the problem takes a string"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "window-max-total": {
+  "skills": [
+   {
+    "concept": "sliding_window",
+    "weight": 0.7
+   },
+   {
+    "concept": "stack_queue",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "stack_queue": [
+    "code: optimal() uses a deque / queue",
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ },
+ "word-pattern-match": {
+  "skills": [
+   {
+    "concept": "strings",
+    "weight": 0.7
+   },
+   {
+    "concept": "hashing",
+    "weight": 0.3
+   }
+  ],
+  "evidence": {
+   "hashing": [
+    "code(weak): optimal() uses a dict / set",
+    "hint: the pattern hint names it"
+   ]
+  },
+  "ignoredWeakEvidence": []
+ }
+}

@@ -8,11 +8,15 @@
 //    take the WEAKEST concept (lowest rating), then the problem closest to the target in it.
 //    If nothing is in the window, take the closest problem anywhere.
 // 3. The learner can skip problems (exclude); solved problems are never offered again.
+// 4. Variety (Logging v2): with probability `explore.rate` the pick is drawn uniformly from ALL problems in the
+//    window instead of the top choice. The result says how likely the chosen problem was (`propensity`) and lists the
+//    best candidates, so a future model can be evaluated on the log ("what would it have picked, and how did it go?").
 import { START_RATING, expectedScore } from "./skill.js";
 
 export const TARGET_SUCCESS = 0.65; // CLAUDE.md: expected success about 0.6 to 0.7
 export const WINDOW = 0.15; // a problem "fits" when its expected success is within target +/- window
 export const UNLOCK_SOLVED = 2;
+export const MAX_CANDIDATES = 12;
 
 /** For each concept: how many problems, how many solved, is it solid, is it unlocked, and which prerequisites block it. */
 export function conceptStatus({ concepts, problems, solved }) {
@@ -38,18 +42,21 @@ export function conceptStatus({ concepts, problems, solved }) {
 }
 
 const pct = (x) => Math.round(x * 100);
+const round3 = (x) => Math.round(x * 1000) / 1000;
 
 /**
- * @param {{concepts, problems, difficulty:Map, ratings:Map, solved:Set, exclude:Set}} state
+ * @param {{concepts, problems, difficulty:Map, ratings:Map, solved:Set, exclude:Set, explore?:{rate:number, rng?:()=>number}}} state
  *   problems: [{slug, title, concept, difficulty, rating}]  difficulty: slug -> current Elo difficulty  ratings: concept -> rating
- * @returns {{done:true, ...} | {done:false, problem, expectedSuccess, mode, reason, repeated}}
+ * @returns {{done:true, ...} | {done:false, problem, expectedSuccess, mode, reason, repeated, explored, propensity, greedySlug, candidates, fitsCount, poolSize, openCount, exploreRate}}
  */
-export function pickNext({ concepts, problems, difficulty, ratings, solved, exclude = new Set() }) {
+export function pickNext({ concepts, problems, difficulty, ratings, solved, exclude = new Set(), explore = { rate: 0 } }) {
   const status = conceptStatus({ concepts, problems, solved });
   const order = new Map(concepts.map((c, i) => [c.key, i]));
   const name = new Map(concepts.map((c) => [c.key, c.name]));
   const ratingOf = (concept) => ratings.get(concept) ?? START_RATING;
   const expected = (p) => expectedScore(ratingOf(p.concept), difficulty.get(p.slug) ?? p.rating);
+  const rate = Math.min(1, Math.max(0, explore.rate ?? 0));
+  const rng = explore.rng ?? Math.random;
 
   const open = problems.filter((p) => !solved.has(p.slug) && status.get(p.concept).unlocked);
   if (open.length === 0) return { done: true, reason: "You have solved every available problem. More are coming." };
@@ -60,21 +67,34 @@ export function pickNext({ concepts, problems, difficulty, ratings, solved, excl
 
   const distance = (p) => Math.abs(expected(p) - TARGET_SUCCESS);
   const byFit = (a, b) => distance(a) - distance(b) || (difficulty.get(a.slug) ?? a.rating) - (difficulty.get(b.slug) ?? b.rating) || a.slug.localeCompare(b.slug);
+  const describe = (p, greedyRank) => ({ slug: p.slug, concept: p.concept, expectedSuccess: round3(expected(p)), conceptRating: Math.round(ratingOf(p.concept) * 10) / 10, greedyRank });
+  const common = { repeated, poolSize: pool.length, openCount: open.length, exploreRate: rate };
 
   const fits = pool.filter((p) => distance(p) <= WINDOW);
   if (fits.length > 0) {
-    const concept = [...new Set(fits.map((p) => p.concept))].sort((a, b) => ratingOf(a) - ratingOf(b) || order.get(a) - order.get(b))[0];
-    const problem = fits.filter((p) => p.concept === concept).sort(byFit)[0];
+    // the top-choice ordering: weakest concept first (ties: curriculum order), then closest to the target
+    const ranked = [...fits].sort((a, b) => ratingOf(a.concept) - ratingOf(b.concept) || order.get(a.concept) - order.get(b.concept) || byFit(a, b));
+    const greedy = ranked[0];
+    const explored = fits.length > 1 && rate > 0 && rng() < rate;
+    const problem = explored ? fits[Math.min(fits.length - 1, Math.floor(rng() * fits.length))] : greedy;
+    const n = fits.length;
+    const propensity = n === 1 ? 1 : round3((problem === greedy ? 1 - rate : 0) + rate / n); // P(this problem) = (1-rate)*[is top choice] + rate/n
     const e = expected(problem);
+    const concept = problem.concept;
     return {
-      done: false, problem, expectedSuccess: e, mode: "weakest", repeated,
-      reason: `${name.get(concept)} is your weakest open topic (rating ${Math.round(ratingOf(concept))}), and this problem should be a good challenge: about ${pct(e)}% chance to solve it.`,
+      done: false, problem, expectedSuccess: e, mode: "weakest", explored: problem !== greedy, propensity, greedySlug: greedy.slug,
+      candidates: ranked.slice(0, MAX_CANDIDATES).map((p, i) => describe(p, i + 1)), fitsCount: n, ...common,
+      reason: problem === greedy
+        ? `${name.get(concept)} is your weakest open topic (rating ${Math.round(ratingOf(concept))}), and this problem should be a good challenge: about ${pct(e)}% chance to solve it.`
+        : `${name.get(concept)} has a good fit for you right now: about ${pct(e)}% chance to solve it. (A little variety: you have several good options, so this one was picked from them.)`,
     };
   }
-  const problem = [...pool].sort((a, b) => byFit(a, b) || ratingOf(a.concept) - ratingOf(b.concept))[0];
+  const ranked = [...pool].sort((a, b) => byFit(a, b) || ratingOf(a.concept) - ratingOf(b.concept));
+  const problem = ranked[0];
   const e = expected(problem);
   return {
-    done: false, problem, expectedSuccess: e, mode: "closest", repeated,
+    done: false, problem, expectedSuccess: e, mode: "closest", explored: false, propensity: 1, greedySlug: problem.slug,
+    candidates: ranked.slice(0, MAX_CANDIDATES).map((p, i) => describe(p, i + 1)), fitsCount: 0, ...common,
     reason: `No open problem is a perfect fit right now, so this is the closest one (${name.get(problem.concept)}, about ${pct(e)}% chance to solve it).`,
   };
 }

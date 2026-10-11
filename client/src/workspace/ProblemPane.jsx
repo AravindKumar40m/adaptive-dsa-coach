@@ -1,6 +1,7 @@
 import { DifficultyBadge, Inline, prettyConcept } from "../ui.jsx";
+import { Confidence, SkipWithReason } from "./Feedback.jsx";
 
-export function ProblemPane({ problem, why, onSkip, skipLabel, disabled }) {
+export function ProblemPane({ problem, why, onSkip, skipLabel, disabled, solved, confidence, onConfidence, showConfidence }) {
   if (!problem) return <div className="problem"><p className="muted">Loading problem...</p></div>;
   return (
     <article className="problem">
@@ -9,6 +10,7 @@ export function ProblemPane({ problem, why, onSkip, skipLabel, disabled }) {
         <DifficultyBadge level={problem.difficulty} />
       </div>
       <h1>{problem.title}</h1>
+      {showConfidence && <Confidence value={confidence} onPick={onConfidence} />}
 
       {why && <div className="callout why-box"><strong>Why this problem:</strong> {why}</div>}
 
@@ -33,7 +35,9 @@ export function ProblemPane({ problem, why, onSkip, skipLabel, disabled }) {
       ))}
 
       <div className="problem-foot">
-        <button className="btn btn-ghost" onClick={onSkip} disabled={disabled}>{skipLabel}</button>
+        {solved
+          ? <button className="btn btn-ghost" onClick={() => onSkip(null)} disabled={disabled}>{skipLabel}</button>
+          : <SkipWithReason label={skipLabel} onSkip={onSkip} disabled={disabled} />}
       </div>
     </article>
   );

@@ -2,7 +2,7 @@
 // If you change the wording, change the version: everyone must then agree again before anything is recorded.
 // NOTE: this wording is a plain-language DRAFT written by the developer, not legal advice. Have it reviewed
 // (privacy law, minors, your country's rules) before real learners use the platform.
-export const CONSENT_VERSION = "2026-10-08";
+export const CONSENT_VERSION = "2026-10-09.2";
 
 export const CONSENT_TEXT = {
   version: CONSENT_VERSION,
@@ -13,6 +13,9 @@ export const CONSENT_TEXT = {
     points: [
       "the code you run or submit, and the results (which tests passed, how long it took)",
       "which hints you open, and how long you spend on each problem",
+      "how you work in the editor: when you start typing, how much you type or paste, and your pauses (totals only, not a recording of every key)",
+      "which problems we recommended to you and which you chose, and what you tell us about a problem: how hard it felt, whether you liked it, why you skipped it",
+      "your own answers about what you already know (an optional self-assessment at the start)",
       "your skill ratings, which are calculated from the above",
       "your email address, only so you can log in",
     ],

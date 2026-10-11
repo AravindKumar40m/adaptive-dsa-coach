@@ -17,6 +17,7 @@ const schema = new mongoose.Schema({
   },
   examples: [{ args: [mongoose.Schema.Types.Mixed], expected: mongoose.Schema.Types.Mixed, explanation: String }],
   expected: { time: String, space: String }, // best-known complexity (graded in a later step)
+  skills: [{ concept: String, weight: Number, _id: false }], // skills the problem needs, main concept first; weights add up to 1 (content/tag_skills.py)
   hints: { nudge: String, pattern: String, pseudocode: String, walkthrough: String }, // 4-level ladder
 });
 

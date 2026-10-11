@@ -20,6 +20,8 @@ const schema = new mongoose.Schema(
     failsBefore: Number,
     secondsSpent: Number,
     hintLevel: Number, // 0-4: most help shown on this problem before this submit
+    sessionId: String,
+    scoringVersion: String, // which version of the scoring rules produced this change
   },
   { timestamps: true }
 );

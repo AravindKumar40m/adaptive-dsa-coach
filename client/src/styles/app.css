@@ -341,3 +341,9 @@ kbd {
 .google-btn:hover { background: #f6f7f8; text-decoration: none; }
 .or { display: flex; align-items: center; gap: 12px; margin: 16px 0; color: var(--text-faint); font-size: 12.5px; }
 .or::before, .or::after { content: ""; flex: 1; border-top: 1px solid var(--line); }
+
+/* ---------- learner feedback (Logging v2) ---------- */
+.rate { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
+.confidence { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 4px 0 14px; font-size: 13px; }
+.confidence .seg button { height: 28px; min-width: 30px; }
+.skip-reasons { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }

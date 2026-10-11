@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Arrow } from "../icons.jsx";
 import { VERDICTS, describeActual, prettyConcept } from "../ui.jsx";
+import { RateProblem } from "./Feedback.jsx";
 
 const MIN = 700, MAX = 1500; // the ruler's range; ratings outside it are pinned to the ends
 const pct = (r) => `${(100 * Math.min(MAX, Math.max(MIN, r) - MIN)) / (MAX - MIN)}%`;
@@ -54,7 +55,7 @@ function Case({ t }) {
   );
 }
 
-export function ConsolePane({ busy, mode, result, onNext, solved }) {
+export function ConsolePane({ busy, mode, result, onNext, solved, rate }) {
   const [picked, setPicked] = useState(0);
   // jump to the first failing example when a new result arrives
   useEffect(() => {
@@ -83,6 +84,9 @@ export function ConsolePane({ busy, mode, result, onNext, solved }) {
   const hidden = result.tests.filter((t) => !t.visible);
   const shown = visible[picked] ?? visible[0];
 
+  // optional: how the problem felt (only after a Submit). Solved problems show it right under the Next button.
+  const rateRow = result.mode === "submit" && rate ? <RateProblem state={rate.state} onFeel={rate.onFeel} onLiked={rate.onLiked} /> : null;
+
   // A solved Submit leads with what matters now (rating change, next problem); a failure leads with the cases.
   const outcome = (
     <>
@@ -93,6 +97,7 @@ export function ConsolePane({ busy, mode, result, onNext, solved }) {
           <span className="muted">Solved. We will pick one that fits your new rating.</span>
         </div>
       )}
+      {accepted && rateRow}
     </>
   );
   const details = (
@@ -129,6 +134,7 @@ export function ConsolePane({ busy, mode, result, onNext, solved }) {
         <span className="badge" style={{ marginLeft: "auto" }}>{result.mode === "submit" ? "Submit" : "Run"}</span>
       </div>
       {accepted ? <>{outcome}{details}</> : <>{details}{outcome}</>}
+      {!accepted && rateRow}
     </div>
   );
 }

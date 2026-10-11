@@ -1,6 +1,7 @@
 import Editor from "@monaco-editor/react";
 import { useEffect, useRef, useState } from "react";
 import { api } from "../api.js";
+import { ActivityTracker } from "../activityTracker.js";
 import { loadDraft, removeDraft, saveDraft, useSplit } from "../hooks.js";
 import { Play, Reset, Send } from "../icons.jsx";
 import { EDITOR_OPTIONS, defineLamplightThemes } from "../monacoTheme.js";
@@ -9,7 +10,7 @@ import { ConsolePane } from "./ConsolePane.jsx";
 import { HelpPane } from "./HelpPane.jsx";
 import { ProblemPane } from "./ProblemPane.jsx";
 
-export function Workspace({ user, slug, recommendation, aiEnabled, theme, dataVersion, onUser, onSolved, onNext, nextBusy }) {
+export function Workspace({ user, slug, source, recommendation, aiEnabled, theme, dataVersion, onUser, onSolved, onNext, nextBusy }) {
   const learnerId = user.learnerId;
   const [problem, setProblem] = useState(null);
   const [language, setLanguage] = useState("python");
@@ -23,6 +24,10 @@ export function Workspace({ user, slug, recommendation, aiEnabled, theme, dataVe
   const [feedback, setFeedback] = useState(null); // { text } | { error } | { busy: true }
   const [leftTab, setLeftTab] = useState("problem");
   const [mobilePane, setMobilePane] = useState("problem");
+  const [told, setTold] = useState({ confidence: null, feel: null, liked: null, runs: 0 }); // what the learner told us about this problem
+  const trackerRef = useRef(null);
+  trackerRef.current ??= new ActivityTracker(); // totals about how the learner works in the editor (see activityTracker.js)
+  const tracker = trackerRef.current;
 
   const left = useSplit({ initial: 520, min: 340, max: 900, axis: "x", storeKey: "split-left" });
   const consoleH = useSplit({ initial: 330, min: 120, max: 620, axis: "y", reverse: true, storeKey: "split-console" });
@@ -30,7 +35,11 @@ export function Workspace({ user, slug, recommendation, aiEnabled, theme, dataVe
   // load the problem and any hints already opened
   useEffect(() => {
     setProblem(null); setResult(null); setFeedback(null); setError(""); setLeftTab("problem");
-    setHints({ revealed: [], next: 1 });
+    setHints({ revealed: [], next: 1 }); setTold({ confidence: null, feel: null, liked: null, runs: 0 });
+    tracker.restart();
+    // tell the server the problem was opened and how we got here (recommendation, library or directly)
+    api("/problem-event", { method: "POST", body: { problem: slug, kind: "opened", value: source === "rec" || source === "library" ? source : "direct" } });
+    api(`/learners/${learnerId}/problem-state/${slug}`).then((r) => r.ok && setTold(r.data));
     api(`/learners/${learnerId}/hints/${slug}`).then((r) => r.ok && setHints({ revealed: r.data.revealed ?? [], next: r.data.next ?? null }));
     api(`/problems/${slug}`).then((r) => {
       if (r.ok) { setProblem(r.data); setStartedAt(new Date().toISOString()); } else setError("Could not load the problem.");
@@ -40,7 +49,7 @@ export function Workspace({ user, slug, recommendation, aiEnabled, theme, dataVe
   // the learner deleted their learning data from the Account menu
   useEffect(() => {
     if (!dataVersion) return;
-    setResult(null); setFeedback(null); setHints({ revealed: [], next: 1 }); setDrafts({});
+    setResult(null); setFeedback(null); setHints({ revealed: [], next: 1 }); setDrafts({}); setTold({ confidence: null, feel: null, liked: null, runs: 0 });
   }, [dataVersion]);
 
   const draftKey = `${slug}:${language}`;
@@ -50,11 +59,18 @@ export function Workspace({ user, slug, recommendation, aiEnabled, theme, dataVe
   async function send(which) {
     if (busy || !problem) return;
     setBusy(true); setMode(which); setError("");
-    const r = await api(`/${which}`, { method: "POST", body: { problem: slug, language, code, startedAt } });
+    const r = await api(`/${which}`, { method: "POST", body: { problem: slug, language, code, startedAt, activity: tracker.take() } });
     if (r.data.needsConsent) onUser({ ...user, consentCurrent: false }); // the wording changed in the meantime: ask again
     else if (!r.ok) setError(r.data.error ?? "Something went wrong.");
     else { setResult(r.data); if (which === "submit") onSolved(); }
     setBusy(false);
+  }
+
+  // optional answers: how confident before, how it felt after, liked or not
+  async function tell(kind, value) {
+    const key = kind === "confidence" ? "confidence" : kind === "feel" ? "feel" : "liked";
+    setTold((t) => ({ ...t, [key]: value }));
+    api("/problem-event", { method: "POST", body: { problem: slug, kind, value } });
   }
 
   async function revealHint() {
@@ -83,6 +99,8 @@ export function Workspace({ user, slug, recommendation, aiEnabled, theme, dataVe
   const onMount = (editor, monaco) => {
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => latest.current.send("run"));
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.Enter, () => latest.current.send("submit"));
+    // pasting is noted by size only (never the pasted text itself)
+    editor.onDidPaste(({ range }) => tracker.paste(editor.getModel().getValueInRange(range).length));
   };
 
   const why = recommendation && !recommendation.done && recommendation.problem.slug === slug
@@ -111,7 +129,9 @@ export function Workspace({ user, slug, recommendation, aiEnabled, theme, dataVe
           </div>
           <div className="pane-body">
             {leftTab === "problem"
-              ? <ProblemPane problem={problem} why={why} disabled={nextBusy} skipLabel={solvedHere ? "Next problem →" : "Skip to another problem"} onSkip={() => onNext(!solvedHere)} />
+              ? <ProblemPane problem={problem} why={why} disabled={nextBusy} solved={solvedHere} skipLabel={solvedHere ? "Next problem →" : "Skip to another problem"}
+                  onSkip={(reason) => onNext(!solvedHere, reason)}
+                  showConfidence={!result && !(told.runs > 0)} confidence={told.confidence} onConfidence={(n) => tell("confidence", n)} />
               : <HelpPane hints={hints} onHint={revealHint} disabled={busy || !problem} showAi={showAi} aiHint={aiHint} feedback={feedback} onExplain={explainResult} />}
           </div>
         </section>
@@ -120,11 +140,11 @@ export function Workspace({ user, slug, recommendation, aiEnabled, theme, dataVe
 
         <section className={`pane ${mobilePane === "code" ? "" : "hide-mobile"}`} aria-label="Code">
           <div className="editor-head">
-            <select className="select select-sm" value={language} onChange={(e) => setLanguage(e.target.value)} aria-label="Language">
+            <select className="select select-sm" value={language} onChange={(e) => { tracker.languageSwitch(); setLanguage(e.target.value); }} aria-label="Language">
               {LANGUAGES.map((l) => (<option key={l.key} value={l.key}>{l.label}</option>))}
             </select>
             <button className="btn btn-ghost" disabled={busy || !problem} title="Back to the starter code"
-              onClick={() => { setDrafts((d) => { const n = { ...d }; delete n[draftKey]; return n; }); removeDraft(learnerId, draftKey); }}>
+              onClick={() => { tracker.reset(); setDrafts((d) => { const n = { ...d }; delete n[draftKey]; return n; }); removeDraft(learnerId, draftKey); }}>
               <Reset size={15} /> <span className="label">Reset</span>
             </button>
             <div className="spacer" />
@@ -139,7 +159,7 @@ export function Workspace({ user, slug, recommendation, aiEnabled, theme, dataVe
                 path={`${slug}.${language}`}
                 language={LANGUAGES.find((l) => l.key === language).monaco}
                 value={code}
-                onChange={(v) => { const val = v ?? ""; saveDraft(learnerId, draftKey, val); setDrafts((d) => ({ ...d, [draftKey]: val })); }}
+                onChange={(v, ev) => { tracker.edit(ev?.changes); const val = v ?? ""; saveDraft(learnerId, draftKey, val); setDrafts((d) => ({ ...d, [draftKey]: val })); }}
                 theme={theme === "dark" ? "lamplight-dark" : "lamplight-paper"}
                 beforeMount={defineLamplightThemes}
                 onMount={onMount}
@@ -152,7 +172,8 @@ export function Workspace({ user, slug, recommendation, aiEnabled, theme, dataVe
           <div className="console" style={{ "--console-h": `${consoleH.size}px` }}>
             <div className="tabs"><span className="tab" aria-selected="true" style={{ cursor: "default" }}>Results</span></div>
             {error && <div className="callout bad" style={{ margin: "10px 16px 0" }} role="alert">{error}</div>}
-            <ConsolePane busy={busy} mode={mode} result={result} solved={solvedHere} onNext={() => onNext(false)} />
+            <ConsolePane busy={busy} mode={mode} result={result} solved={solvedHere} onNext={() => onNext(false)}
+              rate={{ state: told, onFeel: (v) => tell("feel", v), onLiked: (v) => tell("liked", v) }} />
           </div>
         </section>
       </div>

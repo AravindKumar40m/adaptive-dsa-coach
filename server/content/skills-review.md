@@ -1,0 +1,126 @@
+# Proposed skill tags (automatic, needs a human read)
+
+Main concept first with its weight; secondary skills only where there is evidence. Edit `skills.json` to correct anything, then run `npm run content:build && npm run content:seed`.
+
+| problem | skills (weight) | why the extra skills |
+|---|---|---|
+| backspace-compare | stack_queue 0.7, strings 0.3 | strings: input: the problem takes a string |
+| balanced-brackets | stack_queue 0.7, strings 0.3 | strings: input: the problem takes a string |
+| baseball-score | stack_queue 0.7, strings 0.3 | strings: input: the problem takes a string |
+| best-streak-sum | arrays 1.0 | - |
+| best-window | sliding_window 1.0 | - |
+| build-tree-from-orders | trees 0.6, recursion 0.2, hashing 0.2 | recursion: code: optimal() has a function (build) that calls itself, hint: the pattern hint names it; hashing: code(weak): optimal() uses a dict / set, hint: the pattern hint names it |
+| can-finish-courses | graphs 1.0 | - |
+| candy-distribution | greedy 1.0 | - |
+| cheapest-with-stops | graphs 1.0 | - |
+| clean-palindrome | strings 0.7, two_pointers 0.3 | two_pointers: hint: the pattern hint names it |
+| combination-sum-count | backtracking 0.6, dp 0.2, recursion 0.2 | dp: code: better() memoizes or fills a dp table, hint: the pattern hint names it; recursion: code: better() has a function (go) that calls itself, hint: the nudge/walkthrough mentions it |
+| compress-string | strings 0.6, hashing 0.2, two_pointers 0.2 | hashing: hint: the pattern hint names it; two_pointers: hint: the pattern hint names it |
+| connected-groups | graphs 1.0 | - |
+| cookie-match | greedy 0.7, sorting 0.3 | sorting: code: optimal() sorts the data, hint: the pattern hint names it |
+| count-inversions | sorting 0.7, recursion 0.3 | recursion: code: optimal() has a function (sort) that calls itself, hint: the nudge/walkthrough mentions it |
+| count-windows-above | sliding_window 1.0 | - |
+| cycle-length | linked_list 1.0 | - |
+| days-until-warmer | stack_queue 1.0 | - |
+| decode-nested | stack_queue 0.7, strings 0.3 | strings: input: the problem takes a string |
+| distinct-permutations | recursion 0.6, strings 0.2, sorting 0.2 | strings: input: the problem takes a string; sorting: code: better() sorts the data |
+| edit-distance | dp 0.6, recursion 0.2, strings 0.2 | recursion: code: better() has a function (go) that calls itself, hint: the nudge/walkthrough mentions it; strings: input: the problem takes a string |
+| fair-capacity | binary_search 1.0 | - |
+| fibonacci-nth | recursion 0.7, dp 0.3 | dp: code: better() memoizes or fills a dp table, hint: the pattern hint names it |
+| find-center | graphs 1.0 | - |
+| first-missing-positive | arrays 1.0 | - |
+| first-repeat | hashing 1.0 | - |
+| first-unique-char | strings 1.0 | - |
+| four-sum-count | hashing 1.0 | - |
+| gcd-recursive | recursion 1.0 | - |
+| generate-parentheses-count | recursion 0.7, dp 0.3 | dp: code: better() memoizes or fills a dp table, hint: the nudge/walkthrough mentions it |
+| grid-islands | graphs 1.0 | - |
+| grid-paths | dp 1.0 | - |
+| group-anagram-count | hashing 0.6, sorting 0.2, strings 0.2 | sorting: code: optimal() sorts the data, hint: the pattern hint names it; strings: input: the problem takes a string |
+| height-checker | sorting 1.0 | - |
+| insert-position | binary_search 1.0 | - |
+| integer-partitions | recursion 0.7, dp 0.3 | dp: code: better() memoizes or fills a dp table, hint: the nudge/walkthrough mentions it |
+| integer-sqrt | binary_search 1.0 | - |
+| invert-tree | trees 0.7, recursion 0.3 | recursion: code: optimal() has a function (optimal) that calls itself, hint: the pattern hint names it |
+| is-anagram | strings 1.0 | - |
+| is-valid-bst | trees 0.7, recursion 0.3 | recursion: code: optimal() has a function (check) that calls itself |
+| jump-reach | greedy 1.0 | - |
+| knapsack-01 | dp 0.7, recursion 0.3 | recursion: code: better() has a function (go) that calls itself |
+| kth-largest | heaps 1.0 | - |
+| kth-smallest-in-lists | heaps 1.0 | - |
+| largest-number | sorting 1.0 | - |
+| largest-rectangle | stack_queue 1.0 | - |
+| last-stone-weight | heaps 0.7, stack_queue 0.3 | stack_queue: hint: the pattern hint names it |
+| lemonade-change | greedy 1.0 | - |
+| level-sums | trees 0.6, stack_queue 0.2, graphs 0.2 | stack_queue: hint: the pattern hint names it; graphs: hint: the pattern hint names it |
+| longest-balanced-run | hashing 1.0 | - |
+| longest-consecutive-run | hashing 1.0 | - |
+| longest-mountain | two_pointers 1.0 | - |
+| longest-palindrome-part | strings 1.0 | - |
+| longest-repeat-replace | sliding_window 0.7, strings 0.3 | strings: input: the problem takes a string |
+| longest-unique-run | sliding_window 0.7, strings 0.3 | strings: input: the problem takes a string |
+| lowest-common-ancestor | trees 0.7, recursion 0.3 | recursion: code: optimal() has a function (find) that calls itself, hint: the pattern hint names it |
+| max-depth | trees 0.7, recursion 0.3 | recursion: code: optimal() has a function (optimal) that calls itself, hint: the pattern hint names it |
+| max-non-overlap | greedy 0.7, sorting 0.3 | sorting: code: optimal() sorts the data, hint: the nudge/walkthrough mentions it |
+| max-path-sum | trees 0.7, recursion 0.3 | recursion: code: optimal() has a function (gain) that calls itself, hint: the pattern hint names it |
+| max-product-three | sorting 1.0 | - |
+| max-profit-trades | greedy 1.0 | - |
+| max-vowels-window | sliding_window 0.7, strings 0.3 | strings: input: the problem takes a string |
+| median-two-sorted | binary_search 1.0 | - |
+| merge-sorted-arrays | sorting 0.7, two_pointers 0.3 | two_pointers: hint: the pattern hint names it |
+| merge-two-lists | linked_list 0.7, two_pointers 0.3 | two_pointers: hint: the pattern hint names it |
+| middle-value | linked_list 1.0 | - |
+| min-coins | dp 0.7, recursion 0.3 | recursion: code: better() has a function (go) that calls itself, hint: the nudge/walkthrough mentions it |
+| min-cost-path | graphs 0.6, heaps 0.2, stack_queue 0.2 | heaps: code: optimal() uses a heap, hint: the pattern hint names it; stack_queue: hint: the pattern hint names it |
+| min-cost-stairs | dp 1.0 | - |
+| min-jumps | greedy 0.7, graphs 0.3 | graphs: hint: the pattern hint names it |
+| min-rotated | binary_search 1.0 | - |
+| min-subarray-len | sliding_window 0.7, two_pointers 0.3 | two_pointers: hint: the pattern hint names it |
+| min-window-cover | strings 0.7, sliding_window 0.3 | sliding_window: hint: the pattern hint names it |
+| missing-number | arrays 1.0 | - |
+| mountain-peak | binary_search 1.0 | - |
+| n-queens-count | backtracking 0.7, recursion 0.3 | recursion: code: optimal() has a function (place) that calls itself, code: better() has a function (place) that calls itself |
+| nearby-duplicate | hashing 1.0 | - |
+| next-permutation | two_pointers 1.0 | - |
+| no-adjacent-ones | backtracking 0.6, dp 0.2, recursion 0.2 | dp: code: better() memoizes or fills a dp table, hint: the nudge/walkthrough mentions it; recursion: code: better() has a function (go) that calls itself |
+| paint-fence-ways | dp 0.7, recursion 0.3 | recursion: code: better() has a function (go) that calls itself |
+| pair-count | hashing 1.0 | - |
+| palindrome-partitions | backtracking 0.6, strings 0.2, dp 0.2 | strings: input: the problem takes a string; dp: hint: the pattern hint names it |
+| partition-k-groups | backtracking 0.6, sorting 0.2, recursion 0.2 | sorting: code: optimal() sorts the data; recursion: code: optimal() has a function (place) that calls itself |
+| peak-altitude | arrays 1.0 | - |
+| peak-overlap | sorting 1.0 | - |
+| postfix-eval | stack_queue 0.7, strings 0.3 | strings: input: the problem takes a string |
+| pow-mod | recursion 1.0 | - |
+| product-except-self | arrays 1.0 | - |
+| rain-catch | arrays 0.7, two_pointers 0.3 | two_pointers: hint: the pattern hint names it |
+| remove-adjacent-dupes | stack_queue 0.7, strings 0.3 | strings: input: the problem takes a string |
+| remove-duplicates-length | two_pointers 1.0 | - |
+| remove-nth-from-end | linked_list 0.7, two_pointers 0.3 | two_pointers: hint: the pattern hint names it |
+| reverse-k-group | linked_list 1.0 | - |
+| reverse-list | linked_list 1.0 | - |
+| rope-join | heaps 0.7, greedy 0.3 | greedy: hint: the pattern hint names it |
+| rotate-right | arrays 1.0 | - |
+| rotting-oranges | graphs 0.7, stack_queue 0.3 | stack_queue: code: optimal() uses a deque / queue, hint: the pattern hint names it |
+| same-tree | trees 0.7, recursion 0.3 | recursion: code: optimal() has a function (optimal) that calls itself, hint: the pattern hint names it |
+| search-rotated | binary_search 0.7, sorting 0.3 | sorting: hint: the pattern hint names it |
+| search-sorted | binary_search 1.0 | - |
+| second-highest | arrays 1.0 | - |
+| shortest-grid-path | graphs 0.7, stack_queue 0.3 | stack_queue: code: optimal() uses a deque / queue, hint: the nudge/walkthrough mentions it |
+| shortest-palindrome-extension | strings 1.0 | - |
+| skip-neighbours | dp 1.0 | - |
+| smallest-gap | sorting 1.0 | - |
+| sort-list | linked_list 0.6, recursion 0.2, sorting 0.2 | recursion: code: optimal() has a function (sort) that calls itself, hint: the pattern hint names it; sorting: hint: the pattern hint names it |
+| sorted-pair-sum | two_pointers 1.0 | - |
+| sorted-squares | two_pointers 1.0 | - |
+| stair-ways | recursion 0.7, dp 0.3 | dp: code: better() memoizes or fills a dp table, hint: the pattern hint names it |
+| subarray-sum-count | hashing 1.0 | - |
+| subset-sum-count | backtracking 0.7, recursion 0.3 | recursion: code: optimal() has a function (go) that calls itself, hint: the nudge/walkthrough mentions it |
+| three-sum-count | two_pointers 0.7, sorting 0.3 | sorting: code: optimal() sorts the data, hint: the pattern hint names it |
+| top-k-frequent | heaps 0.6, hashing 0.2, sorting 0.2 | hashing: code(weak): optimal() uses a dict / set, hint: the pattern hint names it; sorting: code: optimal() sorts the data, hint: the nudge/walkthrough mentions it |
+| top-k-sum | heaps 1.0 | - |
+| town-judge | graphs 1.0 | - |
+| tree-diameter | trees 0.7, recursion 0.3 | recursion: code: optimal() has a function (height) that calls itself, hint: the pattern hint names it |
+| widest-fence | two_pointers 1.0 | - |
+| wildcard-match | dp 0.6, recursion 0.2, strings 0.2 | recursion: code: better() has a function (go) that calls itself, hint: the nudge/walkthrough mentions it; strings: input: the problem takes a string |
+| window-max-total | sliding_window 0.7, stack_queue 0.3 | stack_queue: code: optimal() uses a deque / queue, hint: the pattern hint names it |
+| word-pattern-match | strings 0.7, hashing 0.3 | hashing: code(weak): optimal() uses a dict / set, hint: the pattern hint names it |

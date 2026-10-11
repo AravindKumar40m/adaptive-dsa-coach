@@ -1,4 +1,15 @@
 import { Router } from "express";
+import { config } from "../config.js";
+import { RecommendationEvent } from "../models/RecommendationEvent.js";
+import { Submission } from "../models/Submission.js";
+import { touchSession } from "../sessions.js";
+import { PICKER_VERSION, RECOMMENDER2_VERSION } from "../versions.js";
+import { createModel } from "../kt/models.js";
+import { SHADOW_PARAMS } from "../kt/params.js";
+import { shadowCatalog, toLearner } from "../kt/shadow.js";
+import { KnowledgeState } from "../models/KnowledgeState.js";
+import { policyFor } from "../policy.js";
+import { pickNextV2, slotFor } from "../recommender2.js";
 import { loadLearnerState } from "../learnerState.js";
 import { conceptStatus, pickNext } from "../picker.js";
 import { START_RATING } from "../skill.js";
@@ -35,8 +46,50 @@ router.get("/learners/:learnerId/next", async (req, res, next) => {
   try {
     if (!ID_PATTERN.test(req.params.learnerId)) return res.status(400).json({ error: "bad learner id" });
     const exclude = new Set(String(req.query.exclude ?? "").split(",").filter(Boolean).slice(0, 100));
-    const state = await loadLearnerState(req.params.learnerId);
-    const pick = pickNext({ ...state, exclude });
+    const learnerId = req.params.learnerId;
+    const state = await loadLearnerState(learnerId);
+    const policy = policyFor(learnerId); // v1 or v2 (see policy.js)
+
+    // The same state gets the same pick: revisiting the page must not reshuffle a recommendation (and not log it twice).
+    // "State" = the learner's latest Submit plus the list of skipped problems.
+    const lastSubmit = await Submission.findOne({ learnerId, mode: "submit" }).sort({ createdAt: -1 }).select("_id").lean();
+    const stateKey = `${lastSubmit?._id ?? "none"}|${[...exclude].sort().join(",")}`;
+    const prev = await RecommendationEvent.findOne({ learnerId }).sort({ createdAt: -1 }).lean();
+    if (prev && !prev.done && (prev.policy ?? "v1") === policy && prev.stateKey === stateKey && Date.now() - prev.createdAt.getTime() < 6 * 3600 * 1000 && !state.solved.has(prev.chosen.slug)) {
+      const problem = state.problems.find((p) => p.slug === prev.chosen.slug);
+      if (problem) {
+        return res.json({ done: false, problem, expectedSuccess: prev.chosen.expectedSuccess, mode: prev.mode, reason: prev.reason, repeated: prev.repeated, explored: prev.explored, recommendationId: prev._id, reused: true, policy, slot: prev.v2?.slot ?? null });
+      }
+    }
+
+    const sessionId = await touchSession(learnerId).catch(() => null);
+    let pick, v2info = null;
+    if (policy === "v2") {
+      // the new recommender: it reads the knowledge model's memory of this learner (see recommender2.js)
+      const model = createModel("kt-full", SHADOW_PARAMS, await shadowCatalog());
+      model.difficultyProvider = (item) => state.difficulty.get(item.slug) ?? item.seed; // the live, drifted difficulty
+      const L = toLearner(model, await KnowledgeState.findOne({ learnerId }).lean());
+      const attemptsInSession = sessionId ? await Submission.countDocuments({ learnerId, sessionId, mode: "submit" }) : 0;
+      const r = pickNextV2({ concepts: state.concepts, problems: state.problems, solved: state.solved, exclude, model, L, now: Date.now(), slot: slotFor(attemptsInSession) });
+      pick = r.done ? r : { ...r, expectedSuccess: r.p, mode: "v2" };
+      v2info = r.done ? null : { slot: r.slot, target: r.target, score: r.score, parts: r.parts, warmup: r.warmup };
+    } else {
+      pick = pickNext({ ...state, exclude, explore: { rate: config.pickerExploreRate } });
+    }
+
+    // log the decision (a logging failure must not stop the learner getting a problem)
+    let recommendationId = null;
+    try {
+      const base = { learnerId, sessionId, pickerVersion: policy === "v2" ? RECOMMENDER2_VERSION : PICKER_VERSION, policy, stateKey, exploreRate: policy === "v2" ? null : config.pickerExploreRate, solvedCount: state.solved.size, excludeCount: exclude.size, reason: pick.reason };
+      const row = await RecommendationEvent.create(pick.done ? { ...base, done: true } : {
+        ...base, done: false, mode: pick.mode, explored: pick.explored, propensity: pick.propensity, greedySlug: pick.greedySlug, repeated: pick.repeated,
+        chosen: { slug: pick.problem.slug, concept: pick.problem.concept, difficultyLabel: pick.problem.difficulty, expectedSuccess: pick.expectedSuccess, conceptRating: state.ratings.get(pick.problem.concept) ?? START_RATING },
+        candidates: pick.candidates, fitsCount: pick.fitsCount, poolSize: pick.poolSize, openCount: pick.openCount, v2: v2info,
+      });
+      recommendationId = row._id;
+    } catch (err) {
+      console.error("could not log recommendation:", err.message);
+    }
     if (pick.done) return res.json({ done: true, reason: pick.reason });
     res.json({
       done: false,
@@ -45,6 +98,10 @@ router.get("/learners/:learnerId/next", async (req, res, next) => {
       mode: pick.mode,
       reason: pick.reason,
       repeated: pick.repeated,
+      explored: pick.explored,
+      recommendationId,
+      policy,
+      slot: v2info?.slot ?? null,
     });
   } catch (err) {
     next(err);

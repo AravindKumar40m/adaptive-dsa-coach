@@ -165,6 +165,21 @@ def load_other_languages():
 OTHER = load_other_languages()
 
 
+SKILL_FILE = HERE / "skills.json"
+SKILL_TAGS = json.loads(SKILL_FILE.read_text(encoding="utf-8")) if SKILL_FILE.exists() else {}
+
+
+def skills_for(meta):
+    """Skills a problem needs, main concept first. From skills.json (see tag_skills.py); a problem without an entry needs only its concept."""
+    skills = SKILL_TAGS.get(meta["slug"], {}).get("skills") or [{"concept": meta["concept"], "weight": 1.0}]
+    assert skills[0]["concept"] == meta["concept"], f"{meta['slug']}: the first skill must be the main concept"
+    assert abs(sum(s["weight"] for s in skills) - 1.0) < 1e-9, f"{meta['slug']}: skill weights must add up to 1"
+    assert len({s["concept"] for s in skills}) == len(skills), f"{meta['slug']}: a skill is listed twice"
+    for s in skills:
+        assert s["concept"] in CONCEPT_KEYS, f"{meta['slug']}: unknown skill {s['concept']}"
+    return skills
+
+
 def build_problem(folder):
     meta = json.loads((folder / "problem.json").read_text(encoding="utf-8"))
     mod = load_solutions(folder)
@@ -246,6 +261,7 @@ def build_problem(folder):
     problem = {k: meta[k] for k in ("slug", "title", "concept", "difficulty", "statement", "constraints",
                                     "signature", "examples", "expected", "hints")}
     problem["rating"] = RATING[meta["difficulty"]]
+    problem["skills"] = skills_for(meta)
     # examples keep the author's answers; they were verified against the solutions above
     return problem, tests, refs
 

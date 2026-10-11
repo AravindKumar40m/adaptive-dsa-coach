@@ -16,6 +16,8 @@ export const Reset = make(<><path d="M4 12a8 8 0 1 0 2.5-5.8" /><path d="M4 4v5h
 export const Spark = make(<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" />);
 export const Target = make(<><circle cx="12" cy="12" r="8" /><circle cx="12" cy="12" r="3.5" /></>);
 export const Branch = make(<><circle cx="6" cy="6" r="2.2" /><circle cx="6" cy="18" r="2.2" /><circle cx="18" cy="9" r="2.2" /><path d="M6 8.2v7.6M18 11.2c0 3-6 2-12 4.6" /></>);
+export const ThumbUp = make(<><path d="M7 11v9H4v-9h3z" /><path d="M7 11l4-8c1.5 0 2.5 1 2.5 2.5V9H19a2 2 0 0 1 2 2.3l-1.2 7A2 2 0 0 1 17.8 20H7" /></>);
+export const ThumbDown = (props) => <ThumbUp {...props} style={{ transform: "scaleY(-1)", ...(props.style ?? {}) }} />;
 export const Shield = make(<path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z" />);
 
 // The brand mark: a lamp shade over a small stem (a reading lamp).

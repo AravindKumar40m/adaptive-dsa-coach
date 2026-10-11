@@ -9,6 +9,8 @@ import content from "./routes/content.js";
 import run from "./routes/run.js";
 import skills from "./routes/skills.js";
 import hints from "./routes/hints.js";
+import events from "./routes/events.js";
+import placement from "./routes/placement.js";
 
 const app = express();
 // No open CORS: the page and the API live on one address (the dev proxy / the production server), and the session
@@ -23,10 +25,12 @@ app.use("/api", google);
 app.use("/api", content); // problems and concepts are public
 
 // Everything about one learner needs a login, only their own id, and (for anything that records) current consent.
-app.use(["/api/run", "/api/submit", "/api/hint", "/api/feedback", "/api/learners"], guardLearner);
+app.use(["/api/run", "/api/submit", "/api/hint", "/api/feedback", "/api/problem-event", "/api/placement", "/api/learners"], guardLearner);
 app.use("/api", run);
 app.use("/api", skills);
 app.use("/api", hints);
+app.use("/api", events);
+app.use("/api", placement);
 
 // last-resort error handler: never leak stack traces to the browser
 app.use((err, _req, res, _next) => {

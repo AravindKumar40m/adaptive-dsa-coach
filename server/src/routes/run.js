@@ -7,6 +7,11 @@ import { TestCase } from "../models/TestCase.js";
 import { Submission } from "../models/Submission.js";
 import { eraseLearnerData } from "../erase.js";
 import { applySubmission, priorHistory, secondsSince } from "../rating.js";
+import { sanitizeActivity } from "../activity.js";
+import { collectSignals } from "../logSignals.js";
+import { touchSession } from "../sessions.js";
+import { recordShadow } from "../kt/shadow.js";
+import { LOGGING_VERSION, SCORING_VERSION } from "../versions.js";
 
 const router = Router();
 
@@ -32,6 +37,8 @@ async function handle(mode, req, res) {
   const tests = await TestCase.find(filter).sort({ idx: 1 }).lean();
 
   const secondsSpent = secondsSince(startedAt);
+  const sessionId = await touchSession(learnerId).catch(() => null);
+  const activity = sanitizeActivity(req.body?.activity); // how the learner worked since their last Run/Submit
   const history = mode === "submit" ? await priorHistory(learnerId, slug) : null; // must be read before this submission is logged
   const started = Date.now();
   let graded;
@@ -47,14 +54,26 @@ async function handle(mode, req, res) {
   const total = tests.length;
 
   // log every run/submit; a logging failure must not break the learner's result
+  let signals = {};
+  try {
+    signals = await collectSignals({ learnerId, slug, language, code, problem, graded, tests });
+  } catch (err) {
+    console.error("could not compute signals:", err.message);
+  }
   let submissionId = null;
   try {
     const row = await Submission.create({
       learnerId, problem: slug, language, mode, code, secondsSpent, startedAt: secondsSpent == null ? undefined : new Date(startedAt),
       verdict: graded.verdict, passed, total,
-      perTest: graded.tests.map(({ idx, verdict }) => ({ idx, verdict })),
+      perTest: signals.perTest ?? graded.tests.map(({ idx, verdict }) => ({ idx, verdict })),
       timeSec: graded.timeSec, memoryKb: graded.memoryKb,
       compileOutput: graded.compileOutput?.slice(0, 2000), stderr: graded.stderr?.slice(0, 1500), durationMs,
+      // Logging v2
+      sessionId, statusId: graded.statusId, exitCode: graded.exitCode, exitSignal: graded.exitSignal, wallTimeSec: graded.wallTimeSec,
+      errorName: graded.errorName, errorFamily: graded.errorFamily, firstFailKind: signals.firstFailKind,
+      codeStats: signals.codeStats, approach: signals.approach, activity,
+      openSource: signals.openSource, recommendationId: signals.recommendationId, runsOnProblemBefore: signals.runsOnProblemBefore,
+      scoringVersion: SCORING_VERSION, loggingVersion: LOGGING_VERSION,
     });
     submissionId = row._id;
   } catch (err) {
@@ -64,8 +83,14 @@ async function handle(mode, req, res) {
   // Only Submit moves the skill rating (Run never does). A failure here must not hide the learner's result.
   let skill = null;
   if (mode === "submit") {
+    // the new knowledge model predicts silently BEFORE the rating changes (shadow mode: logs only, changes nothing)
     try {
-      skill = await applySubmission({ learnerId, problem, graded, passed, total, history, secondsSpent, submissionId });
+      await recordShadow({ learnerId, problem, graded, history, submissionId, sessionId });
+    } catch (err) {
+      console.error("knowledge-model shadow failed:", err.message);
+    }
+    try {
+      skill = await applySubmission({ learnerId, problem, graded, passed, total, history, secondsSpent, submissionId, sessionId });
     } catch (err) {
       console.error("could not update skill rating:", err.message);
     }

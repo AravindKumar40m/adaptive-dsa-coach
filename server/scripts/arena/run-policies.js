@@ -1,0 +1,97 @@
+// Compares recommendation policies in the closed-loop simulator (see policy-sim.js for what this can and cannot show).
+//   npm run policies                      the full comparison (writes docs/recommender-results.md)
+//   npm run policies -- --quick           one world, one seed, fewer learners (writes nothing)
+//   options: --seeds 3 --learners 250
+// Every policy faces exactly the same simulated learners, so differences are measured per learner ("paired").
+import { writeFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { LEARN_RULES, POLICIES, simulatePolicy } from "./policy-sim.js";
+import { WORLDS } from "./sim.js";
+
+const value = (name, fallback) => { const i = process.argv.indexOf(`--${name}`); return i >= 0 && process.argv[i + 1] && !process.argv[i + 1].startsWith("--") ? process.argv[i + 1] : fallback; };
+const quick = process.argv.includes("--quick");
+const seeds = Number(value("seeds", quick ? 1 : 3)), learners = Number(value("learners", quick ? 80 : 250));
+const policies = Object.keys(POLICIES);
+const configs = quick ? [["W4-realistic", "outcome"]]
+  : [["W0-static", "outcome"], ...["outcome", "zpd", "constant"].flatMap((r) => [["W3-forgetting", r], ["W4-realistic", r]])];
+
+// what we look at: [key, label, better, digits]  (better: "low" or "high")
+const METRICS = [
+  ["rmse10", "error in our picture of the learner after 10 problems, over the topics they can reach (rating points)", "low", 1],
+  ["rmse20", "... after 20 problems", "low", 1],
+  ["rmse40", "... after 40 problems", "low", 1],
+  ["gain40", "true skill gained by problem 40 (rating points, depends on the learning rule)", "high", 1],
+  ["zoneShare", "share of problems in the productive zone (45-85% likely)", "high", 3],
+  ["badSessionShare", "share of sessions that contain 3 failures in a row", "low", 3],
+  ["attempts", "problems done before leaving (engagement)", "high", 1],
+  ["skills", "different skills practised", "high", 1],
+  ["solved", "problems solved", "high", 1],
+];
+
+const mean = (xs) => xs.reduce((s, x) => s + x, 0) / xs.length;
+const sd = (xs) => { const m = mean(xs); return Math.sqrt(xs.reduce((s, x) => s + (x - m) ** 2, 0) / Math.max(1, xs.length - 1)); };
+const f = (x, d) => (Number.isFinite(x) ? x.toFixed(d) : "-");
+
+function runConfig(world, rule) {
+  const byPolicy = {};
+  for (const policy of policies) {
+    byPolicy[policy] = new Map();
+    for (let seed = 1; seed <= seeds; seed++) for (const r of simulatePolicy(world, policy, { learners, seed, learnRule: rule })) byPolicy[policy].set(`${seed}-${r.learner}`, r);
+    process.stdout.write(`  ${world} / ${rule} / ${policy} done\n`);
+  }
+  return byPolicy;
+}
+
+/** The policy's average and its paired difference from the baseline, BOTH over the learners that have a value under both policies. */
+function compare(byPolicy, metric, policy, baseline = "v1-production") {
+  const pairs = [...byPolicy[policy]].map(([k, r]) => [r[metric], byPolicy[baseline].get(k)?.[metric]]).filter(([v, b]) => v != null && b != null && Number.isFinite(v) && Number.isFinite(b));
+  const diffs = pairs.map(([v, b]) => v - b);
+  return { mean: mean(pairs.map(([v]) => v)), n: pairs.length, diff: mean(diffs), se: diffs.length > 1 ? sd(diffs) / Math.sqrt(diffs.length) : NaN };
+}
+
+function table(byPolicy) {
+  const lines = [];
+  for (const [metric, label, better, digits] of METRICS) {
+    lines.push(`**${label}** (${better === "low" ? "lower" : "higher"} is better)`, "", "| policy | average | difference from today's picker |", "|---|---|---|");
+    for (const policy of policies) {
+      const c = compare(byPolicy, metric, policy);
+      const real = Math.abs(c.diff) > 2 * c.se;
+      const good = better === "low" ? c.diff < 0 : c.diff > 0;
+      const verdict = policy === "v1-production" ? "(reference)" : `${c.diff >= 0 ? "+" : ""}${f(c.diff, digits)} ± ${f(c.se, digits)} ${real ? (good ? "better" : "worse") : "~same"}`;
+      lines.push(`| ${policy} | ${f(c.mean, digits)} | ${verdict} |`);
+    }
+    lines.push("");
+  }
+  return lines.join("\n");
+}
+
+const started = Date.now();
+const results = [];
+for (const [world, rule] of configs) {
+  const byPolicy = runConfig(world, rule);
+  results.push({ world, rule, byPolicy });
+  console.log(`\n=== ${world}, learning rule "${rule}"  (${seeds} seeds x ${learners} learners = ${seeds * learners} per policy)\n`);
+  console.log(table(byPolicy));
+}
+
+if (!quick) {
+  const w = (n) => { const x = WORLDS[n]; return `learning ${x.learning ? "yes" : "no"}, forgetting ${Number.isFinite(x.halfLife) ? `yes (half-life ${x.halfLife} days, learners return every ~${x.gapDays ?? 3} days)` : "no"}, problems train ${x.multiTruth ? "several skills" : "one skill"}, ${x.correlated ? "correlated skills" : "independent skills"}, ${Math.round(x.tagCorruption * 100)}% wrong secondary tags`; };
+  const md = [
+    "# Recommender results: which policy suits simulated learners?",
+    "",
+    `Generated by \`npm run policies\` (${new Date().toISOString().slice(0, 10)}): ${seeds} seeds x ${learners} learners per policy and setting, ${Math.round((Date.now() - started) / 1000)} s.`,
+    "",
+    "**Read this first.** Simulated learners (`server/scripts/arena/policy-sim.js`), not people. It can show how fast a policy learns who the learner is, whether it keeps them in a productive zone, how often it causes failure streaks, coverage and how long simulated learners stay. It CANNOT show what truly helps real learners to learn: \"true skill gained\" depends on how I made simulated people learn, so it is reported under three learning rules and only a result that holds under all three deserves any trust. The decision comes from the pilot, not from this file.",
+    "",
+    "Policies: `v1-production` today's picker (weakest topic, aim 65%, 10% variety); `v2-full` the new recommender (fit, information, weakness, review, variety, session arc, gentle placement); `v2-no-info` without the information term; `v2-info-heavy` information weighted 2.0 instead of 0.6; `v2-fit-only` only \"aim for the right chance\" (no arc); `random-window` a random problem with a 50-80% chance.",
+    "",
+    "Learning rules: " + Object.entries(LEARN_RULES).map(([k, v]) => `**${k}**: ${v}`).join("; ") + ".",
+    "Engagement assumes learners are a bit more likely to leave after 3 failures in a row (an assumption of mine).",
+    "",
+    ...results.flatMap(({ world, rule, byPolicy }) => [`## ${world}, learning rule "${rule}"`, "", w(world), "", table(byPolicy)]),
+  ].join("\n");
+  const out = fileURLToPath(new URL("../../../docs/recommender-results.md", import.meta.url));
+  writeFileSync(out, md, "utf8");
+  console.log(`written: ${out}`);
+}
+console.log(`finished in ${Math.round((Date.now() - started) / 1000)} s`);

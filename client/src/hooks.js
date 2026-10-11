@@ -19,6 +19,7 @@ function parseHash() {
   const params = Object.fromEntries(new URLSearchParams(query));
   if (parts[0] === "practice" && parts[1]) return { name: "practice", slug: decodeURIComponent(parts[1]), params };
   if (parts[0] === "problems") return { name: "problems", params };
+  if (parts[0] === "placement") return { name: "placement", params };
   return { name: "path", params };
 }
 export function useRoute() {

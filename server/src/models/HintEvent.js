@@ -11,6 +11,7 @@ const schema = new mongoose.Schema(
     level: { type: Number, required: true }, // 1 nudge, 2 pattern, 3 pseudocode, 4 walkthrough
     source: { type: String, enum: ["stored", "llm", "cache"] },
     text: String, // what the learner was shown
+    sessionId: String,
   },
   { timestamps: true }
 );

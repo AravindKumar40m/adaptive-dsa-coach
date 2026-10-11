@@ -185,7 +185,17 @@
     "pseudocode": "final(s): stack = []; for ch in s: if ch == '#': pop if not empty else push ch; return stack\nreturn final(first) == final(second)",
     "walkthrough": "Build the final text of each string with a stack: a letter is pushed, a '#' pops the top if there is one. Then compare the two results. That uses O(n + m) extra space. To use O(1) space, walk both strings from the right: keep a count of pending backspaces, skip letters that are erased, and compare the next surviving letters one by one."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "stack_queue",
+     "weight": 0.7
+    },
+    {
+     "concept": "strings",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "balanced-brackets",
@@ -233,7 +243,17 @@
     "pseudocode": "stack = empty\nfor each ch in text:\n  if ch is an opener: push ch\n  else: if stack is empty or top is not the matching opener: return false; pop\nreturn stack is empty",
     "walkthrough": "Push every opening bracket. When you see a closing bracket, the stack's top must be its matching opener; if the stack is empty or the top is a different kind, the text is unbalanced. Pop on a match. At the end the stack must be empty, otherwise some bracket was never closed. Repeatedly deleting '()' '[]' '{}' pairs also works but is O(n^2) in the worst case."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "stack_queue",
+     "weight": 0.7
+    },
+    {
+     "concept": "strings",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "baseball-score",
@@ -281,7 +301,17 @@
     "pseudocode": "stack = []\nfor each op:\n  number: push it\n  '+': push(top + second from top)\n  'D': push(2 * top)\n  'C': pop\nreturn sum of the stack",
     "walkthrough": "Keep the record in a stack: its top is the previous score. A number is pushed. '+' pushes the sum of the top two (read them without removing). 'D' pushes twice the top. 'C' pops the top. When all operations are done, add up what is left in the stack. O(n)."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "stack_queue",
+     "weight": 0.7
+    },
+    {
+     "concept": "strings",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "best-streak-sum",
@@ -341,7 +371,13 @@
     "pseudocode": "current = daily[0]; best = daily[0]\nfor each x after the first:\n  current = max(x, current + x)\n  best = max(best, current)\nreturn best",
     "walkthrough": "Checking every start and end is O(n^2). Instead track the best streak that ends exactly on the current day. Either it extends the previous streak (current + x) or starts over with just x, whichever is bigger. The answer is the largest value that 'current' ever takes. Start from the first element, not from 0, so an all-negative list still returns its largest (least negative) value."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "arrays",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "best-window",
@@ -406,7 +442,13 @@
     "pseudocode": "window = sum of the first k values; best = window\nfor i from k to n-1:\n  window = window + profits[i] - profits[i-k]\n  best = max(best, window)\nreturn best",
     "walkthrough": "Summing each window from scratch costs O(n*k). Notice neighbouring windows share k-1 days: moving right adds one new day and drops the oldest one. Compute the first window's sum once, then slide: window += profits[i] - profits[i-k], updating the best as you go. That is O(n) time and O(1) space."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "sliding_window",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "build-tree-from-orders",
@@ -487,7 +529,21 @@
     "pseudocode": "root = preorder[next]; next++\nmid = position of root in inorder (hash map)\nroot.left = build the part of inorder before mid\nroot.right = build the part of inorder after mid",
     "walkthrough": "The first preorder value is the root. In the inorder list, everything left of the root's position belongs to the left subtree and everything right of it to the right subtree, and preorder visits the whole left subtree before the right one, so you can keep one running pointer into preorder. Recursively build the left part first, then the right part. Searching for the root in the inorder list each time costs O(n) per node (O(n^2) overall); a hash map from value to inorder position makes each lookup O(1), so the whole rebuild is O(n)."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "trees",
+     "weight": 0.6
+    },
+    {
+     "concept": "recursion",
+     "weight": 0.2
+    },
+    {
+     "concept": "hashing",
+     "weight": 0.2
+    }
+   ]
   },
   {
    "slug": "can-finish-courses",
@@ -556,7 +612,13 @@
     "pseudocode": "indegree[a] = number of prerequisites of a; adj[b] = courses that need b\nqueue = courses with indegree 0; taken = 0\nwhile queue: c = pop; taken++; for each course x needing c: indegree[x]--; if 0: push x\nreturn taken == n",
     "walkthrough": "Count, for every course, how many unfinished prerequisites it has. Courses with zero can be taken now: put them in a queue. Taking a course finishes a prerequisite for every course that needs it, so reduce their counts, and queue any that reach zero. If you manage to take all n courses, there is no circle. If some courses never reach zero, they are stuck waiting on each other in a cycle, so the answer is false. O(n + m) time."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "graphs",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "candy-distribution",
@@ -612,7 +674,13 @@
     "pseudocode": "candies = [1] * n\nfor i from 1 to n-1: if ratings[i] > ratings[i-1]: candies[i] = candies[i-1] + 1\nfor i from n-2 down to 0: if ratings[i] > ratings[i+1]: candies[i] = max(candies[i], candies[i+1] + 1)\nreturn sum(candies)",
     "walkthrough": "Fixing violations one at a time until nothing changes can take O(n^2). Instead split the rule in two. Pass 1, left to right: if a child is rated higher than the left neighbour, they need one more candy than that neighbour. Pass 2, right to left: if a child is rated higher than the right neighbour, they need one more than that neighbour, but never less than what pass 1 already required (take the max). Both rules then hold, and nobody gets more than needed. Add up the candies. The total can reach about 1.25 billion for 50,000 children, which fits in a 32-bit int."
    },
-   "rating": 1500
+   "rating": 1500,
+   "skills": [
+    {
+     "concept": "greedy",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "cheapest-with-stops",
@@ -738,7 +806,13 @@
     "pseudocode": "price[src] = 0, others = infinity\nrepeat k + 1 times:\n  next = copy of price\n  for each flight (a, b, p): if price[a] + p < next[b]: next[b] = price[a] + p\n  price = next\nreturn price[dst] or -1 if infinity",
     "walkthrough": "Dijkstra on its own can pick a cheap path that uses too many flights, so it is not directly suitable. Instead let price[c] be the cheapest price to reach city c using at most a certain number of flights, and improve it round by round: in round i, allow one more flight by relaxing every flight using the prices from the PREVIOUS round (copy the array first, otherwise a single round could chain several flights). After k + 1 rounds you have the best price with at most k + 1 flights, that is at most k stops. O(k * m) time."
    },
-   "rating": 1500
+   "rating": 1500,
+   "skills": [
+    {
+     "concept": "graphs",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "clean-palindrome",
@@ -786,7 +860,17 @@
     "pseudocode": "i = 0; j = len-1\nwhile i < j:\n  if text[i] is not a letter/digit: i++\n  else if text[j] is not a letter/digit: j--\n  else if lower(text[i]) != lower(text[j]): return false\n  else: i++; j--\nreturn true",
     "walkthrough": "Building a cleaned copy and comparing it with its reverse works in O(n) time but uses O(n) extra space. With two pointers you skip symbols in place: move i right past non-alphanumeric characters, move j left past them, then compare the two characters ignoring case. If they ever differ the answer is false; if the pointers meet, it is true."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "strings",
+     "weight": 0.7
+    },
+    {
+     "concept": "two_pointers",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "combination-sum-count",
@@ -847,7 +931,21 @@
     "pseudocode": "count(i, remaining):\n  if remaining == 0: return 1\n  if remaining < 0 or i == number of coin types: return 0\n  return count(i, remaining - coins[i]) + count(i + 1, remaining)",
     "walkthrough": "Handle one coin type at a time: either take another coin of the current type (remaining shrinks, same type) or stop using this type and go to the next. Because you only ever move forward through the types, each combination is counted once. The plain recursion repeats the same (type, remaining) pairs many times, so remember the answers, or fill a table ways[sum]: for each coin value c, for sum from c to target, ways[sum] += ways[sum - c]."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "backtracking",
+     "weight": 0.6
+    },
+    {
+     "concept": "dp",
+     "weight": 0.2
+    },
+    {
+     "concept": "recursion",
+     "weight": 0.2
+    }
+   ]
   },
   {
    "slug": "compress-string",
@@ -895,7 +993,21 @@
     "pseudocode": "result = []; i = 0\nwhile i < n:\n  j = i\n  while j < n and text[j] == text[i]: j++\n  result.append(text[i] + str(j - i))\n  i = j\nreturn join(result)",
     "walkthrough": "Start at the first letter and extend j while the letters are equal; the run length is j - i. Append the letter and the length, then continue from j. Every character is visited once, so O(n). Build the answer with a list or string builder instead of repeated string concatenation, which can be O(n^2) in some languages. Remember the count can have several digits (for example a12)."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "strings",
+     "weight": 0.6
+    },
+    {
+     "concept": "hashing",
+     "weight": 0.2
+    },
+    {
+     "concept": "two_pointers",
+     "weight": 0.2
+    }
+   ]
   },
   {
    "slug": "connected-groups",
@@ -963,7 +1075,13 @@
     "pseudocode": "union-find: parent[i] = i; groups = n\nfor each [a, b]: if find(a) != find(b): union them; groups--\nreturn groups",
     "walkthrough": "Think of users as nodes and friendships as edges. Count connected components. With union-find: start with n groups. For each friendship, if the two users are in different groups, merge them and reduce the count by one. Duplicate friendships and self-friendships do nothing because their endpoints are already in the same group. With path compression this is nearly O(n + m). A BFS or DFS from every unvisited user also works and counts how many times you have to start a new search."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "graphs",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "cookie-match",
@@ -1031,7 +1149,17 @@
     "pseudocode": "sort(needs); sort(sizes)\ni = 0 (child)\nfor each cookie c in sizes (small to big):\n  if i < n and c >= needs[i]: i++\nreturn i",
     "walkthrough": "Trying every assignment is exponential. Think greedily: giving a big cookie to a child who needs little wastes it, so serve the least demanding children first with the smallest cookies that work. Sort both lists. Walk through the cookies from smallest to largest, keeping a pointer to the next unhappy child (smallest need first). If the cookie is big enough for that child, they are happy and the pointer advances; otherwise the cookie is too small for everyone remaining, so skip it. The pointer ends at the number of happy children. O(n log n + m log m) for the sorting."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "greedy",
+     "weight": 0.7
+    },
+    {
+     "concept": "sorting",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "count-inversions",
@@ -1091,7 +1219,17 @@
     "pseudocode": "count(lo, hi): if hi - lo < 2: return 0\n  mid = (lo + hi) / 2; total = count(lo, mid) + count(mid, hi)\n  merge the sorted halves; whenever right[j] < left[i]: total += (number of left items still waiting)\n  return total",
     "walkthrough": "Split the list in half, count the out-of-order pairs inside each half (recursively, which also sorts each half), then count the pairs where the bigger number is in the left half and the smaller in the right. While merging two sorted halves, if the next right element is smaller than the current left element, it is smaller than ALL remaining left elements, so add that remaining count at once. Total O(n log n). The answer for n = 50,000 can reach 1.25 billion, which fits in a 32-bit int."
    },
-   "rating": 1500
+   "rating": 1500,
+   "skills": [
+    {
+     "concept": "sorting",
+     "weight": 0.7
+    },
+    {
+     "concept": "recursion",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "count-windows-above",
@@ -1162,7 +1300,13 @@
     "pseudocode": "sum = sum of the first k; count = (sum >= limit)\nfor i from k to n-1: sum += sales[i] - sales[i-k]; if sum >= limit: count++\nreturn count",
     "walkthrough": "Adding up k days for every window costs O(n*k). Compute the first window's sum once. Each time the window slides right by one day, add the new day and subtract the day that dropped out. Compare the running sum with the limit at each position. O(n) time, O(1) space."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "sliding_window",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "cycle-length",
@@ -1225,7 +1369,13 @@
     "pseudocode": "slow = fast = head\nwhile fast and fast.next:\n  slow = slow.next; fast = fast.next.next\n  if slow == fast:\n    count = 1; cur = slow.next\n    while cur != slow: count++; cur = cur.next\n    return count\nreturn 0",
     "walkthrough": "Storing visited nodes in a set finds the loop but uses O(n) memory. Instead move one pointer one step at a time and another two steps at a time. If the list ends, there is no loop (answer 0). If there is a loop the fast pointer eventually laps the slow one and they meet inside the loop. From the meeting node, walk once around the loop counting nodes until you return to it: that count is the loop length."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "linked_list",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "days-until-warmer",
@@ -1301,7 +1451,13 @@
     "pseudocode": "stack = []  (indices of days still waiting)\nfor i, t in temps:\n  while stack not empty and temps[top] < t: j = pop; result[j] = i - j\n  push i",
     "walkthrough": "Checking all later days for each day is O(n^2). Keep a stack of day indices that have not found a warmer day yet. Their temperatures are non-increasing from bottom to top (otherwise a warmer one would already have resolved the earlier ones). When day i arrives with temperature t, it resolves every waiting day colder than t: pop them and record i - index as their waiting time. Then push i. Each day is pushed and popped once, so O(n). Days left on the stack get 0."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "stack_queue",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "decode-nested",
@@ -1350,7 +1506,17 @@
     "pseudocode": "stack = []; current = ''; number = 0\nfor ch in code:\n  digit: number = number*10 + digit\n  '[': push (current, number); current = ''; number = 0\n  ']': (prev, k) = pop; current = prev + current * k\n  letter: current += ch\nreturn current",
     "walkthrough": "Scan left to right keeping the text of the current bracket level and the number just read. On '[', save the current text and the repeat count on a stack and start a fresh text for the inside. On ']', pop the saved text and count; the finished inside text repeated count times is appended to the saved text. Digits can have several characters, so build the number digit by digit. Letters just extend the current text. When the scan ends the current text is the answer."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "stack_queue",
+     "weight": 0.7
+    },
+    {
+     "concept": "strings",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "distinct-permutations",
@@ -1398,7 +1564,21 @@
     "pseudocode": "answer = n!\nfor each letter that appears c times: answer = answer / c!\nreturn answer",
     "walkthrough": "Listing every arrangement and removing duplicates works for tiny inputs but explodes quickly (12 letters give up to 479 million arrangements). Counting is easier: n! orders if all tiles were different, but each group of c identical tiles can be reordered among themselves in c! ways without changing the arrangement, so divide by c! for every letter. The recursive view gives the same count: choose the first letter among the distinct letters left, then count the arrangements of the rest. For n <= 12 every number involved fits in a 32-bit int (12! = 479001600)."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "recursion",
+     "weight": 0.6
+    },
+    {
+     "concept": "strings",
+     "weight": 0.2
+    },
+    {
+     "concept": "sorting",
+     "weight": 0.2
+    }
+   ]
   },
   {
    "slug": "edit-distance",
@@ -1452,7 +1632,21 @@
     "pseudocode": "dist(0, j) = j; dist(i, 0) = i\nif source[i-1] == target[j-1]: dist(i, j) = dist(i-1, j-1)\nelse: dist(i, j) = 1 + min(dist(i-1, j), dist(i, j-1), dist(i-1, j-1))   // delete, insert, replace",
     "walkthrough": "Let dist(i, j) be the answer for the first i letters of source and first j letters of target. If one prefix is empty you must insert or delete everything of the other. Otherwise look at the last letters: if they match, no edit is needed there, so dist(i, j) = dist(i-1, j-1). If they differ, pick the best of three edits: delete the source's letter (dist(i-1, j)), insert the target's letter (dist(i, j-1)) or replace one letter by the other (dist(i-1, j-1)), each costing 1. Plain recursion repeats many subproblems; filling the table row by row takes O(n * m) time, and keeping only the previous row needs O(m) space."
    },
-   "rating": 1500
+   "rating": 1500,
+   "skills": [
+    {
+     "concept": "dp",
+     "weight": 0.6
+    },
+    {
+     "concept": "recursion",
+     "weight": 0.2
+    },
+    {
+     "concept": "strings",
+     "weight": 0.2
+    }
+   ]
   },
   {
    "slug": "fair-capacity",
@@ -1516,7 +1710,13 @@
     "pseudocode": "lo = max(packages); hi = sum(packages)\nwhile lo < hi:\n  mid = (lo + hi) // 2\n  if canShip(mid): hi = mid else: lo = mid + 1\nreturn lo\n\ncanShip(cap): days_used = 1; load = 0\n  for w in packages: if load + w > cap: days_used++; load = 0\n    load += w\n  return days_used <= days",
     "walkthrough": "The answer is at least the heaviest package (it has to fit on some truck) and at most the total weight (one truck, one day). Trying every capacity in that range works but is slow. Notice monotonicity: if capacity c is enough, then any larger capacity is enough too. So binary search the capacity. To test a capacity, simulate greedily: fill the current day until the next package would exceed the capacity, then start a new day. If the days needed are within the limit, the capacity works, so try smaller; otherwise try larger. Each check is O(n) and there are O(log(sum)) checks."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "binary_search",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "fibonacci-nth",
@@ -1563,7 +1763,17 @@
     "pseudocode": "a = 0; b = 1\nrepeat n times: (a, b) = (b, a + b)\nreturn a",
     "walkthrough": "The definition F(n) = F(n-1) + F(n-2) translates directly to a recursive function, but that function calls F(n-2) again inside F(n-1), so the number of calls grows exponentially (about 1.6^n): far too slow for n = 40. Remember each value once (memoization), or build up from the start: keep only the last two numbers and update them n times. O(n) time and O(1) space."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "recursion",
+     "weight": 0.7
+    },
+    {
+     "concept": "dp",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "find-center",
@@ -1647,7 +1857,13 @@
     "pseudocode": "[a, b] = edges[0]; [c, d] = edges[1]\nreturn a if a is c or d else b",
     "walkthrough": "Counting how many edges each node appears in works in O(n) (the center appears n - 1 times). But the center belongs to every edge, so it must be the node shared by any two edges. Look only at the first two edges: whichever node of the first edge also occurs in the second edge is the center. That is O(1)."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "graphs",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "first-missing-positive",
@@ -1704,7 +1920,13 @@
     "pseudocode": "for i in 0..n-1:\n  while 1 <= a[i] <= n and a[a[i]-1] != a[i]: swap a[i] with a[a[i]-1]\nfor i in 0..n-1: if a[i] != i+1: return i+1\nreturn n+1",
     "walkthrough": "A set makes this easy in O(n) time but O(n) space. To use O(1) extra space, note the answer is at most n+1 (there are only n numbers). So only values 1..n matter. Rearrange the list so that value v sits at position v-1 by swapping (ignore values out of range and duplicates). Then scan: the first position i where a[i] != i+1 means i+1 is missing. If every position is right, the answer is n+1."
    },
-   "rating": 1500
+   "rating": 1500,
+   "skills": [
+    {
+     "concept": "arrays",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "first-repeat",
@@ -1762,7 +1984,13 @@
     "pseudocode": "seen = empty set\nfor each x in tickets:\n  if x in seen: return x\n  add x to seen\nreturn -1",
     "walkthrough": "Comparing every number with all earlier ones is O(n^2). Instead keep a set of values you have already read. For each new value, if it is in the set you have found the first repeat, because you scan in order and stop at the first hit. Otherwise add it and continue. Return -1 after the loop. O(n) time, O(n) space."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "hashing",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "first-unique-char",
@@ -1810,7 +2038,13 @@
     "pseudocode": "count = array of 26 zeros\nfor each ch: count[ch] += 1\nfor i from 0 to n-1: if count[text[i]] == 1: return i\nreturn -1",
     "walkthrough": "Checking each character against all others is O(n^2). Count the letters first: one pass filling a table of 26 counters. Then walk the string from the left and return the first index whose letter has count 1. Two passes, O(n) time, and the table is a fixed 26 entries so extra space is O(1)."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "strings",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "four-sum-count",
@@ -1896,7 +2130,13 @@
     "pseudocode": "counts = {}\nfor a in first: for b in second: counts[a + b] += 1\ntotal = 0\nfor c in third: for d in fourth: total += counts.get(-(c + d), 0)\nreturn total",
     "walkthrough": "The condition a + b + c + d = 0 is the same as a + b = -(c + d). Count how many times each sum a + b occurs (n^2 pairs). Then for every pair (c, d), add the number of earlier pairs whose sum equals -(c + d). That is two double loops instead of one quadruple loop: O(n^2) time and O(n^2) space. With n up to 100 the answer is at most 10^8, which fits in an int."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "hashing",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "gcd-recursive",
@@ -1949,7 +2189,13 @@
     "pseudocode": "gcd(a, b): if b == 0: return a\n  return gcd(b, a % b)",
     "walkthrough": "Trying every candidate from min(a, b) down to 1 can take up to a billion steps. Euclid noticed that any common divisor of a and b also divides the remainder a mod b, so gcd(a, b) = gcd(b, a mod b). The second number shrinks quickly (at least by half every two steps), so the recursion has about 40 levels at most. The base case is b = 0, where the answer is a."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "recursion",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "generate-parentheses-count",
@@ -1996,7 +2242,17 @@
     "pseudocode": "count(0) = 1\ncount(n) = sum over i from 0 to n-1 of count(i) * count(n - 1 - i)",
     "walkthrough": "Every non-empty well-formed string starts with '(' whose matching ')' splits it into: an inside part (well-formed, using i pairs) and a rest (well-formed, using n-1-i pairs). Count the strings for each split and add them: count(n) = sum of count(i) * count(n-1-i). Remember small answers (memoization, or a table filled from 0 to n) so the work is O(n^2). Generating every one of the 2^(2n) strings and checking each is far too slow for n = 12."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "recursion",
+     "weight": 0.7
+    },
+    {
+     "concept": "dp",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "grid-islands",
@@ -2069,7 +2325,13 @@
     "pseudocode": "islands = 0\nfor each cell (r, c):\n  if grid[r][c] is land and not visited:\n    islands++\n    flood(r, c): visit every land cell reachable up/down/left/right",
     "walkthrough": "Scan the grid. The first time you meet a land cell that is not visited, you have found a new island: add one, then flood-fill from that cell, marking every connected land cell as visited (use a stack or queue; for a 50x50 grid recursion also works). Later cells of the same island are already visited so they are not counted again. Each cell is visited a constant number of times, so O(rows * cols) time."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "graphs",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "grid-paths",
@@ -2142,7 +2404,13 @@
     "pseudocode": "paths[0][0] = 1 if free else 0\nfor each cell (r, c) in row order:\n  if blocked: paths = 0\n  else: paths = (paths[r-1][c] if r > 0) + (paths[r][c-1] if c > 0)\nreturn paths[last][last]",
     "walkthrough": "Exploring every path with recursion repeats the same sub-paths many times. The number of ways to reach a free cell is the ways to reach the cell above plus the ways to reach the cell to its left, because the robot's last move was either down or right. A blocked cell has 0 ways. Fill the grid row by row starting with the start cell set to 1 (or 0 if it is blocked); the bottom-right value is the answer. O(rows * cols) time. The biggest possible answer (12x12, nothing blocked) is 705,432, so it fits in an int."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "dp",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "group-anagram-count",
@@ -2191,7 +2459,21 @@
     "pseudocode": "keys = empty set\nfor each word: keys.add(sorted letters of word joined)\nreturn size(keys)",
     "walkthrough": "Comparing every pair of words is O(n^2) comparisons. Instead give each word a key that is identical for all its anagrams: sort its letters (eat, tea and ate all become aet). Put all keys in a set; the number of different keys is the number of groups. Sorting a word of length L costs O(L log L), so the whole thing is O(n * L log L)."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "hashing",
+     "weight": 0.6
+    },
+    {
+     "concept": "sorting",
+     "weight": 0.2
+    },
+    {
+     "concept": "strings",
+     "weight": 0.2
+    }
+   ]
   },
   {
    "slug": "height-checker",
@@ -2252,7 +2534,13 @@
     "pseudocode": "expected = sorted copy of heights\ncount positions i where heights[i] != expected[i]",
     "walkthrough": "Make a sorted copy of the list; that is the correct line. Walk both lists together and count the positions where the values differ. Sorting costs O(n log n); counting sort would make it O(n + maxHeight) since heights are bounded."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "sorting",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "insert-position",
@@ -2317,7 +2605,13 @@
     "pseudocode": "lo = 0; hi = len(ids)\nwhile lo < hi:\n  mid = (lo + hi) // 2\n  if ids[mid] < new_id: lo = mid + 1\n  else: hi = mid\nreturn lo",
     "walkthrough": "A linear scan is O(n). Because the list is sorted, keep a search range [lo, hi). Look at the middle: if it is smaller than new_id, the answer must be to its right, so set lo = mid + 1; otherwise the middle could be the answer, so set hi = mid. The range halves each step. When lo == hi, that is the first index with ids[index] >= new_id (or len(ids) if none). O(log n) time."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "binary_search",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "integer-partitions",
@@ -2364,7 +2658,17 @@
     "pseudocode": "count(n, maxPart): if n == 0: return 1; if n < 0 or maxPart == 0: return 0\n  return count(n - maxPart, maxPart) + count(n, maxPart - 1)   // use maxPart or don't",
     "walkthrough": "Let count(n, m) be the number of partitions of n using parts of size at most m. Either the largest part is exactly m (leaving count(n - m, m)) or all parts are smaller (count(n, m - 1)). Plain recursion repeats the same (n, m) pairs again and again, so remember the results (memoization), or fill a table where ways[s] is the number of partitions of s: for each part size p from 1 to n, for s from p to n, ways[s] += ways[s - p]. O(n^2) time. The largest answer (n = 60) is 966467."
    },
-   "rating": 1500
+   "rating": 1500,
+   "skills": [
+    {
+     "concept": "recursion",
+     "weight": 0.7
+    },
+    {
+     "concept": "dp",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "integer-sqrt",
@@ -2411,7 +2715,13 @@
     "pseudocode": "lo = 0; hi = min(n, 46341)\nwhile lo < hi:\n  mid = (lo + hi + 1) / 2\n  if mid * mid <= n: lo = mid else: hi = mid - 1\nreturn lo",
     "walkthrough": "Trying r = 0, 1, 2, ... works but takes up to 46340 steps for large n. The condition 'r * r <= n' is true for small r and false for big r, so binary search finds the boundary in about 16 steps: if the middle guess fits, the answer is at least mid, otherwise it is smaller. Use the 'round up' middle (lo + hi + 1) / 2 so the loop always makes progress. Careful: mid * mid can exceed a 32-bit int, so use a 64-bit type or cap the search range at 46341 (46341 squared is already above 2^31 - 1)."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "binary_search",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "invert-tree",
@@ -2483,7 +2793,17 @@
     "pseudocode": "invert(node): if node is empty: return empty\n  node.left, node.right = invert(node.right), invert(node.left)\n  return node",
     "walkthrough": "For each node, the mirrored version has the mirrored right subtree on the left and the mirrored left subtree on the right. Recursively mirror both children, then swap them (or build a new node with the swapped, mirrored children). Each node is handled once: O(n) time, O(h) recursion depth."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "trees",
+     "weight": 0.7
+    },
+    {
+     "concept": "recursion",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "is-anagram",
@@ -2537,7 +2857,13 @@
     "pseudocode": "if len(first) != len(second): return false\ncount = 26 zeros\nfor ch in first: count[ch]++\nfor ch in second: count[ch]--; if count[ch] < 0: return false\nreturn true",
     "walkthrough": "Sorting both words and comparing works in O(n log n). Counting is faster: if the lengths differ the answer is false. Otherwise add 1 to a counter for each letter of the first word and subtract 1 for each letter of the second; if no counter ever goes below zero (and the lengths are equal) they are anagrams. 26 counters means O(1) extra space."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "strings",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "is-valid-bst",
@@ -2597,7 +2923,17 @@
     "pseudocode": "check(node, low, high): if node is empty: return true\n  if node.val <= low or node.val >= high: return false\n  return check(node.left, low, node.val) and check(node.right, node.val, high)\ncall check(root, -infinity, +infinity)",
     "walkthrough": "A node that is fine compared with its parent can still break the rule for a grandparent (like the 3 in the second example). So carry a range down the tree: the left child must be below the parent's value (and above the lower bound inherited so far), the right child must be above it (and below the inherited upper bound). Any value outside its range makes the tree invalid. Another method: an in-order walk (left, node, right) of a valid BST produces strictly increasing values. Both are O(n)."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "trees",
+     "weight": 0.7
+    },
+    {
+     "concept": "recursion",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "jump-reach",
@@ -2657,7 +2993,13 @@
     "pseudocode": "farthest = 0\nfor i in 0..n-1:\n  if i > farthest: return false\n  farthest = max(farthest, i + jumps[i])\nreturn true",
     "walkthrough": "Exploring every path (or a table of reachable squares) can be O(n^2). Instead keep the farthest square you can reach from anything you have visited. Walk through the squares in order: if you arrive at a square beyond the farthest reachable one, you are stuck, so the answer is false. Otherwise update the farthest with i + jumps[i]. If you get through the whole row, the end is reachable."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "greedy",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "knapsack-01",
@@ -2732,7 +3074,17 @@
     "pseudocode": "best = array of capacity+1 zeros\nfor each item (w, v):\n  for c from capacity down to w: best[c] = max(best[c], best[c - w] + v)\nreturn best[capacity]",
     "walkthrough": "Trying every subset of items takes 2^n time. Let best[c] be the largest value achievable with total weight at most c, using the items processed so far. For a new item (w, v): for each capacity c >= w, you can either ignore the item (best[c]) or take it (best[c - w] + v). Update the capacities from LARGEST to SMALLEST so that best[c - w] still refers to the situation before this item (otherwise the item could be used twice). O(n * capacity) time, O(capacity) space."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "dp",
+     "weight": 0.7
+    },
+    {
+     "concept": "recursion",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "kth-largest",
@@ -2803,7 +3155,13 @@
     "pseudocode": "heap = empty min-heap\nfor each x in scores:\n  push x\n  if size(heap) > k: pop the smallest\nreturn the smallest in heap (top)",
     "walkthrough": "Sorting everything is O(n log n) and works. A min-heap of size k does better when k is small: push each score, and whenever the heap grows beyond k, remove its smallest item. After all scores are processed, the heap contains the k largest, and its smallest element (the top) is exactly the k-th largest. Each push or pop costs O(log k), so O(n log k) overall. Java: PriorityQueue. C++: priority_queue with greater<int>. Python: heapq. JavaScript has no built-in heap, so write a small one or sort."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "heaps",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "kth-smallest-in-lists",
@@ -2882,7 +3240,13 @@
     "pseudocode": "heap = [(list[0], list index, 0) for each non-empty list]\nrepeat k times: (value, i, j) = pop smallest; if j + 1 < len(list i): push (list i [j+1], i, j+1)\nreturn the last popped value",
     "walkthrough": "Merging everything into one array and sorting costs O(N log N). Because every list is sorted, the next smallest number overall is always the front of some list. Keep a min-heap with one entry per list (its current front). Pop the smallest, then push the next element of that same list. After k pops, the last popped value is the k-th smallest. With m lists the heap holds at most m items, so each step costs O(log m) and the total is O(k log m)."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "heaps",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "largest-number",
@@ -2939,7 +3303,13 @@
     "pseudocode": "convert numbers to strings\nsort so that a comes first when (a + b) > (b + a)\njoin; if the result starts with '0', return '0'",
     "walkthrough": "For two numbers a and b, the best order is the one where the glued text a+b is larger than b+a (compare them as text, they have equal length). This pairwise rule is consistent, so sorting by it gives the overall best order. Join the sorted strings. If the first piece is '0', every number was 0, so return just '0'. Trying every arrangement is n! and only feasible for tiny inputs."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "sorting",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "largest-rectangle",
@@ -2997,7 +3367,13 @@
     "pseudocode": "stack of indices with increasing heights; append a final bar of height 0\nfor i, h in heights:\n  while stack not empty and heights[top] >= h:\n    height = heights[pop]; left = stack top (or -1); width = i - left - 1; best = max(best, height * width)\n  push i",
     "walkthrough": "For each building, the widest rectangle using its full height reaches left and right until a shorter building. Finding those limits by scanning is O(n^2). Keep a stack of indices whose heights increase. When a shorter bar arrives it ends the rectangles of the taller bars on the stack: pop each one; its height is the popped bar's height, its right limit is the current index, and its left limit is the new top of the stack (or the start). Area = height * (right - left - 1). Adding a zero-height bar at the end flushes the stack. O(n) time."
    },
-   "rating": 1500
+   "rating": 1500,
+   "skills": [
+    {
+     "concept": "stack_queue",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "last-stone-weight",
@@ -3054,7 +3430,17 @@
     "pseudocode": "heap = all stones (max-heap)\nwhile size > 1:\n  a = pop max; b = pop max\n  if a != b: push (a - b)\nreturn top or 0",
     "walkthrough": "Sorting the pile again after every smash costs O(n log n) per round, O(n^2 log n) overall. A max-heap gives the largest element in O(log n) and lets you insert the leftover in O(log n). Pop the two largest, push their difference if it is non-zero, and repeat until at most one stone remains. In languages with only a min-heap (like Python's heapq), store negative weights."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "heaps",
+     "weight": 0.7
+    },
+    {
+     "concept": "stack_queue",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "lemonade-change",
@@ -3114,7 +3500,13 @@
     "pseudocode": "fives = 0; tens = 0\nfor bill in bills:\n  5: fives++\n  10: if fives == 0: return false; fives--; tens++\n  20: if tens > 0 and fives > 0: tens--; fives-- elif fives >= 3: fives -= 3 else: return false\nreturn true",
     "walkthrough": "You only ever need to remember how many 5s and 10s you hold (a 20 is never given back as change). A 5 needs no change. A 10 needs one 5. A 20 needs 15: you can give a 10 and a 5, or three 5s. Since 5s are the more flexible bill (they can serve 10s and 20s alike), use the 10 first when you can, saving your 5s. If you cannot give the exact change at some point, the answer is false."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "greedy",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "level-sums",
@@ -3178,7 +3570,21 @@
     "pseudocode": "queue = [root]\nwhile queue not empty:\n  size = len(queue); total = 0\n  repeat size times: node = pop front; total += node.val; push its children\n  append total to the result",
     "walkthrough": "Visit the nodes level by level using a queue. At the start of each round the queue holds exactly the nodes of one level, so remember its size, then process that many nodes: add their values and put their children in the queue for the next round. Append the level's total to the result. O(n) time. A depth-first walk that adds each value into a table indexed by depth also works."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "trees",
+     "weight": 0.6
+    },
+    {
+     "concept": "stack_queue",
+     "weight": 0.2
+    },
+    {
+     "concept": "graphs",
+     "weight": 0.2
+    }
+   ]
   },
   {
    "slug": "longest-balanced-run",
@@ -3238,7 +3644,13 @@
     "pseudocode": "first = {0: -1}; total = 0; best = 0\nfor i, b in bits:\n  total += 1 if b == 1 else -1\n  if total in first: best = max(best, i - first[total])\n  else: first[total] = i\nreturn best",
     "walkthrough": "Checking every stretch is O(n^2). Treat 1 as +1 and 0 as -1 and keep a running total. A stretch from j+1 to i is balanced exactly when the total after i equals the total after j. So remember the FIRST index where each total appeared (the empty prefix has total 0 at index -1). When the same total shows up again at i, the stretch since the first time has length i - first[total]. Keep the maximum. Never overwrite the first index, so stretches are as long as possible."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "hashing",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "longest-consecutive-run",
@@ -3304,7 +3716,13 @@
     "pseudocode": "set = all numbers; best = 0\nfor x in set:\n  if x - 1 not in set:\n    length = 1\n    while x + length in set: length++\n    best = max(best, length)\nreturn best",
     "walkthrough": "A number starts a run exactly when its predecessor x-1 is NOT in the set. For each such start, walk upward x+1, x+2, ... while the numbers are in the set and count the length. Numbers in the middle of a run are skipped, so each number is walked over at most once in total: O(n) time with O(1) lookups."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "hashing",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "longest-mountain",
@@ -3364,7 +3782,13 @@
     "pseudocode": "for each i with h[i-1] < h[i] > h[i+1]:\n  l = i-1; while l > 0 and h[l-1] < h[l]: l--\n  r = i+1; while r < n-1 and h[r] > h[r+1]: r++\n  best = max(best, r - l + 1)",
     "walkthrough": "A peak is an index strictly higher than both neighbours. From a peak, walk left while the values keep decreasing (going away from the peak) and walk right while they keep decreasing. The mountain spans from the left end to the right end. Equal neighbours stop the walk, which handles plateaus. Each element is walked over by at most one peak's slopes (the next peak starts after the right slope), so the total is O(n)."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "two_pointers",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "longest-palindrome-part",
@@ -3412,7 +3836,13 @@
     "pseudocode": "best = 1\nfor each centre c (n letters and n-1 gaps):\n  expand left and right while the letters match\n  best = max(best, length of that palindrome)\nreturn best",
     "walkthrough": "Checking every substring costs O(n^3) (O(n^2) substrings, O(n) check each). Instead, a palindrome grows outward from its centre: for each of the 2n-1 possible centres (a letter for odd lengths, a gap between letters for even lengths), keep expanding while the two end letters are equal. Each expansion is at most O(n), so O(n^2) overall with O(1) space."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "strings",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "longest-repeat-replace",
@@ -3467,7 +3897,17 @@
     "pseudocode": "count = 26 zeros; left = 0; maxFreq = 0; best = 0\nfor right in 0..n-1:\n  count[text[right]]++; maxFreq = max(maxFreq, count[text[right]])\n  while (right - left + 1) - maxFreq > k: count[text[left]]--; left++\n  best = max(best, right - left + 1)",
     "walkthrough": "For a window, the cheapest way to make it uniform is to keep its most frequent letter and replace the rest, which costs (window length - highest frequency). The window is valid when that cost is at most k. Expand the right end; if the window becomes invalid, move the left end forward. You never need to lower maxFreq when shrinking: a window only matters if it beats the best length so far, which requires a larger frequency. O(n) time, O(1) space."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "sliding_window",
+     "weight": 0.7
+    },
+    {
+     "concept": "strings",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "longest-unique-run",
@@ -3515,7 +3955,17 @@
     "pseudocode": "last = table of -1; start = 0; best = 0\nfor i, ch in text:\n  if last[ch] >= start: start = last[ch] + 1\n  last[ch] = i\n  best = max(best, i - start + 1)\nreturn best",
     "walkthrough": "Checking every start and end position costs at least O(n^2). Keep a window [start, i] with all different letters, plus the last index where each letter appeared. When the letter at i was last seen inside the window, jump start to just after that earlier copy, so the window is unique again. The window never moves backwards, so each position is processed once: O(n) time, and the table is 26 entries so O(1) space."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "sliding_window",
+     "weight": 0.7
+    },
+    {
+     "concept": "strings",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "lowest-common-ancestor",
@@ -3600,7 +4050,17 @@
     "pseudocode": "find(node): if node is empty or node.val is p or q: return node\n  left = find(node.left); right = find(node.right)\n  if left and right: return node   // p and q are on different sides\n  return left or right",
     "walkthrough": "Search both subtrees of each node. If a node equals p or q, report it. If the left search finds one target and the right search finds the other, the current node is the first place where the paths split, so it is the LCA. If only one side reports something, pass that result up (either both targets are on that side, or the one that was found is the answer when the other is below it). O(n) time. A simpler idea: record the root-to-p and root-to-q paths and take the last node they share."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "trees",
+     "weight": 0.7
+    },
+    {
+     "concept": "recursion",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "max-depth",
@@ -3660,7 +4120,17 @@
     "pseudocode": "depth(node): if node is empty: return 0\n  return 1 + max(depth(node.left), depth(node.right))",
     "walkthrough": "A tree is a root plus two smaller trees, so recursion fits: the depth of an empty tree is 0, and otherwise it is one more than the deeper of the two subtrees. Every node is visited once: O(n) time, and the recursion stack is as deep as the tree (O(h)). A level-by-level traversal (BFS) that counts levels gives the same answer."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "trees",
+     "weight": 0.7
+    },
+    {
+     "concept": "recursion",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "max-non-overlap",
@@ -3743,7 +4213,17 @@
     "pseudocode": "sort jobs by end time\nlastEnd = -infinity; count = 0\nfor each job in that order:\n  if job.start >= lastEnd: count++; lastEnd = job.end\nreturn count",
     "walkthrough": "Trying every subset of jobs is exponential. A greedy rule works: always take the job that finishes earliest among those that fit, because it leaves the most room for the rest. Sort by end time, then scan: take a job if it starts at or after the end of the last job you took. Sorting by start time or by length does NOT work (a long job that starts early can block many short ones). O(n log n) for the sort."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "greedy",
+     "weight": 0.7
+    },
+    {
+     "concept": "sorting",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "max-path-sum",
@@ -3803,7 +4283,17 @@
     "pseudocode": "best = -infinity\ngain(node): if node is empty: return 0\n  l = max(0, gain(node.left)); r = max(0, gain(node.right))\n  best = max(best, node.val + l + r)\n  return node.val + max(l, r)",
     "walkthrough": "For each node as the top of a path, add the node's value and the best downward chain from each child, but only when that chain is positive (otherwise leave it out, so use max(0, chain)). That total is a candidate for the answer. The value passed up to the parent can use only one side: node.val + max(l, r), because a path cannot branch twice. Computing every chain again for every node would be O(n^2); one recursive pass does it in O(n). Start best at minus infinity (or the first value) because the answer can be negative."
    },
-   "rating": 1500
+   "rating": 1500,
+   "skills": [
+    {
+     "concept": "trees",
+     "weight": 0.7
+    },
+    {
+     "concept": "recursion",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "max-product-three",
@@ -3860,7 +4350,13 @@
     "pseudocode": "sort(nums)\nreturn max(nums[n-1]*nums[n-2]*nums[n-3], nums[0]*nums[1]*nums[n-1])",
     "walkthrough": "Trying every triple is O(n^3). After sorting, the best product is one of two cases: the three biggest numbers, or the two most negative numbers (whose product is positive and big) times the biggest number. Compute both and return the larger. The products are at most 10^9, which fits in a 32-bit int."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "sorting",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "max-profit-trades",
@@ -3921,7 +4417,13 @@
     "pseudocode": "profit = 0\nfor i from 1 to n-1: if prices[i] > prices[i-1]: profit += prices[i] - prices[i-1]\nreturn profit",
     "walkthrough": "Trying all buy/sell choices is exponential. Notice that holding the stock through a rise from day i-1 to day i earns exactly that rise, and any profitable trade is the sum of its daily rises. So the best you can do is to be holding the stock on exactly the days when the price goes up the next day: add every positive difference prices[i] - prices[i-1] and skip the negative ones."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "greedy",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "max-vowels-window",
@@ -3975,7 +4477,17 @@
     "pseudocode": "count = vowels in the first k letters; best = count\nfor i from k to n-1:\n  if text[i] is a vowel: count++\n  if text[i-k] is a vowel: count--\n  best = max(best, count)",
     "walkthrough": "Counting vowels in every stretch from scratch costs O(n*k). Keep the vowel count of the current window. When you slide right by one letter, add one if the new letter is a vowel and subtract one if the letter that dropped out was a vowel. Track the maximum. O(n) time."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "sliding_window",
+     "weight": 0.7
+    },
+    {
+     "concept": "strings",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "median-two-sorted",
@@ -4040,7 +4552,13 @@
     "pseudocode": "make a the shorter list; half = (n + m + 1) / 2\nbinary search i = how many from a go left; j = half - i from b\n  valid when a[i-1] <= b[j] and b[j-1] <= a[i]\n  if a[i-1] > b[j]: take fewer from a; else take more\nmedian from max(left parts) and min(right parts)",
     "walkthrough": "Merging both lists is O(n + m). To do better, search for the dividing line of the merged order. If you take i numbers from the shorter list and j = half - i from the other for the left half, the split is correct when every left number is <= every right number; since each list is already sorted that only needs a[i-1] <= b[j] and b[j-1] <= a[i]. If a[i-1] > b[j] you took too many from a (decrease i); otherwise take more. Treat missing elements as minus and plus infinity at the ends. When a valid split is found, the median comes from the largest left value (odd total) or the average of the largest left and smallest right value (even total)."
    },
-   "rating": 1500
+   "rating": 1500,
+   "skills": [
+    {
+     "concept": "binary_search",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "merge-sorted-arrays",
@@ -4113,7 +4631,17 @@
     "pseudocode": "i = 0; j = 0; result = []\nwhile i < n and j < m:\n  if first[i] <= second[j]: append first[i]; i++ else: append second[j]; j++\nappend the rest of whichever list is left",
     "walkthrough": "Concatenating and sorting costs O((n+m) log(n+m)) and ignores that the lists are sorted. Instead compare the two front elements, take the smaller, and advance that list's pointer. When one list runs out, copy what remains of the other. Every element is handled once: O(n + m). This is the 'merge' step of merge sort."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "sorting",
+     "weight": 0.7
+    },
+    {
+     "concept": "two_pointers",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "merge-two-lists",
@@ -4182,7 +4710,17 @@
     "pseudocode": "dummy = new node; tail = dummy\nwhile first and second:\n  if first.val <= second.val: tail.next = first; first = first.next\n  else: tail.next = second; second = second.next\n  tail = tail.next\ntail.next = first or second\nreturn dummy.next",
     "walkthrough": "Pick the smaller of the two front nodes, attach it to the end of the result, and advance in that list. A temporary 'dummy' node at the start avoids special cases for the first node. When one list runs out, attach the remaining nodes of the other list in one step (they are already sorted). Nodes are re-linked, not copied: O(1) extra space and O(n + m) time."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "linked_list",
+     "weight": 0.7
+    },
+    {
+     "concept": "two_pointers",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "middle-value",
@@ -4243,7 +4781,13 @@
     "pseudocode": "slow = head; fast = head\nwhile fast and fast.next:\n  slow = slow.next; fast = fast.next.next\nreturn slow.val",
     "walkthrough": "You could count the nodes and walk n/2 steps (two passes). A single pass uses two pointers: slow moves one node at a time, fast moves two. When fast reaches the end, slow has covered half the distance, so it stands on the middle. For an even number of nodes the loop ends one step later, leaving slow on the second middle, exactly what the problem asks."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "linked_list",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "min-coins",
@@ -4305,7 +4849,17 @@
     "pseudocode": "best[0] = 0; best[1..amount] = infinity\nfor a from 1 to amount:\n  for each coin c <= a:\n    best[a] = min(best[a], best[a - c] + 1)\nreturn best[amount] if finite else -1",
     "walkthrough": "A greedy choice (always the biggest coin) can fail: with coins 1, 3, 4 and amount 6, greedy takes 4+1+1 (3 coins) but 3+3 uses 2. Plain recursion trying every coin is exponential. Instead fill a table best[a] = fewest coins for amount a, from 0 upward: the last coin used was some c, so best[a] = 1 + best[a - c] for the best c. Amounts that cannot be made stay at infinity. The answer is best[amount], or -1 if it is infinity. O(n * amount) time."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "dp",
+     "weight": 0.7
+    },
+    {
+     "concept": "recursion",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "min-cost-path",
@@ -4400,7 +4954,21 @@
     "pseudocode": "dist[start] = 0; heap = [(0, start)]\nwhile heap: (d, u) = pop smallest\n  if d > dist[u]: continue\n  if u == end: return d\n  for each road (u -> v, w): if d + w < dist[v]: dist[v] = d + w; push (d + w, v)\nreturn -1",
     "walkthrough": "Breadth-first search counts roads, not costs, so it fails here. Dijkstra keeps the best known cost to each city and always expands the cheapest unfinished city (a min-heap gives it in O(log n)). Because every cost is positive, the first time a city is taken from the heap its cost is final. Skip stale heap entries (d larger than the stored distance). When the end city is taken, return its cost; if the heap empties first, the end is unreachable. Bellman-Ford (relax every road n - 1 times) also works in O(n * m)."
    },
-   "rating": 1500
+   "rating": 1500,
+   "skills": [
+    {
+     "concept": "graphs",
+     "weight": 0.6
+    },
+    {
+     "concept": "heaps",
+     "weight": 0.2
+    },
+    {
+     "concept": "stack_queue",
+     "weight": 0.2
+    }
+   ]
   },
   {
    "slug": "min-cost-stairs",
@@ -4463,7 +5031,13 @@
     "pseudocode": "prev2 = 0; prev1 = 0      // best(0) and best(1): you may start on step 0 or 1 for free\nfor i from 2 to n:\n  current = min(prev1 + cost[i-1], prev2 + cost[i-2])\n  prev2 = prev1; prev1 = current\nreturn prev1              // best(n) = the top",
     "walkthrough": "Let best(i) be the cheapest total to be standing at position i, meaning 'about to step on step i'. Positions 0 and 1 cost nothing because you may start on either step. To reach position i you came from position i-1 by paying cost[i-1], or from position i-2 by paying cost[i-2], so best(i) = min of those two. The answer is best(n), the top. Plain recursion tries every route (exponential); a table, or just the last two values, does it in O(n)."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "dp",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "min-jumps",
@@ -4524,7 +5098,17 @@
     "pseudocode": "jumps_used = 0; range_end = 0; farthest = 0\nfor i in 0..n-2:\n  farthest = max(farthest, i + jumps[i])\n  if i == range_end: jumps_used++; range_end = farthest\nreturn jumps_used",
     "walkthrough": "A table of the fewest jumps to every square costs O(n^2). Instead process the squares in 'rounds'. All squares reachable with k jumps form a range ending at range_end. While scanning that range, record the farthest square any of them can reach (farthest). When you pass the end of the current range you must take one more jump, and the new range ends at farthest. Count how many times this happens before reaching the last square. One pass: O(n) time, O(1) space."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "greedy",
+     "weight": 0.7
+    },
+    {
+     "concept": "graphs",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "min-rotated",
@@ -4584,7 +5168,13 @@
     "pseudocode": "lo = 0; hi = n - 1\nwhile lo < hi:\n  mid = (lo + hi) / 2\n  if nums[mid] > nums[hi]: lo = mid + 1   // the drop is to the right of mid\n  else: hi = mid                           // mid could be the smallest\nreturn nums[lo]",
     "walkthrough": "Taking the minimum of everything is O(n). The smallest value sits right after the 'drop' where the list falls from a large number to a small one. If nums[mid] is greater than nums[hi], the drop is somewhere to the right of mid, so the minimum is in (mid, hi]. Otherwise the part from mid to hi is sorted, so the minimum is at mid or to its left. Narrow the range until one element is left."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "binary_search",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "min-subarray-len",
@@ -4650,7 +5240,17 @@
     "pseudocode": "left = 0; sum = 0; best = infinity\nfor right in 0..n-1:\n  sum += deposits[right]\n  while sum >= target: best = min(best, right - left + 1); sum -= deposits[left]; left++\nreturn best or 0",
     "walkthrough": "Checking every start and end is O(n^2). With positive numbers you can use a sliding window: extend the right end until the sum reaches the target, then record the length and move the left end forward while the sum still reaches the target (each move can only shorten the window). Both pointers only move forward, so O(n) total. If best was never updated return 0."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "sliding_window",
+     "weight": 0.7
+    },
+    {
+     "concept": "two_pointers",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "min-window-cover",
@@ -4704,7 +5304,17 @@
     "pseudocode": "need counts; missing = len(need); left = 0; best = infinity\nfor right in 0..n-1:\n  if count[text[right]] > 0: missing--\n  count[text[right]]--\n  while missing == 0:\n    best = min(best, right - left + 1)\n    count[text[left]]++; if count[text[left]] > 0: missing++\n    left++\nreturn best (or 0)",
     "walkthrough": "Checking every window is O(n^2) windows times a check. Use two pointers. Keep a table of how many of each letter are still needed (it can go negative for extras) and a counter 'missing' of letters not yet covered. Move right one letter at a time. Whenever missing reaches 0 the window covers need: record its length, then move left forward to try to shrink it (if you remove a letter that was needed, missing goes up again and you stop shrinking). Each pointer moves at most n times, so O(n)."
    },
-   "rating": 1500
+   "rating": 1500,
+   "skills": [
+    {
+     "concept": "strings",
+     "weight": 0.7
+    },
+    {
+     "concept": "sliding_window",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "missing-number",
@@ -4759,7 +5369,13 @@
     "pseudocode": "expected = n * (n + 1) / 2\nreturn expected - sum(numbers)",
     "walkthrough": "Checking each possible ticket against the whole list is O(n^2). The numbers 0..n add up to n*(n+1)/2. The list contains all of them except one, so the missing ticket is the expected total minus the actual total of the list. One pass, O(1) extra space."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "arrays",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "mountain-peak",
@@ -4818,7 +5434,13 @@
     "pseudocode": "lo = 0; hi = n - 1\nwhile lo < hi:\n  mid = (lo + hi) / 2\n  if heights[mid] < heights[mid + 1]: lo = mid + 1   // still climbing: peak is to the right\n  else: hi = mid                                      // descending: peak is at mid or to the left\nreturn lo",
     "walkthrough": "A scan for the maximum is O(n). On this trail, if heights[mid] < heights[mid + 1] you are on the way up, so the peak is to the right of mid. Otherwise you are on the way down (or at the peak), so the peak is at mid or to its left. Keep shrinking the range; when it has one element left, that is the peak. O(log n)."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "binary_search",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "n-queens-count",
@@ -4865,7 +5487,17 @@
     "pseudocode": "place(row): if row == n: return 1\n  total = 0\n  for each column c that is not attacked (column, diagonal, anti-diagonal unused):\n    mark c; total += place(row + 1); unmark c\n  return total",
     "walkthrough": "Trying every placement of n queens on n*n squares is hopeless, but one queen per row is forced, so place queens row by row. In each row try every column, skipping those attacked by the queens already placed: same column, same diagonal (row - col equal) or same anti-diagonal (row + col equal). Keep three sets (or bit masks) of used columns and diagonals so each check is O(1). When all n rows are filled, count one solution; then undo the last queen and try the next column (backtracking). The counts for n = 1..9 are 1, 0, 0, 2, 10, 4, 40, 92, 352."
    },
-   "rating": 1500
+   "rating": 1500,
+   "skills": [
+    {
+     "concept": "backtracking",
+     "weight": 0.7
+    },
+    {
+     "concept": "recursion",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "nearby-duplicate",
@@ -4932,7 +5564,13 @@
     "pseudocode": "last = {}\nfor i, x in readings:\n  if x in last and i - last[x] <= k: return true\n  last[x] = i\nreturn false",
     "walkthrough": "Comparing every pair within distance k costs O(n*k). Scan once and remember, for each value, the index where you last saw it. If the current value was seen before and the gap i - last is at most k, you found a suspicious repeat. Otherwise update the last index to i (only the closest earlier copy matters). O(n) time."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "hashing",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "next-permutation",
@@ -4996,7 +5634,13 @@
     "pseudocode": "i = n-2; while i >= 0 and nums[i] >= nums[i+1]: i--\nif i >= 0:\n  j = n-1; while nums[j] <= nums[i]: j--\n  swap(nums[i], nums[j])\nreverse(nums[i+1 .. n-1])",
     "walkthrough": "Scan from the right for the first index i where nums[i] < nums[i+1]. Everything to the right of i is in descending order, i.e. already the largest possible arrangement of those numbers, so to go to the next arrangement you must increase position i. Choose the smallest number on the right that is still bigger than nums[i] (the rightmost one that is > nums[i], because the tail is descending), swap it with nums[i], then reverse the tail so it becomes the smallest possible (ascending). If no such i exists, the whole list is descending: reversing it gives the first arrangement."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "two_pointers",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "no-adjacent-ones",
@@ -5043,7 +5687,21 @@
     "pseudocode": "count(remaining, lastWasOne):\n  if remaining == 0: return 1\n  total = count(remaining - 1, false)          // put a 0\n  if not lastWasOne: total += count(remaining - 1, true)   // put a 1\n  return total",
     "walkthrough": "Checking all 2^n strings works for small n only. Building the string character by character is faster because you never extend a string that already has two adjacent ones: a 0 can always be added, a 1 only after a 0 (or at the start). The number of completions depends only on how many characters remain and whether the last one was a 1, so remember those answers (memoization) or keep two running counts: strings ending in 0 and strings ending in 1. Each step: new_zero = zero + one, new_one = zero. The answer for n = 30 is 2178309."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "backtracking",
+     "weight": 0.6
+    },
+    {
+     "concept": "dp",
+     "weight": 0.2
+    },
+    {
+     "concept": "recursion",
+     "weight": 0.2
+    }
+   ]
   },
   {
    "slug": "paint-fence-ways",
@@ -5097,7 +5755,17 @@
     "pseudocode": "same = colors; diff = colors * (colors - 1)      // after 2 posts\nrepeat posts - 2 times: (same, diff) = (diff, (same + diff) * (colors - 1))\nreturn same + diff    // for posts == 1 the answer is just colors",
     "walkthrough": "Count paintings by whether the last two posts have the same color. A new post can always get a color different from the previous post: (colors - 1) choices, from any painting. It can copy the previous post's color only if the previous two posts were different. So new_same = diff, new_diff = (same + diff) * (colors - 1). Start after two posts with same = colors and diff = colors * (colors - 1), and handle posts = 1 separately (the answer is colors). O(n) time. Checking all colors^posts paintings is only fine for tiny fences."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "dp",
+     "weight": 0.7
+    },
+    {
+     "concept": "recursion",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "pair-count",
@@ -5164,7 +5832,13 @@
     "pseudocode": "count = {}; total = 0\nfor each p in prices:\n  total = total + count.get(budget - p, 0)\n  count[p] = count.get(p, 0) + 1\nreturn total",
     "walkthrough": "Checking every pair is O(n^2), too slow for 50,000 items. Scan left to right keeping a map from price to how many times you have seen it. For the current price p, every earlier item priced budget - p forms a valid pair with it, so add that count to the total. Then record p. Each pair is counted exactly once, when its second item is reached. O(n) time, O(n) space. The result can be over a billion, but fits in a 32-bit int for n <= 50,000."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "hashing",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "palindrome-partitions",
@@ -5212,7 +5886,21 @@
     "pseudocode": "ways[0] = 1\nfor end in 1..n:\n  for start in 0..end-1:\n    if text[start..end) is a palindrome: ways[end] += ways[start]\nreturn ways[n]",
     "walkthrough": "Recursive version: from a start position, try every end position; if the piece is a palindrome, count the good cuttings of the rest. That recomputes the same suffixes, but with n <= 16 it is still fast. A faster idea: let ways[i] be the number of good cuttings of the first i letters. The last piece covers letters start..i-1; if it is a palindrome, it adds ways[start]. So ways[i] = sum of ways[start] over palindromic pieces ending at i. O(n^2) pieces, each checked in O(n)."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "backtracking",
+     "weight": 0.6
+    },
+    {
+     "concept": "strings",
+     "weight": 0.2
+    },
+    {
+     "concept": "dp",
+     "weight": 0.2
+    }
+   ]
   },
   {
    "slug": "partition-k-groups",
@@ -5279,7 +5967,21 @@
     "pseudocode": "total = sum(nums); if total % k != 0: return false; target = total / k\nsort nums from largest to smallest; if the largest > target: return false\nplace(i): if i == n: return true\n  for each group g (skip a group whose current sum was already tried for this number):\n    if group[g] + nums[i] <= target: add; if place(i + 1): return true; undo\n  return false",
     "walkthrough": "First rule out the easy cases: the total must be divisible by k, and no number may exceed the target sum total / k. Then place the numbers one by one into k groups. Placing the biggest numbers first makes failures show up early. Never put a number into a group that would exceed the target. If two groups currently have the same sum, trying the second one is pointless (it leads to the same situation), so skip it. If every number gets placed, all groups end exactly at the target. A bitmask DP over subsets (2^n states) is another way."
    },
-   "rating": 1500
+   "rating": 1500,
+   "skills": [
+    {
+     "concept": "backtracking",
+     "weight": 0.6
+    },
+    {
+     "concept": "sorting",
+     "weight": 0.2
+    },
+    {
+     "concept": "recursion",
+     "weight": 0.2
+    }
+   ]
   },
   {
    "slug": "peak-altitude",
@@ -5336,7 +6038,13 @@
     "pseudocode": "height = 0; best = 0\nfor each change c: height = height + c; best = max(best, height)\nreturn best",
     "walkthrough": "Start with height = 0 and best = 0 (the start counts). Walk through the list once, adding each change to height. After each step, if height is bigger than best, update best. One pass, no extra memory: O(n) time, O(1) space. Recomputing the sum from the start for every position also works but is O(n^2)."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "arrays",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "peak-overlap",
@@ -5411,7 +6119,13 @@
     "pseudocode": "starts = sorted start times; ends = sorted end times\ni = 0; j = 0; running = 0; best = 0\nwhile i < n:\n  if starts[i] < ends[j]: running++; i++; best = max(best, running)\n  else: running--; j++\nreturn best",
     "walkthrough": "Checking every start time against every talk is O(n^2). Instead, split the talks into two sorted lists: all start times and all end times. Sweep forward: when the next start is earlier than the earliest unfinished end, a talk begins, so the count goes up; otherwise a talk ends first, so the count goes down. Because a talk ending at time t frees the room for one starting at t, ends win ties (the check is 'start < end', not '<='). Track the maximum count seen. O(n log n) from the sorting."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "sorting",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "postfix-eval",
@@ -5460,7 +6174,17 @@
     "pseudocode": "stack = empty\nfor each token:\n  if token is a number: push it\n  else: b = pop(); a = pop(); push(a op b)\nreturn pop()",
     "walkthrough": "Read the tokens left to right. A number is pushed onto the stack. An operator needs the two most recent numbers, which are on top of the stack: pop b (the right operand) then a (the left operand), compute a op b, and push the result back. Order matters for minus: it is a - b, not b - a. When the tokens run out, the single value left on the stack is the answer. O(n) time."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "stack_queue",
+     "weight": 0.7
+    },
+    {
+     "concept": "strings",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "pow-mod",
@@ -5521,7 +6245,13 @@
     "pseudocode": "power(e): if e == 0: return 1 % m\n  half = power(e / 2)\n  result = half * half % m\n  if e is odd: result = result * (base % m) % m\n  return result",
     "walkthrough": "Repeated multiplication takes exp steps, up to a billion. Halving the exponent solves it in about 30 steps: compute x^(e/2) recursively, square it, and multiply by one more x if e is odd. Take the remainder after every multiplication so numbers never get large (every product is below m*m = 9 * 10^8, which fits in a 32-bit int). The base case e = 0 returns 1 mod m (which is 0 when m = 1)."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "recursion",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "product-except-self",
@@ -5591,7 +6321,13 @@
     "pseudocode": "left = 1\nfor i from 0 to n-1: result[i] = left; left *= nums[i]\nright = 1\nfor i from n-1 down to 0: result[i] *= right; right *= nums[i]",
     "walkthrough": "Multiplying all the others for every index costs O(n^2). Instead, make one pass from the left storing in result[i] the product of everything before i. Then make a pass from the right, multiplying result[i] by the product of everything after i. No division is needed, so zeros are handled automatically. O(n) time."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "arrays",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "rain-catch",
@@ -5659,7 +6395,17 @@
     "pseudocode": "left = 0; right = n-1; leftMax = 0; rightMax = 0; total = 0\nwhile left < right:\n  if h[left] < h[right]:\n    leftMax = max(leftMax, h[left]); total += leftMax - h[left]; left++\n  else:\n    rightMax = max(rightMax, h[right]); total += rightMax - h[right]; right--\nreturn total",
     "walkthrough": "Above wall i the water level is min(tallest wall to the left, tallest wall to the right) and the water is that level minus h[i] (never below 0). Computing both maxima for every wall costs O(n^2). With two pointers you track the best wall seen from each end. Whichever end currently has the lower wall is the limiting side: its water level is decided by its own running maximum, because the other side is guaranteed to have something at least as tall. Add the water for that wall and move that pointer inward. O(n) time, O(1) space. The total can reach 1 billion, which fits in a 32-bit int."
    },
-   "rating": 1500
+   "rating": 1500,
+   "skills": [
+    {
+     "concept": "arrays",
+     "weight": 0.7
+    },
+    {
+     "concept": "two_pointers",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "remove-adjacent-dupes",
@@ -5707,7 +6453,17 @@
     "pseudocode": "stack = []\nfor each ch: if stack not empty and top == ch: pop else: push ch\nreturn join(stack)",
     "walkthrough": "Repeatedly scanning and deleting pairs can take O(n^2). With a stack, process the letters once: if the new letter equals the letter on top of the stack, they form a pair, so pop the top and skip the new letter; otherwise push it. The stack always holds the text with all pairs seen so far already removed. At the end the stack is the answer."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "stack_queue",
+     "weight": 0.7
+    },
+    {
+     "concept": "strings",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "remove-duplicates-length",
@@ -5770,7 +6526,13 @@
     "pseudocode": "count = 1\nfor i from 1 to n-1: if ids[i] != ids[i-1]: count++\nreturn count",
     "walkthrough": "You do not need a set: because the list is sorted, all copies of a value are next to each other. A new distinct value starts exactly where an element differs from the one before it. Count those starts, plus the first element. One pass, O(1) space."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "two_pointers",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "remove-nth-from-end",
@@ -5838,7 +6600,17 @@
     "pseudocode": "dummy = node before head; fast = dummy; slow = dummy\nmove fast n steps forward\nwhile fast.next: fast = fast.next; slow = slow.next\nslow.next = slow.next.next\nreturn dummy.next",
     "walkthrough": "Counting the length first and then walking works in two passes. For one pass, start two pointers at a dummy node placed before the head. Move the fast pointer n steps ahead. Now move both pointers together until fast is at the last node: slow then stands right before the node to remove (the gap of n keeps it n nodes behind). Link slow past the removed node. The dummy node makes removing the head work without a special case."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "linked_list",
+     "weight": 0.7
+    },
+    {
+     "concept": "two_pointers",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "reverse-k-group",
@@ -5917,7 +6689,13 @@
     "pseudocode": "dummy -> head; groupPrev = dummy\nloop:\n  kth = k nodes ahead of groupPrev; if there are fewer than k: stop\n  groupNext = kth.next\n  reverse the nodes between groupPrev.next and kth (the reversed group ends by pointing to groupNext)\n  groupPrev.next = kth; groupPrev = the old first node of the group (now the group's tail)",
     "walkthrough": "For each group, first check there are k nodes left by walking k steps ahead (if not, stop and leave the rest untouched). Then reverse the group in place, but start the reversal with 'previous' = the node after the group, so the reversed group's last node automatically points to the rest of the list. Finally connect the node before the group to the group's new first node (the old kth node) and move on: the old first node of the group is now its tail and becomes the 'node before the next group'. A dummy node in front of the head removes special cases. O(n) time, O(1) space."
    },
-   "rating": 1500
+   "rating": 1500,
+   "skills": [
+    {
+     "concept": "linked_list",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "reverse-list",
@@ -5977,7 +6755,13 @@
     "pseudocode": "prev = null; cur = head\nwhile cur:\n  nxt = cur.next\n  cur.next = prev\n  prev = cur; cur = nxt\nreturn prev",
     "walkthrough": "Copying the values into an array and rebuilding works but uses O(n) extra space. Instead reverse the links in place: before changing cur.next, save the next node, then point cur.next at the previous node and move both pointers forward. When cur becomes empty, prev is the old last node, which is the new head. O(n) time, O(1) space."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "linked_list",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "rope-join",
@@ -6032,7 +6816,17 @@
     "pseudocode": "heap = all ropes (min-heap); total = 0\nwhile size(heap) > 1:\n  a = pop(); b = pop()\n  total += a + b\n  push(a + b)\nreturn total",
     "walkthrough": "A rope that is joined early is paid for again each time the resulting rope is joined later, so short ropes should be combined first and long ropes last. At each step take the two shortest ropes, pay their sum, and put the new rope back. You need quick access to the smallest items repeatedly, which is exactly a min-heap: O(log n) per push or pop and n - 1 joins, so O(n log n). The total can be a few hundred million, which still fits in a 32-bit int for n up to 50,000."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "heaps",
+     "weight": 0.7
+    },
+    {
+     "concept": "greedy",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "rotate-right",
@@ -6113,7 +6907,13 @@
     "pseudocode": "k = k % n\nreverse the whole list\nreverse the first k elements\nreverse the remaining n - k elements",
     "walkthrough": "Doing k single turns costs O(n*k), far too slow for k up to a billion. First reduce k to k % n, since n turns change nothing. Then the answer is the last k elements followed by the first n - k elements. In place, you can get this with three reversals: reverse everything, then reverse the first k, then reverse the rest. O(n) time, O(1) extra space."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "arrays",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "rotting-oranges",
@@ -6193,7 +6993,17 @@
     "pseudocode": "queue = all rotten cells (time 0); fresh = number of fresh oranges\nwhile queue: cell, t = pop front\n  for each neighbour that is fresh: make it rotten; fresh--; push (neighbour, t + 1); minutes = t + 1\nreturn minutes if fresh == 0 else -1",
     "walkthrough": "Simulating minute by minute and scanning the whole grid each minute works but is slow for big grids. A breadth-first search from all rotten oranges at once visits cells in the order they rot: level 1 is the fresh neighbours of the rotten ones (rot at minute 1), level 2 their neighbours, and so on. Count the fresh oranges at the start and decrease the count whenever one rots. The last level reached is the answer; if some fresh oranges are never reached (fresh > 0 at the end), return -1."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "graphs",
+     "weight": 0.7
+    },
+    {
+     "concept": "stack_queue",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "same-tree",
@@ -6262,7 +7072,17 @@
     "pseudocode": "same(a, b): if both empty: return true\n  if only one is empty: return false\n  return a.val == b.val and same(a.left, b.left) and same(a.right, b.right)",
     "walkthrough": "Compare the two trees node by node. If both nodes are missing, that part matches. If only one is missing, the shapes differ, so the answer is false. If both exist, their values must be equal and both the left subtrees and the right subtrees must be identical, which is the same question on smaller trees. Each node pair is compared once: O(n)."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "trees",
+     "weight": 0.7
+    },
+    {
+     "concept": "recursion",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "search-rotated",
@@ -6333,7 +7153,17 @@
     "pseudocode": "lo = 0; hi = n-1\nwhile lo <= hi:\n  mid = (lo + hi) / 2; if nums[mid] == target: return mid\n  if nums[lo] <= nums[mid]:   // left half sorted\n    if nums[lo] <= target < nums[mid]: hi = mid - 1 else: lo = mid + 1\n  else:                       // right half sorted\n    if nums[mid] < target <= nums[hi]: lo = mid + 1 else: hi = mid - 1\nreturn -1",
     "walkthrough": "A linear scan is O(n). To keep O(log n), notice that after splitting at mid, one of the two halves has no rotation point inside it, so it is plainly sorted: you can tell which by comparing nums[lo] with nums[mid]. Check whether the target falls inside the range of the sorted half. If it does, search that half; if it does not, it can only be in the other half. Repeat. Each step halves the range."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "binary_search",
+     "weight": 0.7
+    },
+    {
+     "concept": "sorting",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "search-sorted",
@@ -6401,7 +7231,13 @@
     "pseudocode": "lo = 0; hi = n - 1\nwhile lo <= hi:\n  mid = (lo + hi) / 2\n  if nums[mid] == target: return mid\n  if nums[mid] < target: lo = mid + 1 else: hi = mid - 1\nreturn -1",
     "walkthrough": "Checking every element is O(n). Because the list is sorted, compare the middle element with the target: if it is equal you are done, if it is smaller the target can only be to the right, otherwise to the left. Each step halves the search range, so O(log n). Take care with the loop condition (lo <= hi) so a one-element range is still examined."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "binary_search",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "second-highest",
@@ -6458,7 +7294,13 @@
     "pseudocode": "first = -1; second = -1\nfor each x:\n  if x > first: second = first; first = x\n  else if x < first and x > second: second = x\nreturn second",
     "walkthrough": "Sorting the distinct values works but costs O(n log n). One pass is enough: keep first and second, both starting at -1 (scores are never negative). A new value above first pushes the old first down to second. A value strictly between second and first becomes the new second. Equal values change nothing, which handles duplicates. If second is still -1 at the end, there was no runner-up."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "arrays",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "shortest-grid-path",
@@ -6531,7 +7373,17 @@
     "pseudocode": "if start or end is a wall: return -1\nqueue = [(0, 0)]; dist[0][0] = 0\nwhile queue not empty:\n  (r, c) = pop front\n  if (r, c) is the end: return dist[r][c]\n  for each open unvisited neighbour: dist[nr][nc] = dist[r][c] + 1; push it\nreturn -1",
     "walkthrough": "Trying every path (depth-first with backtracking) is exponential. Because every move costs 1, a breadth-first search visits cells in order of distance from the start: first all cells 1 move away, then 2 moves away, and so on. So the first time BFS reaches the end cell, that distance is the minimum. Use a queue, a visited marker (or distance table) so no cell is queued twice, and check the four neighbours. If the queue empties without reaching the end, return -1. O(rows * cols) time."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "graphs",
+     "weight": 0.7
+    },
+    {
+     "concept": "stack_queue",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "shortest-palindrome-extension",
@@ -6579,7 +7431,13 @@
     "pseudocode": "s = text + '#' + reverse(text)\ncompute the prefix function of s\nlongest = last value of the prefix function\nreturn len(text) - longest",
     "walkthrough": "Whatever you prepend is the reverse of the part of the text after some palindromic prefix. So you want the LONGEST palindromic prefix: the answer is n minus its length. Testing every prefix costs O(n^2). Trick: build s = text + '#' + reverse(text). A prefix of text that equals a suffix of reverse(text) is exactly a palindromic prefix of text. The KMP prefix (failure) function of s, at its last position, gives the longest such prefix in O(n)."
    },
-   "rating": 1500
+   "rating": 1500,
+   "skills": [
+    {
+     "concept": "strings",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "skip-neighbours",
@@ -6638,7 +7496,13 @@
     "pseudocode": "prev2 = 0; prev1 = 0\nfor each p in prizes:\n  current = max(prev1, prev2 + p)\n  prev2 = prev1; prev1 = current\nreturn prev1",
     "walkthrough": "Let best(i) be the most coins using the first i stalls. For stall i you either skip it (best(i-1)) or take it, which forces you to skip stall i-1, giving prizes[i] + best(i-2). So best(i) = max(best(i-1), best(i-2) + prizes[i]). Trying every legal set of stalls by recursion is exponential. Because best(i) only needs the previous two values, you can keep just two variables: O(n) time, O(1) space."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "dp",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "smallest-gap",
@@ -6695,7 +7559,13 @@
     "pseudocode": "sort(finish_times)\nbest = infinity\nfor i from 1 to n-1: best = min(best, finish_times[i] - finish_times[i-1])\nreturn best",
     "walkthrough": "Comparing every pair is O(n^2). After sorting, the two closest values must be adjacent: if some value sat between them, it would be even closer to one of them. So sort (O(n log n)), then scan once comparing each element with the previous one and keep the minimum difference. Total O(n log n)."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "sorting",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "sort-list",
@@ -6765,7 +7635,21 @@
     "pseudocode": "sort(head): if head is empty or has one node: return head\n  find the middle with slow/fast; cut the list in two\n  return merge(sort(left), sort(right))",
     "walkthrough": "Quick sort and heap sort rely on jumping to arbitrary positions, which a linked list does not allow. Merge sort fits well: find the middle node with slow and fast pointers, cut the list there, sort each half recursively, then merge the two sorted halves by splicing nodes (the same merge as for two sorted lists). Recursion depth is O(log n) and the total time is O(n log n)."
    },
-   "rating": 1500
+   "rating": 1500,
+   "skills": [
+    {
+     "concept": "linked_list",
+     "weight": 0.6
+    },
+    {
+     "concept": "recursion",
+     "weight": 0.2
+    },
+    {
+     "concept": "sorting",
+     "weight": 0.2
+    }
+   ]
   },
   {
    "slug": "sorted-pair-sum",
@@ -6832,7 +7716,13 @@
     "pseudocode": "i = 0; j = len-1\nwhile i < j:\n  s = scores[i] + scores[j]\n  if s == target: return true\n  if s < target: i++ else: j--\nreturn false",
     "walkthrough": "Trying every pair is O(n^2). Because the list is sorted, put one pointer at the smallest value and one at the largest. If their sum is too small, the left value can never reach the target with any remaining partner, so move i right. If the sum is too large, the right value is too big for every remaining partner, so move j left. Each step discards one position, so it is O(n) time with O(1) space."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "two_pointers",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "sorted-squares",
@@ -6904,7 +7794,13 @@
     "pseudocode": "i = 0; j = n-1\nfor pos from n-1 down to 0:\n  if |nums[i]| > |nums[j]|: result[pos] = nums[i]^2; i++\n  else: result[pos] = nums[j]^2; j--",
     "walkthrough": "Squaring and sorting works in O(n log n). But the input is already sorted, so the biggest absolute values are at the two ends (a large negative on the left or a large positive on the right). Compare the absolute values at both ends, put the bigger square at the END of the result, and move that pointer inward. Repeat until the pointers cross. O(n) time."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "two_pointers",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "stair-ways",
@@ -6951,7 +7847,17 @@
     "pseudocode": "a = ways(0) = 1; b = ways(-1) = 0; c = ways(-2) = 0\nrepeat n times: (a, b, c) = (a + b + c, a, b)\nreturn a",
     "walkthrough": "The last move was 1, 2 or 3 steps, so ways(n) = ways(n-1) + ways(n-2) + ways(n-3), with ways(0) = 1 and ways(negative) = 0. Writing this directly as recursion recomputes the same values again and again and takes exponential time (too slow for n = 30). Fix it by storing results in a table (memoization), or compute upward from 0 to n keeping only the last three values: O(n) time, O(1) space."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "recursion",
+     "weight": 0.7
+    },
+    {
+     "concept": "dp",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "subarray-sum-count",
@@ -7014,7 +7920,13 @@
     "pseudocode": "seen = {0: 1}; running = 0; count = 0\nfor each x:\n  running += x\n  count += seen.get(running - target, 0)\n  seen[running] = seen.get(running, 0) + 1\nreturn count",
     "walkthrough": "Trying every start and end is O(n^2). Let running be the sum of the first i readings. A window from j+1 to i has sum running(i) - running(j). It equals the target exactly when running(j) = running(i) - target. So keep a map from each running total to how many times it appeared (starting with 0 appearing once, for windows that begin at the start) and add the count for running - target at every step. O(n) time and space. The answer can be up to about 1.25 billion, which still fits in a 32-bit int."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "hashing",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "subset-sum-count",
@@ -7078,7 +7990,17 @@
     "pseudocode": "count(i, remaining):\n  if remaining < 0: return 0\n  if i == n: return 1 if remaining == 0 else 0\n  return count(i + 1, remaining - weights[i]) + count(i + 1, remaining)\n\nanswer = count(0, target)",
     "walkthrough": "Every selection is a yes/no decision per ingredient, so there are 2^n selections. You can write a recursive function count(i, remaining): if i is past the last ingredient, the selection is valid only if remaining is exactly 0. Otherwise add the ways when you take ingredient i (remaining - weights[i]) and the ways when you skip it. Because all weights are positive, you can prune: once remaining goes below 0, stop. With n up to 15 this is fast enough (at most 32768 selections)."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "backtracking",
+     "weight": 0.7
+    },
+    {
+     "concept": "recursion",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "three-sum-count",
@@ -7138,7 +8060,17 @@
     "pseudocode": "sort(nums); count = 0\nfor i in 0..n-3:\n  if i > 0 and nums[i] == nums[i-1]: continue\n  lo = i+1; hi = n-1\n  while lo < hi:\n    s = nums[i] + nums[lo] + nums[hi]\n    if s < 0: lo++ elif s > 0: hi--\n    else: count++; lo++; hi--; skip equal values on both sides",
     "walkthrough": "Three nested loops are O(n^3). After sorting, fix the first value nums[i]; the other two must sum to -nums[i], which is a sorted pair-sum problem: move lo right when the sum is too small and hi left when it is too big. To count each value group once, skip a position if it equals the previous value at the same level (for i, and for lo/hi after finding a match). O(n^2) overall."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "two_pointers",
+     "weight": 0.7
+    },
+    {
+     "concept": "sorting",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "top-k-frequent",
@@ -7212,7 +8144,21 @@
     "pseudocode": "counts = frequency map\nheap = min-heap ordered by (count, -value)\nfor each (value, count): push; if size > k: pop the smallest\nresult = heap contents sorted best first",
     "walkthrough": "Count the values with a hash map: O(n). Sorting all distinct values by (count descending, value ascending) and taking k works in O(d log d). A heap of size k does O(d log k): keep the k best pairs, where 'worse' means smaller count, or equal count with a larger value, so the heap's smallest element (the worst of the best k) is the one to drop. At the end sort the k survivors from best to worst."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "heaps",
+     "weight": 0.6
+    },
+    {
+     "concept": "hashing",
+     "weight": 0.2
+    },
+    {
+     "concept": "sorting",
+     "weight": 0.2
+    }
+   ]
   },
   {
    "slug": "top-k-sum",
@@ -7276,7 +8222,13 @@
     "pseudocode": "heap = empty min-heap\nfor each score: push it; if size > k: pop the smallest\nreturn sum of the heap",
     "walkthrough": "Sorting the whole list costs O(n log n). A min-heap of size k does better when k is small: push each score and, whenever the heap holds more than k scores, remove the smallest. The scores left are exactly the k largest. Add them up. Each heap operation costs O(log k)."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "heaps",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "town-judge",
@@ -7353,7 +8305,13 @@
     "pseudocode": "score = array of n+1 zeros\nfor each [a, b]: score[a]--; score[b]++\nfor person 1..n: if score[person] == n - 1: return person\nreturn -1",
     "walkthrough": "The judge has n - 1 arrows pointing at them and none leaving. Give each person a score: +1 for every person who trusts them, -1 for every person they trust. The judge's score is exactly n - 1, and nobody else can reach that (anyone who trusts somebody loses at least a point). One pass over the trust list fills the scores, a second pass over the people finds the judge. O(n + m)."
    },
-   "rating": 900
+   "rating": 900,
+   "skills": [
+    {
+     "concept": "graphs",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "tree-diameter",
@@ -7410,7 +8368,17 @@
     "pseudocode": "best = 0\nheight(node): if node is empty: return 0\n  l = height(node.left); r = height(node.right)\n  best = max(best, l + r)\n  return 1 + max(l, r)",
     "walkthrough": "For a node, the longest path that bends at that node goes down the deepest path on the left and the deepest path on the right, so its length in edges is (left height) + (right height), with heights counted in nodes. Computing the heights separately for every node costs O(n^2). Instead compute each node's height once in a post-order recursion, and while doing so update the best answer with l + r. The height returned to the parent is 1 + max(l, r). O(n) time."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "trees",
+     "weight": 0.7
+    },
+    {
+     "concept": "recursion",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "widest-fence",
@@ -7467,7 +8435,13 @@
     "pseudocode": "i = 0; j = n-1; best = 0\nwhile i < j:\n  best = max(best, min(h[i], h[j]) * (j - i))\n  if h[i] < h[j]: i++ else: j--\nreturn best",
     "walkthrough": "Trying every pair is O(n^2). Start with the widest banner (first and last post). The height is limited by the shorter post, so keeping that short post and moving the other pointer inward can only make the banner narrower without raising its height limit. The only move that can help is discarding the shorter post. So move the pointer at the shorter post inward, record the best area at each step, and stop when the pointers meet. O(n) time, O(1) space. The area can reach 1 billion, which still fits in a 32-bit int."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "two_pointers",
+     "weight": 1.0
+    }
+   ]
   },
   {
    "slug": "wildcard-match",
@@ -7521,7 +8495,21 @@
     "pseudocode": "match(0, 0) = true; match(0, j) = match(0, j-1) if pattern[j-1] == '*' else false\nmatch(i, j):\n  if pattern[j-1] == '*': match(i, j-1) or match(i-1, j)      // * matches nothing, or one more letter\n  else: match(i-1, j-1) and (pattern[j-1] == '?' or pattern[j-1] == text[i-1])",
     "walkthrough": "A `*` makes plain recursion branch a lot, so remember the results for each pair (i, j): match(i, j) says whether the first i text letters match the first j pattern characters. For an ordinary letter or `?`, the last characters must fit and the earlier parts must match: match(i-1, j-1). For `*`, either it matches nothing (match(i, j-1)) or it swallows one more text letter (match(i-1, j)). The base cases: two empty prefixes match, and an empty text matches only a run of `*`. A table of (n + 1) * (m + 1) booleans gives O(n * m)."
    },
-   "rating": 1500
+   "rating": 1500,
+   "skills": [
+    {
+     "concept": "dp",
+     "weight": 0.6
+    },
+    {
+     "concept": "recursion",
+     "weight": 0.2
+    },
+    {
+     "concept": "strings",
+     "weight": 0.2
+    }
+   ]
   },
   {
    "slug": "window-max-total",
@@ -7587,7 +8575,17 @@
     "pseudocode": "deque of indices; total = 0\nfor i in 0..n-1:\n  while deque not empty and temps[back] <= temps[i]: pop back\n  push i\n  if front <= i - k: pop front\n  if i >= k - 1: total += temps[front]",
     "walkthrough": "Scanning every window for its maximum costs O(n*k). Keep a deque of indices in the current window whose temperatures are in decreasing order. A new value removes all smaller-or-equal values from the back (they can never be a window maximum again, because the new value is both larger and later). Remove the front if it has slid out of the window. The front always holds the index of the window maximum. Each index enters and leaves the deque once: O(n)."
    },
-   "rating": 1500
+   "rating": 1500,
+   "skills": [
+    {
+     "concept": "sliding_window",
+     "weight": 0.7
+    },
+    {
+     "concept": "stack_queue",
+     "weight": 0.3
+    }
+   ]
   },
   {
    "slug": "word-pattern-match",
@@ -7642,7 +8640,17 @@
     "pseudocode": "words = sentence.split(' '); if len(words) != len(pattern): return false\nletterToWord = {}; wordToLetter = {}\nfor each i: if letterToWord has pattern[i] and it differs from words[i]: return false\n  if wordToLetter has words[i] and it differs from pattern[i]: return false\n  record both\nreturn true",
     "walkthrough": "Split the sentence into words; if the counts differ, the answer is false. Remember which word each letter stands for, and which letter each word stands for. For every position, the letter must map to the same word as before (if it has one), and the word must map back to the same letter as before. A one-way map is not enough: 'ab' with 'dog dog' would wrongly pass. O(n) time."
    },
-   "rating": 1200
+   "rating": 1200,
+   "skills": [
+    {
+     "concept": "strings",
+     "weight": 0.7
+    },
+    {
+     "concept": "hashing",
+     "weight": 0.3
+    }
+   ]
   }
  ],
  "testCases": [

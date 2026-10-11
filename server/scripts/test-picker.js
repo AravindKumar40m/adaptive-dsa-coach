@@ -114,5 +114,55 @@ test("current (drifted) difficulty is used instead of the seed rating", () => {
   assert.notEqual(slugOf(r), "a1");
 });
 
+// ---------------------------------------------------------------- Logging v2: candidates, variety picks, propensity
+const seq = (...values) => { let i = 0; return () => values[Math.min(i++, values.length - 1)]; }; // a fake random source
+test("the result lists the candidates in top-choice order, with counts", () => {
+  const r = pickNext(state());
+  assert.equal(r.greedySlug, "a1"); assert.equal(r.fitsCount, 3); assert.equal(r.openCount, 4); assert.equal(r.poolSize, 4);
+  assert.deepEqual(r.candidates.map((c) => c.slug), ["a1", "a2", "f1"]);
+  assert.deepEqual(r.candidates.map((c) => c.greedyRank), [1, 2, 3]);
+  assert.ok(Math.abs(r.candidates[0].expectedSuccess - 0.64) < 0.001);
+  assert.equal(r.explored, false); assert.equal(r.exploreRate, 0); assert.equal(r.propensity, 1);
+});
+test("with the variety rate at 0 the pick never changes, whatever the random source says", () => {
+  for (const x of [0, 0.5, 0.999]) assert.equal(slugOf(pickNext(state({ explore: { rate: 0, rng: () => x } }))), "a1");
+});
+test("variety pick: a low random draw chooses uniformly among the good fits, and says so", () => {
+  const r = pickNext(state({ explore: { rate: 0.2, rng: seq(0.1, 0.99) } })); // 0.1 < 0.2 -> explore; 0.99 -> the last fit
+  assert.equal(slugOf(r), "f1"); assert.equal(r.explored, true); assert.equal(r.greedySlug, "a1");
+  assert.equal(r.propensity, 0.067); // rate / 3 fits
+  assert.match(r.reason, /variety/i);
+});
+test("a high random draw keeps the top choice, and its propensity is 1 - rate + rate/n", () => {
+  const r = pickNext(state({ explore: { rate: 0.1, rng: seq(0.5) } }));
+  assert.equal(slugOf(r), "a1"); assert.equal(r.explored, false);
+  assert.equal(r.propensity, 0.933);
+  assert.doesNotMatch(r.reason, /variety/i);
+});
+test("exploring and drawing the top choice again is not called a variety pick", () => {
+  const r = pickNext(state({ explore: { rate: 1, rng: seq(0, 0) } })); // explore, index 0 = a1 = the top choice
+  assert.equal(slugOf(r), "a1"); assert.equal(r.explored, false); assert.equal(r.propensity, 0.333);
+});
+test("the propensities of all fitting problems add up to 1", () => {
+  const rate = 0.25, fits = 3;
+  const total = (1 - rate + rate / fits) + (fits - 1) * (rate / fits);
+  assert.ok(Math.abs(total - 1) < 1e-12);
+});
+test("a single fitting problem has propensity 1 even with variety on", () => {
+  const only = state({ problems: problems.filter((p) => p.slug === "a1" || p.slug === "a3"), explore: { rate: 0.9, rng: seq(0) } });
+  const r = pickNext(only);
+  assert.equal(slugOf(r), "a1"); assert.equal(r.propensity, 1); assert.equal(r.explored, false);
+});
+test("the closest-fallback pick is never random, logs its candidates and has propensity 1", () => {
+  const r = pickNext(state({ ratings: new Map([["A", 2000], ["F", 2000]]), explore: { rate: 1, rng: seq(0) } }));
+  assert.equal(r.mode, "closest"); assert.equal(r.explored, false); assert.equal(r.propensity, 1);
+  assert.equal(r.fitsCount, 0); assert.ok(r.candidates.length >= 3);
+  assert.equal(r.candidates[0].slug, slugOf(r));
+});
+test("at most 12 candidates are listed", () => {
+  const many = Array.from({ length: 30 }, (_, i) => P(`m${String(i).padStart(2, "0")}`, "A", "easy", 900));
+  assert.equal(pickNext(state({ problems: many })).candidates.length, 12);
+});
+
 console.log(failures === 0 ? "\nAll picker tests passed." : `\n${failures} TEST(S) FAILED`);
 process.exit(failures === 0 ? 0 : 1);

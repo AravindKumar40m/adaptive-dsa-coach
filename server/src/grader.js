@@ -4,13 +4,16 @@ import { randomBytes } from "node:crypto";
 import { config } from "./config.js";
 import { LANGUAGES, CPU_TIME_LIMIT_SEC } from "./languages.js";
 import { buildSource, encodeInput, encodeValue, resultPattern } from "./harness.js";
+import { classifyRun, effectiveSignal } from "./errors.js";
 
 const b64 = (s) => Buffer.from(s, "utf8").toString("base64");
 const unb64 = (s) => (s ? Buffer.from(s, "base64").toString("utf8") : "");
 const clip = (s, n) => (s.length > n ? s.slice(0, n) + "\n...(truncated)" : s);
 
 async function callJudge0(lang, source, stdin) {
-  const res = await fetch(`${config.judge0Url}/submissions?base64_encoded=true&wait=true`, {
+  // Judge0 leaves exit_code, exit_signal and wall_time out unless they are asked for by name
+  const fields = "stdout,stderr,compile_output,message,status,time,wall_time,memory,exit_code,exit_signal,token";
+  const res = await fetch(`${config.judge0Url}/submissions?base64_encoded=true&wait=true&fields=${fields}`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
@@ -32,7 +35,7 @@ async function callJudge0(lang, source, stdin) {
  * verdict: accepted | wrong_answer | runtime_error | time_limit | compile_error | internal_error
  * per-test verdict: passed | wrong_answer | runtime_error | time_limit | not_run
  */
-export async function gradeCode({ language, code, signature, tests }) {
+async function gradeInner({ language, code, signature, tests }) {
   const lang = LANGUAGES[language];
   if (!lang) throw new Error(`unsupported language: ${language}`);
   const nonce = randomBytes(6).toString("hex");
@@ -51,6 +54,11 @@ export async function gradeCode({ language, code, signature, tests }) {
     stderr,
     timeSec: Number(raw.time) || 0,
     memoryKb: raw.memory ?? 0,
+    // Judge0's own signals, kept for the log (the learner sees only the verdict)
+    statusId,
+    exitCode: raw.exit_code ?? null,
+    exitSignal: effectiveSignal(raw.exit_signal, raw.exit_code), // 11 = segfault, 8 = divide by zero ...
+    wallTimeSec: Number(raw.wall_time) || 0,
   };
 
   if (statusId === 6) {
@@ -92,4 +100,10 @@ export async function gradeCode({ language, code, signature, tests }) {
   base.stdout = clip((segments[focus] ?? "").trim(), 2000);
   const verdict = firstBad ? firstBad.verdict : "accepted";
   return { ...base, verdict, compileOutput: "", tests: results };
+}
+
+/** Grades the code and also says what KIND of mistake a crash was (errorName / errorFamily). */
+export async function gradeCode(args) {
+  const out = await gradeInner(args);
+  return { ...out, ...classifyRun(out) };
 }

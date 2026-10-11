@@ -26,7 +26,17 @@
     "orphans": "node --env-file=../.env scripts/count-orphans.js",
     "reset-password": "node --env-file=../.env scripts/reset-password.js",
     "test:google": "node --env-file=../.env scripts/test-google.js",
-    "dev:fake-google": "node --env-file=../.env scripts/dev-fake-google.js"
+    "dev:fake-google": "node --env-file=../.env scripts/dev-fake-google.js",
+    "test:signals": "node scripts/test-signals.js",
+    "test:logging": "node --env-file=../.env scripts/test-logging.js",
+    "logs:summary": "node --env-file=../.env scripts/logs-summary.js",
+    "test:kt": "node scripts/test-kt.js",
+    "arena": "node --env-file=../.env scripts/arena/run.js",
+    "test:kt-flow": "node --env-file=../.env scripts/test-kt-flow.js",
+    "test:recommender2": "node scripts/test-recommender2.js",
+    "policies": "node --env-file=../.env scripts/arena/run-policies.js",
+    "test:recommender2-flow": "node --env-file=../.env scripts/test-recommender2-flow.js",
+    "policies:sensitivity": "node --env-file=../.env scripts/arena/policy-sensitivity.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.132.0",

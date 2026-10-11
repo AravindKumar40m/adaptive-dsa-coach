@@ -20,6 +20,12 @@ export const config = {
   googleRedirectUri: process.env.GOOGLE_REDIRECT_URI ?? `${process.env.PUBLIC_URL ?? "http://localhost:5173"}/api/auth/google/callback`,
   googleAuthUrl: process.env.GOOGLE_AUTH_URL ?? "https://accounts.google.com/o/oauth2/v2/auth", // overridden only by tests (a local stand-in)
   googleTokenUrl: process.env.GOOGLE_TOKEN_URL ?? "https://oauth2.googleapis.com/token",
+  // how often the picker offers a different good option instead of the top choice (0 = never). Logged with its probability.
+  pickerExploreRate: Number(process.env.PICKER_EXPLORE_RATE ?? 0.1),
+  // the new knowledge model runs silently beside the live Elo and logs its predictions (never changes anything the learner sees)
+  // which recommender chooses the next problem: v1 (today's picker), v2 (new, needs KT_SHADOW), or ab (half the learners each, decided by their id)
+  pickerPolicy: process.env.PICKER_POLICY ?? "v1",
+  ktShadow: (process.env.KT_SHADOW ?? "true") !== "false",
   googleAttemptsPer15Min: Number(process.env.AUTH_GOOGLE_ATTEMPTS ?? 30), // Google sign-in steps per IP (start + callback)
   loginAttemptsPer15Min: Number(process.env.AUTH_LOGIN_ATTEMPTS ?? 10), // per email + IP
 };
