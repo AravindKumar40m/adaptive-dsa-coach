@@ -681,3 +681,18 @@ Format: one entry per step. Newest at the bottom.
 - Candidate fixes (none applied, they change production behaviour and need a decision): pass `-J-Xmx512m -J-XX:+UseSerialGC` to `javac` through Judge0's `compiler_options` and cap the run-time JVM the same way; or limit the Docker VM's CPUs/RAM in Docker Desktop settings (`.wslconfig`); or raise `MAX_MEMORY_LIMIT` and Java's `memoryKb`. After a fix: rerun `npm run content:validate` with a longer timeout (about 25 minutes) and `test:run-flow`.
 
 **Next:** decide the Java fix; restart both dev servers (they still run the old file layout in memory); then Batch 2 (dashboard, learning gain per hour), Batch 3, Batch 4. Hosting is still open.
+
+### Day 5 (2026-10-12), continued: Java memory problem fixed (option 1: cap javac's JVM)
+
+**Decision with the user:** fix it by capping the JVM that runs `javac` (not by changing Docker's size or Judge0's limits).
+
+**Built.** `server/src/grading/languages.js` gives Java `compilerOptions: "-J-Xmx256m -J-Xss512k -J-XX:+UseSerialGC -J-XX:CompressedClassSpaceSize=64m -J-XX:ReservedCodeCacheSize=64m -J-XX:MaxMetaspaceSize=128m"`; `grading/grader.js` sends it to Judge0 as `compiler_options` (Judge0 runs `javac <options> Main.java`; `-J` hands the flag to javac's own JVM). Why these flags: they remove what made the JVM's reservation depend on the machine (heap = a quarter of RAM, 1 GB of class space, one GC thread per CPU). Only `javac` is capped: Judge0's run command `java Main` has no place for flags, so the learner's program still runs on a default JVM. No Java run-time failures showed up in any check below.
+
+**Checked first:** Judge0 accepts the option and honours it (a deliberately impossible `-J-Xmx2m` makes javac refuse to start with a clear VM error; the real cap compiles a trivial program).
+
+**Tested (real results)**
+- The 20 problems that failed before (first full run: 20 Java failures; rerun: 11 of 20): now 101 of 101 runs pass in all four languages.
+- `content:validate`, all 623 reference solutions in 4 languages through the real harness and Judge0: **all pass, 0 failures, 823 s** (the earlier run had 20 Java failures and was cut off by my own 15-minute timeout).
+- `test:run-flow` (incl. a real Java compile error still returns its compiler message to the learner) and `test:harness-types` pass.
+
+**Caveats.** The failures were intermittent and had no proven single cause (the Docker VM size is the leading explanation, not confirmed), so "fixed" rests on 623 of 623 plus 101 of 101 clean runs on this machine, not on a proof. If the Docker VM changes again, rerun `content:validate`. The cap does not cover the run phase; if Java `runtime_error` with the same memory message ever shows up, the next step is a smaller Docker VM or a higher Java `memoryKb` / Judge0 `MAX_MEMORY_LIMIT`.

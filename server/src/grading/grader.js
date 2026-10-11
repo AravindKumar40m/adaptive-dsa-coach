@@ -26,6 +26,7 @@ async function callJudge0(lang, source, stdin, learnerId) {
         source_code: b64(source),
         stdin: b64(stdin),
         memory_limit: lang.memoryKb,
+        ...(lang.compilerOptions ? { compiler_options: lang.compilerOptions } : {}), // Java: cap javac's JVM (see languages.js)
         cpu_time_limit: CPU_TIME_LIMIT_SEC,
         wall_time_limit: 10,
       }),

@@ -49,6 +49,7 @@ Copy `.env.example` to `.env`. Never commit `.env` or `infra/judge0.conf`.
   `ENABLE_PER_PROCESS_AND_THREAD_*=true` so it runs without cgroups. Time limits still work (infinite loops are killed).
 - Without cgroups the memory limit is per-process address space, so Node needs ~1 GB and Java ~4 GB
   (see `server/src/grading/languages.js`). It is a ceiling on virtual memory, not real RAM use.
+- Java: `javac` is started with a JVM memory cap (`compilerOptions` in `server/src/grading/languages.js`, sent to Judge0 as `compiler_options`). Without it a JVM sizes itself from the Docker VM (8 CPUs, 6.7 GiB) and can pass the 4,000,000 KB address-space limit, so about 1 compile in 7 failed with "insufficient memory for the Java Runtime Environment" (found Day 5). Only `javac` is capped: Judge0 gives `java Main` no way to take flags. If it ever returns, first check what the Docker VM size is.
 - Always call Judge0 with `base64_encoded=true` (compiler error text is not valid UTF-8).
 - For production, use a Linux host with cgroup v1 (or a newer Judge0/isolate) and proper per-run memory limits.
 - Verified 2026-10-06: Python, JavaScript, Java and C++ all run; infinite loop = Time Limit Exceeded; division by zero = Runtime Error.
