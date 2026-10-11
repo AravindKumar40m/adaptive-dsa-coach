@@ -9,7 +9,7 @@ window focus, mouse movement or anything from other pages or apps. Learning data
 the email address lives only in `users`. All learning data is deleted by "Delete my learning data"; everything including
 the account by "Delete my account" (`server/src/erase.js`).
 
-Version tags written on rows: `LOGGING_VERSION = log-2`, `SCORING_VERSION = score-1`, `PICKER_VERSION = picker-2`
+Version tags written on rows: `LOGGING_VERSION = log-3`, `SCORING_VERSION = score-1`, `PICKER_VERSION = picker-3`, `REVIEW_VERSION = review-1`
 (`server/src/versions.js`). Change a tag whenever that part's behaviour changes, so analysis can tell which rules produced a row.
 
 ## Accounts (not learning data)
@@ -52,13 +52,16 @@ Each hint level opened (`kind: ladder`) and each AI explanation (`kind: feedback
 ### `recommendationevents` (every time the picker chose; the base for evaluating future recommenders)
 | Field | Meaning |
 |---|---|
-| chosen {slug, concept, difficultyLabel, expectedSuccess, conceptRating}, mode (weakest / closest), reason | what was offered and why |
+| chosen {slug, concept, difficultyLabel, expectedSuccess, conceptRating}, mode (weakest / closest / review), reason | what was offered and why |
+| review {concept, stage, reviewsDone, intervalDays, daysSinceLast, overdueRatio, repeat, dueConcepts} | review picks only (`mode: review`, Batch 1): which topic was due, its stage in the 1/3/7/14/30-day schedule, how overdue it was, and whether the problem is one the learner solved before (`repeat`) |
 | explored, exploreRate, propensity, greedySlug | whether it was a "variety pick" instead of the top choice, the variety rate in force, the probability this problem was chosen, and what the top choice was |
 | candidates[{slug, concept, expectedSuccess, conceptRating, greedyRank}] (best 12) | what else could have been offered |
 | fitsCount, poolSize, openCount, solvedCount, excludeCount, repeated | sizes of the sets at decision time |
 | stateKey, pickerVersion, sessionId | state the pick belongs to (the same state reuses the pick: no reshuffling, no duplicate rows) |
 
 Recommender v2 rows (`policy: v2`, `pickerVersion: rec-2.0`) add: `v2` {slot (warmup / core / stretch), target (aimed chance of success), score, parts {fit, info, weak, review, variety}, warmup}, and per candidate `score` and `parts`; `propensity` is the softmax probability of the pick and `explored` means it was not the top score. `policy` is `v1` for today's picker.
+
+**Spaced review (v1 picker, `server/src/review.js`, `PICKER_REVIEW=off` disables it).** The schedule is computed from the learner's accepted Submits, not stored: the first solve in a topic makes it due after 1 day; a clean solve made after the due time (at most hint level 2 and 2 failed submits) moves it one stage up (3, 7, 14, then every 30 days); an unclean one repeats the same wait; a solve before the due time is extra practice and changes nothing. A due topic gets a fresh problem about 78% likely to be solved (never under 55%), or a problem solved before if none is left. Never more than 1 review in 3 recommendations. Review picks have `propensity 1` and `explored false`. The reason text of ordinary picks now also states facts about the learner's last solve in that topic.
 
 Variety picks: with probability `PICKER_EXPLORE_RATE` (default 0.1) the picker takes a problem uniformly from ALL problems in the 50-80% window instead of the top choice. `propensity = (1 - rate) * [is the top choice] + rate / n`. With these two numbers a later model can be scored on this log ("inverse propensity" evaluation).
 
@@ -70,7 +73,15 @@ Variety picks: with probability `PICKER_EXPLORE_RATE` (default 0.1) the picker t
 | confidence | 1-5 | "how confident are you that you can solve this?" (asked before the first run, optional) |
 | feel | too_easy / just_right / too_hard | after a Submit (optional) |
 | liked | true / false | after a Submit (optional) |
+| nudge_shown | {rule: struggle-1, level, failedAttempts, secondsSpent, expectedSeconds, noProgress, helpLevel, shown} | written by the SERVER only: after a failed Run/Submit it suggested a hint (rule in `server/src/struggle.js`: at least 3 failed attempts, at least half the expected time, no progress, hint level under 2, at most 2 per problem and 10 minutes apart). A browser cannot create this kind. |
+| nudge_taken / nudge_dismissed | hints / not_now | the learner's answer to the suggestion. "Open the hints" only opens the Hints tab: nothing is revealed (and no score is lost) until they press Reveal. |
 Also: recommendationId (opened / skipped), sessionId. The latest row of a kind wins when read back.
+
+### `codesnapshots` (the code as it develops; Batch 1)
+learnerId, problem, language, code, chars, hash (sha256), trigger (`timer` = about every 30 s while the code changed, `switch` = the learner changed language or problem), seq (1, 2, 3 ... per learner and problem), msSinceOpen (clamped to 6 h, sent by the page), sessionId, loggingVersion. Untouched starter code and code identical to the previous snapshot are never sent or stored; at most 400 per learner and problem and 240 per hour. Together with the code stored on every Run/Submit (`submissions.code`) this shows how a solution grew. Nothing uses it yet: it is raw material for a later "how did their reasoning evolve" study. Covered by the consent line about "a saved copy about every 30 seconds". Erased with the learner's data.
+
+### `metricevents` (operational timings; Batch 1)
+kind (`http` / `judge0` / `ai` / `mongo`), name (http: `POST /api/submit`, the route pattern with no ids; judge0: `lang71`; ai: model; mongo: `ping`), ms, ok, status, who (a scrambled learner id: first 10 hex of sha256, so "how many different people hit this error" can be counted without storing who), extra (judge0: {execSec, wallSec, overheadMs} where overhead = how long we waited minus how long the program ran = queue + start-up). MongoDB deletes rows after 14 days. `/api/health` is not recorded. Read them with `npm run metrics`. Erased with the learner's data (by the same scrambled id).
 
 ### `placementsurveys` (the optional self-assessment)
 learnerId, answers {concept: 0..4} (0 never heard of it, 1 heard of it, 2 know the basics, 3 comfortable, 4 could teach it; a topic left out = no answer), experience (0 brand new ... 3 a lot, or empty). Saved exactly as given. It also sets a WEAK starting guess in `knowledgestates` for skills with no real attempts: `1000 + 30 x (answer - 2)` with the normal uncertainty, `n: 0`, `last: null` (so it cannot fade). Real attempts are never overwritten. Redoing the survey replaces the guess for unpractised skills only.
@@ -93,4 +104,6 @@ Both are erased with the learner's data. Neither changes anything the learner se
 - `codeStats` and `approach` are heuristics. `approach` is similarity to OUR reference solutions, not a proof of the algorithm used.
 - Browser-reported values (`activity`, `startedAt`) can be faked; they are clamped but not trusted. They must never decide anything important alone.
 - Timings on a shared machine are noisy; one run proves nothing about efficiency.
-- No code snapshots yet (planned later with consent): the work pattern is the cheap substitute.
+- Code snapshots exist since Batch 1 but only every ~30 s of editing: fast bursts between two snapshots are not seen. The work pattern (`activity`) still counts those.
+- The struggle nudge is evaluated only after a failed Run/Submit, never while the learner is idle or typing, so a learner who stares at the screen without running anything is not nudged.
+- A review's schedule is a simple fixed ladder, not a retention model; whether it matches how this learner forgets is unknown until real data exists.

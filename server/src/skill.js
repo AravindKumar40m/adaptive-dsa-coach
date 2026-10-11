@@ -14,7 +14,7 @@ export const MAX_COUNTED_FAILS = 3; // failed submits per problem that still mov
 export const PARTIAL_CREDIT_CAP = 0.4; // a failing solution can never score like a passing one
 const INDEPENDENCE_SCORES = [1, 0.75, 0.5, 0.25, 0]; // help level shown before the accepted solution: none, nudge, pattern, pseudocode, walkthrough
 const ATTEMPT_SCORES = [1, 0.7, 0.4, 0.2]; // efficiency part: 0, 1, 2, 3+ failed submits before the accepted one
-const EXPECTED_SECONDS = { easy: 600, medium: 1200, hard: 2400 }; // full speed credit up to this, none at 3x
+export const EXPECTED_SECONDS = { easy: 600, medium: 1200, hard: 2400 }; // full speed credit up to this, none at 3x
 
 export const expectedScore = (rating, difficulty) => 1 / (1 + 10 ** ((difficulty - rating) / 400));
 export const kFactor = (attemptsOnConcept) => (attemptsOnConcept < 10 ? 40 : 16);

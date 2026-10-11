@@ -9,6 +9,7 @@ import { eraseLearnerData } from "../erase.js";
 import { applySubmission, priorHistory, secondsSince } from "../rating.js";
 import { sanitizeActivity } from "../activity.js";
 import { collectSignals } from "../logSignals.js";
+import { maybeNudge } from "../nudge.js";
 import { touchSession } from "../sessions.js";
 import { recordShadow } from "../kt/shadow.js";
 import { LOGGING_VERSION, SCORING_VERSION } from "../versions.js";
@@ -43,7 +44,7 @@ async function handle(mode, req, res) {
   const started = Date.now();
   let graded;
   try {
-    graded = await gradeCode({ language, code, signature: problem.signature, tests });
+    graded = await gradeCode({ language, code, signature: problem.signature, tests, learnerId });
   } catch (err) {
     console.error("grading failed:", err.message);
     return res.status(503).json({ error: "The code runner is not available right now. Try again in a moment." });
@@ -96,6 +97,16 @@ async function handle(mode, req, res) {
     }
   }
 
+  // a suggestion to open a hint when the learner looks stuck (rule in struggle.js); it never blocks or changes the result
+  let nudge = null;
+  if (graded.verdict !== "accepted" && graded.verdict !== "internal_error") {
+    try {
+      nudge = await maybeNudge({ learnerId, problem, startedAt, secondsSpent });
+    } catch (err) {
+      console.error("could not evaluate the nudge:", err.message);
+    }
+  }
+
   // what the learner may see: full detail for visible tests, verdict only for hidden ones
   const byIdx = new Map(tests.map((t) => [t.idx, t]));
   const shown = graded.tests.map((r) => {
@@ -110,6 +121,7 @@ async function handle(mode, req, res) {
     compileOutput: graded.compileOutput, stdout: graded.stdout, stderr: graded.stderr,
     timeSec: graded.timeSec, memoryKb: graded.memoryKb,
     skill,
+    nudge,
   });
 }
 

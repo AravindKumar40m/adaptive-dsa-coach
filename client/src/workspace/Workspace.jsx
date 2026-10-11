@@ -25,16 +25,34 @@ export function Workspace({ user, slug, source, recommendation, aiEnabled, theme
   const [leftTab, setLeftTab] = useState("problem");
   const [mobilePane, setMobilePane] = useState("problem");
   const [told, setTold] = useState({ confidence: null, feel: null, liked: null, runs: 0 }); // what the learner told us about this problem
+  const [nudge, setNudge] = useState(null); // { level, label, text }: the server thinks a small hint might help (struggle.js)
   const trackerRef = useRef(null);
   trackerRef.current ??= new ActivityTracker(); // totals about how the learner works in the editor (see activityTracker.js)
   const tracker = trackerRef.current;
+  const snap = useRef({}); // the latest render's problem / language / code, read by the snapshot timer
+  const committed = useRef({}); // the same, but as of the previous finished render (so a cleanup still sees the OLD problem)
+  const lastSnapshot = useRef({}); // "slug:language" -> the code we last sent, so unchanged code is not sent again
 
   const left = useSplit({ initial: 520, min: 340, max: 900, axis: "x", storeKey: "split-left" });
   const consoleH = useSplit({ initial: 330, min: 120, max: 620, axis: "y", reverse: true, storeKey: "split-console" });
 
+  // Save a copy of the code while the learner works (see the consent text): every 30 s if it changed, and when they switch
+  // language or problem. Untouched starter code and unchanged code are never sent.
+  function sendSnapshot(trigger, s = snap.current) {
+    if (!s.problem || !s.code?.trim() || s.code === s.problem.starters?.[s.language]) return;
+    const key = `${s.slug}:${s.language}`;
+    if (lastSnapshot.current[key] === s.code) return;
+    lastSnapshot.current[key] = s.code;
+    api("/snapshot", { method: "POST", body: { problem: s.slug, language: s.language, code: s.code, trigger, msSinceOpen: Date.now() - Date.parse(s.openedAt) } });
+  }
+  useEffect(() => {
+    const timer = setInterval(() => { if (document.visibilityState === "visible") sendSnapshot("timer"); }, 30_000);
+    return () => clearInterval(timer);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   // load the problem and any hints already opened
   useEffect(() => {
-    setProblem(null); setResult(null); setFeedback(null); setError(""); setLeftTab("problem");
+    setProblem(null); setResult(null); setFeedback(null); setError(""); setLeftTab("problem"); setNudge(null);
     setHints({ revealed: [], next: 1 }); setTold({ confidence: null, feel: null, liked: null, runs: 0 });
     tracker.restart();
     // tell the server the problem was opened and how we got here (recommendation, library or directly)
@@ -44,6 +62,7 @@ export function Workspace({ user, slug, source, recommendation, aiEnabled, theme
     api(`/problems/${slug}`).then((r) => {
       if (r.ok) { setProblem(r.data); setStartedAt(new Date().toISOString()); } else setError("Could not load the problem.");
     });
+    return () => sendSnapshot("switch", committed.current); // leaving this problem: keep its latest code
   }, [slug, learnerId]);
 
   // the learner deleted their learning data from the Account menu
@@ -55,15 +74,24 @@ export function Workspace({ user, slug, source, recommendation, aiEnabled, theme
   const draftKey = `${slug}:${language}`;
   const code = drafts[draftKey] ?? loadDraft(learnerId, draftKey) ?? problem?.starters?.[language] ?? "";
   const solvedHere = result?.mode === "submit" && result?.verdict === "accepted" && result?.problem === slug;
+  snap.current = { problem, slug, language, code, openedAt: startedAt };
+  useEffect(() => { committed.current = snap.current; }); // runs after every render, AFTER the previous render's cleanups
 
   async function send(which) {
     if (busy || !problem) return;
-    setBusy(true); setMode(which); setError("");
+    setBusy(true); setMode(which); setError(""); setNudge(null);
     const r = await api(`/${which}`, { method: "POST", body: { problem: slug, language, code, startedAt, activity: tracker.take() } });
     if (r.data.needsConsent) onUser({ ...user, consentCurrent: false }); // the wording changed in the meantime: ask again
     else if (!r.ok) setError(r.data.error ?? "Something went wrong.");
-    else { setResult(r.data); if (which === "submit") onSolved(); }
+    else { setResult(r.data); setNudge(r.data.nudge ?? null); if (which === "submit") onSolved(); }
     setBusy(false);
+  }
+
+  // the learner's answer to "Stuck? A small hint might help": open the hints (nothing is revealed for them) or not now
+  function answerNudge(taken) {
+    api("/problem-event", { method: "POST", body: { problem: slug, kind: taken ? "nudge_taken" : "nudge_dismissed", value: taken ? "hints" : "not_now" } });
+    if (taken) { setLeftTab("help"); setMobilePane("problem"); }
+    setNudge(null);
   }
 
   // optional answers: how confident before, how it felt after, liked or not
@@ -140,7 +168,7 @@ export function Workspace({ user, slug, source, recommendation, aiEnabled, theme
 
         <section className={`pane ${mobilePane === "code" ? "" : "hide-mobile"}`} aria-label="Code">
           <div className="editor-head">
-            <select className="select select-sm" value={language} onChange={(e) => { tracker.languageSwitch(); setLanguage(e.target.value); }} aria-label="Language">
+            <select className="select select-sm" value={language} onChange={(e) => { sendSnapshot("switch"); tracker.languageSwitch(); setLanguage(e.target.value); }} aria-label="Language">
               {LANGUAGES.map((l) => (<option key={l.key} value={l.key}>{l.label}</option>))}
             </select>
             <button className="btn btn-ghost" disabled={busy || !problem} title="Back to the starter code"
@@ -172,7 +200,7 @@ export function Workspace({ user, slug, source, recommendation, aiEnabled, theme
           <div className="console" style={{ "--console-h": `${consoleH.size}px` }}>
             <div className="tabs"><span className="tab" aria-selected="true" style={{ cursor: "default" }}>Results</span></div>
             {error && <div className="callout bad" style={{ margin: "10px 16px 0" }} role="alert">{error}</div>}
-            <ConsolePane busy={busy} mode={mode} result={result} solved={solvedHere} onNext={() => onNext(false)}
+            <ConsolePane busy={busy} mode={mode} result={result} solved={solvedHere} onNext={() => onNext(false)} nudge={nudge} onNudge={answerNudge}
               rate={{ state: told, onFeel: (v) => tell("feel", v), onLiked: (v) => tell("liked", v) }} />
           </div>
         </section>

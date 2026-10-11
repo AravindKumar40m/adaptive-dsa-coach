@@ -80,6 +80,8 @@ kbd {
 .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 10px 14px; border-radius: 0 var(--radius-s) var(--radius-s) 0; color: var(--text); }
 .callout.bad { border-left-color: var(--bad); background: var(--bad-soft); }
 .callout.ok { border-left-color: var(--ok); background: var(--ok-soft); }
+.callout.nudge { margin: 12px 0; }
+.nudge-actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
 .eyebrow { font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; color: var(--text-faint); }
 .progress { height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
 .progress > i { display: block; height: 100%; background: var(--accent); }

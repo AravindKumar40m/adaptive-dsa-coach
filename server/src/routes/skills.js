@@ -12,6 +12,8 @@ import { policyFor } from "../policy.js";
 import { pickNextV2, slotFor } from "../recommender2.js";
 import { loadLearnerState } from "../learnerState.js";
 import { conceptStatus, pickNext } from "../picker.js";
+import { loadSolveHistory } from "../history.js";
+import { REVIEW_COOLDOWN_PICKS, pickReview, reviewStates } from "../review.js";
 import { START_RATING } from "../skill.js";
 
 const router = Router();
@@ -55,10 +57,10 @@ router.get("/learners/:learnerId/next", async (req, res, next) => {
     const lastSubmit = await Submission.findOne({ learnerId, mode: "submit" }).sort({ createdAt: -1 }).select("_id").lean();
     const stateKey = `${lastSubmit?._id ?? "none"}|${[...exclude].sort().join(",")}`;
     const prev = await RecommendationEvent.findOne({ learnerId }).sort({ createdAt: -1 }).lean();
-    if (prev && !prev.done && (prev.policy ?? "v1") === policy && prev.stateKey === stateKey && Date.now() - prev.createdAt.getTime() < 6 * 3600 * 1000 && !state.solved.has(prev.chosen.slug)) {
+    if (prev && !prev.done && (prev.policy ?? "v1") === policy && prev.stateKey === stateKey && Date.now() - prev.createdAt.getTime() < 6 * 3600 * 1000 && (prev.mode === "review" || !state.solved.has(prev.chosen.slug))) { // a repeat review is a solved problem on purpose
       const problem = state.problems.find((p) => p.slug === prev.chosen.slug);
       if (problem) {
-        return res.json({ done: false, problem, expectedSuccess: prev.chosen.expectedSuccess, mode: prev.mode, reason: prev.reason, repeated: prev.repeated, explored: prev.explored, recommendationId: prev._id, reused: true, policy, slot: prev.v2?.slot ?? null });
+        return res.json({ done: false, problem, expectedSuccess: prev.chosen.expectedSuccess, mode: prev.mode, reason: prev.reason, repeated: prev.repeated, explored: prev.explored, recommendationId: prev._id, reused: true, policy, slot: prev.v2?.slot ?? null, review: prev.review ?? null });
       }
     }
 
@@ -74,7 +76,19 @@ router.get("/learners/:learnerId/next", async (req, res, next) => {
       pick = r.done ? r : { ...r, expectedSuccess: r.p, mode: "v2" };
       v2info = r.done ? null : { slot: r.slot, target: r.target, score: r.score, parts: r.parts, warmup: r.warmup };
     } else {
-      pick = pickNext({ ...state, exclude, explore: { rate: config.pickerExploreRate } });
+      // v1: first, is any topic due for a spaced review? (review.js; never more than 1 review in 3 recommendations)
+      const now = Date.now();
+      const solves = await loadSolveHistory(learnerId, state.problems);
+      const states = reviewStates(solves, now);
+      if (config.pickerReview) {
+        const recent = await RecommendationEvent.find({ learnerId }).sort({ createdAt: -1 }).limit(REVIEW_COOLDOWN_PICKS).select("mode -_id").lean();
+        if (!recent.some((r) => r.mode === "review")) {
+          const solveInfo = new Map();
+          for (const s of solves) solveInfo.set(s.problem, s); // oldest first, so the latest solve of each problem wins
+          pick = pickReview({ states, concepts: state.concepts, problems: state.problems, difficulty: state.difficulty, ratings: state.ratings, solved: state.solved, exclude, solveInfo, status: conceptStatus(state) });
+        }
+      }
+      pick ??= pickNext({ ...state, exclude, explore: { rate: config.pickerExploreRate }, history: { last: new Map([...states].map(([c, s]) => [c, s.last])), now } });
     }
 
     // log the decision (a logging failure must not stop the learner getting a problem)
@@ -84,7 +98,7 @@ router.get("/learners/:learnerId/next", async (req, res, next) => {
       const row = await RecommendationEvent.create(pick.done ? { ...base, done: true } : {
         ...base, done: false, mode: pick.mode, explored: pick.explored, propensity: pick.propensity, greedySlug: pick.greedySlug, repeated: pick.repeated,
         chosen: { slug: pick.problem.slug, concept: pick.problem.concept, difficultyLabel: pick.problem.difficulty, expectedSuccess: pick.expectedSuccess, conceptRating: state.ratings.get(pick.problem.concept) ?? START_RATING },
-        candidates: pick.candidates, fitsCount: pick.fitsCount, poolSize: pick.poolSize, openCount: pick.openCount, v2: v2info,
+        candidates: pick.candidates, fitsCount: pick.fitsCount, poolSize: pick.poolSize, openCount: pick.openCount, v2: v2info, review: pick.review ?? undefined,
       });
       recommendationId = row._id;
     } catch (err) {
@@ -102,6 +116,7 @@ router.get("/learners/:learnerId/next", async (req, res, next) => {
       recommendationId,
       policy,
       slot: v2info?.slot ?? null,
+      review: pick.review ?? null,
     });
   } catch (err) {
     next(err);

@@ -17,6 +17,9 @@ const VALID = {
   feel: (v) => ["too_easy", "just_right", "too_hard"].includes(v),
   liked: (v) => typeof v === "boolean",
   skipped: (v) => ["too_hard", "too_easy", "not_interested", "other", "no_reason"].includes(v),
+  nudge_shown: () => false, // only the server writes this (nudge.js); a browser cannot invent an offer
+  nudge_taken: (v) => v === "hints",
+  nudge_dismissed: (v) => v === "not_now",
 };
 const DAY = 24 * 3600 * 1000;
 

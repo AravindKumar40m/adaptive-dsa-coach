@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import Anthropic from "@anthropic-ai/sdk";
 import { config } from "../config.js";
 import { aiConsentCurrent } from "../auth.js";
+import { timed } from "../metrics.js";
 import { touchSession } from "../sessions.js";
 import { FEEDBACK_LEVEL, revealNext, revealedHints } from "../hints.js";
 import { explainResult, llmConfigured, summarizeResult } from "../llm.js";
@@ -69,7 +70,7 @@ router.post("/feedback", async (req, res, next) => {
       const turn = limiter.take(learnerId);
       if (!turn.ok) return res.status(429).json({ error: `You have used all ${config.aiCallsPerHour} AI explanations for this hour. Try again in ${Math.ceil(turn.retryAfterSec / 60)} minutes.` });
       try {
-        text = await explainResult({ problem, language, code, summary });
+        text = await timed({ kind: "ai", name: config.anthropicModel, learnerId }, () => explainResult({ problem, language, code, summary }));
       } catch (err) {
         console.error("AI feedback failed:", err instanceof Anthropic.APIError ? `${err.status} ${err.message}` : err.message);
         const busy = err instanceof Anthropic.RateLimitError || err.status === 529;

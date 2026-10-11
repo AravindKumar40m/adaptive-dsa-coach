@@ -55,7 +55,7 @@ function Case({ t }) {
   );
 }
 
-export function ConsolePane({ busy, mode, result, onNext, solved, rate }) {
+export function ConsolePane({ busy, mode, result, onNext, solved, rate, nudge, onNudge }) {
   const [picked, setPicked] = useState(0);
   // jump to the first failing example when a new result arrives
   useEffect(() => {
@@ -133,6 +133,15 @@ export function ConsolePane({ busy, mode, result, onNext, solved, rate }) {
         <span className="muted num">{result.passed} / {result.total} tests passed · {result.timeSec}s</span>
         <span className="badge" style={{ marginLeft: "auto" }}>{result.mode === "submit" ? "Submit" : "Run"}</span>
       </div>
+      {nudge && !accepted && (
+        <div className="callout nudge" role="status">
+          <div>{nudge.text}</div>
+          <div className="nudge-actions">
+            <button className="btn btn-primary" onClick={() => onNudge(true)}>Open the hints</button>
+            <button className="btn btn-ghost" onClick={() => onNudge(false)}>Not now</button>
+          </div>
+        </div>
+      )}
       {accepted ? <>{outcome}{details}</> : <>{details}{outcome}</>}
       {!accepted && rateRow}
     </div>

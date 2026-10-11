@@ -1,33 +1,52 @@
 // Runs learner code against tests in Judge0 and turns the raw output into a per-test verdict.
-// Pure grading: no database, no logging (the routes do that).
+// Grading only: the routes log submissions. The one exception is a fire-and-forget timing of the Judge0 call (metrics.js).
 import { randomBytes } from "node:crypto";
 import { config } from "./config.js";
 import { LANGUAGES, CPU_TIME_LIMIT_SEC } from "./languages.js";
 import { buildSource, encodeInput, encodeValue, resultPattern } from "./harness.js";
 import { classifyRun, effectiveSignal } from "./errors.js";
+import { recordMetric } from "./metrics.js";
 
 const b64 = (s) => Buffer.from(s, "utf8").toString("base64");
 const unb64 = (s) => (s ? Buffer.from(s, "base64").toString("utf8") : "");
 const clip = (s, n) => (s.length > n ? s.slice(0, n) + "\n...(truncated)" : s);
 
-async function callJudge0(lang, source, stdin) {
+async function callJudge0(lang, source, stdin, learnerId) {
   // Judge0 leaves exit_code, exit_signal and wall_time out unless they are asked for by name
   const fields = "stdout,stderr,compile_output,message,status,time,wall_time,memory,exit_code,exit_signal,token";
-  const res = await fetch(`${config.judge0Url}/submissions?base64_encoded=true&wait=true&fields=${fields}`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({
-      language_id: lang.judge0Id,
-      source_code: b64(source),
-      stdin: b64(stdin),
-      memory_limit: lang.memoryKb,
-      cpu_time_limit: CPU_TIME_LIMIT_SEC,
-      wall_time_limit: 10,
-    }),
-    signal: AbortSignal.timeout(60000),
+  const started = process.hrtime.bigint();
+  const waited = () => Number(process.hrtime.bigint() - started) / 1e6;
+  let res;
+  try {
+    res = await fetch(`${config.judge0Url}/submissions?base64_encoded=true&wait=true&fields=${fields}`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        language_id: lang.judge0Id,
+        source_code: b64(source),
+        stdin: b64(stdin),
+        memory_limit: lang.memoryKb,
+        cpu_time_limit: CPU_TIME_LIMIT_SEC,
+        wall_time_limit: 10,
+      }),
+      signal: AbortSignal.timeout(60000),
+    });
+  } catch (err) {
+    recordMetric({ kind: "judge0", name: `lang${lang.judge0Id}`, ms: waited(), ok: false, learnerId });
+    throw err;
+  }
+  if (!res.ok) {
+    recordMetric({ kind: "judge0", name: `lang${lang.judge0Id}`, ms: waited(), ok: false, status: res.status, learnerId });
+    throw new Error(`Judge0 returned HTTP ${res.status}`);
+  }
+  const raw = await res.json();
+  // overhead = how long we waited minus how long the program itself ran = queueing + start-up inside Judge0
+  const wallSec = Number(raw.wall_time) || 0;
+  recordMetric({
+    kind: "judge0", name: `lang${lang.judge0Id}`, ms: waited(), ok: raw.status?.id !== 13, status: raw.status?.id, learnerId,
+    extra: { execSec: Number(raw.time) || 0, wallSec, overheadMs: Math.max(0, Math.round(waited() - wallSec * 1000)) },
   });
-  if (!res.ok) throw new Error(`Judge0 returned HTTP ${res.status}`);
-  return res.json();
+  return raw;
 }
 
 /**
@@ -35,12 +54,12 @@ async function callJudge0(lang, source, stdin) {
  * verdict: accepted | wrong_answer | runtime_error | time_limit | compile_error | internal_error
  * per-test verdict: passed | wrong_answer | runtime_error | time_limit | not_run
  */
-async function gradeInner({ language, code, signature, tests }) {
+async function gradeInner({ language, code, signature, tests, learnerId }) {
   const lang = LANGUAGES[language];
   if (!lang) throw new Error(`unsupported language: ${language}`);
   const nonce = randomBytes(6).toString("hex");
   const { source, lineOffset } = buildSource(language, code, signature, nonce);
-  const raw = await callJudge0(lang, source, encodeInput(signature, tests));
+  const raw = await callJudge0(lang, source, encodeInput(signature, tests), learnerId);
   // Python gets the node classes on extra lines before the learner's code: make error line numbers match their editor
   const fixLines = (text) => (lineOffset ? text.replace(/(script\.py", line )(\d+)/g, (m, a, n) => (Number(n) > lineOffset ? a + (Number(n) - lineOffset) : m)) : text);
 

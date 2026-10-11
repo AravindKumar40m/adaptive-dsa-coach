@@ -12,6 +12,7 @@
 //    window instead of the top choice. The result says how likely the chosen problem was (`propensity`) and lists the
 //    best candidates, so a future model can be evaluated on the log ("what would it have picked, and how did it go?").
 import { START_RATING, expectedScore } from "./skill.js";
+import { historyNote } from "./review.js";
 
 export const TARGET_SUCCESS = 0.65; // CLAUDE.md: expected success about 0.6 to 0.7
 export const WINDOW = 0.15; // a problem "fits" when its expected success is within target +/- window
@@ -45,11 +46,12 @@ const pct = (x) => Math.round(x * 100);
 const round3 = (x) => Math.round(x * 1000) / 1000;
 
 /**
- * @param {{concepts, problems, difficulty:Map, ratings:Map, solved:Set, exclude:Set, explore?:{rate:number, rng?:()=>number}}} state
+ * @param {{concepts, problems, difficulty:Map, ratings:Map, solved:Set, exclude:Set, explore?:{rate:number, rng?:()=>number}, history?:{last:Map, now:number}}} state
  *   problems: [{slug, title, concept, difficulty, rating}]  difficulty: slug -> current Elo difficulty  ratings: concept -> rating
+ *   history (optional): last = concept -> the learner's latest solve there ({title, at, fails, hintLevel}); only adds facts to the reason text
  * @returns {{done:true, ...} | {done:false, problem, expectedSuccess, mode, reason, repeated, explored, propensity, greedySlug, candidates, fitsCount, poolSize, openCount, exploreRate}}
  */
-export function pickNext({ concepts, problems, difficulty, ratings, solved, exclude = new Set(), explore = { rate: 0 } }) {
+export function pickNext({ concepts, problems, difficulty, ratings, solved, exclude = new Set(), explore = { rate: 0 }, history = null }) {
   const status = conceptStatus({ concepts, problems, solved });
   const order = new Map(concepts.map((c, i) => [c.key, i]));
   const name = new Map(concepts.map((c) => [c.key, c.name]));
@@ -69,6 +71,8 @@ export function pickNext({ concepts, problems, difficulty, ratings, solved, excl
   const byFit = (a, b) => distance(a) - distance(b) || (difficulty.get(a.slug) ?? a.rating) - (difficulty.get(b.slug) ?? b.rating) || a.slug.localeCompare(b.slug);
   const describe = (p, greedyRank) => ({ slug: p.slug, concept: p.concept, expectedSuccess: round3(expected(p)), conceptRating: Math.round(ratingOf(p.concept) * 10) / 10, greedyRank });
   const common = { repeated, poolSize: pool.length, openCount: open.length, exploreRate: rate };
+  // facts about the learner's last solve in this topic, so the reason is about THIS learner (empty when unknown)
+  const note = (concept) => { const n = historyNote(name.get(concept), history?.last.get(concept), history?.now ?? Date.now()); return n ? ` ${n}` : ""; };
 
   const fits = pool.filter((p) => distance(p) <= WINDOW);
   if (fits.length > 0) {
@@ -85,8 +89,8 @@ export function pickNext({ concepts, problems, difficulty, ratings, solved, excl
       done: false, problem, expectedSuccess: e, mode: "weakest", explored: problem !== greedy, propensity, greedySlug: greedy.slug,
       candidates: ranked.slice(0, MAX_CANDIDATES).map((p, i) => describe(p, i + 1)), fitsCount: n, ...common,
       reason: problem === greedy
-        ? `${name.get(concept)} is your weakest open topic (rating ${Math.round(ratingOf(concept))}), and this problem should be a good challenge: about ${pct(e)}% chance to solve it.`
-        : `${name.get(concept)} has a good fit for you right now: about ${pct(e)}% chance to solve it. (A little variety: you have several good options, so this one was picked from them.)`,
+        ? `${name.get(concept)} is your weakest open topic (rating ${Math.round(ratingOf(concept))}), and this problem should be a good challenge: about ${pct(e)}% chance to solve it.${note(concept)}`
+        : `${name.get(concept)} has a good fit for you right now: about ${pct(e)}% chance to solve it. (A little variety: you have several good options, so this one was picked from them.)${note(concept)}`,
     };
   }
   const ranked = [...pool].sort((a, b) => byFit(a, b) || ratingOf(a.concept) - ratingOf(b.concept));
@@ -95,6 +99,6 @@ export function pickNext({ concepts, problems, difficulty, ratings, solved, excl
   return {
     done: false, problem, expectedSuccess: e, mode: "closest", explored: false, propensity: 1, greedySlug: problem.slug,
     candidates: ranked.slice(0, MAX_CANDIDATES).map((p, i) => describe(p, i + 1)), fitsCount: 0, ...common,
-    reason: `No open problem is a perfect fit right now, so this is the closest one (${name.get(problem.concept)}, about ${pct(e)}% chance to solve it).`,
+    reason: `No open problem is a perfect fit right now, so this is the closest one (${name.get(problem.concept)}, about ${pct(e)}% chance to solve it).${note(problem.concept)}`,
   };
 }

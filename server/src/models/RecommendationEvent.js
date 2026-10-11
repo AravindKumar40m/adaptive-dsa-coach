@@ -16,7 +16,8 @@ const schema = new mongoose.Schema(
     stateKey: String, // the learner's state when this was chosen (last submit + skipped list); the same state reuses the pick
     done: Boolean, // true = nothing left to offer
     chosen: { slug: String, concept: String, difficultyLabel: String, expectedSuccess: Number, conceptRating: Number },
-    mode: String, // weakest | closest
+    mode: String, // weakest | closest | review (v1)  v2 (recommender 2)
+    review: mongoose.Schema.Types.Mixed, // review picks only: { concept, stage, intervalDays, daysSinceLast, overdueRatio, repeat, dueConcepts }
     explored: Boolean, // true = a variety pick (not the top choice)
     exploreRate: Number,
     propensity: Number, // probability that THIS problem was chosen under the rules in force

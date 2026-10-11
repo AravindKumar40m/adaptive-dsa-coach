@@ -36,7 +36,11 @@
     "test:recommender2": "node scripts/test-recommender2.js",
     "policies": "node --env-file=../.env scripts/arena/run-policies.js",
     "test:recommender2-flow": "node --env-file=../.env scripts/test-recommender2-flow.js",
-    "policies:sensitivity": "node --env-file=../.env scripts/arena/policy-sensitivity.js"
+    "policies:sensitivity": "node --env-file=../.env scripts/arena/policy-sensitivity.js",
+    "test:review": "node scripts/test-review.js",
+    "test:struggle": "node scripts/test-struggle.js",
+    "test:batch1-flow": "node --env-file=../.env scripts/test-batch1-flow.js",
+    "metrics": "node --env-file=../.env scripts/metrics-report.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.132.0",

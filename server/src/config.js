@@ -1,7 +1,7 @@
 // All settings come from environment variables (see ../.env.example).
 export const config = {
   port: Number(process.env.PORT ?? 4000),
-  mongoUri: process.env.MONGO_URI ?? "mongodb://localhost:27017/adaptive_dsa",
+  mongoUri: process.env.MONGO_URI ?? "mongodb://localhost:27018/adaptive_dsa",
   judge0Url: process.env.JUDGE0_URL ?? "http://localhost:2358",
   // AI feedback is switched on only when an API key is present. Never commit the key (use .env).
   anthropicApiKey: process.env.ANTHROPIC_API_KEY ?? "",
@@ -26,6 +26,7 @@ export const config = {
   // which recommender chooses the next problem: v1 (today's picker), v2 (new, needs KT_SHADOW), or ab (half the learners each, decided by their id)
   pickerPolicy: process.env.PICKER_POLICY ?? "v1",
   ktShadow: (process.env.KT_SHADOW ?? "true") !== "false",
+  pickerReview: (process.env.PICKER_REVIEW ?? "on") !== "off", // spaced review in the v1 picker (review.js); "off" = never offer reviews
   googleAttemptsPer15Min: Number(process.env.AUTH_GOOGLE_ATTEMPTS ?? 30), // Google sign-in steps per IP (start + callback)
   loginAttemptsPer15Min: Number(process.env.AUTH_LOGIN_ATTEMPTS ?? 10), // per email + IP
 };

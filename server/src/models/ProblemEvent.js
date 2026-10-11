@@ -2,7 +2,8 @@ import mongoose from "mongoose";
 
 // What the learner did around a problem, besides running code: opened it (and how), skipped it (and why),
 // said how confident they were, how hard it felt, and whether they liked it. The latest row of a kind wins.
-export const PROBLEM_EVENT_KINDS = ["opened", "skipped", "confidence", "feel", "liked"];
+// nudge_shown is written by the server only (struggle.js decided to suggest a hint); the learner's answer is nudge_taken or nudge_dismissed.
+export const PROBLEM_EVENT_KINDS = ["opened", "skipped", "confidence", "feel", "liked", "nudge_shown", "nudge_taken", "nudge_dismissed"];
 const schema = new mongoose.Schema(
   {
     learnerId: { type: String, required: true },

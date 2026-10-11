@@ -23,9 +23,10 @@ export function PathView({ user, placement, skills, problems, recommendation, on
           {rec ? (
             <>
               <div>
-                <div className="eyebrow">Recommended next</div>
+                <div className="eyebrow">{rec.mode === "review" ? "Review recommended" : "Recommended next"}</div>
                 <h2>{rec.problem.title}</h2>
                 <div className="meta">
+                  {rec.mode === "review" && <span className="badge badge-accent">Review</span>}
                   <span className="badge">{prettyConcept(rec.problem.concept)}</span>
                   <DifficultyBadge level={rec.problem.difficulty} />
                   {rec.slot && <span className="badge badge-accent">{SLOT_LABEL[rec.slot]}</span>}

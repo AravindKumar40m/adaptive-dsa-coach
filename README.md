@@ -11,7 +11,7 @@ See `CLAUDE.md` for the idea and decisions.
 - `data/synthetic/`  synthetic learner data for later model testing.
 
 ## Run it (3 terminals)
-1. `docker compose up -d`  (first time pulls a few GB; Judge0 takes about a minute to start)
+1. `docker compose up -d`  (first time pulls a few GB; Judge0 takes about a minute to start). Our MongoDB is published on **host port 27018** (only on this PC), not 27017, so it cannot clash with a MongoDB installed on Windows; `MONGO_URI` in `.env` points at it.
 2. `cd server && npm install && npm run dev`   -> http://localhost:4000/api/health
 3. `cd client && npm install && npm run dev`   -> http://localhost:5173
 
@@ -158,3 +158,13 @@ Step 3 of the plan. Write-up and numbers: `docs/recommender-v2.md`; raw simulato
 - **Switch:** `PICKER_POLICY=v1|v2|ab` in `.env` (ab = half of the learners each, fixed by learner id). v2 needs `KT_SHADOW` on.
 - **Self-assessment:** an optional "Where are you now?" screen (`#/placement`, offered on the Path page): rate each topic, and your answers become a weak starting guess (never beating real results). The consent wording lists it, so everyone agrees again once.
 - **Commands (from `server/`):** `npm run policies` (compare policies in the simulator, about 5 minutes, writes `docs/recommender-results.md`), `npm run policies:sensitivity` (change one setting at a time), tests `test:recommender2` (scoring, hand-checked numbers) and `test:recommender2-flow` (switch, A/B, logging, survey; starts three extra API copies on ports 4106-4108).
+
+## Batch 1: snapshots, struggle nudge, spaced review, "why", observability (Day 5)
+Plain-words write-up in the CLAUDE.md log (Day 5). Every new field is in `docs/data-dictionary.md`.
+- **Code snapshots:** the editor sends the learner's code about every 30 seconds when it changed (and when they switch language or problem) to `POST /api/snapshot` (`server/src/routes/snapshots.js`, collection `codesnapshots`). Identical code is not stored twice; at most 400 per learner and problem. Raw material for later "how did the solution grow" studies; nothing uses it yet.
+- **Struggle nudge:** after a failed Run/Submit the server may add a `nudge` to the response ("Stuck for a while? A small hint might help: level 1 (Nudge)"). Rule in `server/src/struggle.js`: at least 3 failed attempts, at least half the expected time, no progress, hint level under 2, at most 2 per problem and 10 minutes apart. It never reveals a hint by itself and never appears while the learner types.
+- **Spaced review:** `server/src/review.js`. A topic becomes due 1 day after the first solve, then 3, 7, 14 and 30 days after each clean review. The picker offers a due topic as a "Review" (a fresh problem about 78% likely to be solved, or a repeat when none is left), never more than 1 review in 3 recommendations. `PICKER_REVIEW=off` turns it off. v1 picker only: recommender v2 has its own review term.
+- **"Why this problem?"** The reason text now mentions the learner's last solve in that topic (how long ago, failed attempts, hint level) and, for reviews, why it is due. The Path page shows a "Review" badge.
+- **Observability:** every API request, Judge0 call, AI call and a once-a-minute MongoDB ping is timed into `metricevents` (kept 14 days, scrambled learner id). Read it with `npm run metrics` (add `-- --days 30` for a longer window): slow routes, failures and how many people they hit, Judge0 queue overhead, plus first-attempt success, completion, hint use, day-1/day-7 retention, sessions per week, reviews and nudges.
+- **Tests (from `server/`):** `test:review` and `test:struggle` need no services; `test:batch1-flow` needs MongoDB and Judge0 (it starts two extra API copies on 4109 and 4110).
+- The consent wording was extended and `CONSENT_VERSION` is now `2026-10-12`: everyone sees the "agree again" screen once.
