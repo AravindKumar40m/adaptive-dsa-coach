@@ -11,7 +11,8 @@ const b64 = (s) => Buffer.from(s, "utf8").toString("base64");
 const unb64 = (s) => (s ? Buffer.from(s, "base64").toString("utf8") : "");
 const clip = (s, n) => (s.length > n ? s.slice(0, n) + "\n...(truncated)" : s);
 
-async function callJudge0(lang, source, stdin, learnerId) {
+/** One Judge0 run. `limits` (optional) overrides memoryKb / cpuSec / wallSec: the complexity analyzer needs more room than a test run. */
+export async function callJudge0(lang, source, stdin, learnerId, limits = {}) {
   // Judge0 leaves exit_code, exit_signal and wall_time out unless they are asked for by name
   const fields = "stdout,stderr,compile_output,message,status,time,wall_time,memory,exit_code,exit_signal,token";
   const started = process.hrtime.bigint();
@@ -25,10 +26,10 @@ async function callJudge0(lang, source, stdin, learnerId) {
         language_id: lang.judge0Id,
         source_code: b64(source),
         stdin: b64(stdin),
-        memory_limit: lang.memoryKb,
+        memory_limit: limits.memoryKb ?? lang.memoryKb,
         ...(lang.compilerOptions ? { compiler_options: lang.compilerOptions } : {}), // Java: cap javac's JVM (see languages.js)
-        cpu_time_limit: CPU_TIME_LIMIT_SEC,
-        wall_time_limit: 10,
+        cpu_time_limit: limits.cpuSec ?? CPU_TIME_LIMIT_SEC,
+        wall_time_limit: limits.wallSec ?? 10,
       }),
       signal: AbortSignal.timeout(60000),
     });

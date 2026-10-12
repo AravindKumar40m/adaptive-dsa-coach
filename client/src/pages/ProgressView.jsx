@@ -23,7 +23,7 @@ function Pace({ label, g }) {
 
 export function ProgressView({ progress }) {
   if (!progress) return <div className="page"><div className="container"><div className="card empty">Loading your progress...</div></div></div>;
-  const { totals, skills, strongest, weakest, mistakes, independence, review, pace } = progress;
+  const { totals, skills, strongest, weakest, mistakes, independence, review, pace, scaling } = progress;
   const started = totals.submits + totals.runs > 0;
   const { buckets } = independence;
   const helpRows = [["No hint", buckets.none], ["Hint level 1", buckets.one], ["Hint level 2", buckets.two], ["Hint level 3 or 4", buckets.threePlus]];
@@ -114,6 +114,23 @@ export function ProgressView({ progress }) {
                   {review.upcoming.map((r) => (<li key={r.concept}><span>{r.name}</span><span className="faint">in {r.dueInDays < 1 ? "less than a day" : plural(Math.round(r.dueInDays), "day")}</span></li>))}
                 </ul>
               )}
+            </>
+          )}
+        </section>
+
+        <section className="card pad" style={{ marginTop: 14 }} aria-label="How your solutions scale">
+          <h3 className="card-title">How your solutions scale</h3>
+          {scaling.checked === 0 ? <p className="muted">After a correct Python Submit on some problems, we check how fast your solution grows on bigger inputs. Your results will show here.</p> : (
+            <>
+              <div className="row" style={{ gap: 10, flexWrap: "wrap", marginBottom: 10 }}>
+                <span className="badge badge-ok">{scaling.matches} as good as expected</span>
+                {scaling.near > 0 && <span className="badge badge-warn">{scaling.near} a little slower</span>}
+                {scaling.slow > 0 && <span className="badge badge-bad">{scaling.slow} slower than it could be</span>}
+                {scaling.unclear > 0 && <span className="badge">{scaling.unclear} unclear</span>}
+              </div>
+              <ul className="plain-list">
+                {scaling.items.map((it) => (<li key={it.problem}><a href={`#/practice/${it.problem}`}>{it.title}</a><span className="faint">{it.label}{it.verdict === "slow" ? " (slower than it could be)" : it.verdict === "near" ? " (a little slower)" : ""}</span></li>))}
+              </ul>
             </>
           )}
         </section>

@@ -55,7 +55,55 @@ function Case({ t }) {
   );
 }
 
-export function ConsolePane({ busy, mode, result, onNext, solved, rate, nudge, onNudge }) {
+const SCALING_WORDS = { matches: ["As good as expected", "ok"], near: ["A little slower than expected", "warn"], slow: ["Slower than it could be", "bad"], unclear: ["Unclear", "neutral"], unmeasured: ["Not measured", "neutral"] };
+const fmtTime = (ms) => (ms < 1 ? `${Math.round(ms * 1000)} µs` : ms < 1000 ? `${ms < 10 ? ms.toFixed(1) : Math.round(ms)} ms` : `${(ms / 1000).toFixed(2)} s`);
+
+// time against input size, both on log scales: a straight line = polynomial growth, its steepness = the exponent
+function ScalingChart({ points }) {
+  const pts = points.filter((p) => p.ms > 0 && p.n > 0);
+  if (pts.length < 3) return null;
+  const W = 260, H = 96, P = 8;
+  const lx = pts.map((p) => Math.log(p.n)), ly = pts.map((p) => Math.log(p.ms));
+  const [x0, x1, y0, y1] = [Math.min(...lx), Math.max(...lx), Math.min(...ly), Math.max(...ly)];
+  const sx = (v) => P + ((v - x0) / (x1 - x0 || 1)) * (W - 2 * P);
+  const sy = (v) => H - P - ((v - y0) / (y1 - y0 || 1)) * (H - 2 * P);
+  const line = pts.map((_, i) => `${sx(lx[i]).toFixed(1)},${sy(ly[i]).toFixed(1)}`).join(" ");
+  return (
+    <svg className="scaling-chart" viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Running time against input size, both on logarithmic scales">
+      <polyline points={line} fill="none" stroke="var(--accent)" strokeWidth="2" />
+      {pts.map((_, i) => (<circle key={i} cx={sx(lx[i])} cy={sy(ly[i])} r="3" fill="var(--accent)" />))}
+    </svg>
+  );
+}
+
+// "How does my solution scale?": shown under a correct Python Submit (a few seconds after it). Always a "likely": timing is noisy.
+function ScalingCard({ s }) {
+  if (s.busy) return <div className="card scaling" aria-live="polite"><div className="eyebrow">How your solution scales</div><p className="muted" style={{ marginTop: 6 }}>Measuring... we run your solution on bigger and bigger inputs and time it (a few seconds).</p></div>;
+  if (s.error) return <div className="faint" style={{ marginTop: 12, fontSize: 13 }}>Scaling check: {s.error}</div>;
+  const d = s.data;
+  const [words, tone] = SCALING_WORDS[d.verdict] ?? [d.verdict, "neutral"];
+  return (
+    <div className="card scaling" aria-live="polite">
+      <div className="row" style={{ justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
+        <span className="eyebrow">How your solution scales</span>
+        <span className={`badge badge-${tone === "neutral" ? "accent" : tone}`}>{words}</span>
+      </div>
+      <p style={{ marginTop: 8 }}>{d.message}</p>
+      <ScalingChart points={d.points} />
+      {d.points.length >= 3 && <p className="faint" style={{ fontSize: 12, marginTop: 4 }}>Time (up) against input size (right), both on log scales: the steeper the line, the faster the time grows.</p>}
+      {d.points.length > 0 && (
+        <details className="scaling-table">
+          <summary>The timings ({d.points.length} sizes)</summary>
+          <table><thead><tr><th>Input size n</th><th>Time for one call</th></tr></thead>
+            <tbody>{d.points.map((p) => (<tr key={p.n}><td className="num">{p.n.toLocaleString("en-US")}</td><td className="num">{fmtTime(p.ms)}</td></tr>))}</tbody></table>
+        </details>
+      )}
+      <p className="faint" style={{ fontSize: 12, marginTop: 8 }}>This is an estimate from timing your code on this machine, so treat it as "likely", not as a verdict. It never changes your rating and never marks a solution wrong.</p>
+    </div>
+  );
+}
+
+export function ConsolePane({ busy, mode, result, onNext, solved, rate, nudge, onNudge, scaling }) {
   const [picked, setPicked] = useState(0);
   // jump to the first failing example when a new result arrives
   useEffect(() => {
@@ -98,6 +146,7 @@ export function ConsolePane({ busy, mode, result, onNext, solved, rate, nudge, o
         </div>
       )}
       {accepted && rateRow}
+      {accepted && result.mode === "submit" && scaling && <ScalingCard s={scaling} />}
     </>
   );
   const details = (

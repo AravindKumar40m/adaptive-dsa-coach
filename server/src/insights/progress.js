@@ -47,7 +47,7 @@ const labelOf = (key) => MISTAKE_LABELS[key] ?? "Another kind of crash";
  *  times: number[]                                             (every logged event time, for engaged time)
  *  now: number
  */
-export function buildProgress({ concepts, problems, ratings, attempts, solved, placed = new Set(), solves, submissions, updates, times, now }) {
+export function buildProgress({ concepts, problems, ratings, attempts, solved, placed = new Set(), solves, submissions, updates, times, complexity = [], now }) {
   // ---- skills
   const status = conceptStatus({ concepts, problems, solved, placed });
   const skills = concepts.filter((c) => (status.get(c.key)?.total ?? 0) > 0).map((c) => {
@@ -110,9 +110,17 @@ export function buildProgress({ concepts, problems, ratings, attempts, solved, p
   const gainArgs = { times, updates, solves };
   const pace = { week: learningGain({ ...gainArgs, from: now - 7 * DAY, to: now }), allTime: learningGain(gainArgs) };
 
+  // ---- complexity: the latest scaling check of each problem (a learner may submit the same problem again)
+  const title = new Map(problems.map((p) => [p.slug, p.title]));
+  const latest = new Map();
+  for (const m of [...complexity].sort((a, b) => a.at - b.at)) latest.set(m.problem, m);
+  const checked = [...latest.values()].sort((a, b) => b.at - a.at).map((m) => ({ problem: m.problem, title: title.get(m.problem) ?? m.problem, verdict: m.verdict, label: m.label, expected: m.expected }));
+  const count = (v) => checked.filter((c) => c.verdict === v).length;
+  const scaling = { checked: checked.length, matches: count("matches"), near: count("near"), slow: count("slow"), unclear: count("unclear") + count("unmeasured"), items: checked.slice(0, 12) };
+
   return {
     totals: { solved: solved.size, problems: problems.length, submits: submissions.filter((s) => s.mode === "submit").length, runs: submissions.filter((s) => s.mode === "run").length },
-    skills, strongest: pick(best), weakest: pick(worst), mistakes, independence, review, pace,
+    skills, strongest: pick(best), weakest: pick(worst), mistakes, independence, review, pace, scaling,
     typicalDifficulty: TYPICAL_DIFFICULTY,
   };
 }

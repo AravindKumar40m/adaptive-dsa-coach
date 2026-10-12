@@ -10,6 +10,7 @@ import { applySubmission, priorHistory, secondsSince } from "../skill/rating.js"
 import { sanitizeActivity } from "../logging/activity.js";
 import { collectSignals } from "../logging/logSignals.js";
 import { maybeNudge } from "../help/nudge.js";
+import { ComplexityConfig } from "../models/ComplexityConfig.js";
 import { touchSession } from "../logging/sessions.js";
 import { recordShadow } from "../kt/shadow.js";
 import { LOGGING_VERSION, SCORING_VERSION } from "../core/versions.js";
@@ -107,6 +108,9 @@ async function handle(mode, req, res) {
     }
   }
 
+  // the scaling check: a CORRECT Python Submit of a problem we have a size generator for
+  const complexityAvailable = mode === "submit" && graded.verdict === "accepted" && language === "python" && submissionId != null && Boolean(await ComplexityConfig.exists({ problem: slug }).catch(() => null));
+
   // what the learner may see: full detail for visible tests, verdict only for hidden ones
   const byIdx = new Map(tests.map((t) => [t.idx, t]));
   const shown = graded.tests.map((r) => {
@@ -122,6 +126,8 @@ async function handle(mode, req, res) {
     timeSec: graded.timeSec, memoryKb: graded.memoryKb,
     skill,
     nudge,
+    submissionId,
+    complexity: { available: complexityAvailable }, // the page may ask "how does my solution scale?" for this Submit (POST /api/complexity)
   });
 }
 

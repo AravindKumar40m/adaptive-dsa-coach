@@ -5,5 +5,6 @@ export const SCORING_VERSION = "score-1"; // the Elo + correctness/independence/
 export const RECOMMENDER2_VERSION = "rec-2.0"; // recommender v2 (recommender2.js): fit + information + weakness + review + variety, session arc
 export const KT_VERSION = "kt-full-0.1"; // the new knowledge model running in shadow mode (kt/shadow.js)
 export const LOGGING_VERSION = "log-3"; // which signals are captured (see docs/data-dictionary.md); 3 = code snapshots, nudges, review picks
+export const COMPLEXITY_VERSION = "complexity-1"; // the analyzer in complexity/analyze.js + program.js (sizes, tolerances, noise floors)
 export const PLACEMENT_VERSION = "placement-1"; // the quiz algorithm and rating table in placement/quiz.js
 export const REVIEW_VERSION = "review-1"; // the spaced-review schedule in review.js (1, 3, 7, 14, 30 days)

@@ -1,0 +1,358 @@
+{
+ "version": "complexity-cfg-1",
+ "configs": {
+  "peak-altitude": {
+   "make": "def _make(n, rng):\n    return [[rng.randint(-1000, 1000) for _ in range(n)]]\n",
+   "sizes": [
+    256,
+    512,
+    1024,
+    2048,
+    4096,
+    8192,
+    16384,
+    32768,
+    65536,
+    100000
+   ],
+   "expected": "n",
+   "slow": "n^2",
+   "functionName": "peak_altitude"
+  },
+  "missing-number": {
+   "make": "def _make(n, rng):\n    values = list(range(n))  # the missing number is the largest one (n): the slow solution scans for every i up to n\n    rng.shuffle(values)\n    return [[x + 0 for x in values]]\n",
+   "sizes": [
+    256,
+    512,
+    1024,
+    2048,
+    4096,
+    8192,
+    16384,
+    32768,
+    65536,
+    100000
+   ],
+   "expected": "n",
+   "slow": "n^2",
+   "functionName": "find_missing"
+  },
+  "best-streak-sum": {
+   "make": "def _make(n, rng):\n    return [[rng.randint(-1000, 1000) for _ in range(n)]]\n",
+   "sizes": [
+    256,
+    512,
+    1024,
+    2048,
+    4096,
+    8192,
+    16384,
+    32768,
+    65536,
+    100000
+   ],
+   "expected": "n",
+   "slow": "n^2",
+   "functionName": "best_streak_sum"
+  },
+  "sorted-pair-sum": {
+   "make": "def _make(n, rng):\n    # sorted, and the target is below every possible sum: no pair exists, so the slow solution checks every pair\n    return [[x + 0 for x in sorted(rng.randint(0, 1000000) for _ in range(n))], -1]\n",
+   "sizes": [
+    256,
+    512,
+    1024,
+    2048,
+    4096,
+    8192,
+    16384,
+    32768,
+    65536,
+    100000
+   ],
+   "expected": "n",
+   "slow": "n^2",
+   "functionName": "has_pair_with_sum"
+  },
+  "pair-count": {
+   "make": "def _make(n, rng):\n    return [[rng.randint(-1000000, 1000000) for _ in range(n)], 0]\n",
+   "sizes": [
+    256,
+    512,
+    1024,
+    2048,
+    4096,
+    8192,
+    16384,
+    32768,
+    50000
+   ],
+   "expected": "n",
+   "slow": "n^2",
+   "functionName": "count_pairs"
+  },
+  "subarray-sum-count": {
+   "make": "def _make(n, rng):\n    return [[rng.randint(-1000, 1000) for _ in range(n)], 0]\n",
+   "sizes": [
+    256,
+    512,
+    1024,
+    2048,
+    4096,
+    8192,
+    16384,
+    32768,
+    50000
+   ],
+   "expected": "n",
+   "slow": "n^2",
+   "functionName": "count_windows"
+  },
+  "count-inversions": {
+   "make": "def _make(n, rng):\n    return [[rng.randint(-1000000000, 1000000000) for _ in range(n)]]\n",
+   "sizes": [
+    256,
+    512,
+    1024,
+    2048,
+    4096,
+    8192,
+    16384,
+    32768,
+    50000
+   ],
+   "expected": "n log n",
+   "slow": "n^2",
+   "functionName": "count_inversions"
+  },
+  "smallest-gap": {
+   "make": "def _make(n, rng):\n    return [[rng.randint(0, 1000000000) for _ in range(n)]]\n",
+   "sizes": [
+    256,
+    512,
+    1024,
+    2048,
+    4096,
+    8192,
+    16384,
+    32768,
+    65536,
+    100000
+   ],
+   "expected": "n log n",
+   "slow": "n^2",
+   "functionName": "smallest_gap"
+  },
+  "days-until-warmer": {
+   "make": "def _make(n, rng):\n    return [[50] * n]  # never gets warmer: the slow solution looks at every later day for every day\n",
+   "sizes": [
+    256,
+    512,
+    1024,
+    2048,
+    4096,
+    8192,
+    16384,
+    32768,
+    65536,
+    100000
+   ],
+   "expected": "n",
+   "slow": "n^2",
+   "functionName": "days_until_warmer"
+  },
+  "balanced-brackets": {
+   "make": "def _make(n, rng):\n    half = n // 2  # fully nested ((((...)))): the slow solution can only remove one pair per pass\n    return [\"(\" * half + \")\" * half]\n",
+   "sizes": [
+    256,
+    512,
+    1024,
+    2048,
+    4096,
+    8192,
+    16384,
+    32768,
+    65536,
+    100000
+   ],
+   "expected": "n",
+   "slow": "n^2",
+   "functionName": "is_balanced"
+  },
+  "best-window": {
+   "make": "def _make(n, rng):\n    return [[rng.randint(-1000, 1000) for _ in range(n)], max(1, n // 2)]  # a window of half the list: n * k is about n^2 / 4\n",
+   "sizes": [
+    256,
+    512,
+    1024,
+    2048,
+    4096,
+    8192,
+    16384,
+    32768,
+    65536,
+    100000
+   ],
+   "expected": "n",
+   "slow": "n^2",
+   "functionName": "best_window_sum"
+  },
+  "min-subarray-len": {
+   "make": "def _make(n, rng):\n    return [[rng.randint(1, 1000) for _ in range(n)], 1000000000]  # a target no stretch can reach: no early exit\n",
+   "sizes": [
+    256,
+    512,
+    1024,
+    2048,
+    4096,
+    8192,
+    16384,
+    32768,
+    65536,
+    100000
+   ],
+   "expected": "n",
+   "slow": "n^2",
+   "functionName": "min_days_to_reach"
+  },
+  "insert-position": {
+   "make": "def _make(n, rng):\n    return [list(range(n)), n + 5]  # larger than everything: a linear scan has to read the whole list\n",
+   "sizes": [
+    1024,
+    2048,
+    4096,
+    8192,
+    16384,
+    32768,
+    65536,
+    100000
+   ],
+   "expected": "log n",
+   "slow": "n",
+   "functionName": "insert_position"
+  },
+  "search-sorted": {
+   "make": "def _make(n, rng):\n    return [list(range(0, 2 * n, 2)), -1]  # not in the list: a linear scan has to read the whole list\n",
+   "sizes": [
+    1024,
+    2048,
+    4096,
+    8192,
+    16384,
+    32768,
+    65536,
+    100000
+   ],
+   "expected": "log n",
+   "slow": "n",
+   "functionName": "find_index"
+  },
+  "fibonacci-nth": {
+   "make": "def _make(n, rng):\n    return [n]\n",
+   "sizes": [
+    12,
+    14,
+    16,
+    18,
+    20,
+    22,
+    24,
+    26,
+    28,
+    30
+   ],
+   "expected": "n",
+   "slow": "exp",
+   "functionName": "fibonacci_nth"
+  },
+  "stair-ways": {
+   "make": "def _make(n, rng):\n    return [n]\n",
+   "sizes": [
+    10,
+    12,
+    14,
+    16,
+    18,
+    20,
+    22,
+    24,
+    26,
+    28
+   ],
+   "expected": "n",
+   "slow": "exp",
+   "functionName": "count_ways"
+  },
+  "three-sum-count": {
+   "make": "def _make(n, rng):\n    return [[rng.randint(-100000, 100000) for _ in range(n)]]\n",
+   "sizes": [
+    16,
+    24,
+    32,
+    48,
+    64,
+    96,
+    128,
+    192,
+    256,
+    384
+   ],
+   "expected": "n^2",
+   "slow": "n^3",
+   "functionName": "count_zero_triples"
+  },
+  "widest-fence": {
+   "make": "def _make(n, rng):\n    return [[rng.randint(0, 10000) for _ in range(n)]]\n",
+   "sizes": [
+    256,
+    512,
+    1024,
+    2048,
+    4096,
+    8192,
+    16384,
+    32768,
+    65536,
+    100000
+   ],
+   "expected": "n",
+   "slow": "n^2",
+   "functionName": "max_banner_area"
+  },
+  "rain-catch": {
+   "make": "def _make(n, rng):\n    return [[rng.randint(0, 10000) for _ in range(n)]]\n",
+   "sizes": [
+    256,
+    512,
+    1024,
+    2048,
+    4096,
+    8192,
+    16384,
+    32768,
+    65536,
+    100000
+   ],
+   "expected": "n",
+   "slow": "n^2",
+   "functionName": "trapped_water"
+  },
+  "largest-rectangle": {
+   "make": "def _make(n, rng):\n    return [[rng.randint(0, 10000) for _ in range(n)]]\n",
+   "sizes": [
+    256,
+    512,
+    1024,
+    2048,
+    4096,
+    8192,
+    16384,
+    32768,
+    65536,
+    100000
+   ],
+   "expected": "n",
+   "slow": "n^2",
+   "functionName": "largest_rectangle"
+  }
+ }
+}

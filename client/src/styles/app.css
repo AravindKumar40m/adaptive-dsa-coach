@@ -96,6 +96,15 @@ pre.codeblock.quiz-code { margin: 6px 0 0; max-height: none; overflow-x: auto; o
 .quiz-topic:last-child { border-bottom: 0; }
 .quiz-topic b { min-width: 130px; }
 
+/* the scaling check under a correct Submit */
+.scaling { margin-top: 12px; padding: 12px 14px; }
+.scaling-chart { display: block; width: 100%; max-width: 280px; margin-top: 8px; background: var(--bg-sunken); border-radius: var(--radius-s); }
+.scaling-table { margin-top: 8px; font-size: 13px; }
+.scaling-table summary { cursor: pointer; color: var(--text-dim); }
+.scaling-table table { border-collapse: collapse; margin-top: 6px; }
+.scaling-table th, .scaling-table td { text-align: left; padding: 3px 18px 3px 0; border-bottom: 1px solid var(--line); font-weight: 400; }
+.scaling-table th { color: var(--text-faint); font-size: 12px; }
+
 /* Progress page */
 .pad { padding: 16px 18px; }
 .card-title { font-size: 15px; font-weight: 650; margin-bottom: 10px; }

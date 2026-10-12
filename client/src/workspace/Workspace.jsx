@@ -25,6 +25,7 @@ export function Workspace({ user, slug, source, recommendation, aiEnabled, theme
   const [leftTab, setLeftTab] = useState("problem");
   const [mobilePane, setMobilePane] = useState("problem");
   const [told, setTold] = useState({ confidence: null, feel: null, liked: null, runs: 0 }); // what the learner told us about this problem
+  const [scaling, setScaling] = useState(null); // the scaling check after a correct Python Submit: { busy } | { data } | { error }
   const [nudge, setNudge] = useState(null); // { level, label, text }: the server thinks a small hint might help (struggle.js)
   const trackerRef = useRef(null);
   trackerRef.current ??= new ActivityTracker(); // totals about how the learner works in the editor (see activityTracker.js)
@@ -52,7 +53,7 @@ export function Workspace({ user, slug, source, recommendation, aiEnabled, theme
 
   // load the problem and any hints already opened
   useEffect(() => {
-    setProblem(null); setResult(null); setFeedback(null); setError(""); setLeftTab("problem"); setNudge(null);
+    setProblem(null); setResult(null); setFeedback(null); setError(""); setLeftTab("problem"); setNudge(null); setScaling(null);
     setHints({ revealed: [], next: 1 }); setTold({ confidence: null, feel: null, liked: null, runs: 0 });
     tracker.restart();
     // tell the server the problem was opened and how we got here (recommendation, library or directly)
@@ -79,12 +80,24 @@ export function Workspace({ user, slug, source, recommendation, aiEnabled, theme
 
   async function send(which) {
     if (busy || !problem) return;
-    setBusy(true); setMode(which); setError(""); setNudge(null);
+    setBusy(true); setMode(which); setError(""); setNudge(null); setScaling(null);
     const r = await api(`/${which}`, { method: "POST", body: { problem: slug, language, code, startedAt, activity: tracker.take() } });
     if (r.data.needsConsent) onUser({ ...user, consentCurrent: false }); // the wording changed in the meantime: ask again
     else if (!r.ok) setError(r.data.error ?? "Something went wrong.");
-    else { setResult(r.data); setNudge(r.data.nudge ?? null); if (which === "submit") onSolved(); }
+    else {
+      setResult(r.data); setNudge(r.data.nudge ?? null);
+      if (which === "submit") onSolved();
+      if (r.data.complexity?.available) measureScaling(r.data.submissionId, slug); // a correct Python Submit: how does it scale?
+    }
     setBusy(false);
+  }
+
+  // "How does my solution scale?": the server runs the stored solution on bigger and bigger inputs (a few seconds) and fits the growth
+  async function measureScaling(submissionId, forSlug) {
+    setScaling({ busy: true });
+    const r = await api("/complexity", { method: "POST", body: { submission: submissionId } });
+    if (snap.current.slug !== forSlug) return; // the learner has moved on to another problem
+    setScaling(r.ok ? { data: r.data } : { error: r.data.error ?? "Could not measure how it scales." });
   }
 
   // the learner's answer to "Stuck? A small hint might help": open the hints (nothing is revealed for them) or not now
@@ -200,7 +213,7 @@ export function Workspace({ user, slug, source, recommendation, aiEnabled, theme
           <div className="console" style={{ "--console-h": `${consoleH.size}px` }}>
             <div className="tabs"><span className="tab" aria-selected="true" style={{ cursor: "default" }}>Results</span></div>
             {error && <div className="callout bad" style={{ margin: "10px 16px 0" }} role="alert">{error}</div>}
-            <ConsolePane busy={busy} mode={mode} result={result} solved={solvedHere} onNext={() => onNext(false)} nudge={nudge} onNudge={answerNudge}
+            <ConsolePane busy={busy} mode={mode} result={result} solved={solvedHere} onNext={() => onNext(false)} nudge={nudge} onNudge={answerNudge} scaling={scaling}
               rate={{ state: told, onFeel: (v) => tell("feel", v), onLiked: (v) => tell("liked", v) }} />
           </div>
         </section>
