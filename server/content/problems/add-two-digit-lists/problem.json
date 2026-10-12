@@ -1,0 +1,25 @@
+{
+  "slug": "add-two-digit-lists",
+  "title": "Add Two Numbers Stored as Lists",
+  "concept": "linked_list",
+  "difficulty": "medium",
+  "statement": "Two non-negative whole numbers are stored in linked lists, **one digit per node, with the least significant digit first**. For example `342` is stored as `2 -> 4 -> 3`.\n\nReturn the sum in the same form: a linked list with the least significant digit first. Neither number has leading zeros (the number zero is stored as a single node `0`).",
+  "constraints": [
+    "1 <= number of nodes in each list <= 1000",
+    "0 <= node value <= 9",
+    "the last node of a list is not 0, unless the list is just [0]"
+  ],
+  "signature": { "name": "add_digit_lists", "params": [{ "name": "first", "type": "ListNode" }, { "name": "second", "type": "ListNode" }], "returns": "ListNode" },
+  "examples": [
+    { "args": [[2, 4, 3], [5, 6, 4]], "expected": [7, 0, 8], "explanation": "342 + 465 = 807, stored as 7 -> 0 -> 8." },
+    { "args": [[9, 9], [1]], "expected": [0, 0, 1], "explanation": "99 + 1 = 100: the carry makes a new last node." }
+  ],
+  "edgeTests": [[[0], [0]], [[9, 9, 9, 9], [1]], [[1], [9, 9]], [[5], [5]], [[0], [1, 2, 3]], [[1, 0, 1], [9, 9]]],
+  "expected": { "time": "O(max(n, m))", "space": "O(max(n, m))" },
+  "hints": {
+    "nudge": "You add numbers on paper starting with the ones digit. The lists already start there. What must you carry along?",
+    "pattern": "Walk both lists together, adding digit by digit with a carry, and build the answer list as you go.",
+    "pseudocode": "carry = 0; dummy head; tail = dummy\nwhile first or second or carry:\n  total = carry + (first.val if first) + (second.val if second)\n  append a node with total % 10\n  carry = total / 10\n  move first and second forward if they exist\nreturn dummy.next",
+    "walkthrough": "Because the least significant digit comes first, you can add exactly like on paper: at each position add the two digits (a missing digit counts as 0) plus the carry from the previous position. The new digit is the sum modulo 10 and the new carry is the sum divided by 10 (0 or 1). Keep going while either list still has nodes OR a carry is left (that last carry is what turns 99 + 1 into three digits). Appending to the end of the answer is easiest with a dummy first node and a tail pointer. Converting both lists to integers and adding them works in Python but fails in languages with fixed-size integers, since the numbers can have 1000 digits. O(max(n, m))."
+  }
+}

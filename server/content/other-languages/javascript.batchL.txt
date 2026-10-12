@@ -1,0 +1,139 @@
+//### mirror-tree
+function isMirror(root) {
+  function same(a, b) {
+    if (a === null || b === null) return a === b;
+    return a.val === b.val && same(a.left, b.right) && same(a.right, b.left);
+  }
+  return root === null || same(root.left, root.right);
+}
+//### root-to-leaf-sum
+function hasLeafSum(root, target) {
+  function go(node, left) {
+    if (node === null) return false;
+    if (node.left === null && node.right === null) return node.val === left;
+    return go(node.left, left - node.val) || go(node.right, left - node.val);
+  }
+  return go(root, target);
+}
+//### visible-from-right
+function visibleFromRight(root) {
+  const out = [];
+  function visit(node, depth) {
+    if (node === null) return;
+    if (depth === out.length) out.push(node.val);
+    visit(node.right, depth + 1);
+    visit(node.left, depth + 1);
+  }
+  visit(root, 0);
+  return out;
+}
+//### bst-kth-value
+function bstKthValue(root, k) {
+  const stack = [];
+  let node = root;
+  while (stack.length > 0 || node !== null) {
+    while (node !== null) {
+      stack.push(node);
+      node = node.left;
+    }
+    node = stack.pop();
+    k--;
+    if (k === 0) return node.val;
+    node = node.right;
+  }
+  return -1;
+}
+//### lamp-placement-tree
+function lampsNeeded(root) {
+  let lamps = 0;
+  function state(node) {
+    if (node === null) return 2;
+    const left = state(node.left), right = state(node.right);
+    if (left === 0 || right === 0) { lamps++; return 1; }
+    if (left === 1 || right === 1) return 2;
+    return 0;
+  }
+  if (state(root) === 0) lamps++;
+  return lamps;
+}
+//### palindrome-list
+function isPalindromeList(head) {
+  let slow = head, fast = head;
+  while (fast !== null && fast.next !== null) {
+    slow = slow.next;
+    fast = fast.next.next;
+  }
+  let prev = null;
+  while (slow !== null) {
+    const next = slow.next;
+    slow.next = prev;
+    prev = slow;
+    slow = next;
+  }
+  let a = head, b = prev;
+  while (b !== null) {
+    if (a.val !== b.val) return false;
+    a = a.next;
+    b = b.next;
+  }
+  return true;
+}
+//### add-two-digit-lists
+function addDigitLists(first, second) {
+  const dummy = new ListNode(0, null);
+  let tail = dummy;
+  let carry = 0;
+  while (first !== null || second !== null || carry !== 0) {
+    let total = carry;
+    if (first !== null) { total += first.val; first = first.next; }
+    if (second !== null) { total += second.val; second = second.next; }
+    tail.next = new ListNode(total % 10, null);
+    tail = tail.next;
+    carry = Math.floor(total / 10);
+  }
+  return dummy.next;
+}
+//### odd-even-regroup
+function groupOddEven(head) {
+  if (head === null) return null;
+  let odd = head;
+  const evenHead = head.next;
+  let even = evenHead;
+  while (even !== null && even.next !== null) {
+    odd.next = even.next;
+    odd = odd.next;
+    even.next = odd.next;
+    even = even.next;
+  }
+  odd.next = evenHead;
+  return head;
+}
+//### cycle-start-index
+function cycleStartIndex(head) {
+  let slow = head, fast = head;
+  while (fast !== null && fast.next !== null) {
+    slow = slow.next;
+    fast = fast.next.next;
+    if (slow === fast) {
+      let start = head, index = 0;
+      while (start !== slow) {
+        start = start.next;
+        slow = slow.next;
+        index++;
+      }
+      return index;
+    }
+  }
+  return -1;
+}
+//### strict-majority
+function majorityValue(numbers) {
+  let candidate = -1, votes = 0;
+  for (const x of numbers) {
+    if (votes === 0) candidate = x;
+    votes += x === candidate ? 1 : -1;
+  }
+  let count = 0;
+  for (const x of numbers) if (x === candidate) count++;
+  return count * 2 > numbers.length ? candidate : -1;
+}

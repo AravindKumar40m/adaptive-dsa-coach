@@ -1,0 +1,24 @@
+{
+  "slug": "bst-kth-value",
+  "title": "K-th Smallest in a Search Tree",
+  "concept": "trees",
+  "difficulty": "medium",
+  "statement": "`root` is a **binary search tree**: for every node, all values in its left subtree are smaller and all values in its right subtree are larger. All values are different.\n\nReturn the `k`-th smallest value in the tree, counting from `1`.",
+  "constraints": [
+    "1 <= k <= number of nodes <= 5000",
+    "-100000 <= node value <= 100000, all different"
+  ],
+  "signature": { "name": "bst_kth_value", "params": [{ "name": "root", "type": "TreeNode" }, { "name": "k", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[5, 3, 7, 2, 4, 6, 8], 3], "expected": 4, "explanation": "In order the values are 2, 3, 4, 5, 6, 7, 8. The 3rd is 4." },
+    { "args": [[3, 1, 4, null, 2], 1], "expected": 1, "explanation": "The smallest value in the tree is 1." }
+  ],
+  "edgeTests": [[[1], 1], [[2, 1, 3], 2], [[3, 2, null, 1], 3], [[5, 3, 8, 1, 4, 7, 9], 7], [[5, 3, 8, 1, 4, 7, 9], 1], [[1, null, 2, null, 3], 2]],
+  "expected": { "time": "O(h + k)", "space": "O(h)" },
+  "hints": {
+    "nudge": "What do you get if you visit the left subtree, then the node, then the right subtree, for every node?",
+    "pattern": "In-order traversal of a search tree visits the values in increasing order. Stop as soon as you have counted k of them.",
+    "pseudocode": "stack = empty; node = root\nwhile stack is not empty or node exists:\n  while node exists: push node; node = node.left\n  node = pop\n  k = k - 1\n  if k == 0: return node.val\n  node = node.right",
+    "walkthrough": "In a search tree, visiting left subtree, then the node itself, then the right subtree (in-order) gives the values in sorted order. So the k-th value visited is the answer, and you can stop right there. Collecting everything and sorting also works but wastes work. To avoid deep recursion and to stop early, use an explicit stack: keep going left and push every node on the way; pop one node (that is the next smallest), count it, and if it is the k-th return it, otherwise continue with its right subtree. You only go down one path of the tree and then walk k nodes: O(h + k)."
+  }
+}

@@ -1,0 +1,275 @@
+//### two-team-split
+class Solution {
+    public boolean canSplitInTwo(int people, int[][] conflicts) {
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < people; i++) adj.add(new ArrayList<>());
+        for (int[] e : conflicts) { adj.get(e[0]).add(e[1]); adj.get(e[1]).add(e[0]); }
+        int[] side = new int[people];
+        Arrays.fill(side, -1);
+        for (int s = 0; s < people; s++) {
+            if (side[s] != -1) continue;
+            side[s] = 0;
+            Deque<Integer> queue = new ArrayDeque<>();
+            queue.add(s);
+            while (!queue.isEmpty()) {
+                int u = queue.poll();
+                for (int v : adj.get(u)) {
+                    if (side[v] == -1) { side[v] = 1 - side[u]; queue.add(v); }
+                    else if (side[v] == side[u]) return false;
+                }
+            }
+        }
+        return true;
+    }
+}
+//### paint-region-size
+class Solution {
+    public int regionSize(int[][] grid, int row, int col) {
+        int rows = grid.length, cols = grid[0].length;
+        int colour = grid[row][col];
+        boolean[][] seen = new boolean[rows][cols];
+        seen[row][col] = true;
+        Deque<int[]> stack = new ArrayDeque<>();
+        stack.push(new int[]{row, col});
+        int count = 0;
+        int[] dr = {1, -1, 0, 0}, dc = {0, 0, 1, -1};
+        while (!stack.isEmpty()) {
+            int[] cell = stack.pop();
+            count++;
+            for (int d = 0; d < 4; d++) {
+                int nr = cell[0] + dr[d], nc = cell[1] + dc[d];
+                if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && !seen[nr][nc] && grid[nr][nc] == colour) {
+                    seen[nr][nc] = true;
+                    stack.push(new int[]{nr, nc});
+                }
+            }
+        }
+        return count;
+    }
+}
+//### signal-spread-time
+class Solution {
+    public int signalSpreadTime(int stations, int[][] links, int source) {
+        List<List<int[]>> adj = new ArrayList<>();
+        for (int i = 0; i < stations; i++) adj.add(new ArrayList<>());
+        for (int[] l : links) adj.get(l[0]).add(new int[]{l[1], l[2]});
+        int[] best = new int[stations];
+        Arrays.fill(best, -1);
+        PriorityQueue<int[]> heap = new PriorityQueue<>((x, y) -> Integer.compare(x[0], y[0]));
+        heap.add(new int[]{0, source});
+        while (!heap.isEmpty()) {
+            int[] top = heap.poll();
+            int d = top[0], u = top[1];
+            if (best[u] != -1) continue;
+            best[u] = d;
+            for (int[] e : adj.get(u)) {
+                if (best[e[0]] == -1) heap.add(new int[]{d + e[1], e[0]});
+            }
+        }
+        int worst = 0;
+        for (int b : best) {
+            if (b == -1) return -1;
+            worst = Math.max(worst, b);
+        }
+        return worst;
+    }
+}
+//### first-cycle-edge
+class Solution {
+    private int[] parent;
+
+    private int find(int x) {
+        while (parent[x] != x) {
+            parent[x] = parent[parent[x]];
+            x = parent[x];
+        }
+        return x;
+    }
+
+    public int firstCycleEdge(int nodes, int[][] edges) {
+        parent = new int[nodes];
+        for (int i = 0; i < nodes; i++) parent[i] = i;
+        for (int i = 0; i < edges.length; i++) {
+            int ra = find(edges[i][0]), rb = find(edges[i][1]);
+            if (ra == rb) return i;
+            parent[ra] = rb;
+        }
+        return -1;
+    }
+}
+//### critical-link-count
+class Solution {
+    private int timer, found;
+    private int[] order, low;
+    private List<List<int[]>> adj;
+
+    private void visit(int u, int via) {
+        order[u] = low[u] = timer++;
+        for (int[] e : adj.get(u)) {
+            int v = e[0], id = e[1];
+            if (id == via) continue;
+            if (order[v] == -1) {
+                visit(v, id);
+                low[u] = Math.min(low[u], low[v]);
+                if (low[v] > order[u]) found++;
+            } else {
+                low[u] = Math.min(low[u], order[v]);
+            }
+        }
+    }
+
+    public int criticalLinkCount(int nodes, int[][] links) {
+        adj = new ArrayList<>();
+        for (int i = 0; i < nodes; i++) adj.add(new ArrayList<>());
+        for (int i = 0; i < links.length; i++) {
+            adj.get(links[i][0]).add(new int[]{links[i][1], i});
+            adj.get(links[i][1]).add(new int[]{links[i][0], i});
+        }
+        order = new int[nodes];
+        low = new int[nodes];
+        Arrays.fill(order, -1);
+        timer = 0;
+        found = 0;
+        for (int s = 0; s < nodes; s++) if (order[s] == -1) visit(s, -1);
+        return found;
+    }
+}
+//### min-spanning-cost
+class Solution {
+    private int[] parent;
+
+    private int find(int x) {
+        while (parent[x] != x) {
+            parent[x] = parent[parent[x]];
+            x = parent[x];
+        }
+        return x;
+    }
+
+    public int minSpanningCost(int nodes, int[][] roads) {
+        parent = new int[nodes];
+        for (int i = 0; i < nodes; i++) parent[i] = i;
+        int[][] sorted = roads.clone();
+        Arrays.sort(sorted, (p, q) -> Integer.compare(p[2], q[2]));
+        long total = 0;
+        int joined = 0;
+        for (int[] r : sorted) {
+            int ra = find(r[0]), rb = find(r[1]);
+            if (ra != rb) { parent[ra] = rb; total += r[2]; joined++; }
+        }
+        return joined == nodes - 1 ? (int) total : -1;
+    }
+}
+//### path-in-grid-exists
+class Solution {
+    private int[][] grid;
+    private int[] word;
+    private boolean[][] seen;
+    private final int[] dr = {1, -1, 0, 0}, dc = {0, 0, 1, -1};
+
+    private boolean go(int r, int c, int k) {
+        if (grid[r][c] != word[k]) return false;
+        if (k == word.length - 1) return true;
+        seen[r][c] = true;
+        for (int d = 0; d < 4; d++) {
+            int nr = r + dr[d], nc = c + dc[d];
+            if (nr >= 0 && nr < grid.length && nc >= 0 && nc < grid[0].length && !seen[nr][nc] && go(nr, nc, k + 1)) {
+                seen[r][c] = false;
+                return true;
+            }
+        }
+        seen[r][c] = false;
+        return false;
+    }
+
+    public boolean wordPathExists(int[][] grid, int[] word) {
+        this.grid = grid;
+        this.word = word;
+        this.seen = new boolean[grid.length][grid[0].length];
+        for (int r = 0; r < grid.length; r++) {
+            for (int c = 0; c < grid[0].length; c++) if (go(r, c, 0)) return true;
+        }
+        return false;
+    }
+}
+//### target-signs-count
+class Solution {
+    public int signedSumWays(int[] numbers, int target) {
+        int total = 0;
+        for (int x : numbers) total += x;
+        if (Math.abs(target) > total || (total + target) % 2 != 0) return 0;
+        int want = (total + target) / 2;
+        long[] ways = new long[want + 1];
+        ways[0] = 1;
+        for (int x : numbers) {
+            for (int s = want; s >= x; s--) ways[s] += ways[s - x];
+        }
+        return (int) ways[want];
+    }
+}
+//### grid-walks-count
+class Solution {
+    private int[][] grid;
+    private boolean[][] seen;
+    private final int[] dr = {1, -1, 0, 0}, dc = {0, 0, 1, -1};
+
+    private int walk(int r, int c) {
+        if (r == grid.length - 1 && c == grid[0].length - 1) return 1;
+        seen[r][c] = true;
+        int total = 0;
+        for (int d = 0; d < 4; d++) {
+            int nr = r + dr[d], nc = c + dc[d];
+            if (nr >= 0 && nr < grid.length && nc >= 0 && nc < grid[0].length && grid[nr][nc] == 0 && !seen[nr][nc]) total += walk(nr, nc);
+        }
+        seen[r][c] = false;
+        return total;
+    }
+
+    public int countGridWalks(int[][] grid) {
+        this.grid = grid;
+        this.seen = new boolean[grid.length][grid[0].length];
+        return walk(0, 0);
+    }
+}
+//### mini-sudoku-count
+class Solution {
+    private int[] rows = new int[4], cols = new int[4], boxes = new int[4];
+    private int[][] empty;
+    private int emptyCount;
+
+    private int fill(int i) {
+        if (i == emptyCount) return 1;
+        int r = empty[i][0], c = empty[i][1];
+        int b = (r / 2) * 2 + c / 2;
+        int total = 0;
+        for (int v = 1; v <= 4; v++) {
+            int bit = 1 << v;
+            if ((rows[r] & bit) == 0 && (cols[c] & bit) == 0 && (boxes[b] & bit) == 0) {
+                rows[r] |= bit; cols[c] |= bit; boxes[b] |= bit;
+                total += fill(i + 1);
+                rows[r] ^= bit; cols[c] ^= bit; boxes[b] ^= bit;
+            }
+        }
+        return total;
+    }
+
+    public int miniSudokuCount(int[][] board) {
+        rows = new int[4]; cols = new int[4]; boxes = new int[4];
+        empty = new int[16][2];
+        emptyCount = 0;
+        for (int r = 0; r < 4; r++) {
+            for (int c = 0; c < 4; c++) {
+                int v = board[r][c];
+                if (v != 0) {
+                    int bit = 1 << v;
+                    rows[r] |= bit; cols[c] |= bit; boxes[(r / 2) * 2 + c / 2] |= bit;
+                } else {
+                    empty[emptyCount][0] = r;
+                    empty[emptyCount][1] = c;
+                    emptyCount++;
+                }
+            }
+        }
+        return fill(0);
+    }
+}

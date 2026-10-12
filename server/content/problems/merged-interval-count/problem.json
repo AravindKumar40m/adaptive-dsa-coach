@@ -1,0 +1,24 @@
+{
+  "slug": "merged-interval-count",
+  "title": "How Many Groups After Merging",
+  "concept": "sorting",
+  "difficulty": "medium",
+  "statement": "Each entry `[start, end]` of `intervals` is a stretch of time from `start` to `end`, both included. Two stretches **overlap** if they share at least one moment (touching at a single moment, like `[1, 4]` and `[4, 5]`, counts). Overlapping stretches are **merged** into one longer stretch, and merging continues until no two stretches overlap.\n\nReturn how many stretches are left after all merging. The input is not sorted.",
+  "constraints": [
+    "0 <= len(intervals) <= 10000",
+    "0 <= start <= end <= 1000000000"
+  ],
+  "signature": { "name": "merged_interval_count", "params": [{ "name": "intervals", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [[[5, 8], [1, 4], [3, 6], [10, 12]]], "expected": 2, "explanation": "[1,4] and [3,6] and [5,8] chain into [1,8]; [10,12] stands alone." },
+    { "args": [[[1, 2], [3, 4]]], "expected": 2, "explanation": "They do not share any moment (2 and 3 are different moments), so they stay separate." }
+  ],
+  "edgeTests": [[[]], [[[1, 1]]], [[[1, 4], [4, 5]]], [[[1, 10], [2, 3], [4, 5]]], [[[1, 2], [3, 4], [5, 6]]], [[[2, 3], [2, 3]]]],
+  "expected": { "time": "O(n log n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "If the stretches were sorted by their start, which stretches could possibly overlap a given one?",
+    "pattern": "Sort by start, then sweep once: keep the end of the current merged stretch; a new stretch either extends it (it starts at or before that end) or begins a new group.",
+    "pseudocode": "sort intervals by start\ngroups = 0; end = none\nfor (s, e) in sorted order:\n  if end is none or s > end: groups += 1; end = e\n  else: end = max(end, e)\nreturn groups",
+    "walkthrough": "Comparing every pair is O(n^2) and does not even handle chains like [1,4], [3,6], [5,8] where the first and the last do not overlap directly. Sort the stretches by their start. Then every stretch can only overlap the group built just before it. Walk through them keeping `end`, the largest end of the current group. If the next stretch starts after `end`, nothing before it can reach it (they all end by `end`, and later stretches start even later), so it begins a new group: count it and set end to its end. Otherwise it overlaps the group, so just stretch the group: end = max(end, e). Remember that starting exactly at `end` is an overlap. The sort dominates: O(n log n)."
+  }
+}

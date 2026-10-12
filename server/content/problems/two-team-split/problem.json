@@ -1,0 +1,25 @@
+{
+  "slug": "two-team-split",
+  "title": "Two Team Split",
+  "concept": "graphs",
+  "difficulty": "medium",
+  "statement": "`people` people are numbered `0` to `people - 1`. Each pair `[a, b]` in `conflicts` means that `a` and `b` do not get along and must be on **different teams**.\n\nReturn `true` if everyone can be put on one of two teams so that no conflicting pair shares a team. A person with no conflicts can join either team.",
+  "constraints": [
+    "1 <= people <= 2000",
+    "0 <= len(conflicts) <= 5000",
+    "each pair has two different numbers in 0..people-1; the same pair may appear more than once"
+  ],
+  "signature": { "name": "can_split_in_two", "params": [{ "name": "people", "type": "int" }, { "name": "conflicts", "type": "int[][]" }], "returns": "bool" },
+  "examples": [
+    { "args": [4, [[0, 1], [1, 2], [2, 3], [3, 0]]], "expected": true, "explanation": "Put 0 and 2 on one team and 1 and 3 on the other." },
+    { "args": [3, [[0, 1], [1, 2], [2, 0]]], "expected": false, "explanation": "Each of the three people conflicts with the other two, so two of them would have to share a team." }
+  ],
+  "edgeTests": [[1, []], [2, [[0, 1]]], [5, []], [5, [[0, 1], [1, 2], [2, 3], [3, 4], [4, 0]]], [6, [[0, 1], [2, 3], [3, 4], [4, 2]]], [4, [[0, 1], [0, 1]]]],
+  "expected": { "time": "O(people + conflicts)", "space": "O(people + conflicts)" },
+  "hints": {
+    "nudge": "Pick one person and put them on team A. What does that force for everyone they conflict with, and then for the people those people conflict with?",
+    "pattern": "Two-colour the graph with a breadth-first search. If two linked people ever get the same colour, it is impossible.",
+    "pseudocode": "team = array of -1 (unknown) for every person\nfor each person s with team -1:\n  team[s] = 0; queue = [s]\n  while queue not empty:\n    u = next in queue\n    for each person v in conflict with u:\n      if team[v] == -1: team[v] = 1 - team[u]; add v to queue\n      else if team[v] == team[u]: return false\nreturn true",
+    "walkthrough": "Trying every split into two teams takes 2^people tries. But one choice forces the next: once a person is on team A, everyone who conflicts with them must be on team B, and everyone who conflicts with those people must be on team A, and so on. So pick any unassigned person, give them a team, and spread the opposite team to their neighbours with a breadth-first search. If you ever reach a person who already has the SAME team as the person you came from, there is a conflict that cannot be fixed, so return false. People in separate groups do not affect each other, so repeat the search from every person that is still unassigned. If the whole graph is coloured without trouble, return true. This works exactly when the graph has no cycle of odd length. O(people + conflicts)."
+  }
+}

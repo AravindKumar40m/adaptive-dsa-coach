@@ -1,0 +1,24 @@
+{
+  "slug": "min-add-brackets",
+  "title": "Fewest Brackets to Insert",
+  "concept": "stack_queue",
+  "difficulty": "easy",
+  "statement": "`text` contains only the characters `(` and `)`. A text is **balanced** if every `(` has a matching `)` after it and every `)` has a matching `(` before it, each used once, like in a correct arithmetic expression.\n\nYou may **insert** brackets anywhere. Return the smallest number of insertions that makes `text` balanced. An empty text is balanced.",
+  "constraints": [
+    "0 <= len(text) <= 100000",
+    "text contains only ( and )"
+  ],
+  "signature": { "name": "min_bracket_fixes", "params": [{ "name": "text", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["())"], "expected": 1, "explanation": "The last `)` has nothing to match: insert one `(` at the start (`(())` or `()()`)." },
+    { "args": ["((("], "expected": 3, "explanation": "Three `(` need three `)`." }
+  ],
+  "edgeTests": [[""], [")("], ["()()"], ["))(("], ["(()"], ["()"]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Walk through the text and remember only one number: how many `(` are still waiting for a `)`.",
+    "pattern": "A counter instead of a stack: every `(` adds one waiting bracket, every `)` cancels one, and a `)` with nobody waiting needs a new `(` inserted.",
+    "pseudocode": "waiting = 0; fixes = 0\nfor ch in text:\n  if ch == '(': waiting += 1\n  else if waiting > 0: waiting -= 1\n  else: fixes += 1\nreturn fixes + waiting",
+    "walkthrough": "Every `)` that arrives when no `(` is waiting can never be matched by something that comes before it, so one `(` must be inserted for it: count those as `fixes`. Every `(` that is still waiting at the end needs a `)` inserted after it: count them as `waiting`. The two kinds of problems are independent, so the answer is their sum. A stack of brackets would work, but because all brackets are the same kind, a single counter is enough: O(n) time, O(1) memory. Another way to see it: keep deleting the pairs `()` until none are left; what remains is the number of insertions needed."
+  }
+}

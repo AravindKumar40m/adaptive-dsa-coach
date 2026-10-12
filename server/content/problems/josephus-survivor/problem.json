@@ -1,0 +1,24 @@
+{
+  "slug": "josephus-survivor",
+  "title": "Last Seat Standing",
+  "concept": "recursion",
+  "difficulty": "medium",
+  "statement": "`people` people sit in a circle on seats numbered `1` to `people`. Counting starts at seat `1` (that seat counts as `1`). Count `step` seats forward; the person on the last seat you counted leaves the circle. Counting then starts again from the next seat that is still taken (that seat counts as `1` again).\n\nKeep going until one person is left, and return that person's seat number.",
+  "constraints": [
+    "1 <= people <= 100000",
+    "1 <= step <= 100000"
+  ],
+  "signature": { "name": "survivor_seat", "params": [{ "name": "people", "type": "int" }, { "name": "step", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [5, 2], "expected": 3, "explanation": "Seats leave in the order 2, 4, 1, 5. Seat 3 is left." },
+    { "args": [7, 3], "expected": 4, "explanation": "Seats leave in the order 3, 6, 2, 7, 5, 1. Seat 4 is left." }
+  ],
+  "edgeTests": [[1, 1], [1, 5], [2, 1], [2, 3], [10, 1], [6, 6]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Simulating is possible but slow. After the first person leaves, you have the same game again with one person fewer, only with the seats renumbered. How do the old and new numbers relate?",
+    "pattern": "Recursion on the number of people: the survivor for n people can be computed from the survivor for n - 1 people.",
+    "pseudocode": "survivor(1) = 0   (seats counted from 0)\nsurvivor(n) = (survivor(n - 1) + step) mod n\nanswer = survivor(people) + 1",
+    "walkthrough": "Number the seats from 0. In a circle of n people, the first person to leave is at seat (step - 1) mod n, and the game then continues with n - 1 people starting from the seat right after. If you renumber the remaining seats so that this next seat is 0, a seat s in the smaller game was at seat (s + step) mod n in the bigger game. So survivor(n) = (survivor(n - 1) + step) mod n, with survivor(1) = 0. Instead of recursing 100000 levels deep, run the same formula in a loop for n = 2, 3, ... people, and add 1 at the end to go back to seats counted from 1. O(n) time, O(1) memory; simulating with a list needs O(n^2) time."
+  }
+}

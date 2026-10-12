@@ -1,0 +1,25 @@
+{
+  "slug": "closest-triplet-sum",
+  "title": "Closest Triplet Sum",
+  "concept": "two_pointers",
+  "difficulty": "medium",
+  "statement": "Choose **three numbers at three different positions** of `numbers` so that their sum is as **close as possible to `target`**, and return that sum.\n\nIf two different sums are equally close to `target` (one below, one above), return the **smaller** sum.",
+  "constraints": [
+    "3 <= len(numbers) <= 1000",
+    "-1000 <= numbers[i] <= 1000",
+    "-10000 <= target <= 10000"
+  ],
+  "signature": { "name": "closest_triple_sum", "params": [{ "name": "numbers", "type": "int[]" }, { "name": "target", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 6, 9, 14], 20], "expected": 21, "explanation": "The possible sums are 16, 21, 24 and 29. 21 is only 1 away from 20." },
+    { "args": [[0, 1, 2, 6], 5], "expected": 3, "explanation": "The sums are 3, 7, 8 and 9. 3 and 7 are both 2 away from 5, so the smaller one, 3, is returned." }
+  ],
+  "edgeTests": [[[1, 2, 3], 100], [[1, 2, 3], -100], [[-1, 2, 1, -4], 1], [[0, 0, 0], 1], [[5, 5, 5, 5], 14], [[-3, 0, 2, 5, 9], 4]],
+  "expected": { "time": "O(n^2)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Fix the first number. Then you need a PAIR of the remaining numbers whose sum is closest to what is left of the target. That is a problem you can solve in a single pass if the list is sorted.",
+    "pattern": "Sort, then for each first number use two pointers from both ends of the rest: if the sum is too small move the left pointer right, if too big move the right pointer left.",
+    "pseudocode": "sort numbers; best = none\nfor i in 0..n-3:\n  lo = i + 1; hi = n - 1\n  while lo < hi:\n    s = a[i] + a[lo] + a[hi]\n    update best if s is closer to target (or equally close and smaller)\n    if s < target: lo += 1 else if s > target: hi -= 1 else return s\nreturn best",
+    "walkthrough": "Trying every triple is O(n^3). Sort the numbers first. For each choice of the first number, search the numbers after it with two pointers, one at each end: the sum of the three is too small -> move the left pointer to a larger number; too large -> move the right pointer to a smaller number; exactly the target -> you cannot do better. On the way, compare every sum you see with the best so far: closer wins, and for equal distance keep the smaller sum (the problem's tie rule). Each first number needs one pass of the pointers, O(n), so O(n^2) overall after the O(n log n) sort."
+  }
+}

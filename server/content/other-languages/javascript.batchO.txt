@@ -1,0 +1,130 @@
+//### tidy-sentence
+function tidySentence(text) {
+  const words = [];
+  let i = text.length - 1;
+  while (i >= 0) {
+    while (i >= 0 && text[i] === " ") i--;
+    if (i < 0) break;
+    const j = i;
+    while (i >= 0 && text[i] !== " ") i--;
+    words.push(text.slice(i + 1, j + 1));
+  }
+  return words.join(" ");
+}
+//### palindromic-substring-count
+function countPalindromicSubstrings(text) {
+  const n = text.length;
+  let count = 0;
+  for (let center = 0; center < 2 * n - 1; center++) {
+    let left = Math.floor(center / 2), right = left + (center % 2);
+    while (left >= 0 && right < n && text[left] === text[right]) {
+      count++;
+      left--;
+      right++;
+    }
+  }
+  return count;
+}
+//### compare-versions
+function compareVersions(first, second) {
+  let i = 0, j = 0;
+  while (i < first.length || j < second.length) {
+    let x = 0;
+    while (i < first.length && first[i] !== ".") { x = x * 10 + (first.charCodeAt(i) - 48); i++; }
+    let y = 0;
+    while (j < second.length && second[j] !== ".") { y = y * 10 + (second.charCodeAt(j) - 48); j++; }
+    if (x !== y) return x < y ? -1 : 1;
+    i++;
+    j++;
+  }
+  return 0;
+}
+//### digit-square-loop
+function endsAtOne(number) {
+  const seen = new Set();
+  let n = number;
+  while (n !== 1 && !seen.has(n)) {
+    seen.add(n);
+    let sum = 0;
+    while (n > 0) { const d = n % 10; sum += d * d; n = Math.floor(n / 10); }
+    n = sum;
+  }
+  return n === 1;
+}
+//### equidistant-point-pairs
+function countEquidistant(points) {
+  let total = 0;
+  for (let a = 0; a < points.length; a++) {
+    const seen = new Map();
+    for (let b = 0; b < points.length; b++) {
+      if (a === b) continue;
+      const dx = points[a][0] - points[b][0], dy = points[a][1] - points[b][1];
+      const d = dx * dx + dy * dy;
+      seen.set(d, (seen.get(d) || 0) + 1);
+    }
+    for (const c of seen.values()) total += c * (c - 1);
+  }
+  return total;
+}
+//### multiple-of-k-subarray
+function hasMultipleRun(numbers, k) {
+  const first = new Map([[0, -1]]);
+  let total = 0;
+  for (let i = 0; i < numbers.length; i++) {
+    total = (total + numbers[i]) % k;
+    if (first.has(total)) {
+      if (i - first.get(total) >= 2) return true;
+    } else {
+      first.set(total, i);
+    }
+  }
+  return false;
+}
+//### merged-interval-count
+function mergedIntervalCount(intervals) {
+  const sorted = intervals.slice().sort((p, q) => p[0] - q[0]);
+  let count = 0, end = null;
+  for (const [s, e] of sorted) {
+    if (end === null || s > end) { count++; end = e; }
+    else end = Math.max(end, e);
+  }
+  return count;
+}
+//### frequency-sort
+function frequencySort(numbers) {
+  const counts = new Map();
+  for (const x of numbers) counts.set(x, (counts.get(x) || 0) + 1);
+  const values = [...counts.keys()].sort((p, q) => counts.get(q) - counts.get(p) || p - q);
+  const out = [];
+  for (const v of values) for (let c = counts.get(v); c > 0; c--) out.push(v);
+  return out;
+}
+//### spiral-walk
+function spiralWalk(grid) {
+  let top = 0, bottom = grid.length - 1, left = 0, right = grid[0].length - 1;
+  const out = [];
+  while (top <= bottom && left <= right) {
+    for (let c = left; c <= right; c++) out.push(grid[top][c]);
+    for (let r = top + 1; r <= bottom; r++) out.push(grid[r][right]);
+    if (top < bottom && left < right) {
+      for (let c = right - 1; c >= left; c--) out.push(grid[bottom][c]);
+      for (let r = bottom - 1; r > top; r--) out.push(grid[r][left]);
+    }
+    top++; bottom--; left++; right--;
+  }
+  return out;
+}
+//### repeated-value
+function repeatedValue(numbers) {
+  let slow = numbers[0], fast = numbers[0];
+  do {
+    slow = numbers[slow];
+    fast = numbers[numbers[fast]];
+  } while (slow !== fast);
+  slow = numbers[0];
+  while (slow !== fast) {
+    slow = numbers[slow];
+    fast = numbers[fast];
+  }
+  return slow;
+}

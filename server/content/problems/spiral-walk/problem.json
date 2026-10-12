@@ -1,0 +1,24 @@
+{
+  "slug": "spiral-walk",
+  "title": "Spiral Walk",
+  "concept": "arrays",
+  "difficulty": "medium",
+  "statement": "Walk through a grid in a **clockwise spiral**: start at the top-left cell and go right along the top row, then down the right column, then left along the bottom row, then up the left column, and keep spiralling inwards until every cell has been visited once.\n\nReturn the values in the order you visit them.",
+  "constraints": [
+    "1 <= rows, columns <= 100",
+    "-1000 <= grid[r][c] <= 1000"
+  ],
+  "signature": { "name": "spiral_walk", "params": [{ "name": "grid", "type": "int[][]" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]], "expected": [1, 2, 3, 6, 9, 8, 7, 4, 5], "explanation": "Right along the top (1, 2, 3), down the right side (6, 9), left along the bottom (8, 7), up the left side (4), then the middle (5)." },
+    { "args": [[[1, 2, 3, 4], [5, 6, 7, 8]]], "expected": [1, 2, 3, 4, 8, 7, 6, 5], "explanation": "Right along the top, then left along the bottom: there is nothing left inside." }
+  ],
+  "edgeTests": [[[[1]]], [[[1, 2, 3]]], [[[1], [2], [3]]], [[[1, 2], [3, 4]]], [[[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]]], [[[1, 2, 3, 4, 5], [6, 7, 8, 9, 10], [11, 12, 13, 14, 15]]]],
+  "expected": { "time": "O(rows * columns)", "space": "O(1) extra" },
+  "hints": {
+    "nudge": "After walking the outer ring, what remains is a smaller grid of the same kind. How can you describe the part that is still to be walked?",
+    "pattern": "Four boundaries (top, bottom, left, right) that shrink inwards after each side of the ring is done.",
+    "pseudocode": "top = 0; bottom = rows-1; left = 0; right = cols-1\nwhile top <= bottom and left <= right:\n  walk the top row left..right; walk the right column top+1..bottom\n  if top < bottom and left < right: walk the bottom row right-1..left; walk the left column bottom-1..top+1\n  top += 1; bottom -= 1; left += 1; right -= 1",
+    "walkthrough": "Keep the boundaries of the part of the grid that has not been visited yet: top, bottom, left, right. In each round walk the ring around it: the top row from left to right, then the right column from just below the top to the bottom, then the bottom row from right to left and the left column from the bottom up. The last two sides must only be walked when the remaining part has at least two rows AND at least two columns; otherwise you would visit the same cells twice (a single remaining row or column was already covered by the first two sides). Then shrink all four boundaries by one and repeat while there is still something left. Every cell is visited once: O(rows * columns)."
+  }
+}

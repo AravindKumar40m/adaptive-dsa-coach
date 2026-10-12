@@ -5,6 +5,7 @@ import { spawn } from "node:child_process";
 import mongoose from "mongoose";
 import { config } from "../../src/config.js";
 import { CodeSnapshot } from "../../src/models/CodeSnapshot.js";
+import { Problem } from "../../src/models/Problem.js";
 import { ProblemDifficulty } from "../../src/models/ProblemDifficulty.js";
 import { ReferenceSolution } from "../../src/models/ReferenceSolution.js";
 import { Submission } from "../../src/models/Submission.js";
@@ -39,7 +40,7 @@ try {
 
   // ---------------------------------------------------------------- a brand-new learner
   let p = await progress(a);
-  check(p.skills.length === 16 && p.skills.every((s) => s.rating === 1000 && s.attempts === 0) && p.totals.solved === 0 && p.totals.problems === 120, "a new learner: 16 topics at 1000, nothing solved, 120 problems in the library");
+  check(p.skills.length === 16 && p.skills.every((s) => s.rating === 1000 && s.attempts === 0) && p.totals.solved === 0 && p.totals.problems === (await Problem.countDocuments()), "a new learner: 16 topics at 1000, nothing solved, every problem of the library counted");
   check(p.strongest === null && p.weakest === null && p.mistakes.failedAttempts === 0 && p.review.due.length === 0 && p.pace.week.pointsPerHour === null && p.independence.firstTry.of === 0, "and no strongest/weakest, no mistakes, no review, no pace");
   check(p.skills.find((s) => s.concept === "arrays").unlocked && !p.skills.find((s) => s.concept === "dp").unlocked, "arrays is open and dp is locked");
 

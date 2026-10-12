@@ -1,0 +1,25 @@
+{
+  "slug": "equidistant-point-pairs",
+  "title": "Equidistant Pairs",
+  "concept": "hashing",
+  "difficulty": "medium",
+  "statement": "`points` lists different points on a flat map, each as `[x, y]`. Count the **ordered triples** `(i, j, k)` of three different points where the distance from point `i` to point `j` **equals** the distance from point `i` to point `k`.\n\nThe order matters: `(i, j, k)` and `(i, k, j)` are two different triples. (Point `i` is the \"centre\"; `j` and `k` are two other points at the same distance from it.)",
+  "constraints": [
+    "1 <= len(points) <= 500",
+    "-10000 <= x, y <= 10000",
+    "all points are different"
+  ],
+  "signature": { "name": "count_equidistant", "params": [{ "name": "points", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [[[0, 0], [1, 0], [2, 0]]], "expected": 2, "explanation": "Only the middle point (1, 0) works as the centre: (0,0) and (2,0) are both 1 away. Ordered, that is 2 triples." },
+    { "args": [[[0, 0], [1, 0], [0, 1], [-1, 0], [0, -1]]], "expected": 20, "explanation": "The origin has 4 points at distance 1: 4 * 3 = 12 ordered pairs. Each of the other four points has 2 points equally far away: 4 * 2 = 8. Total 20." }
+  ],
+  "edgeTests": [[[[0, 0]]], [[[0, 0], [1, 1]]], [[[1, 1], [2, 2], [3, 3]]], [[[0, 0], [3, 4], [-3, 4], [0, 5]]], [[[0, 0], [5, 0], [0, 5], [5, 5]]]],
+  "expected": { "time": "O(n^2)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Fix the centre point. Among the other points, how could you group those that are the same distance away?",
+    "pattern": "For every centre, count how many points are at each (squared) distance with a hash map; a group of c points gives c * (c - 1) ordered pairs.",
+    "pseudocode": "total = 0\nfor each centre a:\n  counts = empty map\n  for each other point b: counts[squared distance(a, b)] += 1\n  for each count c in counts: total += c * (c - 1)\nreturn total",
+    "walkthrough": "Checking all triples is O(n^3), too slow for 500 points. Choose the centre first. Compute the distance from the centre to every other point and group the points by that distance in a hash map. If c points share a distance, any ordered choice of two different ones makes a valid triple: c choices for j and c - 1 for k, so c * (c - 1) triples. Add this up over all distances and over all centres. Use the SQUARED distance (dx * dx + dy * dy) as the key: it is a whole number and keeps the same order and equality as the real distance, so you never need a square root or any floating-point number. O(n^2) time."
+  }
+}

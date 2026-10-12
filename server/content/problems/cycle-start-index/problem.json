@@ -1,0 +1,25 @@
+{
+  "slug": "cycle-start-index",
+  "title": "Where Does the Loop Begin?",
+  "concept": "linked_list",
+  "difficulty": "medium",
+  "statement": "A linked list may have a **loop**: its last node points back to an earlier node (or to itself) instead of ending. Given the head of such a list, return the **position** (counting from `0`, starting at the head) of the node where the loop begins: the first node you would reach a second time if you kept following `next`.\n\nReturn `-1` if the list has no loop. Values can repeat, so you must compare nodes, not values.",
+  "constraints": [
+    "0 <= number of nodes <= 100000",
+    "-100000 <= node value <= 100000",
+    "a list that has a loop is described by its values plus the position the last node points back to (or -1 for no loop)"
+  ],
+  "signature": { "name": "cycle_start_index", "params": [{ "name": "head", "type": "CycleList" }], "returns": "int" },
+  "examples": [
+    { "args": [[[3, 2, 0, -4], 1]], "expected": 1, "explanation": "The last node (-4) points back to the node at position 1 (value 2), so the loop begins there." },
+    { "args": [[[1, 2], -1]], "expected": -1, "explanation": "The last node points to nothing: there is no loop." }
+  ],
+  "edgeTests": [[[[], -1]], [[[5], 0]], [[[5], -1]], [[[1, 2, 3], 0]], [[[1, 2, 3, 4, 5], 4]], [[[7, 7, 7, 7], 2]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "A set of nodes you have already seen would tell you the answer at once. Can you do it without remembering every node?",
+    "pattern": "Floyd's tortoise and hare: a slow and a fast pointer meet inside the loop; then a pointer from the head and one from the meeting point, both moving one step at a time, meet at the start of the loop.",
+    "pseudocode": "slow = fast = head\nwhile fast and fast.next:\n  slow = slow.next; fast = fast.next.next\n  if slow is fast:\n    start = head; index = 0\n    while start is not slow: start = start.next; slow = slow.next; index += 1\n    return index\nreturn -1",
+    "walkthrough": "The simple way: walk the list and store every node you pass in a set (with its position); the first node you meet twice is the loop start. That needs O(n) memory. Floyd's trick needs none. Move a slow pointer 1 step and a fast pointer 2 steps at a time. If there is no loop, the fast pointer reaches the end. If there is a loop, they must meet inside it. At that moment, the distance from the head to the loop start equals the distance from the meeting point to the loop start (walking forward around the loop). So start a new pointer at the head, move both it and the meeting-point pointer one step at a time, and they meet exactly at the loop start; count the steps from the head to get the position. Compare nodes with `is` / `===` / `==` on references, never the values."
+  }
+}

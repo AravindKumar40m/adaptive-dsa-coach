@@ -1,0 +1,25 @@
+{
+  "slug": "lone-element",
+  "title": "The Lone Element",
+  "concept": "binary_search",
+  "difficulty": "medium",
+  "statement": "`pairs` is sorted from smallest to largest. Every value appears **exactly twice** (the two copies are next to each other), except for **one** value that appears exactly once. Return that lone value.\n\nThe list can be very long: find it without reading every element.",
+  "constraints": [
+    "1 <= len(pairs) <= 100001, and len(pairs) is odd",
+    "0 <= pairs[i] <= 1000000",
+    "exactly one value appears once, all others twice"
+  ],
+  "signature": { "name": "lone_element", "params": [{ "name": "pairs", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 1, 2, 3, 3, 4, 4, 8, 8]], "expected": 2, "explanation": "Every value except 2 appears twice." },
+    { "args": [[3, 3, 7, 7, 10, 11, 11]], "expected": 10, "explanation": "10 appears only once." }
+  ],
+  "edgeTests": [[[5]], [[1, 2, 2]], [[1, 1, 2]], [[1, 1, 2, 2, 3]], [[0, 0, 1, 1, 2, 3, 3]], [[4, 4, 5, 6, 6, 9, 9]]],
+  "expected": { "time": "O(log n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Before the lone element, each pair starts at an EVEN position. After the lone element, each pair starts at an ODD position. Can you use that to tell which side of the lone element you are on?",
+    "pattern": "Binary search on pair starts: look at an even position mid; if values[mid] equals values[mid + 1] the lone element is further right, otherwise it is at mid or further left.",
+    "pseudocode": "lo = 0; hi = n - 1\nwhile lo < hi:\n  mid = (lo + hi) / 2; if mid is odd: mid -= 1\n  if pairs[mid] == pairs[mid + 1]: lo = mid + 2\n  else: hi = mid\nreturn pairs[lo]",
+    "walkthrough": "XOR-ing everything or counting finds the value in O(n); the sorted order allows O(log n). Left of the lone element every pair occupies positions (even, odd). The lone element shifts everything after it by one, so right of it pairs occupy (odd, even). Look at the middle, move it to an even index, and compare it with its right neighbour. If they are equal, this pair is in its normal place, so the lone element lies further to the right: continue from mid + 2. If they differ, the pair order has already shifted (or mid itself is lone), so the lone element is at mid or to its left: set hi = mid. When lo and hi meet, that position holds the lone value."
+  }
+}

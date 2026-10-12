@@ -1,0 +1,24 @@
+{
+  "slug": "asteroid-survivors",
+  "title": "Asteroid Survivors",
+  "concept": "stack_queue",
+  "difficulty": "medium",
+  "statement": "A row of asteroids moves along a line. Each number in `asteroids` is one asteroid: its **absolute value is its size** and its **sign is its direction** (positive moves right, negative moves left). All asteroids move at the same speed.\n\nWhen two asteroids meet, the **smaller one explodes**; if they are the same size, **both explode**. Asteroids moving in the same direction never meet. Return the asteroids that are left, in their original left-to-right order.",
+  "constraints": [
+    "0 <= len(asteroids) <= 100000",
+    "asteroids[i] != 0 and -1000 <= asteroids[i] <= 1000"
+  ],
+  "signature": { "name": "asteroid_survivors", "params": [{ "name": "asteroids", "type": "int[]" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[4, -2, 3, -9]], "expected": [-9], "explanation": "-2 hits 4 and explodes. Then -9 destroys 3 and then 4: only -9 is left." },
+    { "args": [[-3, -1, 2, 6]], "expected": [-3, -1, 2, 6], "explanation": "The two on the left move away from the two on the right: nothing ever meets." }
+  ],
+  "edgeTests": [[[]], [[7]], [[3, -3]], [[2, -3]], [[-2, 2]], [[5, 5, -5, -5]]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Only one pair of directions can ever collide: a right-moving asteroid with a left-moving asteroid that comes AFTER it. What does a new left-moving asteroid meet first?",
+    "pattern": "A stack of the asteroids still alive: a new left-moving asteroid fights the top of the stack while the top moves right.",
+    "pseudocode": "stack = empty\nfor x in asteroids:\n  alive = true\n  while alive and x < 0 and stack not empty and top > 0:\n    if top < -x: pop (top explodes)\n    elif top == -x: pop; alive = false (both explode)\n    else: alive = false (x explodes)\n  if alive: push x\nreturn stack",
+    "walkthrough": "Process the asteroids from left to right and keep the survivors so far on a stack. A right-moving asteroid never collides with anything that is already on the stack (everything there is to its left and either moves away or moves along with it), so just push it. A left-moving asteroid can only collide with right-moving asteroids at the top of the stack, one after another: if the top is smaller, the top explodes and the new asteroid keeps going (check the next top); if equal, both explode; if the top is bigger, the new asteroid explodes. A left-moving asteroid that gets through (or finds a left-moving top, or an empty stack) is pushed. At the end the stack holds the survivors in order. Every asteroid is pushed and popped at most once: O(n)."
+  }
+}

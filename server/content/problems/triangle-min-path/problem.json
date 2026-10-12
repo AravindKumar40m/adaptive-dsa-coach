@@ -1,0 +1,25 @@
+{
+  "slug": "triangle-min-path",
+  "title": "Triangle Minimum Path",
+  "concept": "dp",
+  "difficulty": "easy",
+  "statement": "A triangle of numbers is given row by row: row `0` has one number, row `1` has two, row `2` has three, and so on.\n\nStart at the top. At every step move down one row, either to the number **directly below** (same index `j`) or to the number **below and to the right** (index `j + 1`). Return the smallest possible sum of the numbers you pass, including the first and the last.",
+  "constraints": [
+    "1 <= number of rows <= 200",
+    "row r has exactly r + 1 numbers",
+    "-10000 <= rows[r][j] <= 10000"
+  ],
+  "signature": { "name": "triangle_min_path", "params": [{ "name": "rows", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [[[2], [3, 4], [6, 5, 7], [4, 1, 8, 3]]], "expected": 11, "explanation": "The path 2 + 3 + 5 + 1 = 11 is the cheapest." },
+    { "args": [[[-10]]], "expected": -10, "explanation": "A single number is the whole path." }
+  ],
+  "edgeTests": [[[[0]]], [[[1], [1, 1]]], [[[5], [-1, -2]]], [[[1], [2, 3], [4, 5, 6]]]],
+  "expected": { "time": "O(n^2)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Instead of choosing a path from the top, ask: what is the cheapest way to finish from each number if you stand on it?",
+    "pattern": "Work from the bottom row upwards. The best path from a number is itself plus the smaller of the two best paths below it.",
+    "pseudocode": "best = copy of the last row\nfor r from second-to-last row up to row 0:\n  for j in 0..r:\n    best[j] = rows[r][j] + min(best[j], best[j+1])\nreturn best[0]",
+    "walkthrough": "Trying every path means 2^(rows-1) paths. But the cheapest way to finish from a number only depends on that number and the cheapest finishes of the two numbers under it. Start with the bottom row: from there the cheapest finish is the number itself. Then go one row up at a time: for each number add the smaller of the two finishes below it. You can overwrite one array of length rows because each row only needs the row below it. The answer is the single value left at the top. O(n^2) time (n = rows) and O(n) memory."
+  }
+}

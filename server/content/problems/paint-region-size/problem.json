@@ -1,0 +1,25 @@
+{
+  "slug": "paint-region-size",
+  "title": "Paint Region Size",
+  "concept": "graphs",
+  "difficulty": "easy",
+  "statement": "A picture is a grid of colour numbers. Two cells are in the same **region** when they have the same colour and you can walk from one to the other by moving up, down, left or right, only through cells of that colour.\n\nReturn how many cells are in the region that contains the cell at row `row`, column `col` (both counted from `0`).",
+  "constraints": [
+    "1 <= rows, columns <= 100",
+    "0 <= grid[r][c] <= 9",
+    "0 <= row < rows and 0 <= col < columns"
+  ],
+  "signature": { "name": "region_size", "params": [{ "name": "grid", "type": "int[][]" }, { "name": "row", "type": "int" }, { "name": "col", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[[1, 1, 0], [1, 0, 0], [0, 0, 1]], 0, 0], "expected": 3, "explanation": "The 1s at (0,0), (0,1) and (1,0) are connected. The 1 at (2,2) is a different region: it touches no other 1." },
+    { "args": [[[1, 1, 0], [1, 0, 0], [0, 0, 1]], 1, 1], "expected": 5, "explanation": "The 0s at (0,2), (1,1), (1,2), (2,0) and (2,1) form one region." }
+  ],
+  "edgeTests": [[[[7]], 0, 0], [[[1, 2], [3, 4]], 1, 1], [[[2, 2], [2, 2]], 0, 1], [[[5, 5, 5, 5, 5]], 0, 4], [[[1], [1], [2], [1]], 3, 0], [[[0, 1, 0], [1, 0, 1], [0, 1, 0]], 1, 1]],
+  "expected": { "time": "O(rows * columns)", "space": "O(rows * columns)" },
+  "hints": {
+    "nudge": "Start on the given cell. Which cells can you reach in one step, and which of those are allowed?",
+    "pattern": "Flood fill: a depth-first or breadth-first search that only walks onto cells of the same colour, and never visits a cell twice.",
+    "pseudocode": "colour = grid[row][col]\nseen = {(row, col)}; stack = [(row, col)]\nwhile stack not empty:\n  (r, c) = pop\n  for each of the 4 neighbours (nr, nc) inside the grid:\n    if not seen and grid[nr][nc] == colour: mark seen, push\nreturn size of seen",
+    "walkthrough": "Remember the colour of the starting cell. Keep a stack (or queue) of cells whose neighbours still have to be looked at, and a set of cells already counted. Take a cell off the stack, look at its four neighbours, and for each neighbour that is inside the grid, has the same colour, and has not been counted yet, count it and put it on the stack. When the stack is empty, nothing else can be reached, and the number of counted cells is the answer. Marking a cell as counted when you PUSH it (not when you pop it) keeps a cell from being added twice. Each cell is handled once, so O(rows * columns). A loop with recursion works too, but a very large region can make the recursion too deep."
+  }
+}

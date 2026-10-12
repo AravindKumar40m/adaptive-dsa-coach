@@ -1,0 +1,25 @@
+{
+  "slug": "shortest-sum-at-least",
+  "title": "Shortest Stretch With Enough Total",
+  "concept": "sliding_window",
+  "difficulty": "hard",
+  "statement": "Find the **shortest non-empty contiguous stretch** of `numbers` whose sum is **at least `target`**, and return its length, or `-1` if no stretch is large enough.\n\nThe numbers can be **negative**, which makes a stretch longer sometimes make the sum smaller. (When all numbers are positive a plain sliding window is enough; here it is not.)",
+  "constraints": [
+    "1 <= len(numbers) <= 100000",
+    "-10000 <= numbers[i] <= 10000",
+    "1 <= target <= 1000000000"
+  ],
+  "signature": { "name": "shortest_sum_at_least", "params": [{ "name": "numbers", "type": "int[]" }, { "name": "target", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[5, -3, 4, -2, 6], 8], "expected": 3, "explanation": "The stretch 4, -2, 6 adds up to 8. No stretch of length 1 or 2 reaches 8." },
+    { "args": [[1, 2], 4], "expected": -1, "explanation": "Even the whole list adds up to only 3." }
+  ],
+  "edgeTests": [[[7], 7], [[7], 8], [[-1, -2], 1], [[1, 1, 1, 1], 4], [[10, -5, 10], 15], [[5, 5], 5]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Write the sum of any stretch as a difference of two prefix sums. Which earlier prefix sums can you throw away because they can never give a shorter stretch?",
+    "pattern": "Prefix sums plus a monotonic deque: keep candidate start positions with increasing prefix sums; pop from the front while the stretch is long enough, pop from the back while a later start is at least as good.",
+    "pseudocode": "prefix[0] = 0, prefix[i + 1] = prefix[i] + numbers[i]\nwindow = empty deque of positions\nfor j in 0..n:\n  while window not empty and prefix[j] - prefix[front] >= target: best = min(best, j - front); pop front\n  while window not empty and prefix[back] >= prefix[j]: pop back\n  push j at the back\nreturn best or -1",
+    "walkthrough": "A stretch from position i to j (j after i) has the sum prefix[j] - prefix[i]. For every j we want the LATEST i with prefix[i] <= prefix[j] - target. A plain two-pointer window fails because with negative numbers the sum is not monotonic. Keep a deque of candidate starts i whose prefix sums are increasing. Two rules: (1) if the front start already gives a sum >= target for the current j, record the length and remove it: any later j would only give a longer stretch for it. (2) before adding j as a candidate, remove from the back every start with a prefix sum >= prefix[j], because j is later AND not larger, so it is always at least as good. Every position enters and leaves the deque once: O(n)."
+  }
+}

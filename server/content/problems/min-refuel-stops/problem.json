@@ -1,0 +1,27 @@
+{
+  "slug": "min-refuel-stops",
+  "title": "Fewest Refuelling Stops",
+  "concept": "greedy",
+  "difficulty": "hard",
+  "statement": "A car drives along a straight road from position `0` to position `target`. It uses **1 unit of fuel per 1 unit of distance** and starts with `start_fuel` units. Each entry `[position, fuel]` in `stations` is a fuel station at that position that gives **all** of its `fuel` units if you stop there. The stations are listed in increasing order of position, and every position is between `1` and `target - 1`.\n\nThe tank has no size limit. You may refuel at a station you reach with an empty tank, and arriving at `target` with an empty tank counts as arriving. Return the **smallest number of stops** needed to reach `target`, or `-1` if it cannot be done.",
+  "constraints": [
+    "1 <= target <= 1000000000",
+    "0 <= start_fuel <= 1000000000",
+    "0 <= len(stations) <= 500",
+    "1 <= fuel <= 1000000000 for every station; positions are strictly increasing",
+    "sums can exceed a 32-bit integer: use 64-bit numbers"
+  ],
+  "signature": { "name": "min_refuel_stops", "params": [{ "name": "target", "type": "int" }, { "name": "start_fuel", "type": "int" }, { "name": "stations", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [50, 12, [[8, 20], [15, 5], [30, 25], [40, 10]]], "expected": 2, "explanation": "Stop at 8 (fuel 20) and at 30 (fuel 25): the car can then reach 8 + ... in all 12 + 20 + 25 = 57 >= 50. One stop is not enough: 12 + 20 = 32 < 50." },
+    { "args": [30, 10, [[5, 3], [9, 2]]], "expected": -1, "explanation": "Even using both stations the car can drive only 10 + 3 + 2 = 15 units." }
+  ],
+  "edgeTests": [[1, 1, []], [10, 5, []], [10, 10, []], [10, 3, [[3, 7]]], [20, 5, [[5, 5], [10, 5], [15, 5]]], [20, 5, [[6, 100]]]],
+  "expected": { "time": "O(n log n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "You do not have to decide at a station whether to stop. What if you could decide LATER, looking back at all the stations you passed?",
+    "pattern": "Greedy with a max-heap: drive as far as the fuel allows, remembering the fuel of every station you pass; when you get stuck, 'retroactively' refuel at the passed station with the most fuel.",
+    "pseudocode": "reach = start_fuel; stops = 0; i = 0; heap = empty max-heap\nwhile reach < target:\n  push the fuel of every station with position <= reach (advance i)\n  if heap is empty: return -1\n  reach += pop the largest fuel; stops += 1\nreturn stops",
+    "walkthrough": "A DP over (stop count -> furthest reach) works in O(n^2). A faster idea: `reach` is how far you can drive with what you have taken so far. All stations at or before `reach` are stations you could have stopped at. When `reach` is not yet the target, you must have refuelled once more, and to get the furthest you should have used the passed station with the MOST fuel. A max-heap holds the fuel of the stations you passed and have not used. Repeat: add every newly reachable station to the heap, take the largest, add it to `reach`, count one stop. If the heap is empty while `reach` is still short of the target, you are stuck: return -1. Use 64-bit numbers for `reach`."
+  }
+}

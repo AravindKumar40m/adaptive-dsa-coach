@@ -1,0 +1,24 @@
+{
+  "slug": "smallest-after-removal",
+  "title": "Smallest Number After Removing Digits",
+  "concept": "greedy",
+  "difficulty": "medium",
+  "statement": "`digits` is a non-negative whole number written as text. Remove exactly `k` of its digits (any ones, the rest keep their order) so that the number that remains is as **small** as possible.\n\nReturn the result as text **without leading zeros**. If nothing is left, or only zeros are left, the result is `\"0\"`.",
+  "constraints": [
+    "0 <= k <= len(digits) <= 100000",
+    "digits contains only the characters 0 to 9 and has no leading zeros, except the number zero itself"
+  ],
+  "signature": { "name": "smallest_after_removal", "params": [{ "name": "digits", "type": "string" }, { "name": "k", "type": "int" }], "returns": "string" },
+  "examples": [
+    { "args": ["9132", 1], "expected": "132", "explanation": "Removing the 9 gives 132, smaller than removing any other digit." },
+    { "args": ["1002", 2], "expected": "0", "explanation": "Remove the 1 and the 2: `00` is the number 0, which is smaller than 12 or 2." }
+  ],
+  "edgeTests": [["10", 2], ["123", 0], ["321", 1], ["100", 1], ["112", 1], ["1111", 2]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Compare the digits from the left. If a digit is larger than the digit right after it, would the number get smaller if you removed it?",
+    "pattern": "Monotonic stack: keep the digits in non-decreasing order; when a smaller digit arrives, pop larger digits off the stack while you still may remove some.",
+    "pseudocode": "stack = empty\nfor each digit d:\n  while k > 0 and stack is not empty and top of stack > d: pop; k -= 1\n  push d\nif k > 0: remove the last k digits of the stack\nstrip leading zeros; if empty return '0'",
+    "walkthrough": "The left-most digits matter most. If a digit is bigger than the one right after it, deleting it makes the number smaller (the smaller digit moves into its place), and this is the best use of a deletion. So scan left to right with a stack of kept digits; before pushing a digit d, pop every stack digit that is bigger than d, as long as you still have removals left. If the scan ends and removals are left over, the stack is non-decreasing, so remove from the END (the biggest, least important digits). Finally cut the leading zeros and return `0` if nothing remains. Each digit is pushed and popped at most once: O(n). Comparing the result as a number is the same as comparing as text of equal length, because all candidates have the same number of digits before zeros are cut."
+  }
+}

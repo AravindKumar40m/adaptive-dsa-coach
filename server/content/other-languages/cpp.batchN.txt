@@ -1,0 +1,147 @@
+//### kth-in-sorted-matrix
+int kth_in_matrix(vector<vector<int>>& matrix, int k) {
+    int rows = (int) matrix.size(), cols = (int) matrix[0].size();
+    long long lo = matrix[0][0], hi = matrix[rows - 1][cols - 1];
+    while (lo < hi) {
+        long long mid = lo + (hi - lo) / 2;
+        int count = 0, c = cols - 1;
+        for (int r = 0; r < rows; r++) {
+            while (c >= 0 && matrix[r][c] > mid) c--;
+            count += c + 1;
+        }
+        if (count >= k) hi = mid; else lo = mid + 1;
+    }
+    return (int) lo;
+}
+//### longest-run-with-k-flips
+int longest_ones_after_flips(vector<int>& bits, int k) {
+    int left = 0, zeros = 0, best = 0;
+    for (int right = 0; right < (int) bits.size(); right++) {
+        zeros += 1 - bits[right];
+        while (zeros > k) {
+            zeros -= 1 - bits[left];
+            left++;
+        }
+        best = max(best, right - left + 1);
+    }
+    return best;
+}
+//### longest-at-most-k-kinds
+int longest_with_k_kinds(vector<int>& items, int k) {
+    unordered_map<int,int> counts;
+    int left = 0, best = 0;
+    for (int right = 0; right < (int) items.size(); right++) {
+        counts[items[right]]++;
+        while ((int) counts.size() > k) {
+            int y = items[left];
+            if (--counts[y] == 0) counts.erase(y);
+            left++;
+        }
+        best = max(best, right - left + 1);
+    }
+    return best;
+}
+//### shortest-sum-at-least
+int shortest_sum_at_least(vector<int>& numbers, int target) {
+    int n = (int) numbers.size();
+    vector<long long> prefix(n + 1, 0);
+    for (int i = 0; i < n; i++) prefix[i + 1] = prefix[i] + numbers[i];
+    int best = n + 1;
+    deque<int> window;
+    for (int j = 0; j <= n; j++) {
+        while (!window.empty() && prefix[j] - prefix[window.front()] >= target) {
+            best = min(best, j - window.front());
+            window.pop_front();
+        }
+        while (!window.empty() && prefix[window.back()] >= prefix[j]) window.pop_back();
+        window.push_back(j);
+    }
+    return best <= n ? best : -1;
+}
+//### min-add-brackets
+int min_bracket_fixes(string text) {
+    int waiting = 0, fixes = 0;
+    for (char ch : text) {
+        if (ch == '(') waiting++;
+        else if (waiting > 0) waiting--;
+        else fixes++;
+    }
+    return fixes + waiting;
+}
+//### valid-stack-sequence
+bool valid_pop_order(vector<int>& pushed, vector<int>& popped) {
+    vector<int> stack;
+    size_t j = 0;
+    for (int x : pushed) {
+        stack.push_back(x);
+        while (!stack.empty() && j < popped.size() && stack.back() == popped[j]) {
+            stack.pop_back();
+            j++;
+        }
+    }
+    return j == popped.size();
+}
+//### asteroid-survivors
+vector<int> asteroid_survivors(vector<int>& asteroids) {
+    vector<int> stack;
+    for (int x : asteroids) {
+        bool alive = true;
+        while (alive && x < 0 && !stack.empty() && stack.back() > 0) {
+            int top = stack.back();
+            if (top < -x) stack.pop_back();
+            else if (top == -x) { stack.pop_back(); alive = false; }
+            else alive = false;
+        }
+        if (alive) stack.push_back(x);
+    }
+    return stack;
+}
+//### zeros-to-end
+vector<int> zeros_to_end(vector<int>& numbers) {
+    vector<int> a = numbers;
+    int write = 0;
+    for (int read = 0; read < (int) a.size(); read++) {
+        if (a[read] != 0) {
+            swap(a[write], a[read]);
+            write++;
+        }
+    }
+    return a;
+}
+//### closest-triplet-sum
+int closest_triple_sum(vector<int>& numbers, int target) {
+    vector<int> a = numbers;
+    sort(a.begin(), a.end());
+    bool has = false;
+    int best = 0;
+    for (int i = 0; i + 2 < (int) a.size(); i++) {
+        int lo = i + 1, hi = (int) a.size() - 1;
+        while (lo < hi) {
+            int s = a[i] + a[lo] + a[hi];
+            if (!has || abs(s - target) < abs(best - target) || (abs(s - target) == abs(best - target) && s < best)) {
+                best = s;
+                has = true;
+            }
+            if (s < target) lo++;
+            else if (s > target) hi--;
+            else return s;
+        }
+    }
+    return best;
+}
+//### product-below-k-count
+int count_small_product_runs(vector<int>& numbers, int limit) {
+    if (limit <= 1) return 0;
+    long long product = 1;
+    int left = 0;
+    long long count = 0;
+    for (int right = 0; right < (int) numbers.size(); right++) {
+        product *= numbers[right];
+        while (product >= limit) {
+            product /= numbers[left];
+            left++;
+        }
+        count += right - left + 1;
+    }
+    return (int) count;
+}

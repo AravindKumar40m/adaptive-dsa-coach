@@ -1,0 +1,165 @@
+//### mirror-tree
+class Solution {
+    private boolean same(TreeNode a, TreeNode b) {
+        if (a == null || b == null) return a == b;
+        return a.val == b.val && same(a.left, b.right) && same(a.right, b.left);
+    }
+
+    public boolean isMirror(TreeNode root) {
+        return root == null || same(root.left, root.right);
+    }
+}
+//### root-to-leaf-sum
+class Solution {
+    private boolean go(TreeNode node, int left) {
+        if (node == null) return false;
+        if (node.left == null && node.right == null) return node.val == left;
+        return go(node.left, left - node.val) || go(node.right, left - node.val);
+    }
+
+    public boolean hasLeafSum(TreeNode root, int target) {
+        return go(root, target);
+    }
+}
+//### visible-from-right
+class Solution {
+    private void visit(TreeNode node, int depth, List<Integer> out) {
+        if (node == null) return;
+        if (depth == out.size()) out.add(node.val);
+        visit(node.right, depth + 1, out);
+        visit(node.left, depth + 1, out);
+    }
+
+    public int[] visibleFromRight(TreeNode root) {
+        List<Integer> out = new ArrayList<>();
+        visit(root, 0, out);
+        int[] result = new int[out.size()];
+        for (int i = 0; i < result.length; i++) result[i] = out.get(i);
+        return result;
+    }
+}
+//### bst-kth-value
+class Solution {
+    public int bstKthValue(TreeNode root, int k) {
+        Deque<TreeNode> stack = new ArrayDeque<>();
+        TreeNode node = root;
+        while (!stack.isEmpty() || node != null) {
+            while (node != null) {
+                stack.push(node);
+                node = node.left;
+            }
+            node = stack.pop();
+            k--;
+            if (k == 0) return node.val;
+            node = node.right;
+        }
+        return -1;
+    }
+}
+//### lamp-placement-tree
+class Solution {
+    private int lamps;
+
+    private int state(TreeNode node) {
+        if (node == null) return 2;
+        int left = state(node.left), right = state(node.right);
+        if (left == 0 || right == 0) { lamps++; return 1; }
+        if (left == 1 || right == 1) return 2;
+        return 0;
+    }
+
+    public int lampsNeeded(TreeNode root) {
+        lamps = 0;
+        if (state(root) == 0) lamps++;
+        return lamps;
+    }
+}
+//### palindrome-list
+class Solution {
+    public boolean isPalindromeList(ListNode head) {
+        ListNode slow = head, fast = head;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        ListNode prev = null;
+        while (slow != null) {
+            ListNode next = slow.next;
+            slow.next = prev;
+            prev = slow;
+            slow = next;
+        }
+        ListNode a = head, b = prev;
+        while (b != null) {
+            if (a.val != b.val) return false;
+            a = a.next;
+            b = b.next;
+        }
+        return true;
+    }
+}
+//### add-two-digit-lists
+class Solution {
+    public ListNode addDigitLists(ListNode first, ListNode second) {
+        ListNode dummy = new ListNode(0), tail = dummy;
+        int carry = 0;
+        while (first != null || second != null || carry != 0) {
+            int total = carry;
+            if (first != null) { total += first.val; first = first.next; }
+            if (second != null) { total += second.val; second = second.next; }
+            tail.next = new ListNode(total % 10);
+            tail = tail.next;
+            carry = total / 10;
+        }
+        return dummy.next;
+    }
+}
+//### odd-even-regroup
+class Solution {
+    public ListNode groupOddEven(ListNode head) {
+        if (head == null) return null;
+        ListNode odd = head, evenHead = head.next, even = evenHead;
+        while (even != null && even.next != null) {
+            odd.next = even.next;
+            odd = odd.next;
+            even.next = odd.next;
+            even = even.next;
+        }
+        odd.next = evenHead;
+        return head;
+    }
+}
+//### cycle-start-index
+class Solution {
+    public int cycleStartIndex(ListNode head) {
+        ListNode slow = head, fast = head;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+            if (slow == fast) {
+                ListNode start = head;
+                int index = 0;
+                while (start != slow) {
+                    start = start.next;
+                    slow = slow.next;
+                    index++;
+                }
+                return index;
+            }
+        }
+        return -1;
+    }
+}
+//### strict-majority
+class Solution {
+    public int majorityValue(int[] numbers) {
+        int candidate = -1, votes = 0;
+        for (int x : numbers) {
+            if (votes == 0) candidate = x;
+            votes += x == candidate ? 1 : -1;
+        }
+        int count = 0;
+        for (int x : numbers) if (x == candidate) count++;
+        return count * 2 > numbers.length ? candidate : -1;
+    }
+}

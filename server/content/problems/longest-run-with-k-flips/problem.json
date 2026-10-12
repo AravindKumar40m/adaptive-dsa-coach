@@ -1,0 +1,25 @@
+{
+  "slug": "longest-run-with-k-flips",
+  "title": "Longest Run After Flips",
+  "concept": "sliding_window",
+  "difficulty": "medium",
+  "statement": "`bits` is a list of `0`s and `1`s. You may change (flip) **at most `k`** of the `0`s into `1`s. Return the length of the longest run of consecutive `1`s you can have after flipping.",
+  "constraints": [
+    "0 <= len(bits) <= 100000",
+    "bits[i] is 0 or 1",
+    "0 <= k <= len(bits) + 1"
+  ],
+  "signature": { "name": "longest_ones_after_flips", "params": [{ "name": "bits", "type": "int[]" }, { "name": "k", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 1, 0, 0, 1, 1, 1, 0, 1], 2], "expected": 7, "explanation": "Flip the two 0s at indices 2 and 3: indices 0 to 6 become seven 1s in a row. (Flipping the 0s at indices 3 and 7 only gives six.)" },
+    { "args": [[0, 0, 0], 0], "expected": 0, "explanation": "You may not flip anything and there is no 1." }
+  ],
+  "edgeTests": [[[], 3], [[1, 1, 1], 0], [[0], 1], [[0, 1, 0], 1], [[0, 0, 0], 3], [[1, 0, 1, 0, 1], 1]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "A stretch can become all 1s exactly when it contains at most k zeros. So the question is about stretches, not about which zeros to flip.",
+    "pattern": "Sliding window: grow the right end; when the window holds more than k zeros, move the left end forward until it holds k again.",
+    "pseudocode": "left = 0; zeros = 0; best = 0\nfor right in 0..n-1:\n  if bits[right] == 0: zeros += 1\n  while zeros > k:\n    if bits[left] == 0: zeros -= 1\n    left += 1\n  best = max(best, right - left + 1)\nreturn best",
+    "walkthrough": "Checking every stretch and counting its zeros costs O(n^2) (or O(n^3) if you recount each time). Notice that the zeros you flip will always be the ones inside the stretch you are looking at, so a stretch is 'good' exactly when it has at most k zeros. Slide a window over the list: move its right end one step at a time and count the zeros inside. When the count exceeds k the window is too greedy, so move the left end forward (reducing the zero count whenever the element leaving is a 0) until the count is k again. The window is always the longest good stretch ending at `right`; keep the largest size seen. Both ends only move forward, so O(n)."
+  }
+}

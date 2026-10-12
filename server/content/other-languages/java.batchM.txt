@@ -1,0 +1,149 @@
+//### rearrange-no-adjacent
+class Solution {
+    public boolean canRearrange(String letters) {
+        int[] counts = new int[26];
+        for (char ch : letters.toCharArray()) counts[ch - 'a']++;
+        PriorityQueue<int[]> heap = new PriorityQueue<>((p, q) -> q[0] - p[0]);
+        for (int i = 0; i < 26; i++) if (counts[i] > 0) heap.add(new int[]{counts[i], i});
+        int[] held = null;
+        while (!heap.isEmpty() || held != null) {
+            if (heap.isEmpty()) return false;
+            int[] top = heap.poll();
+            if (held != null) { heap.add(held); held = null; }
+            if (top[0] > 1) held = new int[]{top[0] - 1, top[1]};
+        }
+        return true;
+    }
+}
+//### climb-with-ladders
+class Solution {
+    public int furthestBuilding(int[] heights, int bricks, int ladders) {
+        PriorityQueue<Integer> used = new PriorityQueue<>();
+        long left = bricks;
+        for (int i = 0; i + 1 < heights.length; i++) {
+            int climb = heights[i + 1] - heights[i];
+            if (climb <= 0) continue;
+            used.add(climb);
+            if (used.size() > ladders) {
+                left -= used.poll();
+                if (left < 0) return i;
+            }
+        }
+        return heights.length - 1;
+    }
+}
+//### running-median-sum
+class Solution {
+    public int medianSum(int[] stream) {
+        PriorityQueue<Integer> low = new PriorityQueue<>(Collections.reverseOrder());
+        PriorityQueue<Integer> high = new PriorityQueue<>();
+        long total = 0;
+        for (int x : stream) {
+            if (!low.isEmpty() && x > low.peek()) high.add(x); else low.add(x);
+            if (low.size() > high.size() + 1) high.add(low.poll());
+            else if (high.size() > low.size()) low.add(high.poll());
+            total += low.peek();
+        }
+        return (int) total;
+    }
+}
+//### closest-k-points
+class Solution {
+    public int closestKSum(int[][] points, int k) {
+        PriorityQueue<Integer> heap = new PriorityQueue<>(Collections.reverseOrder());
+        for (int[] p : points) {
+            heap.add(p[0] * p[0] + p[1] * p[1]);
+            if (heap.size() > k) heap.poll();
+        }
+        int total = 0;
+        for (int d : heap) total += d;
+        return total;
+    }
+}
+//### gas-station-start
+class Solution {
+    public int gasStart(int[] gas, int[] cost) {
+        long total = 0, tank = 0;
+        int start = 0;
+        for (int i = 0; i < gas.length; i++) {
+            long gain = gas[i] - cost[i];
+            total += gain;
+            tank += gain;
+            if (tank < 0) { start = i + 1; tank = 0; }
+        }
+        return total >= 0 ? start : -1;
+    }
+}
+//### partition-labels-count
+class Solution {
+    public int partitionCount(String text) {
+        int[] last = new int[26];
+        for (int i = 0; i < text.length(); i++) last[text.charAt(i) - 'a'] = i;
+        int pieces = 0, end = 0;
+        for (int i = 0; i < text.length(); i++) {
+            end = Math.max(end, last[text.charAt(i) - 'a']);
+            if (i == end) pieces++;
+        }
+        return pieces;
+    }
+}
+//### smallest-after-removal
+class Solution {
+    public String smallestAfterRemoval(String digits, int k) {
+        StringBuilder stack = new StringBuilder();
+        for (char d : digits.toCharArray()) {
+            while (k > 0 && stack.length() > 0 && stack.charAt(stack.length() - 1) > d) {
+                stack.deleteCharAt(stack.length() - 1);
+                k--;
+            }
+            stack.append(d);
+        }
+        stack.setLength(stack.length() - k);
+        int i = 0;
+        while (i < stack.length() && stack.charAt(i) == '0') i++;
+        String result = stack.substring(i);
+        return result.isEmpty() ? "0" : result;
+    }
+}
+//### min-refuel-stops
+class Solution {
+    public int minRefuelStops(int target, int startFuel, int[][] stations) {
+        PriorityQueue<Long> heap = new PriorityQueue<>(Collections.reverseOrder());
+        long reach = startFuel;
+        int stops = 0, i = 0;
+        while (reach < target) {
+            while (i < stations.length && stations[i][0] <= reach) { heap.add((long) stations[i][1]); i++; }
+            if (heap.isEmpty()) return -1;
+            reach += heap.poll();
+            stops++;
+        }
+        return stops;
+    }
+}
+//### count-of-value
+class Solution {
+    private int first(int[] values, long x) {
+        int lo = 0, hi = values.length;
+        while (lo < hi) {
+            int mid = (lo + hi) >>> 1;
+            if (values[mid] >= x) hi = mid; else lo = mid + 1;
+        }
+        return lo;
+    }
+
+    public int countValue(int[] values, int target) {
+        return first(values, (long) target + 1) - first(values, target);
+    }
+}
+//### lone-element
+class Solution {
+    public int loneElement(int[] pairs) {
+        int lo = 0, hi = pairs.length - 1;
+        while (lo < hi) {
+            int mid = (lo + hi) / 2;
+            if (mid % 2 == 1) mid--;
+            if (pairs[mid] == pairs[mid + 1]) lo = mid + 2; else hi = mid;
+        }
+        return pairs[lo];
+    }
+}

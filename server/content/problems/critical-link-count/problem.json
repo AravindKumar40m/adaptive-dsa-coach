@@ -1,0 +1,25 @@
+{
+  "slug": "critical-link-count",
+  "title": "Critical Link Count",
+  "concept": "graphs",
+  "difficulty": "hard",
+  "statement": "A network of `nodes` servers is joined by two-way `links`; each `[a, b]` is one link. A link is **critical** if removing it leaves at least one pair of servers that could talk to each other before, unable to talk afterwards.\n\nReturn how many links are critical. Two servers may be joined by more than one link; then none of those links is critical on its own. The network does not have to be fully connected.",
+  "constraints": [
+    "1 <= nodes <= 500",
+    "0 <= len(links) <= 2000",
+    "each link has two different numbers in 0..nodes-1"
+  ],
+  "signature": { "name": "critical_link_count", "params": [{ "name": "nodes", "type": "int" }, { "name": "links", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [4, [[0, 1], [1, 2], [2, 0], [1, 3]]], "expected": 1, "explanation": "Servers 0, 1 and 2 form a triangle, so any one of those links can fail. Only the link 1-3 is the sole way to reach server 3." },
+    { "args": [2, [[0, 1]]], "expected": 1, "explanation": "The only link is critical." }
+  ],
+  "edgeTests": [[1, []], [3, [[0, 1], [1, 2]]], [2, [[0, 1], [0, 1]]], [4, [[0, 1], [2, 3]]], [5, [[0, 1], [1, 2], [2, 0], [2, 3], [3, 4]]], [4, [[0, 1], [1, 2], [2, 3], [3, 0]]]],
+  "expected": { "time": "O(V + E)", "space": "O(V + E)" },
+  "hints": {
+    "nudge": "A link is NOT critical exactly when its two ends are also joined some other way. How could you notice that during a single walk through the network?",
+    "pattern": "Bridges, with a depth-first search and 'low' times (Tarjan): note when each server is first reached, and the earliest-reached server each subtree can climb back to.",
+    "pseudocode": "order[u] = low[u] = a new time when u is first visited\nfor each link (u, v) except the one we just came along:\n  if v unvisited: visit(v); low[u] = min(low[u], low[v]); if low[v] > order[u]: count one critical link\n  else: low[u] = min(low[u], order[v])\nstart a visit from every server that is not visited yet",
+    "walkthrough": "The slow way: remove each link in turn and count the groups of connected servers again; if the count goes up, the link is critical. That is O(E * (V + E)). To do it in one pass, run a depth-first search and give each server its visit time `order`. For each server also keep `low`, the smallest visit time that its subtree can reach with at most one link going back up the search tree. After visiting a child v of u, if low[v] is still larger than order[u], nothing below v can get back to u or above except through the link u-v, so that link is critical. Skip only the exact link you came along (identify links by number, not by the server at the other end, so that double links are handled correctly). Start a search from every unvisited server so that separate groups are covered. O(V + E)."
+  }
+}

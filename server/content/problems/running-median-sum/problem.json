@@ -1,0 +1,24 @@
+{
+  "slug": "running-median-sum",
+  "title": "Running Median Sum",
+  "concept": "heaps",
+  "difficulty": "hard",
+  "statement": "Numbers arrive one at a time in `stream`. After each number arrives, find the **median** of all numbers received so far: the middle value when they are sorted. When an even amount has arrived there are two middle values: use the **smaller** of the two.\n\nReturn the sum of all these medians (one per arrival).",
+  "constraints": [
+    "1 <= len(stream) <= 100000",
+    "-10000 <= stream[i] <= 10000"
+  ],
+  "signature": { "name": "median_sum", "params": [{ "name": "stream", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[5, 2, 8]], "expected": 12, "explanation": "Medians: [5] -> 5; [2, 5] -> 2 (the smaller middle); [2, 5, 8] -> 5. Sum 5 + 2 + 5 = 12." },
+    { "args": [[1, 2, 3, 4]], "expected": 6, "explanation": "Medians 1, 1, 2, 2: sum 6." }
+  ],
+  "edgeTests": [[[7]], [[1, 1, 1]], [[3, 2, 1]], [[-5, 5]], [[9, 8, 7, 6, 5, 4]]],
+  "expected": { "time": "O(n log n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "The median only depends on the middle of the sorted numbers. Do you need the whole sorted list, or just the two halves around the middle?",
+    "pattern": "Two heaps: a max-heap for the smaller half of the numbers and a min-heap for the larger half. The median sits at the top of the smaller half.",
+    "pseudocode": "low = max-heap, high = min-heap\nfor each x:\n  if low is not empty and x > top of low: push x on high else push x on low\n  if low has 2 more items than high: move the top of low to high\n  else if high has more items than low: move the top of high to low\n  total += top of low\nreturn total",
+    "walkthrough": "Sorting all numbers seen so far after every arrival costs O(n^2 log n). Instead split the numbers into a smaller half and a larger half. The smaller half lives in a max-heap `low` (its top is the largest of the small numbers), the larger half in a min-heap `high` (its top is the smallest of the large numbers). Keep `low` the same size as `high`, or one bigger. Then the smaller of the two middle values (or the one middle value) is exactly the top of `low`. A new number goes to the half it belongs to; afterwards, if the sizes are off by too much, move one top element across. Each arrival costs O(log n), so O(n log n) in total. In languages with only a min-heap, store negated numbers for the max-heap. Use a 64-bit sum."
+  }
+}

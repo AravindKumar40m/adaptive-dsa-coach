@@ -1,0 +1,25 @@
+{
+  "slug": "grid-walks-count",
+  "title": "Count the Walks Through the Maze",
+  "concept": "backtracking",
+  "difficulty": "medium",
+  "statement": "In a grid, `0` is an open cell and `1` is a wall. A **walk** goes from the top-left cell to the bottom-right cell, moving up, down, left or right onto open cells, and **never visits the same cell twice**.\n\nReturn how many different walks there are. Two walks are different if their sequences of cells differ. If the top-left cell is also the bottom-right cell (a 1 by 1 grid), there is exactly one walk, of zero steps.",
+  "constraints": [
+    "1 <= rows, columns <= 5",
+    "grid[r][c] is 0 or 1; the top-left and bottom-right cells are 0",
+    "the answer fits in a 32-bit integer"
+  ],
+  "signature": { "name": "count_grid_walks", "params": [{ "name": "grid", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [[[0, 0], [0, 0]]], "expected": 2, "explanation": "Right then down, or down then right." },
+    { "args": [[[0, 0, 0], [0, 1, 0], [0, 0, 0]]], "expected": 2, "explanation": "The wall in the middle leaves the two routes around the edge." }
+  ],
+  "edgeTests": [[[[0]]], [[[0, 1], [1, 0]]], [[[0, 0, 0]]], [[[0, 0, 0], [0, 0, 0], [0, 0, 0]]], [[[0, 0, 1], [1, 0, 0], [0, 0, 0]]]],
+  "expected": { "time": "O(4^cells) worst case", "space": "O(cells)" },
+  "hints": {
+    "nudge": "A walk may turn back on itself in the grid as long as it never steps on a cell twice. How can you remember which cells are on the walk you are building right now?",
+    "pattern": "Backtracking: mark a cell as visited when you step on it, count the walks from each neighbour, and unmark the cell when you step back.",
+    "pseudocode": "walk(r, c):\n  if (r, c) is the bottom-right cell: return 1\n  mark (r, c) visited; total = 0\n  for each of the 4 neighbours that is inside, open and not visited: total += walk(neighbour)\n  unmark (r, c)\n  return total",
+    "walkthrough": "Count the walks by building them one step at a time. When you reach the bottom-right cell you have found exactly one walk, so return 1. Otherwise mark the current cell as visited (so no later step can reuse it), add up the number of walks you get from each allowed neighbour, then UNMARK the current cell, because another walk coming from a different direction may use it. The unmarking is the essential 'backtrack' step. Counting this way takes time proportional to the number of partial walks, which grows very fast, so it is only meant for small grids (here at most 5 by 5). Note that, unlike the 'right and down only' version of this question, you may also move up and left, so a simple table of counts does not work."
+  }
+}

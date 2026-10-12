@@ -1,0 +1,24 @@
+{
+  "slug": "partition-labels-count",
+  "title": "Cut Into the Most Pieces",
+  "concept": "greedy",
+  "difficulty": "medium",
+  "statement": "Cut `text` into **consecutive pieces** (every letter belongs to exactly one piece, and the pieces joined in order give back `text`) so that **no letter appears in more than one piece**.\n\nReturn the **largest number of pieces** you can make. The whole text as a single piece is always allowed.",
+  "constraints": [
+    "1 <= len(text) <= 100000",
+    "text uses only lowercase English letters"
+  ],
+  "signature": { "name": "partition_count", "params": [{ "name": "text", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["xyxzzwvwuv"], "expected": 3, "explanation": "`xyx`, `zz` and `wvwuv`: x, y are only in the first piece, z only in the second, w, v, u only in the third." },
+    { "args": ["aaaa"], "expected": 1, "explanation": "Cutting anywhere would put an `a` into two pieces." }
+  ],
+  "edgeTests": [["a"], ["ab"], ["abab"], ["abc"], ["abca"], ["aabbcc"]],
+  "expected": { "time": "O(n)", "space": "O(1)"},
+  "hints": {
+    "nudge": "If the first letter appears again later, how far must the first piece reach at least? And what if a letter inside it appears even later?",
+    "pattern": "Remember the LAST position of every letter. Grow the current piece to the farthest last position of any letter inside it; cut when you reach that end.",
+    "pseudocode": "last[ch] = last position of each letter\npieces = 0; end = 0\nfor i, ch in text:\n  end = max(end, last[ch])\n  if i == end: pieces += 1\nreturn pieces",
+    "walkthrough": "Trying all ways to cut (2^(n-1)) is far too much. Greedy: the first piece must contain every copy of its first letter, so it reaches at least that letter's last position. Every letter inside the piece pulls the end further out to ITS last position. Keep `end` as the farthest last position seen in the current piece. When the scan reaches position `end`, nothing inside the piece appears later, so you can cut right there and start a new piece. Each cut is made as early as possible, which gives the most pieces. First one pass to store the last position of each letter, then one pass to count the cuts: O(n)."
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "slug": "kth-grammar-symbol",
+  "title": "Digit in a Growing Pattern",
+  "concept": "recursion",
+  "difficulty": "medium",
+  "statement": "Row `1` of a pattern is the single digit `0`. Every next row is made from the row above it by replacing each `0` with `01` and each `1` with `10`.\n\nSo row 1 is `0`, row 2 is `01`, row 3 is `0110`, row 4 is `01101001`, and every row is twice as long as the one before.\n\nGiven `row` and `position` (both counted from `1`), return the digit at that position of that row. Rows get far too long to build, so find the digit without building the row.",
+  "constraints": [
+    "1 <= row <= 30",
+    "1 <= position <= 2^(row - 1)"
+  ],
+  "signature": { "name": "digit_at", "params": [{ "name": "row", "type": "int" }, { "name": "position", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [3, 2], "expected": 1, "explanation": "Row 3 is `0110`; its 2nd digit is 1." },
+    { "args": [4, 6], "expected": 0, "explanation": "Row 4 is `01101001`; its 6th digit is 0." }
+  ],
+  "edgeTests": [[1, 1], [2, 1], [2, 2], [3, 3], [4, 8], [5, 10], [30, 1], [30, 536870912]],
+  "expected": { "time": "O(row)", "space": "O(row)" },
+  "hints": {
+    "nudge": "Which digit of the row above produced the digit you are looking at? Each digit creates exactly two digits below it.",
+    "pattern": "Recursion on the parent: the digit at (row, position) comes from the digit at (row - 1, (position + 1) / 2).",
+    "pseudocode": "digit_at(row, position):\n  if row == 1: return 0\n  parent = digit_at(row - 1, (position + 1) / 2)   (round down)\n  if position is odd: return parent\n  else: return 1 - parent",
+    "walkthrough": "Row 30 has about 500 million digits, so building it is out of the question. Notice that every digit in a row was created from one digit above it: positions 1 and 2 come from position 1, positions 3 and 4 from position 2, and in general position p comes from position (p + 1) / 2 (rounded down). A 0 becomes `01` and a 1 becomes `10`, so the odd position (the first child) is the same as its parent and the even position (the second child) is the opposite. So ask the same question one row up, flip the answer if your position is even, and stop at row 1 whose only digit is 0. That is one step per row: O(row) time. (There is an even shorter rule: the answer is the parity of the number of 1 bits in position - 1.)"
+  }
+}

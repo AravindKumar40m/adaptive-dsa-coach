@@ -1,0 +1,156 @@
+//### tidy-sentence
+class Solution {
+    public String tidySentence(String text) {
+        List<String> words = new ArrayList<>();
+        int i = text.length() - 1;
+        while (i >= 0) {
+            while (i >= 0 && text.charAt(i) == ' ') i--;
+            if (i < 0) break;
+            int j = i;
+            while (i >= 0 && text.charAt(i) != ' ') i--;
+            words.add(text.substring(i + 1, j + 1));
+        }
+        return String.join(" ", words);
+    }
+}
+//### palindromic-substring-count
+class Solution {
+    public int countPalindromicSubstrings(String text) {
+        int n = text.length();
+        int count = 0;
+        for (int center = 0; center < 2 * n - 1; center++) {
+            int left = center / 2, right = left + center % 2;
+            while (left >= 0 && right < n && text.charAt(left) == text.charAt(right)) {
+                count++;
+                left--;
+                right++;
+            }
+        }
+        return count;
+    }
+}
+//### compare-versions
+class Solution {
+    public int compareVersions(String first, String second) {
+        int i = 0, j = 0;
+        while (i < first.length() || j < second.length()) {
+            long x = 0;
+            while (i < first.length() && first.charAt(i) != '.') { x = x * 10 + (first.charAt(i) - '0'); i++; }
+            long y = 0;
+            while (j < second.length() && second.charAt(j) != '.') { y = y * 10 + (second.charAt(j) - '0'); j++; }
+            if (x != y) return x < y ? -1 : 1;
+            i++;
+            j++;
+        }
+        return 0;
+    }
+}
+//### digit-square-loop
+class Solution {
+    public boolean endsAtOne(int number) {
+        Set<Long> seen = new HashSet<>();
+        long n = number;
+        while (n != 1 && !seen.contains(n)) {
+            seen.add(n);
+            long sum = 0;
+            while (n > 0) { long d = n % 10; sum += d * d; n /= 10; }
+            n = sum;
+        }
+        return n == 1;
+    }
+}
+//### equidistant-point-pairs
+class Solution {
+    public int countEquidistant(int[][] points) {
+        long total = 0;
+        for (int a = 0; a < points.length; a++) {
+            Map<Integer, Integer> seen = new HashMap<>();
+            for (int b = 0; b < points.length; b++) {
+                if (a == b) continue;
+                int dx = points[a][0] - points[b][0], dy = points[a][1] - points[b][1];
+                seen.merge(dx * dx + dy * dy, 1, Integer::sum);
+            }
+            for (int c : seen.values()) total += (long) c * (c - 1);
+        }
+        return (int) total;
+    }
+}
+//### multiple-of-k-subarray
+class Solution {
+    public boolean hasMultipleRun(int[] numbers, int k) {
+        Map<Long, Integer> first = new HashMap<>();
+        first.put(0L, -1);
+        long total = 0;
+        for (int i = 0; i < numbers.length; i++) {
+            total = (total + numbers[i]) % k;
+            Integer seen = first.get(total);
+            if (seen != null) {
+                if (i - seen >= 2) return true;
+            } else {
+                first.put(total, i);
+            }
+        }
+        return false;
+    }
+}
+//### merged-interval-count
+class Solution {
+    public int mergedIntervalCount(int[][] intervals) {
+        int[][] sorted = intervals.clone();
+        Arrays.sort(sorted, (p, q) -> Integer.compare(p[0], q[0]));
+        int count = 0;
+        long end = Long.MIN_VALUE;
+        for (int[] iv : sorted) {
+            if (count == 0 || iv[0] > end) { count++; end = iv[1]; }
+            else end = Math.max(end, iv[1]);
+        }
+        return count;
+    }
+}
+//### frequency-sort
+class Solution {
+    public int[] frequencySort(int[] numbers) {
+        Map<Integer, Integer> counts = new HashMap<>();
+        for (int x : numbers) counts.merge(x, 1, Integer::sum);
+        List<Integer> values = new ArrayList<>(counts.keySet());
+        values.sort((p, q) -> counts.get(p).equals(counts.get(q)) ? Integer.compare(p, q) : Integer.compare(counts.get(q), counts.get(p)));
+        int[] out = new int[numbers.length];
+        int k = 0;
+        for (int v : values) for (int c = counts.get(v); c > 0; c--) out[k++] = v;
+        return out;
+    }
+}
+//### spiral-walk
+class Solution {
+    public int[] spiralWalk(int[][] grid) {
+        int top = 0, bottom = grid.length - 1, left = 0, right = grid[0].length - 1;
+        int[] out = new int[grid.length * grid[0].length];
+        int k = 0;
+        while (top <= bottom && left <= right) {
+            for (int c = left; c <= right; c++) out[k++] = grid[top][c];
+            for (int r = top + 1; r <= bottom; r++) out[k++] = grid[r][right];
+            if (top < bottom && left < right) {
+                for (int c = right - 1; c >= left; c--) out[k++] = grid[bottom][c];
+                for (int r = bottom - 1; r > top; r--) out[k++] = grid[r][left];
+            }
+            top++; bottom--; left++; right--;
+        }
+        return out;
+    }
+}
+//### repeated-value
+class Solution {
+    public int repeatedValue(int[] numbers) {
+        int slow = numbers[0], fast = numbers[0];
+        do {
+            slow = numbers[slow];
+            fast = numbers[numbers[fast]];
+        } while (slow != fast);
+        slow = numbers[0];
+        while (slow != fast) {
+            slow = numbers[slow];
+            fast = numbers[fast];
+        }
+        return slow;
+    }
+}

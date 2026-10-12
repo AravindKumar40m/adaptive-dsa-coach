@@ -1,0 +1,123 @@
+//### longest-rising-chain
+int longest_rising_chain(vector<int>& values) {
+    vector<int> tails;
+    for (int x : values) {
+        auto it = lower_bound(tails.begin(), tails.end(), x);
+        if (it == tails.end()) tails.push_back(x); else *it = x;
+    }
+    return (int) tails.size();
+}
+//### shared-subsequence-length
+int shared_subsequence_length(string first, string second) {
+    int m = (int) second.size();
+    vector<int> prev(m + 1, 0);
+    for (size_t i = 0; i < first.size(); i++) {
+        vector<int> cur(m + 1, 0);
+        for (int j = 1; j <= m; j++) {
+            if (first[i] == second[j - 1]) cur[j] = prev[j - 1] + 1;
+            else cur[j] = max(prev[j], cur[j - 1]);
+        }
+        prev = cur;
+    }
+    return prev[m];
+}
+//### ways-to-make-change
+int ways_to_make_change(vector<int>& coins, int amount) {
+    vector<long long> ways(amount + 1, 0);
+    ways[0] = 1;
+    for (int c : coins) {
+        for (int a = c; a <= amount; a++) ways[a] += ways[a - c];
+    }
+    return (int) ways[amount];
+}
+//### circular-street-robbery
+int line_total(const vector<int>& loot, int from, int to) {
+    int take = 0, skip = 0;
+    for (int i = from; i < to; i++) {
+        int next_take = skip + loot[i];
+        skip = max(take, skip);
+        take = next_take;
+    }
+    return max(take, skip);
+}
+
+int circular_street_robbery(vector<int>& loot) {
+    int n = (int) loot.size();
+    if (n == 1) return loot[0];
+    return max(line_total(loot, 1, n), line_total(loot, 0, n - 1));
+}
+//### equal-sum-split
+bool equal_sum_split(vector<int>& numbers) {
+    int total = 0;
+    for (int x : numbers) total += x;
+    if (total % 2 != 0) return false;
+    int half = total / 2;
+    vector<char> reachable(half + 1, 0);
+    reachable[0] = 1;
+    for (int x : numbers) {
+        for (int s = half; s >= x; s--) {
+            if (reachable[s - x]) reachable[s] = 1;
+        }
+    }
+    return reachable[half] != 0;
+}
+//### longest-mirror-subsequence
+int longest_mirror_subsequence(string text) {
+    int n = (int) text.size();
+    vector<vector<int>> dp(n, vector<int>(n, 0));
+    for (int i = n - 1; i >= 0; i--) {
+        dp[i][i] = 1;
+        for (int j = i + 1; j < n; j++) {
+            if (text[i] == text[j]) dp[i][j] = (i + 1 <= j - 1 ? dp[i + 1][j - 1] : 0) + 2;
+            else dp[i][j] = max(dp[i + 1][j], dp[i][j - 1]);
+        }
+    }
+    return dp[0][n - 1];
+}
+//### triangle-min-path
+int triangle_min_path(vector<vector<int>>& rows) {
+    vector<int> best = rows.back();
+    for (int r = (int) rows.size() - 2; r >= 0; r--) {
+        for (int j = 0; j <= r; j++) {
+            best[j] = rows[r][j] + min(best[j], best[j + 1]);
+        }
+    }
+    return best[0];
+}
+//### balloon-burst-max
+int balloon_burst_max(vector<int>& balloons) {
+    vector<int> nums;
+    nums.push_back(1);
+    for (int b : balloons) nums.push_back(b);
+    nums.push_back(1);
+    int n = (int) nums.size();
+    vector<vector<int>> dp(n, vector<int>(n, 0));
+    for (int length = 2; length < n; length++) {
+        for (int lo = 0; lo + length < n; lo++) {
+            int hi = lo + length;
+            int top = 0;
+            for (int k = lo + 1; k < hi; k++) {
+                int gain = dp[lo][k] + nums[lo] * nums[k] * nums[hi] + dp[k][hi];
+                if (gain > top) top = gain;
+            }
+            dp[lo][hi] = top;
+        }
+    }
+    return dp[0][n - 1];
+}
+//### kth-grammar-symbol
+int digit_at(int row, int position) {
+    int flips = 0;
+    int pos = position;
+    for (int r = row; r > 1; r--) {
+        if (pos % 2 == 0) flips++;
+        pos = (pos + 1) / 2;
+    }
+    return flips % 2;
+}
+//### josephus-survivor
+int survivor_seat(int people, int step) {
+    long long survivor = 0;
+    for (int n = 2; n <= people; n++) survivor = (survivor + step) % n;
+    return (int) survivor + 1;
+}

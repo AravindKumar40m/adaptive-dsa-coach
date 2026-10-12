@@ -1,0 +1,23 @@
+{
+  "slug": "digit-square-loop",
+  "title": "Digit Square Loop",
+  "concept": "hashing",
+  "difficulty": "easy",
+  "statement": "Start with a positive whole number. Replace it by the **sum of the squares of its digits**, and repeat. For example `19` becomes `1*1 + 9*9 = 82`, then `8*8 + 2*2 = 68`, then `100`, then `1`.\n\nSome numbers eventually reach `1` (and stay there). Others never do: they get stuck in a repeating loop. Return `true` if `number` reaches `1`, otherwise `false`.",
+  "constraints": [
+    "1 <= number <= 1000000000"
+  ],
+  "signature": { "name": "ends_at_one", "params": [{ "name": "number", "type": "int" }], "returns": "bool" },
+  "examples": [
+    { "args": [19], "expected": true, "explanation": "19 -> 82 -> 68 -> 100 -> 1." },
+    { "args": [2], "expected": false, "explanation": "2 -> 4 -> 16 -> 37 -> 58 -> 89 -> 145 -> 42 -> 20 -> 4: it is stuck in a loop that never contains 1." }
+  ],
+  "edgeTests": [[1], [7], [4], [100], [10], [999999999]],
+  "expected": { "time": "O(log n)", "space": "O(log n)" },
+  "hints": {
+    "nudge": "If the numbers do not reach 1, they must come back to a number you have seen before. How could you notice that?",
+    "pattern": "Remember every number you have already produced in a set; stop when you reach 1 (success) or a number you have seen (a loop).",
+    "pseudocode": "seen = empty set\nwhile number != 1 and number not in seen:\n  add number to seen\n  number = sum of the squares of its digits\nreturn number == 1",
+    "walkthrough": "A number with at most 10 digits is turned into a number of at most 10 * 81 = 810 after one step, so the sequence can only wander through a small range of values. A sequence in a small range that never reaches 1 must eventually repeat a value, and from then on it repeats forever. So keep a set of the values seen. Compute the next value by taking the digits (number % 10, number / 10) and adding their squares. The loop ends either at 1 (true) or when the next value is already in the set (false). The sequence is very short (a few dozen steps at most), so this is fast. Another way is to detect the loop with a slow and a fast pointer and no set."
+  }
+}

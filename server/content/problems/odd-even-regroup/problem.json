@@ -1,0 +1,24 @@
+{
+  "slug": "odd-even-regroup",
+  "title": "Odd Positions First",
+  "concept": "linked_list",
+  "difficulty": "medium",
+  "statement": "Number the nodes of a linked list `1, 2, 3, ...` from the head. Rearrange the list so that **all nodes at odd positions come first, then all nodes at even positions**, keeping the original order inside each group. Return the head.\n\nDo it by re-linking the existing nodes, using only a constant amount of extra memory.",
+  "constraints": [
+    "0 <= number of nodes <= 100000",
+    "-1000 <= node value <= 1000"
+  ],
+  "signature": { "name": "group_odd_even", "params": [{ "name": "head", "type": "ListNode" }], "returns": "ListNode" },
+  "examples": [
+    { "args": [[1, 2, 3, 4, 5]], "expected": [1, 3, 5, 2, 4], "explanation": "Positions 1, 3, 5 hold 1, 3, 5; positions 2, 4 hold 2, 4." },
+    { "args": [[2, 1, 3, 5, 6, 4, 7]], "expected": [2, 3, 6, 7, 1, 5, 4], "explanation": "Odd positions: 2, 3, 6, 7. Even positions: 1, 5, 4. The values themselves do not matter, only the positions." }
+  ],
+  "edgeTests": [[[]], [[1]], [[1, 2]], [[1, 2, 3]], [[1, 2, 3, 4]], [[5, 5, 5, 5, 5, 5]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Build two chains at once while you walk along the list: one for the odd positions and one for the even positions. When you are done, how do the two chains join?",
+    "pattern": "Two pointers re-linking the list in place: odd.next skips over one node, even.next skips over one node; finally the odd chain's tail points to the head of the even chain.",
+    "pseudocode": "if the list is empty: return empty\nodd = head; even_head = even = head.next\nwhile even and even.next:\n  odd.next = even.next; odd = odd.next\n  even.next = odd.next; even = even.next\nodd.next = even_head\nreturn head",
+    "walkthrough": "Remember where the even chain starts (the second node). Keep a pointer on the last odd node and a pointer on the last even node. In each round, the odd chain takes the node after the current even node (odd.next = even.next, then move odd), and the even chain takes the node after that (even.next = odd.next, then move even). Stop when the even pointer or its next is missing: then the odd chain has taken every odd-position node. Finally link the end of the odd chain to the start of the even chain. Make sure the last even node's next ends up empty: the loop's own updates handle that. No nodes are copied, so memory is O(1) and every node is touched once: O(n)."
+  }
+}

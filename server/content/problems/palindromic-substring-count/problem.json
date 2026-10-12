@@ -1,0 +1,24 @@
+{
+  "slug": "palindromic-substring-count",
+  "title": "Count the Palindromic Substrings",
+  "concept": "strings",
+  "difficulty": "medium",
+  "statement": "A **substring** is a block of consecutive letters of `text`. A **palindrome** reads the same forwards and backwards.\n\nReturn how many substrings of `text` are palindromes. Substrings at different positions count separately, even if they look the same (in `aaa` the single letter `a` counts three times).",
+  "constraints": [
+    "1 <= len(text) <= 1000",
+    "text uses only lowercase English letters"
+  ],
+  "signature": { "name": "count_palindromic_substrings", "params": [{ "name": "text", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["abc"], "expected": 3, "explanation": "Only the single letters `a`, `b` and `c`." },
+    { "args": ["aaa"], "expected": 6, "explanation": "`a` three times, `aa` twice and `aaa` once." }
+  ],
+  "edgeTests": [["a"], ["ab"], ["aa"], ["abba"], ["abcba"], ["abacaba"]],
+  "expected": { "time": "O(n^2)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Every palindrome has a middle. If you fix the middle, how far can the palindrome grow?",
+    "pattern": "Expand around the center: for each of the 2n - 1 possible centers (a letter or the gap between two letters), grow outward while both ends match.",
+    "pseudocode": "count = 0\nfor center in 0 .. 2n - 2:\n  left = center / 2; right = left + center % 2\n  while left >= 0 and right < n and text[left] == text[right]:\n    count += 1; left -= 1; right += 1\nreturn count",
+    "walkthrough": "Checking every substring (about n^2 of them) and testing each for a palindrome costs O(n^3). But a palindrome is determined by its middle: for an odd-length palindrome the middle is a letter, for an even-length one it is the gap between two equal letters. There are 2n - 1 such centers. For each center, start with the smallest possible palindrome and keep stepping outward by one letter on each side as long as the two new end letters are equal; every successful step is one more palindromic substring, so add 1 each time. When the ends differ, no larger palindrome can have this center, so stop. O(n^2) time in the worst case (a text of one repeated letter), O(1) extra memory."
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "slug": "compare-versions",
+  "title": "Compare Version Numbers",
+  "concept": "strings",
+  "difficulty": "medium",
+  "statement": "A version number is written as whole numbers separated by dots, such as `1.2.10`. Compare two versions **number by number from the left**, as numbers (not as text), so `1.10` is bigger than `1.2`. Leading zeros do not matter (`01` is `1`), and a missing number counts as `0` (so `2` equals `2.0.0`).\n\nReturn `-1` if `first` is smaller, `1` if `first` is bigger, and `0` if they are equal.",
+  "constraints": [
+    "1 <= len(first), len(second) <= 500",
+    "each text has numbers of 1 to 9 digits separated by single dots, with no dot at the start or the end"
+  ],
+  "signature": { "name": "compare_versions", "params": [{ "name": "first", "type": "string" }, { "name": "second", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["1.2", "1.10"], "expected": -1, "explanation": "The first numbers are equal; then 2 is smaller than 10 (as numbers)." },
+    { "args": ["2.0.0", "2"], "expected": 0, "explanation": "Missing numbers count as 0, so the versions are equal." }
+  ],
+  "edgeTests": [["0", "0"], ["1.01", "1.001"], ["1.0", "1"], ["7.5.2.4", "7.5.3"], ["10", "9"], ["1.0.1", "1"], ["0.1", "1.1"]],
+  "expected": { "time": "O(n + m)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Comparing the texts letter by letter would say `1.10` is smaller than `1.2`. What do you have to compare instead?",
+    "pattern": "Two pointers, one in each text: read the next number from each (a block of digits up to the next dot), compare them as integers, and move on.",
+    "pseudocode": "i = 0; j = 0\nwhile i < len(first) or j < len(second):\n  x = number read from first starting at i (0 if it has ended); advance i past the next dot\n  y = number read from second starting at j (0 if it has ended); advance j past the next dot\n  if x != y: return -1 if x < y else 1\nreturn 0",
+    "walkthrough": "Split both texts at the dots, convert every piece to an integer (this removes leading zeros), pad the shorter list with zeros, and compare the two lists number by number; the first difference decides. Splitting is the quickest way to write it. Without it, walk through both texts with one pointer each: read digits until a dot or the end of the text, building the number as x = x * 10 + digit; if a text has run out, its number is 0. Compare the two numbers; if they differ you have the answer, otherwise skip the dot in both and continue. The loop must run while EITHER text still has characters, so that `1.0.1` against `1` is seen as bigger. O(n + m) time."
+  }
+}

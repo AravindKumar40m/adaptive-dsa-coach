@@ -1,0 +1,24 @@
+{
+  "slug": "palindrome-list",
+  "title": "Palindrome List",
+  "concept": "linked_list",
+  "difficulty": "easy",
+  "statement": "Given the head of a singly linked list, return `true` if the values read the same from front to back and from back to front, otherwise `false`. An empty list counts as a palindrome.\n\nA list can only be walked forwards. Can you answer without copying all the values into another list?",
+  "constraints": [
+    "0 <= number of nodes <= 100000",
+    "0 <= node value <= 9"
+  ],
+  "signature": { "name": "is_palindrome_list", "params": [{ "name": "head", "type": "ListNode" }], "returns": "bool" },
+  "examples": [
+    { "args": [[1, 2, 2, 1]], "expected": true, "explanation": "Reading from either end gives 1, 2, 2, 1." },
+    { "args": [[1, 2]], "expected": false, "explanation": "Front to back is 1, 2 but back to front is 2, 1." }
+  ],
+  "edgeTests": [[[]], [[7]], [[1, 2, 1]], [[1, 1, 2, 1]], [[3, 3]], [[1, 2, 3, 2, 1]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "You can compare a front half against a back half if you can walk the back half backwards. How could a list be walked backwards?",
+    "pattern": "Find the middle with a slow and a fast pointer, reverse the second half in place, then compare the two halves.",
+    "pseudocode": "slow = fast = head\nwhile fast and fast.next: slow = slow.next; fast = fast.next.next\nreverse the list starting at slow (call the new front 'back')\ncompare head and back node by node until back ends\nreturn true if every pair matched",
+    "walkthrough": "The easy way copies the values into an array and compares it with its reverse: O(n) time, O(n) memory. To use O(1) extra memory, find the middle node by moving one pointer one step and another pointer two steps at a time: when the fast one reaches the end, the slow one is at the middle. Reverse the part of the list from the middle onwards by turning each next pointer around. Now one pointer walks from the head and another from the new tail of the reversed half; they must show equal values until the reversed half is used up (for an odd length the middle node is compared with itself, which is fine). If you must leave the list as you found it, reverse the second half again afterwards."
+  }
+}

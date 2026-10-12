@@ -1,0 +1,121 @@
+//### longest-rising-chain
+function longestRisingChain(values) {
+  const tails = [];
+  for (const x of values) {
+    let lo = 0, hi = tails.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (tails[mid] < x) lo = mid + 1; else hi = mid;
+    }
+    if (lo === tails.length) tails.push(x); else tails[lo] = x;
+  }
+  return tails.length;
+}
+//### shared-subsequence-length
+function sharedSubsequenceLength(first, second) {
+  let prev = new Array(second.length + 1).fill(0);
+  for (let i = 0; i < first.length; i++) {
+    const cur = new Array(second.length + 1).fill(0);
+    for (let j = 1; j <= second.length; j++) {
+      if (first[i] === second[j - 1]) cur[j] = prev[j - 1] + 1;
+      else cur[j] = Math.max(prev[j], cur[j - 1]);
+    }
+    prev = cur;
+  }
+  return prev[second.length];
+}
+//### ways-to-make-change
+function waysToMakeChange(coins, amount) {
+  const ways = new Array(amount + 1).fill(0);
+  ways[0] = 1;
+  for (const c of coins) {
+    for (let a = c; a <= amount; a++) ways[a] += ways[a - c];
+  }
+  return ways[amount];
+}
+//### circular-street-robbery
+function circularStreetRobbery(loot) {
+  function line(from, to) {
+    let take = 0, skip = 0;
+    for (let i = from; i < to; i++) {
+      const nextTake = skip + loot[i];
+      skip = Math.max(take, skip);
+      take = nextTake;
+    }
+    return Math.max(take, skip);
+  }
+  if (loot.length === 1) return loot[0];
+  return Math.max(line(1, loot.length), line(0, loot.length - 1));
+}
+//### equal-sum-split
+function equalSumSplit(numbers) {
+  let total = 0;
+  for (const x of numbers) total += x;
+  if (total % 2 !== 0) return false;
+  const half = total / 2;
+  const reachable = new Array(half + 1).fill(false);
+  reachable[0] = true;
+  for (const x of numbers) {
+    for (let s = half; s >= x; s--) {
+      if (reachable[s - x]) reachable[s] = true;
+    }
+  }
+  return reachable[half];
+}
+//### longest-mirror-subsequence
+function longestMirrorSubsequence(text) {
+  const n = text.length;
+  const dp = Array.from({ length: n }, () => new Array(n).fill(0));
+  for (let i = n - 1; i >= 0; i--) {
+    dp[i][i] = 1;
+    for (let j = i + 1; j < n; j++) {
+      if (text[i] === text[j]) dp[i][j] = (i + 1 <= j - 1 ? dp[i + 1][j - 1] : 0) + 2;
+      else dp[i][j] = Math.max(dp[i + 1][j], dp[i][j - 1]);
+    }
+  }
+  return dp[0][n - 1];
+}
+//### triangle-min-path
+function triangleMinPath(rows) {
+  const best = rows[rows.length - 1].slice();
+  for (let r = rows.length - 2; r >= 0; r--) {
+    for (let j = 0; j <= r; j++) {
+      best[j] = rows[r][j] + Math.min(best[j], best[j + 1]);
+    }
+  }
+  return best[0];
+}
+//### balloon-burst-max
+function balloonBurstMax(balloons) {
+  const nums = [1, ...balloons, 1];
+  const n = nums.length;
+  const dp = Array.from({ length: n }, () => new Array(n).fill(0));
+  for (let length = 2; length < n; length++) {
+    for (let lo = 0; lo + length < n; lo++) {
+      const hi = lo + length;
+      let top = 0;
+      for (let k = lo + 1; k < hi; k++) {
+        const gain = dp[lo][k] + nums[lo] * nums[k] * nums[hi] + dp[k][hi];
+        if (gain > top) top = gain;
+      }
+      dp[lo][hi] = top;
+    }
+  }
+  return dp[0][n - 1];
+}
+//### kth-grammar-symbol
+function digitAt(row, position) {
+  let flips = 0;
+  let pos = position;
+  for (let r = row; r > 1; r--) {
+    if (pos % 2 === 0) flips++;
+    pos = Math.floor((pos + 1) / 2);
+  }
+  return flips % 2;
+}
+//### josephus-survivor
+function survivorSeat(people, step) {
+  let survivor = 0;
+  for (let n = 2; n <= people; n++) survivor = (survivor + step) % n;
+  return survivor + 1;
+}

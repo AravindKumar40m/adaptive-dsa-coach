@@ -1,0 +1,25 @@
+{
+  "slug": "mini-sudoku-count",
+  "title": "Mini Sudoku Completions",
+  "concept": "backtracking",
+  "difficulty": "medium",
+  "statement": "A mini sudoku is a 4 by 4 grid that must be filled with the digits `1` to `4` so that every **row**, every **column** and each of the four **2 by 2 boxes** (top-left, top-right, bottom-left, bottom-right) contains each digit exactly once.\n\n`board` is a partly filled mini sudoku: `0` means an empty cell, and the digits that are already there never conflict with each other. Return the number of ways to fill the empty cells so that the whole board is valid. The answer can be `0`.",
+  "constraints": [
+    "board is 4 by 4",
+    "0 <= board[r][c] <= 4",
+    "the given digits do not repeat in any row, column or box"
+  ],
+  "signature": { "name": "mini_sudoku_count", "params": [{ "name": "board", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]], "expected": 288, "explanation": "An empty mini sudoku has exactly 288 solutions." },
+    { "args": [[[1, 2, 3, 4], [3, 4, 1, 2], [2, 1, 4, 3], [4, 3, 2, 1]]], "expected": 1, "explanation": "Nothing is empty and the board is already valid: there is one way (do nothing)." }
+  ],
+  "edgeTests": [[[[1, 2, 3, 0], [0, 0, 0, 4], [0, 0, 0, 0], [0, 0, 0, 0]]], [[[1, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]], [[[1, 2, 3, 4], [3, 4, 1, 2], [2, 1, 4, 3], [4, 3, 2, 0]]], [[[1, 2, 0, 0], [0, 0, 1, 2], [0, 1, 0, 0], [0, 0, 0, 1]]]],
+  "expected": { "time": "O(4^empty)", "space": "O(empty)" },
+  "hints": {
+    "nudge": "Fill the empty cells one after another. For one cell, which of the digits 1 to 4 are still allowed?",
+    "pattern": "Backtracking over the empty cells: place a legal digit, count the ways to finish, remove the digit, try the next one.",
+    "pseudocode": "fill(i):\n  if every empty cell is filled: return 1\n  (r, c) = the i-th empty cell; total = 0\n  for digit 1..4:\n    if the digit is not in row r, column c or the box of (r, c):\n      place it; total += fill(i + 1); remove it\n  return total",
+    "walkthrough": "List the empty cells in reading order. Work through them with recursion: for the current cell try each digit 1 to 4 that does not already appear in its row, its column or its 2 by 2 box. After placing a digit, count the ways to fill the rest; then take the digit away again (backtracking) so that the next digit gets a clean board. Reaching the end of the list means every cell has a legal digit, which is exactly one valid completion. Add up the counts of all branches. Checking 'is this digit in the row, column or box' by scanning costs a few steps; keeping one small bitmask per row, column and box makes each check a single AND. The box of cell (r, c) has number (r / 2) * 2 + (c / 2). Most branches die quickly, so even the empty board needs only a few hundred steps."
+  }
+}

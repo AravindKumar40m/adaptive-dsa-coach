@@ -1,0 +1,25 @@
+{
+  "slug": "kth-in-sorted-matrix",
+  "title": "K-th Smallest in a Sorted Grid",
+  "concept": "binary_search",
+  "difficulty": "medium",
+  "statement": "`matrix` is a grid of numbers in which **every row is sorted from left to right** and **every column is sorted from top to bottom** (equal values are allowed). The rows are not sorted against each other: the last number of one row can be bigger than the first number of the next.\n\nReturn the `k`-th smallest number in the whole grid, counting from `1` and counting duplicates (so for `[2, 2, 5]` the 2nd smallest is `2`).",
+  "constraints": [
+    "1 <= rows, columns <= 300",
+    "-1000000000 <= matrix[r][c] <= 1000000000",
+    "1 <= k <= rows * columns"
+  ],
+  "signature": { "name": "kth_in_matrix", "params": [{ "name": "matrix", "type": "int[][]" }, { "name": "k", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[[1, 3, 7], [2, 6, 9], [4, 8, 10]], 5], "expected": 6, "explanation": "Sorted, the numbers are 1, 2, 3, 4, 6, 7, 8, 9, 10. The 5th is 6." },
+    { "args": [[[-5]], 1], "expected": -5, "explanation": "There is only one number." }
+  ],
+  "edgeTests": [[[[2, 2], [2, 2]], 3], [[[1, 2], [3, 4]], 4], [[[1, 2, 3]], 2], [[[1], [2], [3]], 3], [[[1, 1, 3], [1, 2, 4], [2, 3, 5]], 6]],
+  "expected": { "time": "O((rows + columns) * log(range))", "space": "O(1)" },
+  "hints": {
+    "nudge": "Instead of searching for the position of the answer, guess a VALUE v and ask: how many numbers in the grid are at most v?",
+    "pattern": "Binary search on the answer: the count of numbers <= v grows as v grows, and it can be counted in one staircase walk because rows and columns are sorted.",
+    "pseudocode": "lo = smallest number, hi = largest number\nwhile lo < hi:\n  mid = (lo + hi) / 2 (round down)\n  if count_at_most(mid) >= k: hi = mid else lo = mid + 1\nreturn lo\ncount_at_most(v): start at the top-right corner; for each row from the top move left while the number is > v; add (column + 1)",
+    "walkthrough": "Putting all numbers in one list and sorting works but ignores the structure (O(N log N) for N numbers). A better idea: the answer is a number from the grid, and for any value v the amount of numbers <= v can be counted fast. Start with the pointer at the top-right corner. For each row going down, move the pointer left while the number is bigger than v; because columns are sorted, the pointer never needs to move right again, and the numbers at or left of the pointer in this row are all <= v. So one walk costs rows + columns steps. Now binary-search v between the smallest and the largest number: if at least k numbers are <= mid, the answer is mid or smaller (hi = mid); otherwise it is larger (lo = mid + 1). The search ends on a value that exists in the grid. Beware of overflow when adding two large numbers in 32-bit languages: use lo + (hi - lo) / 2 or 64-bit numbers."
+  }
+}

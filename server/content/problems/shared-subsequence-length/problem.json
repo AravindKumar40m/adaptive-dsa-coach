@@ -1,0 +1,24 @@
+{
+  "slug": "shared-subsequence-length",
+  "title": "Shared Subsequence Length",
+  "concept": "dp",
+  "difficulty": "medium",
+  "statement": "A **subsequence** of a text is what is left after deleting some of its letters (maybe none) without changing the order of the rest. For example `ace` is a subsequence of `abcde`.\n\nGiven `first` and `second`, return the length of the **longest text that is a subsequence of both**.",
+  "constraints": [
+    "0 <= len(first), len(second) <= 1000",
+    "both texts use only lowercase English letters"
+  ],
+  "signature": { "name": "shared_subsequence_length", "params": [{ "name": "first", "type": "string" }, { "name": "second", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["abcde", "ace"], "expected": 3, "explanation": "`ace` appears in both, in the same order. Nothing longer does." },
+    { "args": ["abc", "def"], "expected": 0, "explanation": "The texts share no letters." }
+  ],
+  "edgeTests": [["", ""], ["a", ""], ["a", "a"], ["abc", "abc"], ["aaaa", "aa"], ["abcbdab", "bdcaba"]],
+  "expected": { "time": "O(n * m)", "space": "O(m)" },
+  "hints": {
+    "nudge": "Compare the LAST letters of the two texts. If they are the same letter, is it always safe to use it in the answer?",
+    "pattern": "Dynamic programming over prefixes: table[i][j] = the answer for the first i letters of one text and the first j letters of the other.",
+    "pseudocode": "table[i][j] for i in 0..n, j in 0..m, all start at 0\nfor i in 1..n:\n  for j in 1..m:\n    if first[i-1] == second[j-1]: table[i][j] = table[i-1][j-1] + 1\n    else: table[i][j] = max(table[i-1][j], table[i][j-1])\nreturn table[n][m]",
+    "walkthrough": "Trying every subsequence of one text and checking it in the other takes 2^n steps. Instead ask a smaller question: what is the answer for the first i letters of `first` and the first j letters of `second`? If the two last letters match, they can be matched with each other, so the answer is 1 + the answer for both texts without that letter. If they differ, at least one of them is unused, so take the better of dropping the last letter of one text or of the other. That gives an (n+1) by (m+1) table and O(n * m) time. Each row only needs the row above it, so two rows of length m + 1 are enough memory."
+  }
+}

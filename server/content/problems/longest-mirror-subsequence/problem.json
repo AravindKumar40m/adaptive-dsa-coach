@@ -1,0 +1,24 @@
+{
+  "slug": "longest-mirror-subsequence",
+  "title": "Longest Mirror Subsequence",
+  "concept": "dp",
+  "difficulty": "medium",
+  "statement": "A **subsequence** keeps the letters of a text in their original order but may skip some of them. A **mirror** reads the same forwards and backwards.\n\nReturn the length of the longest subsequence of `text` that is a mirror. The letters do not have to be next to each other in `text`.",
+  "constraints": [
+    "1 <= len(text) <= 1000",
+    "text uses only lowercase English letters"
+  ],
+  "signature": { "name": "longest_mirror_subsequence", "params": [{ "name": "text", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["bbbab"], "expected": 4, "explanation": "Skip the `a`: `bbbb` is a mirror of length 4." },
+    { "args": ["cbbd"], "expected": 2, "explanation": "`bb` is the longest mirror you can pick." }
+  ],
+  "edgeTests": [["a"], ["ab"], ["aaaa"], ["abcde"], ["agbdba"], ["character"]],
+  "expected": { "time": "O(n^2)", "space": "O(n^2)" },
+  "hints": {
+    "nudge": "Look at the first and the last letter of a stretch of the text. If they are equal, what can you do with them?",
+    "pattern": "Interval DP: best[i][j] = the answer for the part of the text from position i to position j.",
+    "pseudocode": "best[i][i] = 1\nfor i from n-1 down to 0:\n  for j from i+1 to n-1:\n    if text[i] == text[j]: best[i][j] = best[i+1][j-1] + 2\n    else: best[i][j] = max(best[i+1][j], best[i][j-1])\nreturn best[0][n-1]",
+    "walkthrough": "Checking every subsequence takes 2^n steps. Instead define best[i][j] as the answer for text[i..j]. A single letter is a mirror of length 1. If text[i] and text[j] are equal, they can sit at the two ends of a mirror, so the answer is 2 + best[i+1][j-1] (an empty inside counts as 0). If they differ, one of them is not used: take the larger of best[i+1][j] and best[i][j-1]. Fill the table with i going downwards so that the smaller stretches are ready. The answer is best[0][n-1]. O(n^2) time and memory. Another view: the answer equals the longest common subsequence of the text and its reverse."
+  }
+}

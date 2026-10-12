@@ -1,0 +1,25 @@
+{
+  "slug": "repeated-value",
+  "title": "Find the Repeated Value",
+  "concept": "arrays",
+  "difficulty": "medium",
+  "statement": "`numbers` has `n + 1` whole numbers, and every number is between `1` and `n` (both included). **Exactly one value is repeated** (it may appear two or more times); every other value appears at most once.\n\nReturn the repeated value. Try to do it **without changing** `numbers` and using only a constant amount of extra memory.",
+  "constraints": [
+    "2 <= len(numbers) <= 100001, that is n is at least 1",
+    "1 <= numbers[i] <= n where len(numbers) == n + 1",
+    "exactly one value appears more than once"
+  ],
+  "signature": { "name": "repeated_value", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[3, 1, 3, 4, 2]], "expected": 3, "explanation": "3 appears twice; 1, 2 and 4 appear once." },
+    { "args": [[2, 2, 2, 2, 2]], "expected": 2, "explanation": "The repeated value can appear many times." }
+  ],
+  "edgeTests": [[[1, 1]], [[1, 2, 2]], [[2, 1, 2]], [[3, 3, 1, 3, 2]], [[1, 3, 4, 2, 2]], [[4, 1, 4, 2, 3]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "There are more numbers than there are possible values, so two positions must point to the same value. If you treat each number as an index to jump to, what shape does the path have?",
+    "pattern": "Treat the array as a linked list (position i points to position numbers[i]): the repeated value is the entrance of a cycle, found with Floyd's slow and fast pointers.",
+    "pseudocode": "slow = fast = numbers[0]\nrepeat: slow = numbers[slow]; fast = numbers[numbers[fast]]  until slow == fast\nslow = numbers[0]\nwhile slow != fast: slow = numbers[slow]; fast = numbers[fast]\nreturn slow",
+    "walkthrough": "Easy answers: put the numbers in a set and return the first one you see twice (O(n) extra memory), or sort a copy. For O(1) extra memory and no changes, use the structure of the data. Think of every position i as a node with an arrow to position numbers[i]. All values are between 1 and n, so the arrows never leave the array, and starting from position 0 you must eventually enter a cycle. Two different positions with the same value point to the same node, and that node is exactly where the cycle starts, so the value of the cycle entrance is the repeated number. Find the cycle with a slow pointer (one jump per step) and a fast pointer (two jumps per step) until they meet; then restart one pointer at the beginning and move both one jump at a time: they meet at the entrance of the cycle. O(n) time, O(1) memory."
+  }
+}

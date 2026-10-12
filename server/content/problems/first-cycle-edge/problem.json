@@ -1,0 +1,25 @@
+{
+  "slug": "first-cycle-edge",
+  "title": "First Cable That Closes a Loop",
+  "concept": "graphs",
+  "difficulty": "medium",
+  "statement": "Cables are laid between `nodes` computers numbered `0` to `nodes - 1`, one at a time, in the order of `edges`. Each `[a, b]` joins computers `a` and `b` in both directions.\n\nReturn the **position** (counting from `0`) of the first cable that joins two computers that were **already connected**, directly or through other cables, so it closes a loop. Return `-1` if no cable does.",
+  "constraints": [
+    "1 <= nodes <= 5000",
+    "0 <= len(edges) <= 10000",
+    "each edge has two different numbers in 0..nodes-1; the same pair may appear more than once"
+  ],
+  "signature": { "name": "first_cycle_edge", "params": [{ "name": "nodes", "type": "int" }, { "name": "edges", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [4, [[0, 1], [1, 2], [2, 3], [3, 0]]], "expected": 3, "explanation": "After cables 0-1, 1-2 and 2-3, computers 0 and 3 are already connected, so the 4th cable (position 3) closes a loop." },
+    { "args": [3, [[0, 1], [1, 2]]], "expected": -1, "explanation": "Each cable joins two separate groups, so there is no loop." }
+  ],
+  "edgeTests": [[1, []], [2, [[0, 1], [0, 1]]], [5, [[0, 1], [2, 3], [1, 2], [3, 0]]], [3, [[0, 1], [1, 2], [0, 2]]], [4, [[0, 1], [2, 3]]], [6, [[0, 1], [2, 3], [4, 5], [1, 4], [3, 5]]]],
+  "expected": { "time": "O(E * alpha(V))", "space": "O(V)" },
+  "hints": {
+    "nudge": "Before adding a cable, ask one question: are its two ends ALREADY in the same group of connected computers?",
+    "pattern": "Union-Find (disjoint set union): keep the connected groups, find each computer's group leader, and merge groups when a cable joins them.",
+    "pseudocode": "parent[i] = i for every computer\nfind(x): follow parent until a leader (shorten the path as you go)\nfor each cable (a, b) at position i:\n  if find(a) == find(b): return i\n  parent[find(a)] = find(b)\nreturn -1",
+    "walkthrough": "Checking, for every new cable, whether its ends are already connected by searching the existing network costs O(V + E) each time, O(E * (V + E)) overall. Union-Find answers 'are a and b connected?' almost instantly. Give every computer its own group leader. To find the group of x, follow the parent links until a computer that is its own parent; shortening the links on the way (path compression) keeps the chains short. For each cable in order: find the leaders of both ends; if they are the same, the ends are already connected and this cable closes a loop, so return its position; otherwise merge by making one leader the parent of the other. If no cable ever closes a loop, return -1. Practically O(E)."
+  }
+}

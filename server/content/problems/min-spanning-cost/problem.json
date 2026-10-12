@@ -1,0 +1,26 @@
+{
+  "slug": "min-spanning-cost",
+  "title": "Cheapest Way to Connect Everything",
+  "concept": "graphs",
+  "difficulty": "medium",
+  "statement": "A town has `nodes` villages numbered `0` to `nodes - 1`. Each entry `[a, b, cost]` in `roads` is a possible two-way road between villages `a` and `b` that costs `cost` to build.\n\nChoose some of the roads so that **every village can reach every other village**, and make the total cost as small as possible. Return that smallest total cost, or `-1` if the villages cannot all be connected.",
+  "constraints": [
+    "1 <= nodes <= 1000",
+    "0 <= len(roads) <= 10000",
+    "1 <= cost <= 10000",
+    "a and b are different villages; the same pair may appear more than once with different costs"
+  ],
+  "signature": { "name": "min_spanning_cost", "params": [{ "name": "nodes", "type": "int" }, { "name": "roads", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [4, [[0, 1, 1], [1, 2, 2], [0, 2, 3], [2, 3, 4]]], "expected": 7, "explanation": "Build 0-1 (1), 1-2 (2) and 2-3 (4): 7. The road 0-2 is not needed." },
+    { "args": [3, [[0, 1, 5]]], "expected": -1, "explanation": "Village 2 has no road at all." }
+  ],
+  "edgeTests": [[1, []], [2, [[0, 1, 4], [0, 1, 2]]], [3, [[0, 1, 1], [1, 2, 1], [0, 2, 1]]], [4, [[0, 1, 1], [2, 3, 1]]], [4, [[0, 1, 3], [1, 2, 3], [2, 3, 3], [0, 3, 1]]], [5, [[0, 1, 9], [1, 2, 8], [2, 3, 7], [3, 4, 6], [0, 4, 1]]]],
+  "expected": { "time": "O(E log E)", "space": "O(V)" },
+  "hints": {
+    "nudge": "Which single road should definitely be built if it does not create a loop? Think about the cheapest road of all.",
+    "pattern": "Kruskal's algorithm: look at roads from cheapest to most expensive and keep a road only if it joins two villages that are not yet connected (Union-Find).",
+    "pseudocode": "sort roads by cost\nparent[i] = i; total = 0; joined = 0\nfor each road (a, b, cost) in that order:\n  if find(a) != find(b): union them; total += cost; joined += 1\nreturn total if joined == nodes - 1 else -1",
+    "walkthrough": "To connect n villages you need exactly n - 1 roads and never a loop. Trying all sets of n - 1 roads is hopeless. Greedy works here: take the roads in order of cost; a road is useful only if its two ends are not yet connected through roads you already chose, otherwise it would make a loop and only add cost. Union-Find tells you in almost constant time whether two villages are already connected and merges their groups when you choose a road. After going through all roads, if you chose n - 1 of them the villages are connected and the total is the answer; if fewer, some village cannot be reached, so return -1. The sort dominates: O(E log E). One village alone costs 0."
+  }
+}

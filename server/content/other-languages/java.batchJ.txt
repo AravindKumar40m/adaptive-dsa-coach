@@ -1,0 +1,148 @@
+//### longest-rising-chain
+class Solution {
+    public int longestRisingChain(int[] values) {
+        int[] tails = new int[values.length];
+        int size = 0;
+        for (int x : values) {
+            int lo = 0, hi = size;
+            while (lo < hi) {
+                int mid = (lo + hi) >>> 1;
+                if (tails[mid] < x) lo = mid + 1; else hi = mid;
+            }
+            tails[lo] = x;
+            if (lo == size) size++;
+        }
+        return size;
+    }
+}
+//### shared-subsequence-length
+class Solution {
+    public int sharedSubsequenceLength(String first, String second) {
+        int m = second.length();
+        int[] prev = new int[m + 1];
+        for (int i = 0; i < first.length(); i++) {
+            int[] cur = new int[m + 1];
+            for (int j = 1; j <= m; j++) {
+                if (first.charAt(i) == second.charAt(j - 1)) cur[j] = prev[j - 1] + 1;
+                else cur[j] = Math.max(prev[j], cur[j - 1]);
+            }
+            prev = cur;
+        }
+        return prev[m];
+    }
+}
+//### ways-to-make-change
+class Solution {
+    public int waysToMakeChange(int[] coins, int amount) {
+        long[] ways = new long[amount + 1];
+        ways[0] = 1;
+        for (int c : coins) {
+            for (int a = c; a <= amount; a++) ways[a] += ways[a - c];
+        }
+        return (int) ways[amount];
+    }
+}
+//### circular-street-robbery
+class Solution {
+    private int line(int[] loot, int from, int to) {
+        int take = 0, skip = 0;
+        for (int i = from; i < to; i++) {
+            int nextTake = skip + loot[i];
+            skip = Math.max(take, skip);
+            take = nextTake;
+        }
+        return Math.max(take, skip);
+    }
+
+    public int circularStreetRobbery(int[] loot) {
+        if (loot.length == 1) return loot[0];
+        return Math.max(line(loot, 1, loot.length), line(loot, 0, loot.length - 1));
+    }
+}
+//### equal-sum-split
+class Solution {
+    public boolean equalSumSplit(int[] numbers) {
+        int total = 0;
+        for (int x : numbers) total += x;
+        if (total % 2 != 0) return false;
+        int half = total / 2;
+        boolean[] reachable = new boolean[half + 1];
+        reachable[0] = true;
+        for (int x : numbers) {
+            for (int s = half; s >= x; s--) {
+                if (reachable[s - x]) reachable[s] = true;
+            }
+        }
+        return reachable[half];
+    }
+}
+//### longest-mirror-subsequence
+class Solution {
+    public int longestMirrorSubsequence(String text) {
+        int n = text.length();
+        int[][] dp = new int[n][n];
+        for (int i = n - 1; i >= 0; i--) {
+            dp[i][i] = 1;
+            for (int j = i + 1; j < n; j++) {
+                if (text.charAt(i) == text.charAt(j)) dp[i][j] = (i + 1 <= j - 1 ? dp[i + 1][j - 1] : 0) + 2;
+                else dp[i][j] = Math.max(dp[i + 1][j], dp[i][j - 1]);
+            }
+        }
+        return dp[0][n - 1];
+    }
+}
+//### triangle-min-path
+class Solution {
+    public int triangleMinPath(int[][] rows) {
+        int[] best = rows[rows.length - 1].clone();
+        for (int r = rows.length - 2; r >= 0; r--) {
+            for (int j = 0; j <= r; j++) {
+                best[j] = rows[r][j] + Math.min(best[j], best[j + 1]);
+            }
+        }
+        return best[0];
+    }
+}
+//### balloon-burst-max
+class Solution {
+    public int balloonBurstMax(int[] balloons) {
+        int n = balloons.length + 2;
+        int[] nums = new int[n];
+        nums[0] = 1;
+        nums[n - 1] = 1;
+        for (int i = 0; i < balloons.length; i++) nums[i + 1] = balloons[i];
+        int[][] dp = new int[n][n];
+        for (int length = 2; length < n; length++) {
+            for (int lo = 0; lo + length < n; lo++) {
+                int hi = lo + length;
+                int top = 0;
+                for (int k = lo + 1; k < hi; k++) {
+                    int gain = dp[lo][k] + nums[lo] * nums[k] * nums[hi] + dp[k][hi];
+                    if (gain > top) top = gain;
+                }
+                dp[lo][hi] = top;
+            }
+        }
+        return dp[0][n - 1];
+    }
+}
+//### kth-grammar-symbol
+class Solution {
+    public int digitAt(int row, int position) {
+        int flips = 0;
+        int pos = position;
+        for (int r = row; r > 1; r--) {
+            if (pos % 2 == 0) flips++;
+            pos = (pos + 1) / 2;
+        }
+        return flips % 2;
+    }
+}
+//### josephus-survivor
+class Solution {
+    public int survivorSeat(int people, int step) {
+        long survivor = 0;
+        for (int n = 2; n <= people; n++) survivor = (survivor + step) % n;
+        return (int) survivor + 1;
+    }
+}

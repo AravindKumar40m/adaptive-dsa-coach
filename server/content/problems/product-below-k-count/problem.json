@@ -1,0 +1,25 @@
+{
+  "slug": "product-below-k-count",
+  "title": "Stretches With a Small Product",
+  "concept": "two_pointers",
+  "difficulty": "medium",
+  "statement": "All numbers in `numbers` are positive whole numbers. Count the **contiguous, non-empty stretches** whose **product** is **strictly less than `limit`**.\n\nStretches at different positions count separately, even if they hold the same numbers.",
+  "constraints": [
+    "1 <= len(numbers) <= 30000",
+    "1 <= numbers[i] <= 1000",
+    "0 <= limit <= 1000000"
+  ],
+  "signature": { "name": "count_small_product_runs", "params": [{ "name": "numbers", "type": "int[]" }, { "name": "limit", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[3, 4, 2, 5], 30], "expected": 8, "explanation": "Singles: 4 stretches. Pairs: 3*4 = 12, 4*2 = 8, 2*5 = 10 are below 30. Triples: 3*4*2 = 24 is below 30, 4*2*5 = 40 is not." },
+    { "args": [[1, 1, 1], 2], "expected": 6, "explanation": "Every stretch has product 1, and there are 3 + 2 + 1 = 6 stretches." }
+  ],
+  "edgeTests": [[[5], 5], [[5], 6], [[2, 3], 1], [[7, 7], 50], [[1, 2, 3, 4], 25], [[10, 10, 10], 0]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "If a stretch ending at position `right` has a small product, what about the shorter stretches that also end at `right`?",
+    "pattern": "Sliding window over positive numbers: for each right end, the valid left ends form a range; add its size, then slide.",
+    "pseudocode": "if limit <= 1: return 0\nproduct = 1; left = 0; count = 0\nfor right in 0..n-1:\n  product *= numbers[right]\n  while product >= limit: product /= numbers[left]; left += 1\n  count += right - left + 1\nreturn count",
+    "walkthrough": "All numbers are positive, so a longer stretch never has a smaller product than a stretch inside it. For every right end, the stretches ending there that are valid are exactly the ones starting at `left`, `left + 1`, ..., `right`, where `left` is the smallest start that keeps the product below the limit. So keep a window and its product: add numbers[right]; while the product is too big, divide by numbers[left] and move left forward; then right - left + 1 new valid stretches end at `right`. Add that to the answer. If the limit is 1 or less nothing can qualify (every number is at least 1). The pointers only move forward: O(n). Use a 64-bit product in Java and C++ so the product does not overflow before you divide."
+  }
+}

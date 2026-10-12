@@ -1,0 +1,24 @@
+{
+  "slug": "tidy-sentence",
+  "title": "Tidy and Reverse a Sentence",
+  "concept": "strings",
+  "difficulty": "easy",
+  "statement": "`text` holds words made of lowercase letters, separated by spaces. It may have extra spaces at the start, at the end, and several spaces between words.\n\nReturn the words in **reverse order**, joined by **exactly one space**, with no space at the start or the end. If there are no words, return an empty string.",
+  "constraints": [
+    "0 <= len(text) <= 10000",
+    "text contains only lowercase English letters and spaces"
+  ],
+  "signature": { "name": "tidy_sentence", "params": [{ "name": "text", "type": "string" }], "returns": "string" },
+  "examples": [
+    { "args": ["  the sky   is blue "], "expected": "blue is sky the", "explanation": "The four words reversed, with single spaces and nothing at the edges." },
+    { "args": ["one"], "expected": "one", "explanation": "A single word stays as it is." }
+  ],
+  "edgeTests": [[""], ["   "], ["a b"], [" x "], ["hello  world"], ["ab  cd   ef"]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "What is a 'word' in terms of the characters? Where does one start and where does it end?",
+    "pattern": "Scan from the END of the text: skip spaces, then take the word that ends there, and repeat until the start is reached.",
+    "pseudocode": "words = empty list; i = last index\nwhile i >= 0:\n  skip spaces going left\n  if i < 0: stop\n  j = i; go left while the character is not a space\n  add text[i+1 .. j] to words\nreturn the words joined by one space",
+    "walkthrough": "Many languages can do this with a built-in split on whitespace, reversing the pieces and joining them; that is the shortest answer. To do it by hand, go through the text from the right: first skip any spaces, then remember where a word ends (j), walk left until a space or the start, and the characters between are one word. Collect the words in the order you meet them: the last word comes first, which is already the reversed order. Join them with a single space; when there are no words the join of an empty list is the empty string. O(n)."
+  }
+}

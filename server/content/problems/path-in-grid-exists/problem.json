@@ -1,0 +1,25 @@
+{
+  "slug": "path-in-grid-exists",
+  "title": "Trace the Digits",
+  "concept": "backtracking",
+  "difficulty": "medium",
+  "statement": "Every cell of a grid holds a digit. Can the digits in `word` be traced, in order, by moving from cell to cell **up, down, left or right**, without using the same cell twice? The first digit can be found anywhere in the grid.\n\nReturn `true` if such a path exists, otherwise `false`.",
+  "constraints": [
+    "1 <= rows, columns <= 6",
+    "1 <= len(word) <= 12",
+    "0 <= grid[r][c] <= 9 and 0 <= word[i] <= 9"
+  ],
+  "signature": { "name": "word_path_exists", "params": [{ "name": "grid", "type": "int[][]" }, { "name": "word", "type": "int[]" }], "returns": "bool" },
+  "examples": [
+    { "args": [[[1, 2, 3], [4, 5, 6], [7, 8, 9]], [1, 2, 5, 8]], "expected": true, "explanation": "Start at the 1 (top-left), go right to 2, down to 5, down to 8." },
+    { "args": [[[1, 2, 3], [4, 5, 6], [7, 8, 9]], [1, 5]], "expected": false, "explanation": "The 1 and the 5 touch only diagonally, and diagonal moves are not allowed." }
+  ],
+  "edgeTests": [[[[5]], [5]], [[[5]], [5, 5]], [[[1, 1], [1, 1]], [1, 1, 1, 1]], [[[1, 1], [1, 1]], [1, 1, 1, 1, 1]], [[[1, 2, 3]], [3, 2, 1]], [[[1, 2], [3, 4]], [1, 4]]],
+  "expected": { "time": "O(cells * 3^len)", "space": "O(cells)" },
+  "hints": {
+    "nudge": "Try every cell as the start. From a cell that matches the current digit, you have at most 4 places to go. What must you remember so that you never use a cell twice?",
+    "pattern": "Backtracking (depth-first search with undo): mark a cell as used, try the neighbours for the next digit, then unmark it before trying another route.",
+    "pseudocode": "go(r, c, k):\n  if grid[r][c] != word[k]: return false\n  if k is the last digit: return true\n  mark (r, c) used\n  for each of the 4 neighbours (nr, nc) inside the grid and not used:\n    if go(nr, nc, k + 1): unmark and return true\n  unmark (r, c); return false\nreturn true if go(r, c, 0) is true for any cell",
+    "walkthrough": "Start from every cell that holds the first digit. At each step the current cell must hold the next digit of the word; if it does not, this route is dead and you stop at once (that early stop is what keeps the search small). If it does and it was the last digit, you have a path. Otherwise mark the cell as used, try each unused neighbour for the next digit, and when all of them fail, UNMARK the cell so that other routes may use it later: that undo is what makes it backtracking. Trying every route without stopping early would cost about 4 * 3^(len-1) paths from every cell, while stopping at the first wrong digit usually cuts almost all of them."
+  }
+}

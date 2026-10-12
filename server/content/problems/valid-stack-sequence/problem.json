@@ -1,0 +1,25 @@
+{
+  "slug": "valid-stack-sequence",
+  "title": "Possible Pop Order",
+  "concept": "stack_queue",
+  "difficulty": "medium",
+  "statement": "Numbers are pushed onto an empty **stack** one after another, in the order given by `pushed`. Between pushes (and after the last one) you may pop the top of the stack as often as you like. All numbers are different.\n\nCan the numbers come off the stack in exactly the order given by `popped`? Return `true` or `false`.",
+  "constraints": [
+    "1 <= len(pushed) <= 1000",
+    "len(popped) == len(pushed), and popped is a rearrangement of pushed",
+    "all numbers are different, 0 <= value <= 1000"
+  ],
+  "signature": { "name": "valid_pop_order", "params": [{ "name": "pushed", "type": "int[]" }, { "name": "popped", "type": "int[]" }], "returns": "bool" },
+  "examples": [
+    { "args": [[1, 2, 3], [2, 1, 3]], "expected": true, "explanation": "Push 1, push 2, pop 2, pop 1, push 3, pop 3." },
+    { "args": [[1, 2, 3], [3, 1, 2]], "expected": false, "explanation": "After popping 3 the stack holds 1 then 2 (2 on top), so 2 must come off before 1." }
+  ],
+  "edgeTests": [[[1], [1]], [[1, 2], [1, 2]], [[1, 2], [2, 1]], [[1, 2, 3], [1, 3, 2]], [[1, 2, 3, 4], [3, 1, 4, 2]], [[2, 1, 3], [1, 2, 3]]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Do not try every sequence of pushes and pops. When the top of the stack is exactly the number you need to pop next, is there any reason to wait?",
+    "pattern": "Simulate with a real stack: push in order, and pop greedily whenever the top equals the next number in `popped`.",
+    "pseudocode": "stack = empty; j = 0\nfor x in pushed:\n  push x\n  while stack is not empty and top == popped[j]: pop; j += 1\nreturn j == len(popped)",
+    "walkthrough": "Popping as soon as the top matches the next wanted number is always safe: if you waited, you would push more numbers on top of it and it could never come off in time (everything above it would have to come off first, but the order wants it next). So just simulate: push the numbers one at a time, and after every push pop as long as the top of the stack equals popped[j] (advance j each time). When all numbers are pushed and the stack is not empty, the remaining numbers on it are in the wrong order. The order is possible exactly when every number in `popped` was matched (j reached the end). O(n)."
+  }
+}

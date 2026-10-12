@@ -1,0 +1,24 @@
+{
+  "slug": "mirror-tree",
+  "title": "Mirror Tree",
+  "concept": "trees",
+  "difficulty": "easy",
+  "statement": "A binary tree is **symmetric** (a mirror of itself) if its left half is the mirror image of its right half: the same shape and the same values when one half is flipped left to right.\n\nReturn `true` if the tree with the given `root` is symmetric. An empty tree is symmetric.",
+  "constraints": [
+    "0 <= number of nodes <= 1000",
+    "-100 <= node value <= 100"
+  ],
+  "signature": { "name": "is_mirror", "params": [{ "name": "root", "type": "TreeNode" }], "returns": "bool" },
+  "examples": [
+    { "args": [[1, 2, 2, 3, 4, 4, 3]], "expected": true, "explanation": "Left child 2 has children 3 and 4; right child 2 has children 4 and 3: the right half is the left half flipped." },
+    { "args": [[1, 2, 2, null, 3, null, 3]], "expected": false, "explanation": "Both 2s have their only child on the right side, so flipping one half does not give the other." }
+  ],
+  "edgeTests": [[[]], [[1]], [[1, 2]], [[1, 2, 2]], [[1, 2, 3]], [[1, 2, 2, null, 3, 3]]],
+  "expected": { "time": "O(n)", "space": "O(h)" },
+  "hints": {
+    "nudge": "Instead of looking at the tree as a whole, look at TWO nodes at once. Which two nodes have to match for the tree to be a mirror?",
+    "pattern": "Recursion on a pair of nodes: the outside children must match each other and the inside children must match each other.",
+    "pseudocode": "same(a, b):\n  if a or b is missing: return (a and b are both missing)\n  return a.val == b.val and same(a.left, b.right) and same(a.right, b.left)\nreturn root is empty or same(root.left, root.right)",
+    "walkthrough": "A tree is a mirror when its left subtree and its right subtree are mirror images of each other. Define a helper that compares two nodes a and b which are supposed to be mirror images: if both are missing, they match; if only one is missing, they do not; otherwise their values must be equal AND a's left side must mirror b's right side AND a's right side must mirror b's left side. Start with the root's two children (an empty tree, or a tree with just a root, is symmetric). Every node is looked at once: O(n) time, and the recursion depth is the height of the tree."
+  }
+}

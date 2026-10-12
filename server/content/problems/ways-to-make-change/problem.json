@@ -1,0 +1,26 @@
+{
+  "slug": "ways-to-make-change",
+  "title": "Ways to Make Change",
+  "concept": "dp",
+  "difficulty": "medium",
+  "statement": "A shop has an unlimited supply of coins of each value in `coins` (all values are different). Count the **different sets of coins** that add up to exactly `amount`.\n\nOrder does not matter: `1 + 2` and `2 + 1` are the same set. There is exactly one way to make `0` (take no coins). The answer fits in a 32-bit integer.",
+  "constraints": [
+    "1 <= len(coins) <= 15",
+    "1 <= coins[i] <= 1000, all different",
+    "0 <= amount <= 5000",
+    "the answer fits in a 32-bit signed integer"
+  ],
+  "signature": { "name": "ways_to_make_change", "params": [{ "name": "coins", "type": "int[]" }, { "name": "amount", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 2, 5], 5], "expected": 4, "explanation": "5; 2+2+1; 2+1+1+1; 1+1+1+1+1." },
+    { "args": [[2], 3], "expected": 0, "explanation": "Coins of 2 can never add up to an odd amount." }
+  ],
+  "edgeTests": [[[1], 0], [[1], 7], [[3, 5], 0], [[7], 14], [[1, 2, 3], 4], [[2, 5, 3, 6], 10]],
+  "expected": { "time": "O(n * amount)", "space": "O(amount)" },
+  "hints": {
+    "nudge": "Count sets, not orders. What if you decide about one coin value at a time: how many of it to use?",
+    "pattern": "Unbounded knapsack counting: ways[a] = number of ways to make a using the coin values handled so far.",
+    "pseudocode": "ways[0] = 1, all other ways[a] = 0\nfor each coin c:\n  for a from c up to amount:\n    ways[a] += ways[a - c]\nreturn ways[amount]",
+    "walkthrough": "Counting sequences of coins would count 1+2 and 2+1 twice. To count sets, process the coin values one after another and never go back: ways[a] after handling the first few coins is the number of ways to make a using only those coins. Adding a coin c means: every way to make a - c (using the coins so far, including c itself) becomes a way to make a by adding one more c. So loop the amounts upward from c and do ways[a] += ways[a - c]. The OUTER loop must be over the coins and the INNER loop over the amounts; swapping them counts orders instead of sets. O(len(coins) * amount) time, O(amount) memory. Use a 64-bit type for the table in Java and C++."
+  }
+}

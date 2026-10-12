@@ -1,0 +1,25 @@
+{
+  "slug": "target-signs-count",
+  "title": "Plus or Minus to Reach the Target",
+  "concept": "backtracking",
+  "difficulty": "medium",
+  "statement": "Put either a `+` or a `-` in front of every number in `numbers` and add them all up. Count how many **different sign choices** give a total of exactly `target`.\n\nTwo choices are different if at least one position has a different sign, even when that number is `0` (so `+0` and `-0` count as two choices).",
+  "constraints": [
+    "1 <= len(numbers) <= 20",
+    "0 <= numbers[i] <= 1000, and the sum of all numbers is at most 1000",
+    "-1000 <= target <= 1000"
+  ],
+  "signature": { "name": "signed_sum_ways", "params": [{ "name": "numbers", "type": "int[]" }, { "name": "target", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 1, 1, 1, 1], 3], "expected": 5, "explanation": "Exactly one of the five 1s gets a minus: 5 choices, each giving 4 - 1 = 3." },
+    { "args": [[1], 1], "expected": 1, "explanation": "Only +1 works." }
+  ],
+  "edgeTests": [[[0], 0], [[1, 2], 10], [[2, 2], 0], [[1, 2, 3], 0], [[5, 5, 5, 5], 10], [[0, 0, 0], 0]],
+  "expected": { "time": "O(n * sum)", "space": "O(sum)" },
+  "hints": {
+    "nudge": "Each number has two choices, so there are 2^n choices in total. Is there a way to count them without trying every one?",
+    "pattern": "Backtracking tries both signs for each number; the fast version turns the problem into counting subsets with a given sum.",
+    "pseudocode": "total = sum(numbers)\nif |target| > total or (total + target) is odd: return 0\nwant = (total + target) / 2\nways[0] = 1, other ways = 0\nfor each x in numbers:\n  for s from want down to x: ways[s] += ways[s - x]\nreturn ways[want]",
+    "walkthrough": "Backtracking is easy to write: for each number try + and then try -, and count the choices that end exactly on the target. That takes 2^n steps. For something faster, call the numbers that get a + the group P and those that get a - the group N. Then sum(P) - sum(N) = target and sum(P) + sum(N) = total, so sum(P) = (total + target) / 2. The question becomes: in how many ways can you pick a group P of numbers with exactly that sum? That is subset-sum counting: ways[s] counts the choices reaching s, update it for every number from the top down so that each number is used once. If (total + target) is odd or |target| > total, the answer is 0. A number 0 doubles every count, which the same loop handles (ways[s] += ways[s] for s = 0)."
+  }
+}

@@ -1,0 +1,184 @@
+//### rearrange-no-adjacent
+function canRearrange(letters) {
+  const counts = new Array(26).fill(0);
+  for (const ch of letters) counts[ch.charCodeAt(0) - 97]++;
+  let last = -1;
+  for (let placed = 0; placed < letters.length; placed++) {
+    let pick = -1;
+    for (let i = 0; i < 26; i++) {
+      if (i !== last && counts[i] > 0 && (pick === -1 || counts[i] > counts[pick])) pick = i;
+    }
+    if (pick === -1) return false;
+    counts[pick]--;
+    last = pick;
+  }
+  return true;
+}
+//### climb-with-ladders
+function furthestBuilding(heights, bricks, ladders) {
+  const used = []; // climbs covered by ladders, kept as a min-heap
+  function push(x) {
+    used.push(x);
+    let i = used.length - 1;
+    while (i > 0) {
+      const p = (i - 1) >> 1;
+      if (used[p] <= used[i]) break;
+      [used[p], used[i]] = [used[i], used[p]];
+      i = p;
+    }
+  }
+  function pop() {
+    const top = used[0], last = used.pop();
+    if (used.length > 0) {
+      used[0] = last;
+      let i = 0;
+      for (;;) {
+        const l = 2 * i + 1, r = l + 1;
+        let m = i;
+        if (l < used.length && used[l] < used[m]) m = l;
+        if (r < used.length && used[r] < used[m]) m = r;
+        if (m === i) break;
+        [used[i], used[m]] = [used[m], used[i]];
+        i = m;
+      }
+    }
+    return top;
+  }
+  for (let i = 0; i + 1 < heights.length; i++) {
+    const climb = heights[i + 1] - heights[i];
+    if (climb <= 0) continue;
+    push(climb);
+    if (used.length > ladders) {
+      bricks -= pop();
+      if (bricks < 0) return i;
+    }
+  }
+  return heights.length - 1;
+}
+//### running-median-sum
+function medianSum(stream) {
+  class Heap {
+    constructor(less) { this.a = []; this.less = less; }
+    get size() { return this.a.length; }
+    peek() { return this.a[0]; }
+    push(x) {
+      const a = this.a;
+      a.push(x);
+      let i = a.length - 1;
+      while (i > 0) {
+        const p = (i - 1) >> 1;
+        if (!this.less(a[i], a[p])) break;
+        [a[i], a[p]] = [a[p], a[i]];
+        i = p;
+      }
+    }
+    pop() {
+      const a = this.a, top = a[0], last = a.pop();
+      if (a.length > 0) {
+        a[0] = last;
+        let i = 0;
+        for (;;) {
+          const l = 2 * i + 1, r = l + 1;
+          let m = i;
+          if (l < a.length && this.less(a[l], a[m])) m = l;
+          if (r < a.length && this.less(a[r], a[m])) m = r;
+          if (m === i) break;
+          [a[i], a[m]] = [a[m], a[i]];
+          i = m;
+        }
+      }
+      return top;
+    }
+  }
+  const low = new Heap((p, q) => p > q), high = new Heap((p, q) => p < q);
+  let total = 0;
+  for (const x of stream) {
+    if (low.size > 0 && x > low.peek()) high.push(x); else low.push(x);
+    if (low.size > high.size + 1) high.push(low.pop());
+    else if (high.size > low.size) low.push(high.pop());
+    total += low.peek();
+  }
+  return total;
+}
+//### closest-k-points
+function closestKSum(points, k) {
+  const dist = points.map(([x, y]) => x * x + y * y).sort((a, b) => a - b);
+  let total = 0;
+  for (let i = 0; i < k; i++) total += dist[i];
+  return total;
+}
+//### gas-station-start
+function gasStart(gas, cost) {
+  let total = 0, tank = 0, start = 0;
+  for (let i = 0; i < gas.length; i++) {
+    const gain = gas[i] - cost[i];
+    total += gain;
+    tank += gain;
+    if (tank < 0) { start = i + 1; tank = 0; }
+  }
+  return total >= 0 ? start : -1;
+}
+//### partition-labels-count
+function partitionCount(text) {
+  const last = new Map();
+  for (let i = 0; i < text.length; i++) last.set(text[i], i);
+  let pieces = 0, end = 0;
+  for (let i = 0; i < text.length; i++) {
+    end = Math.max(end, last.get(text[i]));
+    if (i === end) pieces++;
+  }
+  return pieces;
+}
+//### smallest-after-removal
+function smallestAfterRemoval(digits, k) {
+  const stack = [];
+  for (const d of digits) {
+    while (k > 0 && stack.length > 0 && stack[stack.length - 1] > d) {
+      stack.pop();
+      k--;
+    }
+    stack.push(d);
+  }
+  if (k > 0) stack.length = stack.length - k;
+  let i = 0;
+  while (i < stack.length && stack[i] === "0") i++;
+  const result = stack.slice(i).join("");
+  return result === "" ? "0" : result;
+}
+//### min-refuel-stops
+function minRefuelStops(target, startFuel, stations) {
+  const avail = [];
+  let reach = startFuel, stops = 0, i = 0;
+  while (reach < target) {
+    while (i < stations.length && stations[i][0] <= reach) { avail.push(stations[i][1]); i++; }
+    if (avail.length === 0) return -1;
+    let best = 0;
+    for (let j = 1; j < avail.length; j++) if (avail[j] > avail[best]) best = j;
+    reach += avail[best];
+    avail.splice(best, 1);
+    stops++;
+  }
+  return stops;
+}
+//### count-of-value
+function countValue(values, target) {
+  function first(x) {
+    let lo = 0, hi = values.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (values[mid] >= x) hi = mid; else lo = mid + 1;
+    }
+    return lo;
+  }
+  return first(target + 1) - first(target);
+}
+//### lone-element
+function loneElement(pairs) {
+  let lo = 0, hi = pairs.length - 1;
+  while (lo < hi) {
+    let mid = (lo + hi) >> 1;
+    if (mid % 2 === 1) mid--;
+    if (pairs[mid] === pairs[mid + 1]) lo = mid + 2; else hi = mid;
+  }
+  return pairs[lo];
+}

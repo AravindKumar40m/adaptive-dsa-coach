@@ -1,0 +1,24 @@
+{
+  "slug": "zeros-to-end",
+  "title": "Zeros to the End",
+  "concept": "two_pointers",
+  "difficulty": "easy",
+  "statement": "Return a list with the same numbers as `numbers`, but with every `0` moved to the **end**, while all the other numbers keep their original relative order.\n\nTry to do it in a single pass without building a second list of the non-zero numbers.",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "-1000000000 <= numbers[i] <= 1000000000"
+  ],
+  "signature": { "name": "zeros_to_end", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[0, 0, 5, 0, 7]], "expected": [5, 7, 0, 0, 0], "explanation": "5 and 7 keep their order; the three zeros go to the end." },
+    { "args": [[1, 2, 3]], "expected": [1, 2, 3], "explanation": "There are no zeros: nothing moves." }
+  ],
+  "edgeTests": [[[]], [[0]], [[0, 0, 0]], [[3, 0, 0, 2, 0, 1]], [[0, 1]], [[4, 0]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Keep a position `write` where the next non-zero number belongs. What do you do when you meet a non-zero number?",
+    "pattern": "Two pointers: `read` scans the list; `write` marks the first zero (or the next free spot). Swap non-zero numbers forward into the write position.",
+    "pseudocode": "write = 0\nfor read in 0..n-1:\n  if a[read] != 0:\n    swap a[write] and a[read]\n    write += 1\nreturn a",
+    "walkthrough": "Everything before `write` is already final: non-zero numbers in their original order. When `read` finds a non-zero number, swap it with whatever is at `write` (a zero, or itself when no zero has been passed yet) and move `write` forward. Zeros are never moved explicitly; they simply get pushed back by the swaps, and each stays after all the non-zeros that came before it. The relative order of the non-zero numbers is kept because they are placed in the order they are read. One pass, O(n) time, O(1) extra space. Counting the non-zeros and filling the rest with zeros also works if you may write over the list."
+  }
+}

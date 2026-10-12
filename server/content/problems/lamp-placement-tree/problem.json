@@ -1,0 +1,23 @@
+{
+  "slug": "lamp-placement-tree",
+  "title": "Lamps in a Tree of Rooms",
+  "concept": "trees",
+  "difficulty": "hard",
+  "statement": "Every node of a binary tree is a room, and the tree edges are doors. A lamp placed in a room lights **that room, its parent room and its child rooms**.\n\nReturn the smallest number of lamps needed so that every room is lit. (The values stored in the nodes do not matter.)",
+  "constraints": [
+    "0 <= number of nodes <= 5000"
+  ],
+  "signature": { "name": "lamps_needed", "params": [{ "name": "root", "type": "TreeNode" }], "returns": "int" },
+  "examples": [
+    { "args": [[0, 0, null, 0, 0]], "expected": 1, "explanation": "One lamp in the left child lights the root, itself and both of its children: all four rooms." },
+    { "args": [[0, 0, null, 0, null, 0, null, 0]], "expected": 2, "explanation": "A chain of 5 rooms: lamps in the 2nd and 4th rooms light all five (one lamp lights at most 3 rooms in a chain)." }
+  ],
+  "edgeTests": [[[]], [[0]], [[0, 0]], [[0, 0, 0]], [[0, 0, 0, 0, 0, 0, 0]], [[0, 0, 0, 0, null, null, 0, 0]]],
+  "expected": { "time": "O(n)", "space": "O(h)" },
+  "hints": {
+    "nudge": "Look at a leaf room. Is it better to put a lamp in the leaf itself or in its parent? Then think about what that means for deciding from the bottom up.",
+    "pattern": "Greedy on the tree, bottom-up: each room reports one of three states to its parent (not lit yet / has a lamp / lit by a neighbour), and a lamp is placed only when a child is still unlit.",
+    "pseudocode": "state(node): 0 = not lit, 1 = has a lamp, 2 = lit without a lamp\n  if node is missing: return 2\n  left = state(node.left); right = state(node.right)\n  if left == 0 or right == 0: place a lamp here; return 1\n  if left == 1 or right == 1: return 2\n  return 0\nlamps = lamps counted; if state(root) == 0: lamps += 1",
+    "walkthrough": "Try all subsets of rooms and you get 2^n. Greedy works from the bottom: a leaf has no children, so a lamp in the leaf lights only the leaf and its parent, while a lamp in the parent lights the leaf, the parent, the grandparent and the sibling: never worse. So never put a lamp on a leaf. Process the rooms bottom-up with three states. A missing child counts as 'lit' (nothing to light). If any child is NOT lit, this room must get a lamp (state 1). Otherwise, if any child has a lamp, this room is lit by it (state 2). Otherwise this room is not lit yet (state 0) and the decision is passed up to its parent. At the very top, if the root is still unlit, it needs one more lamp. Each room is handled once: O(n)."
+  }
+}

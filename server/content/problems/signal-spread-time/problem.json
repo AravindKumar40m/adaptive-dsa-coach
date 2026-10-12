@@ -1,0 +1,26 @@
+{
+  "slug": "signal-spread-time",
+  "title": "Signal Spread Time",
+  "concept": "graphs",
+  "difficulty": "medium",
+  "statement": "A network has `stations` stations numbered `0` to `stations - 1`. Each entry `[a, b, t]` in `links` is a **one-way** cable from station `a` to station `b` that takes `t` time units to cross.\n\nA signal starts at station `source` at time `0` and is sent along every cable at the same time, so it can reach a station by several routes. Return the time at which the **last** station receives the signal, or `-1` if some station never receives it.",
+  "constraints": [
+    "1 <= stations <= 100",
+    "0 <= len(links) <= 6000",
+    "1 <= t <= 100",
+    "0 <= source < stations"
+  ],
+  "signature": { "name": "signal_spread_time", "params": [{ "name": "stations", "type": "int" }, { "name": "links", "type": "int[][]" }, { "name": "source", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [4, [[0, 1, 1], [0, 2, 4], [1, 2, 2], [2, 3, 1]], 0], "expected": 4, "explanation": "Station 1 gets the signal at time 1, station 2 at time 3 (through station 1, faster than the direct cable's 4), station 3 at time 4." },
+    { "args": [3, [[0, 1, 5]], 0], "expected": -1, "explanation": "No cable leads to station 2, so it never receives the signal." }
+  ],
+  "edgeTests": [[1, [], 0], [2, [[0, 1, 3]], 1], [2, [[0, 1, 3]], 0], [3, [[0, 1, 1], [1, 2, 1], [0, 2, 5]], 0], [3, [[0, 1, 1], [1, 0, 1], [1, 2, 1]], 2], [3, [[0, 1, 2], [0, 1, 1], [1, 2, 2]], 0]],
+  "expected": { "time": "O((V + E) log V)", "space": "O(V + E)" },
+  "hints": {
+    "nudge": "A station receives the signal at the EARLIEST moment any route delivers it. How could you always finish the closest unfinished station first?",
+    "pattern": "Shortest paths from one source with positive weights: Dijkstra's algorithm with a min-heap.",
+    "pseudocode": "best = array of 'unknown'; heap = [(0, source)]\nwhile heap not empty:\n  (d, u) = pop the smallest\n  if best[u] is known: continue\n  best[u] = d\n  for each cable (u -> v, t): if best[v] unknown: push (d + t, v)\nif any station unknown: return -1\nreturn the largest best",
+    "walkthrough": "Compute the earliest arrival time at every station, then take the largest. A heap always gives you the unfinished station with the smallest tentative time. When you pop a station for the first time, that time is final, because every other route to it would have to pass through a station that is at least as far away, and cables never take zero or negative time. Then offer each of its cables to the neighbours by pushing (arrival time, neighbour) onto the heap; stale, larger entries are simply skipped when popped later. If some station was never finalised it is unreachable, so the answer is -1; otherwise it is the largest final time. O((V + E) log V). A slower alternative that also works for this size: repeat 'for every cable, try to improve the arrival time' V times (Bellman-Ford)."
+  }
+}

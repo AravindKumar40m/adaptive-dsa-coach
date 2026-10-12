@@ -1,0 +1,24 @@
+{
+  "slug": "strict-majority",
+  "title": "Strict Majority",
+  "concept": "arrays",
+  "difficulty": "easy",
+  "statement": "A value is a **strict majority** if it appears **more than half** of the time in `numbers` (for example, at least 3 times in a list of 5, at least 3 times in a list of 4).\n\nReturn the strict majority value, or `-1` if there is none. Exactly half is not enough.",
+  "constraints": [
+    "1 <= len(numbers) <= 100000",
+    "0 <= numbers[i] <= 1000000"
+  ],
+  "signature": { "name": "majority_value", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[3, 3, 4, 2, 3, 3, 1]], "expected": 3, "explanation": "3 appears 4 times out of 7, which is more than half." },
+    { "args": [[1, 2, 3, 4]], "expected": -1, "explanation": "Every value appears once out of four: no value appears more than twice." }
+  ],
+  "edgeTests": [[[7]], [[1, 1, 2, 2]], [[5, 5, 5]], [[2, 1, 1, 1, 2, 2]], [[0, 0, 1]], [[4, 4, 4, 1, 2]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "If a value really is more than half of the list, what happens if you cancel pairs of DIFFERENT values against each other?",
+    "pattern": "Boyer-Moore voting: keep one candidate and a count; same value adds a vote, a different value removes one. Then check the candidate with a second pass.",
+    "pseudocode": "candidate = none; votes = 0\nfor x in numbers:\n  if votes == 0: candidate = x\n  votes += 1 if x == candidate else -1\ncount how many times candidate appears\nreturn candidate if count * 2 > len(numbers) else -1",
+    "walkthrough": "The easy way counts every value with a hash map and checks which count is above half: O(n) time and O(n) memory. For O(1) memory use voting. Every time two DIFFERENT values meet they cancel each other out; a value that makes up more than half of the list cannot be cancelled completely, so it is what is left standing. Keep a candidate and a vote count: when the count is 0 the current number becomes the candidate; a number equal to the candidate adds one vote, any other number takes one away. The candidate is only a PROPOSAL: if no strict majority exists the loop still ends with some candidate, so count how many times it appears and compare with half the length to be sure."
+  }
+}

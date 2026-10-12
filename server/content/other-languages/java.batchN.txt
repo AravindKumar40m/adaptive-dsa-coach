@@ -1,0 +1,168 @@
+//### kth-in-sorted-matrix
+class Solution {
+    public int kthInMatrix(int[][] matrix, int k) {
+        int rows = matrix.length, cols = matrix[0].length;
+        long lo = matrix[0][0], hi = matrix[rows - 1][cols - 1];
+        while (lo < hi) {
+            long mid = lo + (hi - lo) / 2;
+            int count = 0, c = cols - 1;
+            for (int r = 0; r < rows; r++) {
+                while (c >= 0 && matrix[r][c] > mid) c--;
+                count += c + 1;
+            }
+            if (count >= k) hi = mid; else lo = mid + 1;
+        }
+        return (int) lo;
+    }
+}
+//### longest-run-with-k-flips
+class Solution {
+    public int longestOnesAfterFlips(int[] bits, int k) {
+        int left = 0, zeros = 0, best = 0;
+        for (int right = 0; right < bits.length; right++) {
+            zeros += 1 - bits[right];
+            while (zeros > k) {
+                zeros -= 1 - bits[left];
+                left++;
+            }
+            best = Math.max(best, right - left + 1);
+        }
+        return best;
+    }
+}
+//### longest-at-most-k-kinds
+class Solution {
+    public int longestWithKKinds(int[] items, int k) {
+        Map<Integer, Integer> counts = new HashMap<>();
+        int left = 0, best = 0;
+        for (int right = 0; right < items.length; right++) {
+            counts.merge(items[right], 1, Integer::sum);
+            while (counts.size() > k) {
+                int y = items[left];
+                int c = counts.get(y) - 1;
+                if (c == 0) counts.remove(y); else counts.put(y, c);
+                left++;
+            }
+            best = Math.max(best, right - left + 1);
+        }
+        return best;
+    }
+}
+//### shortest-sum-at-least
+class Solution {
+    public int shortestSumAtLeast(int[] numbers, int target) {
+        int n = numbers.length;
+        long[] prefix = new long[n + 1];
+        for (int i = 0; i < n; i++) prefix[i + 1] = prefix[i] + numbers[i];
+        int best = n + 1;
+        Deque<Integer> window = new ArrayDeque<>();
+        for (int j = 0; j <= n; j++) {
+            while (!window.isEmpty() && prefix[j] - prefix[window.peekFirst()] >= target) best = Math.min(best, j - window.pollFirst());
+            while (!window.isEmpty() && prefix[window.peekLast()] >= prefix[j]) window.pollLast();
+            window.addLast(j);
+        }
+        return best <= n ? best : -1;
+    }
+}
+//### min-add-brackets
+class Solution {
+    public int minBracketFixes(String text) {
+        int waiting = 0, fixes = 0;
+        for (char ch : text.toCharArray()) {
+            if (ch == '(') waiting++;
+            else if (waiting > 0) waiting--;
+            else fixes++;
+        }
+        return fixes + waiting;
+    }
+}
+//### valid-stack-sequence
+class Solution {
+    public boolean validPopOrder(int[] pushed, int[] popped) {
+        Deque<Integer> stack = new ArrayDeque<>();
+        int j = 0;
+        for (int x : pushed) {
+            stack.push(x);
+            while (!stack.isEmpty() && j < popped.length && stack.peek() == popped[j]) {
+                stack.pop();
+                j++;
+            }
+        }
+        return j == popped.length;
+    }
+}
+//### asteroid-survivors
+class Solution {
+    public int[] asteroidSurvivors(int[] asteroids) {
+        int[] stack = new int[asteroids.length];
+        int size = 0;
+        for (int x : asteroids) {
+            boolean alive = true;
+            while (alive && x < 0 && size > 0 && stack[size - 1] > 0) {
+                int top = stack[size - 1];
+                if (top < -x) size--;
+                else if (top == -x) { size--; alive = false; }
+                else alive = false;
+            }
+            if (alive) stack[size++] = x;
+        }
+        return Arrays.copyOf(stack, size);
+    }
+}
+//### zeros-to-end
+class Solution {
+    public int[] zerosToEnd(int[] numbers) {
+        int[] a = numbers.clone();
+        int write = 0;
+        for (int read = 0; read < a.length; read++) {
+            if (a[read] != 0) {
+                int tmp = a[write];
+                a[write] = a[read];
+                a[read] = tmp;
+                write++;
+            }
+        }
+        return a;
+    }
+}
+//### closest-triplet-sum
+class Solution {
+    public int closestTripleSum(int[] numbers, int target) {
+        int[] a = numbers.clone();
+        Arrays.sort(a);
+        boolean has = false;
+        int best = 0;
+        for (int i = 0; i + 2 < a.length; i++) {
+            int lo = i + 1, hi = a.length - 1;
+            while (lo < hi) {
+                int s = a[i] + a[lo] + a[hi];
+                if (!has || Math.abs(s - target) < Math.abs(best - target) || (Math.abs(s - target) == Math.abs(best - target) && s < best)) {
+                    best = s;
+                    has = true;
+                }
+                if (s < target) lo++;
+                else if (s > target) hi--;
+                else return s;
+            }
+        }
+        return best;
+    }
+}
+//### product-below-k-count
+class Solution {
+    public int countSmallProductRuns(int[] numbers, int limit) {
+        if (limit <= 1) return 0;
+        long product = 1;
+        int left = 0;
+        long count = 0;
+        for (int right = 0; right < numbers.length; right++) {
+            product *= numbers[right];
+            while (product >= limit) {
+                product /= numbers[left];
+                left++;
+            }
+            count += right - left + 1;
+        }
+        return (int) count;
+    }
+}

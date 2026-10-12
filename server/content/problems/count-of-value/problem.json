@@ -1,0 +1,25 @@
+{
+  "slug": "count-of-value",
+  "title": "How Many Times Does It Appear",
+  "concept": "binary_search",
+  "difficulty": "easy",
+  "statement": "`values` is sorted from smallest to largest (equal values are next to each other). Return how many times `target` appears in it.\n\nThe list can be very long, so look for an answer that does **not** read every element.",
+  "constraints": [
+    "0 <= len(values) <= 100000",
+    "-1000000000 <= values[i], target <= 1000000000",
+    "values is sorted in non-decreasing order"
+  ],
+  "signature": { "name": "count_value", "params": [{ "name": "values", "type": "int[]" }, { "name": "target", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 2, 2, 2, 3, 5], 2], "expected": 3, "explanation": "The value 2 appears at positions 1, 2 and 3." },
+    { "args": [[1, 3, 5], 4], "expected": 0, "explanation": "4 is not in the list." }
+  ],
+  "edgeTests": [[[], 5], [[7], 7], [[2, 2, 2, 2], 2], [[1, 2, 3], 0], [[1, 2, 3], 9], [[1, 1, 2, 2], 2]],
+  "expected": { "time": "O(log n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "All copies of the target sit side by side. If you knew where the block starts and where it ends, the count would follow.",
+    "pattern": "Two binary searches: the first position holding a value >= target, and the first position holding a value > target. Their difference is the count.",
+    "pseudocode": "first(x) = smallest index i with values[i] >= x   (n if there is none)\ncount = first(target + 1) - first(target)\nfirst(x): lo = 0, hi = n; while lo < hi: mid = (lo + hi) / 2; if values[mid] >= x: hi = mid else lo = mid + 1; return lo",
+    "walkthrough": "Counting by scanning is O(n). Because the list is sorted, the positions of the target form one block. Write one helper that returns the first index whose value is at least x (a lower bound): keep lo = 0 and hi = n, look at the middle, and move hi to mid if the middle value is already >= x, otherwise move lo past it. The block of target values starts at lowerBound(target) and ends just before lowerBound(target + 1). The count is the difference; it is 0 when the target is missing (both give the same index). Each helper call is O(log n). (The two bounds are often named 'left' and 'right' insertion point.)"
+  }
+}

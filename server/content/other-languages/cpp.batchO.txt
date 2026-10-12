@@ -1,0 +1,142 @@
+//### tidy-sentence
+string tidy_sentence(string text) {
+    vector<string> words;
+    int i = (int) text.size() - 1;
+    while (i >= 0) {
+        while (i >= 0 && text[i] == ' ') i--;
+        if (i < 0) break;
+        int j = i;
+        while (i >= 0 && text[i] != ' ') i--;
+        words.push_back(text.substr(i + 1, j - i));
+    }
+    string out;
+    for (size_t k = 0; k < words.size(); k++) {
+        if (k > 0) out += ' ';
+        out += words[k];
+    }
+    return out;
+}
+//### palindromic-substring-count
+int count_palindromic_substrings(string text) {
+    int n = (int) text.size();
+    int count = 0;
+    for (int center = 0; center < 2 * n - 1; center++) {
+        int left = center / 2, right = left + center % 2;
+        while (left >= 0 && right < n && text[left] == text[right]) {
+            count++;
+            left--;
+            right++;
+        }
+    }
+    return count;
+}
+//### compare-versions
+int compare_versions(string first, string second) {
+    size_t i = 0, j = 0;
+    while (i < first.size() || j < second.size()) {
+        long long x = 0;
+        while (i < first.size() && first[i] != '.') { x = x * 10 + (first[i] - '0'); i++; }
+        long long y = 0;
+        while (j < second.size() && second[j] != '.') { y = y * 10 + (second[j] - '0'); j++; }
+        if (x != y) return x < y ? -1 : 1;
+        i++;
+        j++;
+    }
+    return 0;
+}
+//### digit-square-loop
+bool ends_at_one(int number) {
+    unordered_set<long long> seen;
+    long long n = number;
+    while (n != 1 && !seen.count(n)) {
+        seen.insert(n);
+        long long sum = 0;
+        while (n > 0) { long long d = n % 10; sum += d * d; n /= 10; }
+        n = sum;
+    }
+    return n == 1;
+}
+//### equidistant-point-pairs
+int count_equidistant(vector<vector<int>>& points) {
+    long long total = 0;
+    for (size_t a = 0; a < points.size(); a++) {
+        unordered_map<int,int> seen;
+        for (size_t b = 0; b < points.size(); b++) {
+            if (a == b) continue;
+            int dx = points[a][0] - points[b][0], dy = points[a][1] - points[b][1];
+            seen[dx * dx + dy * dy]++;
+        }
+        for (auto& entry : seen) total += (long long) entry.second * (entry.second - 1);
+    }
+    return (int) total;
+}
+//### multiple-of-k-subarray
+bool has_multiple_run(vector<int>& numbers, int k) {
+    unordered_map<long long,int> first;
+    first[0] = -1;
+    long long total = 0;
+    for (int i = 0; i < (int) numbers.size(); i++) {
+        total = (total + numbers[i]) % k;
+        auto it = first.find(total);
+        if (it != first.end()) {
+            if (i - it->second >= 2) return true;
+        } else {
+            first[total] = i;
+        }
+    }
+    return false;
+}
+//### merged-interval-count
+int merged_interval_count(vector<vector<int>>& intervals) {
+    vector<vector<int>> sorted_iv = intervals;
+    sort(sorted_iv.begin(), sorted_iv.end(), [](const vector<int>& p, const vector<int>& q) { return p[0] < q[0]; });
+    int count = 0;
+    long long end = LLONG_MIN;
+    for (auto& iv : sorted_iv) {
+        if (count == 0 || iv[0] > end) { count++; end = iv[1]; }
+        else end = max(end, (long long) iv[1]);
+    }
+    return count;
+}
+//### frequency-sort
+vector<int> frequency_sort(vector<int>& numbers) {
+    map<int,int> counts;
+    for (int x : numbers) counts[x]++;
+    vector<pair<int,int>> entries(counts.begin(), counts.end());
+    sort(entries.begin(), entries.end(), [](const pair<int,int>& p, const pair<int,int>& q) {
+        if (p.second != q.second) return p.second > q.second;
+        return p.first < q.first;
+    });
+    vector<int> out;
+    for (auto& e : entries) for (int c = 0; c < e.second; c++) out.push_back(e.first);
+    return out;
+}
+//### spiral-walk
+vector<int> spiral_walk(vector<vector<int>>& grid) {
+    int top = 0, bottom = (int) grid.size() - 1, left = 0, right = (int) grid[0].size() - 1;
+    vector<int> out;
+    while (top <= bottom && left <= right) {
+        for (int c = left; c <= right; c++) out.push_back(grid[top][c]);
+        for (int r = top + 1; r <= bottom; r++) out.push_back(grid[r][right]);
+        if (top < bottom && left < right) {
+            for (int c = right - 1; c >= left; c--) out.push_back(grid[bottom][c]);
+            for (int r = bottom - 1; r > top; r--) out.push_back(grid[r][left]);
+        }
+        top++; bottom--; left++; right--;
+    }
+    return out;
+}
+//### repeated-value
+int repeated_value(vector<int>& numbers) {
+    int slow = numbers[0], fast = numbers[0];
+    do {
+        slow = numbers[slow];
+        fast = numbers[numbers[fast]];
+    } while (slow != fast);
+    slow = numbers[0];
+    while (slow != fast) {
+        slow = numbers[slow];
+        fast = numbers[fast];
+    }
+    return slow;
+}

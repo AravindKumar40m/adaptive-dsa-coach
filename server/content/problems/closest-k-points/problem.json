@@ -1,0 +1,24 @@
+{
+  "slug": "closest-k-points",
+  "title": "Closest Points Total",
+  "concept": "heaps",
+  "difficulty": "easy",
+  "statement": "`points` lists positions on a flat map, each as `[x, y]`. The **squared distance** of a point from the origin `(0, 0)` is `x * x + y * y`.\n\nPick the `k` points closest to the origin and return the **sum of their squared distances**. If several points are equally far, it does not matter which of them you pick (the sum is the same).",
+  "constraints": [
+    "1 <= k <= len(points) <= 10000",
+    "-100 <= x, y <= 100"
+  ],
+  "signature": { "name": "closest_k_sum", "params": [{ "name": "points", "type": "int[][]" }, { "name": "k", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[[1, 3], [-2, 2], [5, 8], [0, 1]], 2], "expected": 9, "explanation": "Squared distances are 10, 8, 89 and 1. The two smallest are 1 and 8: sum 9." },
+    { "args": [[[3, 3], [5, -1], [-2, 4]], 3], "expected": 64, "explanation": "k equals the number of points, so all of them count: 18 + 26 + 20 = 64." }
+  ],
+  "edgeTests": [[[[0, 0]], 1], [[[1, 1], [1, 1]], 1], [[[2, 0], [0, 2], [-2, 0], [0, -2]], 2], [[[5, 5], [1, 1], [3, 3]], 1]],
+  "expected": { "time": "O(n log k)", "space": "O(k)" },
+  "hints": {
+    "nudge": "You only need to remember the k best distances seen so far. When a new point arrives, which of the remembered ones could you throw away?",
+    "pattern": "A max-heap of size k: it always holds the k smallest distances so far; its top is the worst of them.",
+    "pseudocode": "heap = empty max-heap\nfor each point: d = x*x + y*y; push d\n  if heap has more than k items: pop the largest\nreturn the sum of the numbers left in the heap",
+    "walkthrough": "Sorting all n distances and adding the first k works (O(n log n)). If k is much smaller than n, a heap does better. Keep a max-heap of at most k squared distances. For each new point push its squared distance; if the heap now has k + 1 items, remove the largest, which can never be among the k smallest. After the last point, the heap holds the k smallest distances; add them up. No square roots are needed because squaring keeps the order. In Python use negated numbers with heapq (a min-heap)."
+  }
+}

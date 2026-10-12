@@ -1,0 +1,26 @@
+{
+  "slug": "climb-with-ladders",
+  "title": "Climb With Ladders and Bricks",
+  "concept": "heaps",
+  "difficulty": "medium",
+  "statement": "You stand on building `0` and walk to the right, one building at a time. Moving from building `i` to building `i + 1`:\n- if the next building is **not taller**, the move is free;\n- if it is **taller**, you must either use **one ladder** (it works for any height) or use as many **bricks** as the height difference.\n\nYou have `bricks` bricks and `ladders` ladders. Return the index of the **furthest building** you can reach.",
+  "constraints": [
+    "1 <= len(heights) <= 100000",
+    "1 <= heights[i] <= 1000000",
+    "0 <= bricks <= 1000000000",
+    "0 <= ladders <= len(heights)"
+  ],
+  "signature": { "name": "furthest_building", "params": [{ "name": "heights", "type": "int[]" }, { "name": "bricks", "type": "int" }, { "name": "ladders", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 5, 2, 8, 3], 3, 1], "expected": 2, "explanation": "The climbs are +4 (building 0 to 1) and +6 (building 2 to 3). The ladder covers the +4, but 3 bricks cannot pay for the +6... so you stop at building 2." },
+    { "args": [[3, 3, 9, 1, 10], 6, 1], "expected": 4, "explanation": "Use the 6 bricks for the +6 climb and the ladder for the +9 climb: you reach the last building." }
+  ],
+  "edgeTests": [[[5], 0, 0], [[1, 2], 0, 0], [[1, 2], 0, 1], [[5, 4, 3, 2], 0, 0], [[1, 10, 1, 10], 9, 1], [[1, 3, 6, 10], 5, 0]],
+  "expected": { "time": "O(n log L)", "space": "O(L)" },
+  "hints": {
+    "nudge": "A ladder is worth the same on every climb, but bricks are worth more on a big climb. Which climbs should the ladders be saved for?",
+    "pattern": "Keep a min-heap of the climbs currently covered by ladders. When there are more climbs than ladders, pay the SMALLEST of them with bricks.",
+    "pseudocode": "heap = empty min-heap (climbs covered by ladders)\nfor each step i with climb = heights[i+1] - heights[i] > 0:\n  push climb\n  if heap has more than `ladders` items:\n    bricks -= pop smallest\n    if bricks < 0: return i\nreturn last index",
+    "walkthrough": "Pretend every climb gets a ladder at first. Whenever you have used more ladders than you own, one of the climbs must be paid with bricks instead, and the cheapest choice is the SMALLEST climb among those that currently hold a ladder (giving the ladders to the biggest climbs saves the most bricks). A min-heap gives you that smallest climb quickly. Pay for it with bricks; if the bricks run below zero you cannot afford even that, so the walk ends at the current building i. If the walk gets through every building, return the last index. Free moves (not taller) are skipped. O(n log L) time, where L is the number of ladders."
+  }
+}

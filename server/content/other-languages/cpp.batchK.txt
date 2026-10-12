@@ -1,0 +1,224 @@
+//### two-team-split
+bool can_split_in_two(int people, vector<vector<int>>& conflicts) {
+    vector<vector<int>> adj(people);
+    for (auto& e : conflicts) { adj[e[0]].push_back(e[1]); adj[e[1]].push_back(e[0]); }
+    vector<int> side(people, -1);
+    for (int s = 0; s < people; s++) {
+        if (side[s] != -1) continue;
+        side[s] = 0;
+        queue<int> q;
+        q.push(s);
+        while (!q.empty()) {
+            int u = q.front(); q.pop();
+            for (int v : adj[u]) {
+                if (side[v] == -1) { side[v] = 1 - side[u]; q.push(v); }
+                else if (side[v] == side[u]) return false;
+            }
+        }
+    }
+    return true;
+}
+//### paint-region-size
+int region_size(vector<vector<int>>& grid, int row, int col) {
+    int rows = (int) grid.size(), cols = (int) grid[0].size();
+    int colour = grid[row][col];
+    vector<vector<char>> seen(rows, vector<char>(cols, 0));
+    seen[row][col] = 1;
+    vector<pair<int,int>> stack;
+    stack.push_back({row, col});
+    int count = 0;
+    int dr[4] = {1, -1, 0, 0}, dc[4] = {0, 0, 1, -1};
+    while (!stack.empty()) {
+        auto cell = stack.back();
+        stack.pop_back();
+        count++;
+        for (int d = 0; d < 4; d++) {
+            int nr = cell.first + dr[d], nc = cell.second + dc[d];
+            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && !seen[nr][nc] && grid[nr][nc] == colour) {
+                seen[nr][nc] = 1;
+                stack.push_back({nr, nc});
+            }
+        }
+    }
+    return count;
+}
+//### signal-spread-time
+int signal_spread_time(int stations, vector<vector<int>>& links, int source) {
+    vector<vector<pair<int,int>>> adj(stations);
+    for (auto& l : links) adj[l[0]].push_back({l[1], l[2]});
+    vector<int> best(stations, -1);
+    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> heap;
+    heap.push({0, source});
+    while (!heap.empty()) {
+        auto top = heap.top(); heap.pop();
+        int d = top.first, u = top.second;
+        if (best[u] != -1) continue;
+        best[u] = d;
+        for (auto& e : adj[u]) {
+            if (best[e.first] == -1) heap.push({d + e.second, e.first});
+        }
+    }
+    int worst = 0;
+    for (int b : best) {
+        if (b == -1) return -1;
+        worst = max(worst, b);
+    }
+    return worst;
+}
+//### first-cycle-edge
+int find_leader(vector<int>& parent, int x) {
+    while (parent[x] != x) {
+        parent[x] = parent[parent[x]];
+        x = parent[x];
+    }
+    return x;
+}
+
+int first_cycle_edge(int nodes, vector<vector<int>>& edges) {
+    vector<int> parent(nodes);
+    for (int i = 0; i < nodes; i++) parent[i] = i;
+    for (int i = 0; i < (int) edges.size(); i++) {
+        int ra = find_leader(parent, edges[i][0]), rb = find_leader(parent, edges[i][1]);
+        if (ra == rb) return i;
+        parent[ra] = rb;
+    }
+    return -1;
+}
+//### critical-link-count
+void bridge_visit(int u, int via, vector<vector<pair<int,int>>>& adj, vector<int>& order, vector<int>& low, int& timer, int& found) {
+    order[u] = low[u] = timer++;
+    for (auto& edge : adj[u]) {
+        int v = edge.first, id = edge.second;
+        if (id == via) continue;
+        if (order[v] == -1) {
+            bridge_visit(v, id, adj, order, low, timer, found);
+            low[u] = min(low[u], low[v]);
+            if (low[v] > order[u]) found++;
+        } else {
+            low[u] = min(low[u], order[v]);
+        }
+    }
+}
+
+int critical_link_count(int nodes, vector<vector<int>>& links) {
+    vector<vector<pair<int,int>>> adj(nodes);
+    for (int i = 0; i < (int) links.size(); i++) {
+        adj[links[i][0]].push_back({links[i][1], i});
+        adj[links[i][1]].push_back({links[i][0], i});
+    }
+    vector<int> order(nodes, -1), low(nodes, 0);
+    int timer = 0, found = 0;
+    for (int s = 0; s < nodes; s++) if (order[s] == -1) bridge_visit(s, -1, adj, order, low, timer, found);
+    return found;
+}
+//### min-spanning-cost
+int find_group(vector<int>& parent, int x) {
+    while (parent[x] != x) {
+        parent[x] = parent[parent[x]];
+        x = parent[x];
+    }
+    return x;
+}
+
+int min_spanning_cost(int nodes, vector<vector<int>>& roads) {
+    vector<int> parent(nodes);
+    for (int i = 0; i < nodes; i++) parent[i] = i;
+    vector<vector<int>> sorted_roads = roads;
+    sort(sorted_roads.begin(), sorted_roads.end(), [](const vector<int>& p, const vector<int>& q) { return p[2] < q[2]; });
+    long long total = 0;
+    int joined = 0;
+    for (auto& r : sorted_roads) {
+        int ra = find_group(parent, r[0]), rb = find_group(parent, r[1]);
+        if (ra != rb) { parent[ra] = rb; total += r[2]; joined++; }
+    }
+    return joined == nodes - 1 ? (int) total : -1;
+}
+//### path-in-grid-exists
+bool trace_from(vector<vector<int>>& grid, vector<int>& word, vector<vector<char>>& seen, int r, int c, int k) {
+    if (grid[r][c] != word[k]) return false;
+    if (k == (int) word.size() - 1) return true;
+    int dr[4] = {1, -1, 0, 0}, dc[4] = {0, 0, 1, -1};
+    seen[r][c] = 1;
+    for (int d = 0; d < 4; d++) {
+        int nr = r + dr[d], nc = c + dc[d];
+        if (nr >= 0 && nr < (int) grid.size() && nc >= 0 && nc < (int) grid[0].size() && !seen[nr][nc] && trace_from(grid, word, seen, nr, nc, k + 1)) {
+            seen[r][c] = 0;
+            return true;
+        }
+    }
+    seen[r][c] = 0;
+    return false;
+}
+
+bool word_path_exists(vector<vector<int>>& grid, vector<int>& word) {
+    vector<vector<char>> seen(grid.size(), vector<char>(grid[0].size(), 0));
+    for (int r = 0; r < (int) grid.size(); r++) {
+        for (int c = 0; c < (int) grid[0].size(); c++) if (trace_from(grid, word, seen, r, c, 0)) return true;
+    }
+    return false;
+}
+//### target-signs-count
+int signed_sum_ways(vector<int>& numbers, int target) {
+    int total = 0;
+    for (int x : numbers) total += x;
+    if (abs(target) > total || (total + target) % 2 != 0) return 0;
+    int want = (total + target) / 2;
+    vector<long long> ways(want + 1, 0);
+    ways[0] = 1;
+    for (int x : numbers) {
+        for (int s = want; s >= x; s--) ways[s] += ways[s - x];
+    }
+    return (int) ways[want];
+}
+//### grid-walks-count
+int walk_from(vector<vector<int>>& grid, vector<vector<char>>& seen, int r, int c) {
+    int rows = (int) grid.size(), cols = (int) grid[0].size();
+    if (r == rows - 1 && c == cols - 1) return 1;
+    int dr[4] = {1, -1, 0, 0}, dc[4] = {0, 0, 1, -1};
+    seen[r][c] = 1;
+    int total = 0;
+    for (int d = 0; d < 4; d++) {
+        int nr = r + dr[d], nc = c + dc[d];
+        if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && grid[nr][nc] == 0 && !seen[nr][nc]) total += walk_from(grid, seen, nr, nc);
+    }
+    seen[r][c] = 0;
+    return total;
+}
+
+int count_grid_walks(vector<vector<int>>& grid) {
+    vector<vector<char>> seen(grid.size(), vector<char>(grid[0].size(), 0));
+    return walk_from(grid, seen, 0, 0);
+}
+//### mini-sudoku-count
+int sudoku_fill(int i, vector<pair<int,int>>& empty, int rows[4], int cols[4], int boxes[4]) {
+    if (i == (int) empty.size()) return 1;
+    int r = empty[i].first, c = empty[i].second;
+    int b = (r / 2) * 2 + c / 2;
+    int total = 0;
+    for (int v = 1; v <= 4; v++) {
+        int bit = 1 << v;
+        if ((rows[r] & bit) == 0 && (cols[c] & bit) == 0 && (boxes[b] & bit) == 0) {
+            rows[r] |= bit; cols[c] |= bit; boxes[b] |= bit;
+            total += sudoku_fill(i + 1, empty, rows, cols, boxes);
+            rows[r] ^= bit; cols[c] ^= bit; boxes[b] ^= bit;
+        }
+    }
+    return total;
+}
+
+int mini_sudoku_count(vector<vector<int>>& board) {
+    int rows[4] = {0, 0, 0, 0}, cols[4] = {0, 0, 0, 0}, boxes[4] = {0, 0, 0, 0};
+    vector<pair<int,int>> empty;
+    for (int r = 0; r < 4; r++) {
+        for (int c = 0; c < 4; c++) {
+            int v = board[r][c];
+            if (v != 0) {
+                int bit = 1 << v;
+                rows[r] |= bit; cols[c] |= bit; boxes[(r / 2) * 2 + c / 2] |= bit;
+            } else {
+                empty.push_back({r, c});
+            }
+        }
+    }
+    return sudoku_fill(0, empty, rows, cols, boxes);
+}

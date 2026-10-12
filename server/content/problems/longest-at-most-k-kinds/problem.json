@@ -1,0 +1,25 @@
+{
+  "slug": "longest-at-most-k-kinds",
+  "title": "Longest Stretch of Few Kinds",
+  "concept": "sliding_window",
+  "difficulty": "medium",
+  "statement": "`items` lists the kind of each item on a conveyor belt (kinds are numbers). Find the longest **contiguous stretch** of the belt that contains **at most `k` different kinds**, and return its length. An empty belt gives `0`.",
+  "constraints": [
+    "0 <= len(items) <= 100000",
+    "0 <= items[i] <= 1000000",
+    "1 <= k <= 100000"
+  ],
+  "signature": { "name": "longest_with_k_kinds", "params": [{ "name": "items", "type": "int[]" }, { "name": "k", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 2, 1, 2, 3, 3], 2], "expected": 4, "explanation": "The stretch 1, 2, 1, 2 has two kinds. Adding the 3 would make three kinds." },
+    { "args": [[5, 5, 5], 1], "expected": 3, "explanation": "The whole belt has one kind." }
+  ],
+  "edgeTests": [[[], 2], [[1, 2, 3], 1], [[1, 2, 3], 3], [[4, 4, 5, 5, 6], 2], [[1, 2, 1, 3, 1, 4], 2], [[7], 5]],
+  "expected": { "time": "O(n)", "space": "O(k)" },
+  "hints": {
+    "nudge": "If a stretch has too many kinds, which end do you trim, and until when?",
+    "pattern": "Sliding window with a count per kind: add the right item; while the number of kinds is above k, remove items from the left.",
+    "pseudocode": "counts = empty map; left = 0; best = 0\nfor right in 0..n-1:\n  counts[items[right]] += 1\n  while number of kinds in counts > k:\n    counts[items[left]] -= 1; if it reaches 0: remove that kind\n    left += 1\n  best = max(best, right - left + 1)\nreturn best",
+    "walkthrough": "Looking at every stretch and counting kinds is O(n^2). Instead keep one window [left, right] and a map from kind to how many times it is in the window. Extend the window to the right by one item. If the map now has more than k kinds, shrink from the left: decrease the count of the item that leaves and delete its kind from the map when the count hits 0 (the number of kinds is the size of the map). Repeat until the window is allowed again. Record the largest window length. Each item enters and leaves the window at most once: O(n) time."
+  }
+}

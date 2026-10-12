@@ -1,0 +1,205 @@
+//### two-team-split
+function canSplitInTwo(people, conflicts) {
+  const adj = Array.from({ length: people }, () => []);
+  for (const [a, b] of conflicts) { adj[a].push(b); adj[b].push(a); }
+  const side = new Array(people).fill(-1);
+  for (let s = 0; s < people; s++) {
+    if (side[s] !== -1) continue;
+    side[s] = 0;
+    const queue = [s];
+    for (let head = 0; head < queue.length; head++) {
+      const u = queue[head];
+      for (const v of adj[u]) {
+        if (side[v] === -1) { side[v] = 1 - side[u]; queue.push(v); }
+        else if (side[v] === side[u]) return false;
+      }
+    }
+  }
+  return true;
+}
+//### paint-region-size
+function regionSize(grid, row, col) {
+  const rows = grid.length, cols = grid[0].length;
+  const colour = grid[row][col];
+  const seen = grid.map((line) => line.map(() => false));
+  seen[row][col] = true;
+  const stack = [[row, col]];
+  let count = 0;
+  while (stack.length > 0) {
+    const [r, c] = stack.pop();
+    count++;
+    for (const [nr, nc] of [[r + 1, c], [r - 1, c], [r, c + 1], [r, c - 1]]) {
+      if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && !seen[nr][nc] && grid[nr][nc] === colour) {
+        seen[nr][nc] = true;
+        stack.push([nr, nc]);
+      }
+    }
+  }
+  return count;
+}
+//### signal-spread-time
+function signalSpreadTime(stations, links, source) {
+  const adj = Array.from({ length: stations }, () => []);
+  for (const [a, b, t] of links) adj[a].push([b, t]);
+  const best = new Array(stations).fill(-1);
+  // a simple heap-free version is fine for 100 stations: pick the closest unfinished station each round
+  const dist = new Array(stations).fill(Infinity);
+  dist[source] = 0;
+  for (let round = 0; round < stations; round++) {
+    let u = -1;
+    for (let i = 0; i < stations; i++) {
+      if (best[i] === -1 && dist[i] !== Infinity && (u === -1 || dist[i] < dist[u])) u = i;
+    }
+    if (u === -1) break;
+    best[u] = dist[u];
+    for (const [v, t] of adj[u]) if (best[v] === -1 && dist[u] + t < dist[v]) dist[v] = dist[u] + t;
+  }
+  let worst = 0;
+  for (let i = 0; i < stations; i++) {
+    if (best[i] === -1) return -1;
+    worst = Math.max(worst, best[i]);
+  }
+  return worst;
+}
+//### first-cycle-edge
+function firstCycleEdge(nodes, edges) {
+  const parent = Array.from({ length: nodes }, (_, i) => i);
+  function find(x) {
+    while (parent[x] !== x) {
+      parent[x] = parent[parent[x]];
+      x = parent[x];
+    }
+    return x;
+  }
+  for (let i = 0; i < edges.length; i++) {
+    const ra = find(edges[i][0]), rb = find(edges[i][1]);
+    if (ra === rb) return i;
+    parent[ra] = rb;
+  }
+  return -1;
+}
+//### critical-link-count
+function criticalLinkCount(nodes, links) {
+  const adj = Array.from({ length: nodes }, () => []);
+  links.forEach(([a, b], i) => { adj[a].push([b, i]); adj[b].push([a, i]); });
+  const order = new Array(nodes).fill(-1), low = new Array(nodes).fill(0);
+  let timer = 0, found = 0;
+  function visit(u, via) {
+    order[u] = low[u] = timer++;
+    for (const [v, id] of adj[u]) {
+      if (id === via) continue;
+      if (order[v] === -1) {
+        visit(v, id);
+        low[u] = Math.min(low[u], low[v]);
+        if (low[v] > order[u]) found++;
+      } else {
+        low[u] = Math.min(low[u], order[v]);
+      }
+    }
+  }
+  for (let s = 0; s < nodes; s++) if (order[s] === -1) visit(s, -1);
+  return found;
+}
+//### min-spanning-cost
+function minSpanningCost(nodes, roads) {
+  const parent = Array.from({ length: nodes }, (_, i) => i);
+  function find(x) {
+    while (parent[x] !== x) {
+      parent[x] = parent[parent[x]];
+      x = parent[x];
+    }
+    return x;
+  }
+  const sorted = roads.slice().sort((p, q) => p[2] - q[2]);
+  let total = 0, joined = 0;
+  for (const [a, b, cost] of sorted) {
+    const ra = find(a), rb = find(b);
+    if (ra !== rb) { parent[ra] = rb; total += cost; joined++; }
+  }
+  return joined === nodes - 1 ? total : -1;
+}
+//### path-in-grid-exists
+function wordPathExists(grid, word) {
+  const rows = grid.length, cols = grid[0].length;
+  const seen = grid.map((line) => line.map(() => false));
+  const moves = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+  function go(r, c, k) {
+    if (grid[r][c] !== word[k]) return false;
+    if (k === word.length - 1) return true;
+    seen[r][c] = true;
+    for (const [dr, dc] of moves) {
+      const nr = r + dr, nc = c + dc;
+      if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && !seen[nr][nc] && go(nr, nc, k + 1)) {
+        seen[r][c] = false;
+        return true;
+      }
+    }
+    seen[r][c] = false;
+    return false;
+  }
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) if (go(r, c, 0)) return true;
+  }
+  return false;
+}
+//### target-signs-count
+function signedSumWays(numbers, target) {
+  let total = 0;
+  for (const x of numbers) total += x;
+  if (Math.abs(target) > total || (total + target) % 2 !== 0) return 0;
+  const want = (total + target) / 2;
+  const ways = new Array(want + 1).fill(0);
+  ways[0] = 1;
+  for (const x of numbers) {
+    for (let s = want; s >= x; s--) ways[s] += ways[s - x];
+  }
+  return ways[want];
+}
+//### grid-walks-count
+function countGridWalks(grid) {
+  const rows = grid.length, cols = grid[0].length;
+  const seen = grid.map((line) => line.map(() => false));
+  const moves = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+  function walk(r, c) {
+    if (r === rows - 1 && c === cols - 1) return 1;
+    seen[r][c] = true;
+    let total = 0;
+    for (const [dr, dc] of moves) {
+      const nr = r + dr, nc = c + dc;
+      if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && grid[nr][nc] === 0 && !seen[nr][nc]) total += walk(nr, nc);
+    }
+    seen[r][c] = false;
+    return total;
+  }
+  return walk(0, 0);
+}
+//### mini-sudoku-count
+function miniSudokuCount(board) {
+  const rows = [0, 0, 0, 0], cols = [0, 0, 0, 0], boxes = [0, 0, 0, 0];
+  const empty = [];
+  for (let r = 0; r < 4; r++) {
+    for (let c = 0; c < 4; c++) {
+      const v = board[r][c];
+      if (v) {
+        const bit = 1 << v;
+        rows[r] |= bit; cols[c] |= bit; boxes[Math.floor(r / 2) * 2 + Math.floor(c / 2)] |= bit;
+      } else empty.push([r, c]);
+    }
+  }
+  function fill(i) {
+    if (i === empty.length) return 1;
+    const [r, c] = empty[i];
+    const b = Math.floor(r / 2) * 2 + Math.floor(c / 2);
+    let total = 0;
+    for (let v = 1; v <= 4; v++) {
+      const bit = 1 << v;
+      if (!((rows[r] & bit) || (cols[c] & bit) || (boxes[b] & bit))) {
+        rows[r] |= bit; cols[c] |= bit; boxes[b] |= bit;
+        total += fill(i + 1);
+        rows[r] ^= bit; cols[c] ^= bit; boxes[b] ^= bit;
+      }
+    }
+    return total;
+  }
+  return fill(0);
+}

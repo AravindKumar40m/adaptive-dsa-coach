@@ -1,0 +1,24 @@
+{
+  "slug": "circular-street-robbery",
+  "title": "Circular Street Robbery",
+  "concept": "dp",
+  "difficulty": "medium",
+  "statement": "The houses on a round street stand in a **circle**, and `loot[i]` is the cash in house `i`. A thief may take from any houses, but never from two **neighbouring** houses. Because the street is a circle, the last house and the first house are neighbours too.\n\nReturn the most cash the thief can take.",
+  "constraints": [
+    "1 <= len(loot) <= 100000",
+    "0 <= loot[i] <= 10000"
+  ],
+  "signature": { "name": "circular_street_robbery", "params": [{ "name": "loot", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[2, 3, 2]], "expected": 3, "explanation": "Houses 0 and 2 are neighbours on the circle, so the two 2s cannot both be taken. The best is the 3." },
+    { "args": [[1, 2, 3, 1]], "expected": 4, "explanation": "Take houses 0 and 2: 1 + 3 = 4." }
+  ],
+  "edgeTests": [[[5]], [[1, 2]], [[0, 0, 0]], [[9, 1, 1, 9]], [[1, 2, 3]], [[4, 1, 2, 7, 5, 3, 1]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "If the street were a straight line you could solve it already. On the circle, what do you know about house 0 and the last house?",
+    "pattern": "Break the circle: the thief skips the first house or skips the last house. Solve the straight-line problem twice.",
+    "pseudocode": "line(a): take = 0, skip = 0\n  for x in a: take, skip = skip + x, max(take, skip)\n  return max(take, skip)\nif there is one house: return loot[0]\nreturn max(line(loot without first), line(loot without last))",
+    "walkthrough": "On a straight line, keep two numbers while walking: the best total if you TAKE the current house (it must be the previous best-without) and the best total if you SKIP it (the larger of the previous two). On the circle, the first and last houses cannot both be taken. So the best plan either never touches house 0 or never touches the last house: run the straight-line solution on loot[1:] and on loot[:-1] and keep the larger result. A single house has no neighbour problem, so just take it. O(n) time, O(1) extra space."
+  }
+}

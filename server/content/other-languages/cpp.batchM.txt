@@ -1,0 +1,127 @@
+//### rearrange-no-adjacent
+bool can_rearrange(string letters) {
+    int counts[26] = {0};
+    for (char ch : letters) counts[ch - 'a']++;
+    priority_queue<pair<int,int>> heap;
+    for (int i = 0; i < 26; i++) if (counts[i] > 0) heap.push({counts[i], i});
+    bool has_held = false;
+    pair<int,int> held;
+    while (!heap.empty() || has_held) {
+        if (heap.empty()) return false;
+        auto top = heap.top();
+        heap.pop();
+        if (has_held) { heap.push(held); has_held = false; }
+        if (top.first > 1) { held = {top.first - 1, top.second}; has_held = true; }
+    }
+    return true;
+}
+//### climb-with-ladders
+int furthest_building(vector<int>& heights, int bricks, int ladders) {
+    priority_queue<int, vector<int>, greater<int>> used;
+    long long left = bricks;
+    for (int i = 0; i + 1 < (int) heights.size(); i++) {
+        int climb = heights[i + 1] - heights[i];
+        if (climb <= 0) continue;
+        used.push(climb);
+        if ((int) used.size() > ladders) {
+            left -= used.top();
+            used.pop();
+            if (left < 0) return i;
+        }
+    }
+    return (int) heights.size() - 1;
+}
+//### running-median-sum
+int median_sum(vector<int>& stream) {
+    priority_queue<int> low;
+    priority_queue<int, vector<int>, greater<int>> high;
+    long long total = 0;
+    for (int x : stream) {
+        if (!low.empty() && x > low.top()) high.push(x); else low.push(x);
+        if (low.size() > high.size() + 1) { high.push(low.top()); low.pop(); }
+        else if (high.size() > low.size()) { low.push(high.top()); high.pop(); }
+        total += low.top();
+    }
+    return (int) total;
+}
+//### closest-k-points
+int closest_k_sum(vector<vector<int>>& points, int k) {
+    priority_queue<int> heap;
+    for (auto& p : points) {
+        heap.push(p[0] * p[0] + p[1] * p[1]);
+        if ((int) heap.size() > k) heap.pop();
+    }
+    int total = 0;
+    while (!heap.empty()) { total += heap.top(); heap.pop(); }
+    return total;
+}
+//### gas-station-start
+int gas_start(vector<int>& gas, vector<int>& cost) {
+    long long total = 0, tank = 0;
+    int start = 0;
+    for (int i = 0; i < (int) gas.size(); i++) {
+        long long gain = gas[i] - cost[i];
+        total += gain;
+        tank += gain;
+        if (tank < 0) { start = i + 1; tank = 0; }
+    }
+    return total >= 0 ? start : -1;
+}
+//### partition-labels-count
+int partition_count(string text) {
+    int last[26];
+    for (int i = 0; i < 26; i++) last[i] = 0;
+    for (int i = 0; i < (int) text.size(); i++) last[text[i] - 'a'] = i;
+    int pieces = 0, end = 0;
+    for (int i = 0; i < (int) text.size(); i++) {
+        end = max(end, last[text[i] - 'a']);
+        if (i == end) pieces++;
+    }
+    return pieces;
+}
+//### smallest-after-removal
+string smallest_after_removal(string digits, int k) {
+    string stack;
+    for (char d : digits) {
+        while (k > 0 && !stack.empty() && stack.back() > d) {
+            stack.pop_back();
+            k--;
+        }
+        stack.push_back(d);
+    }
+    stack.resize(stack.size() - k);
+    size_t i = 0;
+    while (i < stack.size() && stack[i] == '0') i++;
+    string result = stack.substr(i);
+    return result.empty() ? "0" : result;
+}
+//### min-refuel-stops
+int min_refuel_stops(int target, int start_fuel, vector<vector<int>>& stations) {
+    priority_queue<long long> heap;
+    long long reach = start_fuel;
+    int stops = 0, i = 0;
+    while (reach < target) {
+        while (i < (int) stations.size() && stations[i][0] <= reach) { heap.push(stations[i][1]); i++; }
+        if (heap.empty()) return -1;
+        reach += heap.top();
+        heap.pop();
+        stops++;
+    }
+    return stops;
+}
+//### count-of-value
+int count_value(vector<int>& values, int target) {
+    auto lo = lower_bound(values.begin(), values.end(), target);
+    auto hi = upper_bound(values.begin(), values.end(), target);
+    return (int) (hi - lo);
+}
+//### lone-element
+int lone_element(vector<int>& pairs) {
+    int lo = 0, hi = (int) pairs.size() - 1;
+    while (lo < hi) {
+        int mid = (lo + hi) / 2;
+        if (mid % 2 == 1) mid--;
+        if (pairs[mid] == pairs[mid + 1]) lo = mid + 2; else hi = mid;
+    }
+    return pairs[lo];
+}

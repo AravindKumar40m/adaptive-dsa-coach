@@ -1,0 +1,25 @@
+{
+  "slug": "multiple-of-k-subarray",
+  "title": "A Stretch That Adds Up to a Multiple",
+  "concept": "hashing",
+  "difficulty": "medium",
+  "statement": "Is there a **contiguous stretch of at least 2 numbers** in `numbers` whose sum is a **multiple of `k`**? The sum `0` counts as a multiple of `k`.\n\nReturn `true` if there is one, otherwise `false`.",
+  "constraints": [
+    "1 <= len(numbers) <= 100000",
+    "0 <= numbers[i] <= 1000000000",
+    "1 <= k <= 1000000000"
+  ],
+  "signature": { "name": "has_multiple_run", "params": [{ "name": "numbers", "type": "int[]" }, { "name": "k", "type": "int" }], "returns": "bool" },
+  "examples": [
+    { "args": [[3, 4, 6, 1], 5], "expected": true, "explanation": "The stretch 4, 6 adds up to 10, a multiple of 5." },
+    { "args": [[5, 1, 9, 2], 7], "expected": false, "explanation": "All stretches of two or more numbers add up to 6, 10, 11, 15, 12 and 17: none is a multiple of 7." }
+  ],
+  "edgeTests": [[[1], 1], [[0, 0], 5], [[5, 0], 5], [[1, 2], 3], [[1, 2], 5], [[2, 4, 3], 6]],
+  "expected": { "time": "O(n)", "space": "O(min(n, k))" },
+  "hints": {
+    "nudge": "The sum of a stretch is a difference of two prefix sums. When is a difference of two numbers a multiple of k?",
+    "pattern": "Prefix sums modulo k stored in a hash map: two equal remainders with at least one number between them mean a stretch whose sum is a multiple of k.",
+    "pseudocode": "first = { 0: -1 }; total = 0\nfor i, x in numbers:\n  total = (total + x) mod k\n  if total in first:\n    if i - first[total] >= 2: return true\n  else: first[total] = i\nreturn false",
+    "walkthrough": "Checking all stretches is O(n^2). Let P(i) be the running sum up to position i. The sum of the stretch after position a up to position b is P(b) - P(a), and it is a multiple of k exactly when P(a) and P(b) have the SAME remainder modulo k. So keep a map from remainder to the EARLIEST position where that remainder was seen (start with remainder 0 at position -1, for stretches that begin at the start). For each position compute the new remainder; if it was seen before at position a and the stretch is long enough (b - a >= 2), return true. If it was seen but the stretch would have length 1, keep the earlier position (a longer stretch is easier to get later). Taking the remainder as you go keeps the numbers small. O(n)."
+  }
+}

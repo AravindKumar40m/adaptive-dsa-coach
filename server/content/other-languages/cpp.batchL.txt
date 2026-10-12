@@ -1,0 +1,148 @@
+//### mirror-tree
+bool mirror_same(TreeNode* a, TreeNode* b) {
+    if (a == nullptr || b == nullptr) return a == b;
+    return a->val == b->val && mirror_same(a->left, b->right) && mirror_same(a->right, b->left);
+}
+
+bool is_mirror(TreeNode* root) {
+    return root == nullptr || mirror_same(root->left, root->right);
+}
+//### root-to-leaf-sum
+bool leaf_sum_from(TreeNode* node, int left) {
+    if (node == nullptr) return false;
+    if (node->left == nullptr && node->right == nullptr) return node->val == left;
+    return leaf_sum_from(node->left, left - node->val) || leaf_sum_from(node->right, left - node->val);
+}
+
+bool has_leaf_sum(TreeNode* root, int target) {
+    return leaf_sum_from(root, target);
+}
+//### visible-from-right
+void right_visit(TreeNode* node, int depth, vector<int>& out) {
+    if (node == nullptr) return;
+    if (depth == (int) out.size()) out.push_back(node->val);
+    right_visit(node->right, depth + 1, out);
+    right_visit(node->left, depth + 1, out);
+}
+
+vector<int> visible_from_right(TreeNode* root) {
+    vector<int> out;
+    right_visit(root, 0, out);
+    return out;
+}
+//### bst-kth-value
+int bst_kth_value(TreeNode* root, int k) {
+    vector<TreeNode*> stack;
+    TreeNode* node = root;
+    while (!stack.empty() || node != nullptr) {
+        while (node != nullptr) {
+            stack.push_back(node);
+            node = node->left;
+        }
+        node = stack.back();
+        stack.pop_back();
+        k--;
+        if (k == 0) return node->val;
+        node = node->right;
+    }
+    return -1;
+}
+//### lamp-placement-tree
+int lamp_state(TreeNode* node, int& lamps) {
+    if (node == nullptr) return 2;
+    int left = lamp_state(node->left, lamps), right = lamp_state(node->right, lamps);
+    if (left == 0 || right == 0) { lamps++; return 1; }
+    if (left == 1 || right == 1) return 2;
+    return 0;
+}
+
+int lamps_needed(TreeNode* root) {
+    int lamps = 0;
+    if (lamp_state(root, lamps) == 0) lamps++;
+    return lamps;
+}
+//### palindrome-list
+bool is_palindrome_list(ListNode* head) {
+    ListNode* slow = head;
+    ListNode* fast = head;
+    while (fast != nullptr && fast->next != nullptr) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    ListNode* prev = nullptr;
+    while (slow != nullptr) {
+        ListNode* next = slow->next;
+        slow->next = prev;
+        prev = slow;
+        slow = next;
+    }
+    ListNode* a = head;
+    ListNode* b = prev;
+    while (b != nullptr) {
+        if (a->val != b->val) return false;
+        a = a->next;
+        b = b->next;
+    }
+    return true;
+}
+//### add-two-digit-lists
+ListNode* add_digit_lists(ListNode* first, ListNode* second) {
+    ListNode dummy(0);
+    ListNode* tail = &dummy;
+    int carry = 0;
+    while (first != nullptr || second != nullptr || carry != 0) {
+        int total = carry;
+        if (first != nullptr) { total += first->val; first = first->next; }
+        if (second != nullptr) { total += second->val; second = second->next; }
+        tail->next = new ListNode(total % 10);
+        tail = tail->next;
+        carry = total / 10;
+    }
+    return dummy.next;
+}
+//### odd-even-regroup
+ListNode* group_odd_even(ListNode* head) {
+    if (head == nullptr) return nullptr;
+    ListNode* odd = head;
+    ListNode* even_head = head->next;
+    ListNode* even = even_head;
+    while (even != nullptr && even->next != nullptr) {
+        odd->next = even->next;
+        odd = odd->next;
+        even->next = odd->next;
+        even = even->next;
+    }
+    odd->next = even_head;
+    return head;
+}
+//### cycle-start-index
+int cycle_start_index(ListNode* head) {
+    ListNode* slow = head;
+    ListNode* fast = head;
+    while (fast != nullptr && fast->next != nullptr) {
+        slow = slow->next;
+        fast = fast->next->next;
+        if (slow == fast) {
+            ListNode* start = head;
+            int index = 0;
+            while (start != slow) {
+                start = start->next;
+                slow = slow->next;
+                index++;
+            }
+            return index;
+        }
+    }
+    return -1;
+}
+//### strict-majority
+int majority_value(vector<int>& numbers) {
+    int candidate = -1, votes = 0;
+    for (int x : numbers) {
+        if (votes == 0) candidate = x;
+        votes += x == candidate ? 1 : -1;
+    }
+    int count = 0;
+    for (int x : numbers) if (x == candidate) count++;
+    return count * 2 > (int) numbers.size() ? candidate : -1;
+}

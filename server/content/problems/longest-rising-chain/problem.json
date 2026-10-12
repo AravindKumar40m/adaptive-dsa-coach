@@ -1,0 +1,24 @@
+{
+  "slug": "longest-rising-chain",
+  "title": "Longest Rising Chain",
+  "concept": "dp",
+  "difficulty": "medium",
+  "statement": "A sensor logs one reading per minute in `values`. A **rising chain** is a set of readings, taken in time order (they do not have to be next to each other), where every reading is **strictly larger** than the one before it.\n\nReturn the length of the longest rising chain. An empty log has length `0`.",
+  "constraints": [
+    "0 <= len(values) <= 100000",
+    "-1000000000 <= values[i] <= 1000000000"
+  ],
+  "signature": { "name": "longest_rising_chain", "params": [{ "name": "values", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[10, 9, 2, 5, 3, 7, 101, 18]], "expected": 4, "explanation": "One longest chain is 2, 3, 7, 18 (another is 2, 5, 7, 101). No chain of 5 readings exists." },
+    { "args": [[5, 5, 5]], "expected": 1, "explanation": "Equal readings do not count as rising, so a chain can only hold one reading." }
+  ],
+  "edgeTests": [[[]], [[7]], [[1, 2, 3, 4, 5]], [[5, 4, 3, 2, 1]], [[1, 3, 2, 4, 3, 5]], [[-3, -1, -2, 0]]],
+  "expected": { "time": "O(n log n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Look at where a chain ENDS. Of two chains with the same length, which one is easier to extend later: the one that ends on a small reading or on a large one?",
+    "pattern": "Keep, for each chain length, the smallest reading that a chain of that length can end with. That list stays sorted, so you can binary-search it.",
+    "pseudocode": "tails = empty list (always sorted)\nfor each x in values:\n  p = first position in tails with tails[p] >= x\n  if p is past the end: append x\n  else: tails[p] = x\nreturn size of tails",
+    "walkthrough": "A simple answer: best[i] = 1 + the largest best[j] over earlier readings j with values[j] < values[i]; the answer is the largest best[i]. That is O(n^2). To go faster, let tails[k] be the smallest possible last reading of a rising chain with k + 1 readings. tails is always sorted, so for each new reading x binary-search the first tail that is >= x (equal values must REPLACE, not extend, because the chain is strictly rising). Replace that tail with x, or append x when it is larger than every tail. The size of tails is the answer. Note that tails itself is not a real chain, only its length is meaningful. O(n log n). Python: bisect_left. C++: lower_bound."
+  }
+}

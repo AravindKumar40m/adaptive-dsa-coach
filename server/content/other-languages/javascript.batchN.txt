@@ -1,0 +1,144 @@
+//### kth-in-sorted-matrix
+function kthInMatrix(matrix, k) {
+  const rows = matrix.length, cols = matrix[0].length;
+  let lo = matrix[0][0], hi = matrix[rows - 1][cols - 1];
+  while (lo < hi) {
+    const mid = lo + Math.floor((hi - lo) / 2);
+    let count = 0, c = cols - 1;
+    for (let r = 0; r < rows; r++) {
+      while (c >= 0 && matrix[r][c] > mid) c--;
+      count += c + 1;
+    }
+    if (count >= k) hi = mid; else lo = mid + 1;
+  }
+  return lo;
+}
+//### longest-run-with-k-flips
+function longestOnesAfterFlips(bits, k) {
+  let left = 0, zeros = 0, best = 0;
+  for (let right = 0; right < bits.length; right++) {
+    zeros += 1 - bits[right];
+    while (zeros > k) {
+      zeros -= 1 - bits[left];
+      left++;
+    }
+    best = Math.max(best, right - left + 1);
+  }
+  return best;
+}
+//### longest-at-most-k-kinds
+function longestWithKKinds(items, k) {
+  const counts = new Map();
+  let left = 0, best = 0;
+  for (let right = 0; right < items.length; right++) {
+    counts.set(items[right], (counts.get(items[right]) || 0) + 1);
+    while (counts.size > k) {
+      const y = items[left];
+      counts.set(y, counts.get(y) - 1);
+      if (counts.get(y) === 0) counts.delete(y);
+      left++;
+    }
+    best = Math.max(best, right - left + 1);
+  }
+  return best;
+}
+//### shortest-sum-at-least
+function shortestSumAtLeast(numbers, target) {
+  const n = numbers.length;
+  const prefix = [0];
+  for (const x of numbers) prefix.push(prefix[prefix.length - 1] + x);
+  let best = n + 1;
+  const window = [];
+  let head = 0;
+  for (let j = 0; j <= n; j++) {
+    while (head < window.length && prefix[j] - prefix[window[head]] >= target) {
+      best = Math.min(best, j - window[head]);
+      head++;
+    }
+    while (head < window.length && prefix[window[window.length - 1]] >= prefix[j]) window.pop();
+    window.push(j);
+  }
+  return best <= n ? best : -1;
+}
+//### min-add-brackets
+function minBracketFixes(text) {
+  let waiting = 0, fixes = 0;
+  for (const ch of text) {
+    if (ch === "(") waiting++;
+    else if (waiting > 0) waiting--;
+    else fixes++;
+  }
+  return fixes + waiting;
+}
+//### valid-stack-sequence
+function validPopOrder(pushed, popped) {
+  const stack = [];
+  let j = 0;
+  for (const x of pushed) {
+    stack.push(x);
+    while (stack.length > 0 && j < popped.length && stack[stack.length - 1] === popped[j]) {
+      stack.pop();
+      j++;
+    }
+  }
+  return j === popped.length;
+}
+//### asteroid-survivors
+function asteroidSurvivors(asteroids) {
+  const stack = [];
+  for (const x of asteroids) {
+    let alive = true;
+    while (alive && x < 0 && stack.length > 0 && stack[stack.length - 1] > 0) {
+      const top = stack[stack.length - 1];
+      if (top < -x) stack.pop();
+      else if (top === -x) { stack.pop(); alive = false; }
+      else alive = false;
+    }
+    if (alive) stack.push(x);
+  }
+  return stack;
+}
+//### zeros-to-end
+function zerosToEnd(numbers) {
+  const a = numbers.slice();
+  let write = 0;
+  for (let read = 0; read < a.length; read++) {
+    if (a[read] !== 0) {
+      const tmp = a[write];
+      a[write] = a[read];
+      a[read] = tmp;
+      write++;
+    }
+  }
+  return a;
+}
+//### closest-triplet-sum
+function closestTripleSum(numbers, target) {
+  const a = numbers.slice().sort((x, y) => x - y);
+  let best = null;
+  for (let i = 0; i + 2 < a.length; i++) {
+    let lo = i + 1, hi = a.length - 1;
+    while (lo < hi) {
+      const s = a[i] + a[lo] + a[hi];
+      if (best === null || Math.abs(s - target) < Math.abs(best - target) || (Math.abs(s - target) === Math.abs(best - target) && s < best)) best = s;
+      if (s < target) lo++;
+      else if (s > target) hi--;
+      else return s;
+    }
+  }
+  return best;
+}
+//### product-below-k-count
+function countSmallProductRuns(numbers, limit) {
+  if (limit <= 1) return 0;
+  let product = 1, left = 0, count = 0;
+  for (let right = 0; right < numbers.length; right++) {
+    product *= numbers[right];
+    while (product >= limit) {
+      product = Math.floor(product / numbers[left]);
+      left++;
+    }
+    count += right - left + 1;
+  }
+  return count;
+}

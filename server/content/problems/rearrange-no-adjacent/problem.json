@@ -1,0 +1,24 @@
+{
+  "slug": "rearrange-no-adjacent",
+  "title": "Rearrange Without Neighbours",
+  "concept": "heaps",
+  "difficulty": "medium",
+  "statement": "Can the letters of `letters` be put in a different order so that **no two equal letters are next to each other**? Every letter must be used exactly once.\n\nReturn `true` if such an order exists, otherwise `false`.",
+  "constraints": [
+    "1 <= len(letters) <= 500",
+    "letters uses only lowercase English letters"
+  ],
+  "signature": { "name": "can_rearrange", "params": [{ "name": "letters", "type": "string" }], "returns": "bool" },
+  "examples": [
+    { "args": ["aab"], "expected": true, "explanation": "`aba` has no equal neighbours." },
+    { "args": ["aaab"], "expected": false, "explanation": "Three `a`s need at least two other letters between them, but there is only one `b`." }
+  ],
+  "edgeTests": [["a"], ["aa"], ["ab"], ["aabb"], ["aaabb"], ["aaaabc"]],
+  "expected": { "time": "O(n log k)", "space": "O(k)" },
+  "hints": {
+    "nudge": "At each position, which letter is the most dangerous to leave for later? Which letter should you place so the problem does not get stuck?",
+    "pattern": "Greedy with a max-heap of letter counts: always place the most frequent remaining letter that is not the one you just placed.",
+    "pseudocode": "heap = (count, letter) for each letter, largest count first\nheld = nothing\nwhile heap or held:\n  if heap is empty: return false\n  take the top (count, letter); place it\n  if held: push held back; held = nothing\n  if count > 1: held = (count - 1, letter)\nreturn true",
+    "walkthrough": "Trying every order is n! work. Greedy works: the letter with the most copies left is the hardest to place, so use it whenever you can. Because the same letter cannot be placed twice in a row, after placing a letter set it aside for one round (`held`) and put it back into the heap after the NEXT letter has been placed. If the heap is empty while a letter is still held, the only letter left would have to go next to itself: return false. When everything has been placed, return true. A faster check without the heap: it is possible exactly when the most frequent letter appears at most (n + 1) / 2 times."
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "slug": "frequency-sort",
+  "title": "Sort by How Often",
+  "concept": "sorting",
+  "difficulty": "medium",
+  "statement": "Rearrange `numbers` so that the values that appear **most often come first**. All copies of a value stay together. If two values appear equally often, the **smaller value comes first**.\n\nFor example `[4, 6, 4, 2, 6, 4]` becomes `[4, 4, 4, 6, 6, 2]`: 4 appears 3 times, 6 twice, 2 once.",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "-1000000000 <= numbers[i] <= 1000000000"
+  ],
+  "signature": { "name": "frequency_sort", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[4, 6, 4, 2, 6, 4]], "expected": [4, 4, 4, 6, 6, 2], "explanation": "4 (three times), then 6 (twice), then 2 (once)." },
+    { "args": [[3, 1, 2]], "expected": [1, 2, 3], "explanation": "Every value appears once, so the smaller values come first." }
+  ],
+  "edgeTests": [[[]], [[5]], [[2, 2, 1, 1]], [[-1, -1, 3]], [[9, 8, 9, 8, 7]], [[1, 2, 2, 3, 3, 3]]],
+  "expected": { "time": "O(n log n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "You need each value's count first. After that, what is the rule that decides which VALUE comes before which?",
+    "pattern": "Count with a hash map, sort the distinct values by (count descending, value ascending), and write each value out as many times as it appears.",
+    "pseudocode": "counts = how many times each value appears\nvalues = distinct values sorted by (-count, value)\nresult = empty\nfor v in values: add v to result counts[v] times\nreturn result",
+    "walkthrough": "First count the occurrences of every value with a hash map. Then sort only the DISTINCT values, using a sort key made of two parts: the count (bigger first) and, to break ties, the value itself (smaller first). Finally build the answer by writing each value as many times as its count. Sorting the distinct values costs O(d log d) with d <= n, plus O(n) to count and to write out the answer. Many languages let you sort the whole list directly with a key function (count, value); that works too but repeats the count lookup for every element."
+  }
+}
