@@ -40,6 +40,8 @@ Version tags written on rows: `LOGGING_VERSION = log-3`, `SCORING_VERSION = scor
 | startedAt, secondsSpent | when the problem was opened (browser clock) and seconds until this click | browser |
 | sessionId, scoringVersion, loggingVersion, durationMs, createdAt | session; rule versions; our API call time; click time | server |
 
+**Failing hidden test shown after a failed Submit** (`submissions.revealedTest` {idx, kind, verdict}): after a Submit that is wrong, crashed or timed out, the server shows the learner ONE failing hidden test (the smallest failing input) with its expected output and what the code returned; the row records which test was shown. It is not recorded for Runs, accepted solutions or compile errors. It is not "help" (only hints lower the independence score). The API sends it as `hiddenFailure` {ordinal, of, kind, verdict, args, expected, actual} (never the test's internal number); the list of hidden tests in the same response still carries only pass or fail.
+
 ### `ratingupdates` (one row per rating change; why a rating moved)
 learnerId, concept, problem, submissionId, ratingBefore/After, difficultyBefore/After, expected (E), score (S), k, components {correctness, optimality, independence, efficiency}, attemptsOnConceptBefore, failsBefore, secondsSpent, hintLevel, sessionId, scoringVersion.
 

@@ -96,6 +96,9 @@ pre.codeblock.quiz-code { margin: 6px 0 0; max-height: none; overflow-x: auto; o
 .quiz-topic:last-child { border-bottom: 0; }
 .quiz-topic b { min-width: 130px; }
 
+/* the hidden test shown after a failed Submit */
+.hidden-fail { margin-top: 12px; padding: 12px 14px; border: 1px solid var(--line-strong); border-left: 3px solid var(--bad); border-radius: var(--radius-s); background: var(--bg-raised); }
+
 /* the scaling check under a correct Submit */
 .scaling { margin-top: 12px; padding: 12px 14px; }
 .scaling-chart { display: block; width: 100%; max-width: 280px; margin-top: 8px; background: var(--bg-sunken); border-radius: var(--radius-s); }

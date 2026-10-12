@@ -103,6 +103,14 @@ await test("summarizeResult keeps only visible tests (max 3), cuts long text, an
   assert.equal(big.visibleTests.length, 3); assert.ok(JSON.stringify(big).length < 4000, "summary is too big");
   for (const hostile of [null, undefined, 5, "text", [], { tests: "nope" }, { tests: [null, 5, { visible: true }] }]) summarizeResult(hostile);
 });
+await test("summarizeResult passes the ONE hidden test the learner was shown (cut to size), and is fine without it", () => {
+  const s = summarizeResult({ verdict: "wrong_answer", passed: 6, total: 21, hiddenFailure: { verdict: "wrong_answer", args: [[4]], expected: 4, actual: 0, kind: "edge", ordinal: 1, of: 19 }, tests: [] });
+  assert.deepEqual(s.failingHiddenTest, { verdict: "wrong_answer", input: "[[4]]", expected: "4", yourOutput: "0" });
+  assert.equal(summarizeResult({ verdict: "accepted", tests: [] }).failingHiddenTest, null);
+  const hostile = summarizeResult({ hiddenFailure: { verdict: "x".repeat(5000), args: ["y".repeat(5000)], expected: "z".repeat(5000), actual: "w".repeat(5000) } });
+  assert.ok(JSON.stringify(hostile.failingHiddenTest).length < 1000, "hostile hidden-failure data must be cut (20,000 characters in, under 1,000 out)");
+  summarizeResult({ hiddenFailure: "nope" }); summarizeResult({ hiddenFailure: 5 }); summarizeResult({ hiddenFailure: null });
+});
 await test("the user message names the problem, the function signature and the constraints", () => {
   const m = buildUserMessage({ problem, language: "java", code: "class Solution {}", summary });
   assert.match(m, /peak_altitude\(changes: int\[\]\) -> int/); assert.match(m, /Constraints: 1 <= n/); assert.match(m, /<language>java<\/language>/);

@@ -795,3 +795,37 @@ Format: one entry per step. Newest at the bottom.
 **Not committed.** Per the user's rule, nothing from Batch 4 is committed or pushed until the user says so. Pending in the working tree: the analyzer (`complexity/`), its route and models, the generators and builder, the seed and validate scripts, three test files, the client card and Progress panel, docs, and small edits to the grader, run route, progress report, consent, erase, versions and styles.
 
 **Next:** the user restarts both dev servers (they run older code: for example the consent version) and decides about committing; then decide whether optimality should feed the rating, and whether to extend the scaling check to more problems or languages. Hosting is still open.
+
+### Day 6 (2026-10-13): show why a Submit failed: one failing hidden test (built and verified, NOT committed)
+
+**Problem (user):** a Run passes the 2 visible examples, then the Submit says "13 / 22" (or here "6 / 21") and the learner has no way to see what is wrong: only a count was shown for hidden tests.
+
+**Decisions (made and stated before building; the user can change them)**
+- After a Submit that is **wrong, crashed or timed out**, the server shows **ONE** failing hidden test, the **smallest failing input** (easiest to trace by hand; ties go to the lowest test number), with its input, the expected output and what the code returned (a crash shows the error name; a hang shows "no answer in time"). The other hidden tests stay hidden; passed tests and tests that never ran are never shown.
+- Never for a Run, an accepted solution or a compile error. Same in all four languages (the grader already collects each test's output the same way).
+- **Scoring unchanged:** seeing the case is not "help" (only hints lower independence), and only the first 3 failed Submits per problem move the rating. **No consent change** (same code and results, only displayed). The AI "Explain my result" also receives the case (the learner can already see it).
+- **Accepted trade-off:** a determined learner can collect hidden cases one Submit at a time and hard-code answers; this only fools their own rating (same "trust the learner" decision as for the placement quiz); one smallest case per Submit keeps it slow.
+
+**Built**
+- `server/src/grading/reveal.js` (pure `chooseHiddenFailure`), used by `routes/run.js`: `POST /api/submit` returns `hiddenFailure` ({ordinal, of, kind, verdict, args, expected, actual} or null; the test's internal number is never sent); the `tests` list still carries only pass or fail for hidden tests. `submissions.revealedTest` {idx, kind, verdict} logs which test was shown.
+- `help/llm.js` `summarizeResult` passes `failingHiddenTest` (cut to size, hostile input safe) to the AI helper.
+- Client `workspace/ConsolePane.jsx`: block "Hidden test 1 of 19 · an edge case · the smallest one your code fails" with Input / Expected / Yours; the hidden-tests line now says "One hidden test your code fails is shown here."; when every visible example passes the block comes FIRST (above the passed examples), otherwise after the failing examples.
+
+**Tested (real results)**
+- `test:reveal` (15 checks, no services): several failures -> the smallest input wins over the first failing one; ties; a failing visible example never counts as "revealed"; a crash shows the error name; the test the time limit hit is shown but tests that never ran are not; one test only, with only the intended fields; no hidden tests / no results do not crash.
+- `test:reveal-flow` (19 checks, real accounts and Judge0, own API copy on 4119): the exact scenario: a solution that knows only the visible examples gets Run 2 of 2, then Submit "6 of 21" with hidden test 1 of 19 (an edge case) shown: input `[4]`, expected 4, the code returned 0, and it IS the smallest failing hidden input in the database; no other failing input appears anywhere in the response; the internal number is absent; the log row records the shown test; a crash shows `ERR:KeyError`; a hang on the first hidden input shows that test as a time-limit failure (10 s); JavaScript and C++ show the same test; nothing is shown for an accepted solution or a compile error; fixing the code afterwards still earns full independence (no hint level), so seeing the case is not scored as help.
+- `test:llm` (12 checks) includes the new summary checks. **All 29 suites pass** (the 28 earlier ones plus `test:reveal` and `test:reveal-flow`); `test:auth` passed this time against the user's own dev server because it was restarted onto the current consent version.
+- **Real Chrome** (own temporary API and page servers, stopped afterwards by recorded PIDs; 13 checks, 0 failures): Run shows 2 / 2 and no hidden test; Submit shows "6 / 21 tests passed", "Hidden tests: 4 of 19 passed. One hidden test your code fails is shown here.", exactly one block "HIDDEN TEST 1 OF 19 · AN EDGE CASE · THE SMALLEST ONE YOUR CODE FAILS" with Input [4], Expected 4, Yours 0; the block is above the passed examples and visible in the results pane without scrolling; after fixing the code and an accepted Submit no block appears; at 390 px the block fits and nothing scrolls sideways.
+
+**Problems found by looking and fixed**
+- The first screenshot showed the block BELOW the passed examples, below the fold of the results pane: for the very case the user described (examples pass, hidden tests fail) the useful part was hidden. It now comes first when all visible examples pass.
+- Test mistakes of mine (not app bugs): a too-tight size bound in the `summarizeResult` hostile-input test (the cut fields can add up to about 800 characters with JSON escaping: bound now 1,000 against 20,000 uncut); case-sensitive patterns against capitalised labels (third time: the page uppercases `.eyebrow` and `<b>` labels through CSS); and a "FAIL" count that matched the words "YOUR CODE FAILS" in the page text (count lines that START with FAIL).
+
+**Known limits**
+- One hidden test per Submit: a learner with many failing tests fixes them one Submit at a time (this is deliberate, but each failed Submit past the third no longer moves the rating, so they may need several Submits).
+- The shown test is the smallest failing INPUT, which is not always the most instructive one (for example a large input that fails for a different reason than the small ones).
+- A learner can still hard-code (see the accepted trade-off); a crash whose cause is the harness's own limits (very deep recursion on a hidden input) is shown as an error name only.
+
+**Not committed.** Per the user's rule, nothing is committed or pushed until the user says so. Pending: `grading/reveal.js`, the changes to `routes/run.js`, `models/Submission.js`, `help/llm.js`, the client results pane and styles, the two new test files plus the `test-llm.js` addition, `package.json` scripts, README, data dictionary and this log.
+
+**Next:** the user decides about committing; open decisions unchanged: optimality in the rating, more scaling-check problems or languages, hosting, human review of the quiz concept questions and problem statements.

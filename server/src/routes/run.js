@@ -2,6 +2,7 @@ import { Router } from "express";
 import { LANGUAGES } from "../grading/languages.js";
 import { gradeCode } from "../grading/grader.js";
 import { decodeValue } from "../grading/harness.js";
+import { chooseHiddenFailure } from "../grading/reveal.js";
 import { Problem } from "../models/Problem.js";
 import { TestCase } from "../models/TestCase.js";
 import { Submission } from "../models/Submission.js";
@@ -52,6 +53,12 @@ async function handle(mode, req, res) {
   }
   const durationMs = Date.now() - started;
 
+  // After a failed SUBMIT (wrong answer, crash, time limit) show ONE failing hidden test: the smallest input, with its expected
+  // output and what the code returned (see grading/reveal.js). Never for a Run, an accepted solution or a compile error.
+  const hiddenFailure = mode === "submit" && ["wrong_answer", "runtime_error", "time_limit"].includes(graded.verdict)
+    ? chooseHiddenFailure({ results: graded.tests, tests, decode: (enc) => showActual(problem.signature.returns, enc) })
+    : null;
+
   const passed = graded.tests.filter((t) => t.verdict === "passed").length;
   const total = tests.length;
 
@@ -75,6 +82,7 @@ async function handle(mode, req, res) {
       errorName: graded.errorName, errorFamily: graded.errorFamily, firstFailKind: signals.firstFailKind,
       codeStats: signals.codeStats, approach: signals.approach, activity,
       openSource: signals.openSource, recommendationId: signals.recommendationId, runsOnProblemBefore: signals.runsOnProblemBefore,
+      revealedTest: hiddenFailure ? { idx: hiddenFailure.idx, kind: hiddenFailure.kind, verdict: hiddenFailure.verdict } : undefined, // what we showed the learner
       scoringVersion: SCORING_VERSION, loggingVersion: LOGGING_VERSION,
     });
     submissionId = row._id;
@@ -122,6 +130,7 @@ async function handle(mode, req, res) {
   res.json({
     mode, problem: slug, verdict: graded.verdict, passed, total,
     tests: shown,
+    hiddenFailure: hiddenFailure && (({ idx: _internal, ...visibleToLearner }) => visibleToLearner)(hiddenFailure), // null, or the ONE hidden test we show after a failed Submit: { ordinal, of, kind, verdict, args, expected, actual } (never the test's internal number)
     compileOutput: graded.compileOutput, stdout: graded.stdout, stderr: graded.stderr,
     timeSec: graded.timeSec, memoryKb: graded.memoryKb,
     skill,

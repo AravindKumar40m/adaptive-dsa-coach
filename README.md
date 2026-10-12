@@ -21,7 +21,7 @@ See `CLAUDE.md` for the idea and decisions.
 | `core/` | `db` connection, `rateLimit`, `metrics` (timings), `versions` (version tags on log rows) |
 | `auth/` | `auth` (accounts, sessions, the login guard) and `google` sign-in |
 | `privacy/` | `consent` (the wording and its version) and `erase` (delete my data) |
-| `grading/` | `grader` (calls Judge0), `harness` (builds the hidden test program per language), `languages`, `errors` (mistake classifier) |
+| `grading/` | `grader` (calls Judge0), `harness` (builds the hidden test program per language), `languages`, `errors` (mistake classifier), `reveal` (which failing hidden test to show) |
 | `skill/` | `skill` (the Elo maths), `rating` (applies it), `learnerState`, `history` (solve history) |
 | `recommend/` | `picker` (v1), `recommender2` (v2), `policy` (v1/v2/ab switch), `review` (spaced review) |
 | `help/` | `hints` (the ladder), `llm` (AI explanation), `struggle` (nudge rule), `nudge` (nudge, database side) |
@@ -224,3 +224,12 @@ Our tests are small, so a correct but slow solution passes them. After a **corre
 - **Content commands:** `npm run content:complexity` (checks every generator: deterministic, within the problem's limits, our brute and optimal solutions agree on the generated inputs, and the source embedded in the program runs ON ITS OWN; then loads `complexityconfigs`).
 - **API:** `POST /api/complexity { submission }` (the id comes back from `POST /api/submit`, which also says `complexity.available`). Only the learner's own correct Python Submit of a configured problem; 30 analyses an hour; the same Submit is measured once. Tests (from `server/`): `test:complexity` (the maths with noisy synthetic timings, the program, and the whole chain with the local Python, no services) and `test:complexity-flow` (real accounts and Judge0; starts an API copy on port 4116).
 - **Consent:** the wording lists "how fast your submitted solution runs on larger inputs that we generate" (version `2026-10-12.3`: everyone agrees again once).
+
+## Showing why a Submit failed: one failing hidden test
+Scenario: a Run passes the 2 visible examples, then the Submit says "6 of 21 tests passed" and gives nothing to debug with. Now, after a Submit that is **wrong, crashed or timed out**, the page shows **one failing hidden test** like an example: "Hidden test 1 of 19 · an edge case · the smallest one your code fails", with the **input**, the **expected** output and **what your code returned** (for a crash: the error name; for a hang: "no answer in time"). The other hidden tests stay hidden.
+- **Which one** (`server/src/grading/reveal.js`, pure): the smallest failing input (easiest to trace by hand), ties to the lowest test number. Never a passed test, never a test that did not run, never for a Run, an accepted solution or a compile error, at most one per Submit. It works the same in all four languages (the grader already collects every test's output the same way).
+- **API:** `POST /api/submit` returns `hiddenFailure` ({ordinal, of, kind, verdict, args, expected, actual}, or null). The `tests` list still shows only pass or fail for hidden tests, and the test's internal number is never sent. The Submit's log row records which test was shown (`revealedTest`).
+- **Page:** when every visible example passes, the failing hidden test is the FIRST thing in the results (above the passed examples); otherwise it comes after the failing examples. The AI "Explain my result" receives it too (the learner can already see it).
+- **Scoring is unchanged:** seeing this case is not "help" (only hints lower the independence score), and only the first 3 failed Submits per problem still move the rating.
+- **Accepted trade-off:** a determined learner could collect hidden cases one Submit at a time and hard-code answers. That only fools their own rating (the same "trust the learner" decision as for the placement quiz); one smallest case per Submit keeps it slow. No consent change: it is the same code and results, only now displayed.
+- **Tests (from `server/`):** `test:reveal` (the choice rule, no services) and `test:reveal-flow` (real accounts and Judge0: a solution that passes the examples but not the hidden tests; a crash; a hang; JavaScript and C++; nothing shown for accepted code or compile errors; no other input leaks; scoring unchanged; starts an API copy on port 4119).

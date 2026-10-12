@@ -46,6 +46,13 @@ export function summarizeResult(result) {
       expected: clip(JSON.stringify(t.expected), 200),
       yourOutput: clip(JSON.stringify(t.actual), 200),
     })),
+    // the one hidden test the learner was shown after a failed Submit (they can already see it, so the tutor may use it)
+    failingHiddenTest: r.hiddenFailure && typeof r.hiddenFailure === "object" ? {
+      verdict: clip(r.hiddenFailure.verdict, 30),
+      input: clip(JSON.stringify(r.hiddenFailure.args), 300),
+      expected: clip(JSON.stringify(r.hiddenFailure.expected), 200),
+      yourOutput: clip(JSON.stringify(r.hiddenFailure.actual), 200),
+    } : null,
   };
 }
 

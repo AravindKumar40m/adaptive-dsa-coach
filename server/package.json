@@ -42,6 +42,8 @@
     "test:struggle": "node scripts/tests/test-struggle.js",
     "test:insights": "node scripts/tests/test-insights.js",
     "test:quiz": "node scripts/tests/test-quiz.js",
+    "test:reveal": "node scripts/tests/test-reveal.js",
+    "test:reveal-flow": "node --env-file=../.env scripts/tests/test-reveal-flow.js",
     "test:complexity": "node scripts/tests/test-complexity.js",
     "test:complexity-flow": "node --env-file=../.env scripts/tests/test-complexity-flow.js",
     "complexity:validate": "node --env-file=../.env scripts/content/validate-complexity.js",

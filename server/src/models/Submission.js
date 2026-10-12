@@ -28,6 +28,7 @@ const schema = new mongoose.Schema(
     wallTimeSec: Number,
     errorName: String, // IndexError, NullPointerException, SIGSEGV ... (null when it did not crash)
     errorFamily: String, // shared vocabulary: index_out_of_range, null_reference, zero_division, syntax, timeout ...
+    revealedTest: { idx: Number, kind: String, verdict: String, _id: false }, // the hidden test we showed after this failed Submit (null otherwise)
     firstFailKind: String, // example | edge | random: the kind of the first test that failed
     codeStats: mongoose.Schema.Types.Mixed, // lines, loops, loopDepth, selfCalls, usesSort, usesHash ...
     approach: mongoose.Schema.Types.Mixed, // { closest: brute|better|optimal, similarity, byApproach }

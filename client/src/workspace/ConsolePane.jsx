@@ -103,6 +103,23 @@ function ScalingCard({ s }) {
   );
 }
 
+const HIDDEN_KIND = { edge: "an edge case", random: "a random case" };
+
+// After a failed Submit: the ONE hidden test the server chose (the smallest failing input), shown like an example.
+function HiddenFailure({ f }) {
+  const timedOut = f.verdict === "time_limit";
+  return (
+    <div className="hidden-fail" role="group" aria-label="A hidden test your code fails">
+      <div className="eyebrow">Hidden test {f.ordinal} of {f.of} · {HIDDEN_KIND[f.kind] ?? "a hidden case"} · the smallest one your code fails</div>
+      {timedOut && <p className="muted" style={{ marginTop: 6 }}>Your code did not finish this input in time. It may loop forever on it, or be too slow.</p>}
+      <div className="kv"><b>Input</b><pre className="codeblock mono">{f.args.map((a) => JSON.stringify(a)).join(",  ")}</pre></div>
+      <div className="kv"><b>Expected</b><pre className="codeblock mono">{JSON.stringify(f.expected)}</pre></div>
+      <div className="kv"><b>Yours</b><pre className="codeblock mono bad">{timedOut ? "(no answer in time)" : describeActual(f.actual)}</pre></div>
+      <p className="faint" style={{ fontSize: 12.5, marginTop: 6 }}>Try this input by hand, or print inside your function while you Run it with a similar example. The other hidden tests stay hidden.</p>
+    </div>
+  );
+}
+
 export function ConsolePane({ busy, mode, result, onNext, solved, rate, nudge, onNudge, scaling }) {
   const [picked, setPicked] = useState(0);
   // jump to the first failing example when a new result arrives
@@ -149,9 +166,22 @@ export function ConsolePane({ busy, mode, result, onNext, solved, rate, nudge, o
       {accepted && result.mode === "submit" && scaling && <ScalingCard s={scaling} />}
     </>
   );
+  // the hidden-test summary and, after a failed Submit, the ONE failing hidden test the server chose
+  const hiddenSection = (
+    <>
+      {result.mode === "submit" && hidden.length > 0 && (
+        <div className="hidden-note">Hidden tests: {hidden.filter((t) => t.verdict === "passed").length} of {hidden.length} passed{hidden.some((t) => t.verdict !== "passed") ? (result.hiddenFailure ? ". One hidden test your code fails is shown here." : ". Their inputs stay hidden, so use the examples to find the bug.") : "."}</div>
+      )}
+      {result.mode === "submit" && result.hiddenFailure && <HiddenFailure f={result.hiddenFailure} />}
+    </>
+  );
+  // when every visible example passes, the hidden test is the only thing left to debug with: it comes FIRST, not below the passed examples
+  const hiddenFirst = result.mode === "submit" && Boolean(result.hiddenFailure) && visible.every((t) => t.verdict === "passed");
   const details = (
     <>
       {result.verdict === "compile_error" && <pre className="codeblock bad mono" style={{ marginTop: 12, maxHeight: 220 }}>{result.compileOutput}</pre>}
+
+      {hiddenFirst && hiddenSection}
 
       {visible.length > 0 && result.verdict !== "compile_error" && (
         <>
@@ -166,9 +196,7 @@ export function ConsolePane({ busy, mode, result, onNext, solved, rate, nudge, o
         </>
       )}
 
-      {result.mode === "submit" && hidden.length > 0 && (
-        <div className="hidden-note">Hidden tests: {hidden.filter((t) => t.verdict === "passed").length} of {hidden.length} passed{hidden.some((t) => t.verdict !== "passed") ? ". Their inputs stay hidden, so use the examples to find the bug." : "."}</div>
-      )}
+      {!hiddenFirst && hiddenSection}
 
       {result.stdout && (<div className="kv"><b>Printed</b><pre className="codeblock mono">{result.stdout}</pre></div>)}
       {!accepted && result.verdict !== "compile_error" && result.stderr && (<div className="kv"><b>Error</b><pre className="codeblock bad mono">{result.stderr}</pre></div>)}
