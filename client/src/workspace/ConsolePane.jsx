@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Arrow } from "../components/icons.jsx";
+import { Arrow, Footsteps } from "../components/icons.jsx";
 import { VERDICTS, describeActual, prettyConcept } from "../components/ui.jsx";
 import { RateProblem } from "./Feedback.jsx";
 
@@ -43,7 +43,7 @@ function SkillCard({ skill }) {
   );
 }
 
-function Case({ t }) {
+function Case({ t, onStep }) {
   const [label] = VERDICTS[t.verdict] ?? [t.verdict];
   return (
     <div>
@@ -51,6 +51,7 @@ function Case({ t }) {
       <div className="kv"><b>Input</b><pre className="codeblock mono">{t.args.map((a) => JSON.stringify(a)).join(",  ")}</pre></div>
       <div className="kv"><b>Expected</b><pre className="codeblock mono">{JSON.stringify(t.expected)}</pre></div>
       <div className="kv"><b>Yours</b><pre className={`codeblock mono ${t.verdict === "passed" ? "" : "bad"}`}>{describeActual(t.actual)}</pre></div>
+      {onStep && t.verdict !== "passed" && t.verdict !== "not_run" && <button className="btn step-here" onClick={onStep}><Footsteps size={15} /> Step through this example</button>}
     </div>
   );
 }
@@ -106,7 +107,7 @@ function ScalingCard({ s }) {
 const HIDDEN_KIND = { edge: "an edge case", random: "a random case" };
 
 // After a failed Submit: the ONE hidden test the server chose (the smallest failing input), shown like an example.
-function HiddenFailure({ f }) {
+function HiddenFailure({ f, onStep }) {
   const timedOut = f.verdict === "time_limit";
   return (
     <div className="hidden-fail" role="group" aria-label="A hidden test your code fails">
@@ -115,12 +116,13 @@ function HiddenFailure({ f }) {
       <div className="kv"><b>Input</b><pre className="codeblock mono">{f.args.map((a) => JSON.stringify(a)).join(",  ")}</pre></div>
       <div className="kv"><b>Expected</b><pre className="codeblock mono">{JSON.stringify(f.expected)}</pre></div>
       <div className="kv"><b>Yours</b><pre className="codeblock mono bad">{timedOut ? "(no answer in time)" : describeActual(f.actual)}</pre></div>
-      <p className="faint" style={{ fontSize: 12.5, marginTop: 6 }}>Try this input by hand, or print inside your function while you Run it with a similar example. The other hidden tests stay hidden.</p>
+      {onStep && <button className="btn step-here" onClick={onStep}><Footsteps size={15} /> Step through this test</button>}
+      <p className="faint" style={{ fontSize: 12.5, marginTop: 6 }}>Try this input by hand, or step through it line by line. The other hidden tests stay hidden.</p>
     </div>
   );
 }
 
-export function ConsolePane({ busy, mode, result, onNext, solved, rate, nudge, onNudge, scaling }) {
+export function ConsolePane({ busy, mode, result, onNext, solved, rate, nudge, onNudge, scaling, onStep }) {
   const [picked, setPicked] = useState(0);
   // jump to the first failing example when a new result arrives
   useEffect(() => {
@@ -172,7 +174,7 @@ export function ConsolePane({ busy, mode, result, onNext, solved, rate, nudge, o
       {result.mode === "submit" && hidden.length > 0 && (
         <div className="hidden-note">Hidden tests: {hidden.filter((t) => t.verdict === "passed").length} of {hidden.length} passed{hidden.some((t) => t.verdict !== "passed") ? (result.hiddenFailure ? ". One hidden test your code fails is shown here." : ". Their inputs stay hidden, so use the examples to find the bug.") : "."}</div>
       )}
-      {result.mode === "submit" && result.hiddenFailure && <HiddenFailure f={result.hiddenFailure} />}
+      {result.mode === "submit" && result.hiddenFailure && <HiddenFailure f={result.hiddenFailure} onStep={onStep ? () => onStep({ kind: "failing" }) : null} />}
     </>
   );
   // when every visible example passes, the hidden test is the only thing left to debug with: it comes FIRST, not below the passed examples
@@ -192,7 +194,7 @@ export function ConsolePane({ busy, mode, result, onNext, solved, rate, nudge, o
               </button>
             ))}
           </div>
-          {shown && <Case t={shown} />}
+          {shown && <Case t={shown} onStep={onStep ? () => onStep({ kind: "example", index: picked + 1 }) : null} />}
         </>
       )}
 

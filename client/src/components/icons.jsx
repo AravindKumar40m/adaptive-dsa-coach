@@ -20,6 +20,16 @@ export const ThumbUp = make(<><path d="M7 11v9H4v-9h3z" /><path d="M7 11l4-8c1.5
 export const ThumbDown = (props) => <ThumbUp {...props} style={{ transform: "scaleY(-1)", ...(props.style ?? {}) }} />;
 export const Shield = make(<path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z" />);
 
+// Step-through controls
+export const StepFirst = make(<><path d="M6 5v14" /><path d="M18 6l-8 6 8 6z" /></>);
+export const StepBack = make(<path d="M16 6l-8 6 8 6z" />);
+export const StepNext = make(<path d="M8 6l8 6-8 6z" />);
+export const StepLast = make(<><path d="M18 5v14" /><path d="M6 6l8 6-8 6z" /></>);
+export const StepOverIcon = make(<><path d="M4 15a8 8 0 0 1 16 0" /><path d="M16 11l4 4-4 4" /></>);
+export const StepOutIcon = make(<><path d="M12 19V7" /><path d="M7 11l5-5 5 5" /><path d="M5 20h14" /></>);
+export const Close = make(<path d="M6 6l12 12M18 6L6 18" />);
+export const Footsteps = make(<><path d="M8 4c2 0 3 2 3 5s-1 5-3 5-3-1-3-3 1-7 3-7z" /><path d="M7 17h3" /><path d="M16 9c2 0 3 2 3 5s-1 5-3 5-3-1-3-3 1-7 3-7z" /></>);
+
 // The brand mark: a lamp shade over a small stem (a reading lamp).
 export function Logo({ size = 24 }) {
   return (

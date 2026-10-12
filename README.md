@@ -30,10 +30,11 @@ See `CLAUDE.md` for the idea and decisions.
 | `placement/` | the placement quiz: `quiz` (which question next, how answers become ratings, option shuffling: pure) and `apply` (writes the starting ratings, never over real practice) |
 | `insights/` | reports built from what is already logged: `gain` (engaged time and learning gain per hour), `progress` (the Progress page report), `loadProgress` (its database side) |
 | `kt/` | the new knowledge model (shadow mode) |
+| `debug/` | step through my code (Python): `program` (the Python program that traces a run: builds it), `runner` (runs it in Judge0 and reads the answer), `inputs` (checks a typed input) |
 
 **`server/scripts/`**: `tests/` (every `test-*.js`, run with `npm run test:...`), `tools/` (owner tools: cleanup, orphans, reset-password, logs-summary, metrics-report, llm-live-check), `dev/` (fake AI, fake Google, dev-db-poke), `content/` (seed, validate-references), `arena/` (model and policy simulations), `lib/` (helpers shared by the scripts). **`server/content/`** holds the problems, tests and the Python build tools.
 
-**`client/src/`**: `pages/` (Auth, Path, Placement, Problems, Shell), `components/` (TopBar, SkillMap, icons, ui), `lib/` (api, hooks, activityTracker, monacoTheme, authQuery), `workspace/` (the practice screen), `styles/`. `App.jsx` and `main.jsx` stay at the top.
+**`client/src/`**: `pages/` (Auth, Path, Placement, Problems, Shell), `components/` (TopBar, SkillMap, icons, ui), `lib/` (api, hooks, activityTracker, monacoTheme, authQuery), `debug/` (the step-through debugger: `model` and `explain` are plain logic with tests; `Debugger`, `Values`, `useDebug`, `SafeView` draw it), `workspace/` (the practice screen), `styles/`. `App.jsx` and `main.jsx` stay at the top.
 
 Old entries in the CLAUDE.md project log use the paths from the day they were written (for example `server/src/grader.js` is now `server/src/grading/grader.js`); this map says where each file is today.
 
@@ -233,3 +234,26 @@ Scenario: a Run passes the 2 visible examples, then the Submit says "6 of 21 tes
 - **Scoring is unchanged:** seeing this case is not "help" (only hints lower the independence score), and only the first 3 failed Submits per problem still move the rating.
 - **Accepted trade-off:** a determined learner could collect hidden cases one Submit at a time and hard-code answers. That only fools their own rating (the same "trust the learner" decision as for the placement quiz); one smallest case per Submit keeps it slow. No consent change: it is the same code and results, only now displayed.
 - **Tests (from `server/`):** `test:reveal` (the choice rule, no services) and `test:reveal-flow` (real accounts and Judge0: a solution that passes the examples but not the hidden tests; a crash; a hang; JavaScript and C++; nothing shown for accepted code or compile errors; no other input leaks; scoring unchanged; starts an API copy on port 4119).
+
+## Step through my code: a Python time-travel debugger (Day 6)
+A **Step through** button next to Run (Python only, 105 of the 120 problems; linked lists and trees later). It runs your code once with tracing on, then you replay it in the browser: forwards, backwards, over a call, out of a function, to the next change, to a breakpoint (click a line number), with a slider and keyboard keys. Every variable is shown at every step; positions (`i`, `j`, `lo`, `hi` ...) are drawn as markers under the array cell they point at; recursion shows a call tree and flags repeated identical calls; each step has a sentence in plain words, errors explain themselves with the real numbers. Inputs: an example, **the failing hidden test** (one click from the failed Submit), or your own.
+- **Not a rating event and not help.** No reference answer is shown for your own input (it would leak hidden answers). Capped at 2,000 steps and 2.5 s; an endless loop shows its first 2,000 steps and the lines that ran most.
+- **Why this design:** record once, replay: no delay per step and stepping back is free (LeetCode's Premium debugger asks a server at every step).
+- Full write-up, research on how debuggers work, what is different and the limits: `docs/step-through-debugger.md`. API: `POST /api/debug`. Tests (from `server/`): `test:debug`, `test:debug-view`, `test:debug-flow`.
+
+## Backups (added after the live database was lost on 2026-10-13)
+The database holds real learning data, so it is backed up by commands that only READ it. Run these from `server/`:
+
+| Command | What it does |
+|---|---|
+| `npm run db:backup` | Saves the whole database to ONE compressed file in `~/adaptive-dsa-backups` (outside the project; set `BACKUP_DIR` to change), plus a `.counts.json` with the number of documents in every collection. The newest 20 are kept. |
+| `npm run db:backup:verify` | Proves the newest backup (or `-- <file>`) works: restores it into a throwaway database, compares every collection with the recorded counts, removes the throwaway database, and tells you how the live database differs. Prints `BACKUP OK` or the problems. |
+| `npm run db:backup:loop` | Backs up now and then every 6 hours (`-- <hours>` to change) while the window stays open. Stop with Ctrl+C. |
+| `npm run db:restore -- <file>` | Restores a backup into a SEPARATE database (`adaptive_dsa_restored_...`) and prints the counts, so you can look before deciding. It refuses the live database, and it deletes nothing. |
+| `npm run db:indexes` | Rebuilds all indexes (unique emails, session expiry). The API does it at start-up; use this if the database was emptied while the API kept running. |
+
+- **Automatic:** `npm run content:seed` takes a backup first and writes nothing if the backup fails (`SKIP_BACKUP=1` to skip it, for a scratch database).
+- **Bringing a backup back as the live database is deliberately manual:** restore it into a separate database, check the counts, stop the API, then copy it over yourself. No tool does that for you.
+- **Rules the tools follow:** a backup is only ever written outside the project folder; the only database a tool may drop is a throwaway one whose name starts with `adaptive_dsa_check`, `adaptive_dsa_verify_`, `adaptive_dsa_backuptest_` or `adaptive_dsa_restored_`, and never the live one (the check runs before any connection is made).
+- **Habit:** run `npm run db:backup` before any bulk change to the database and after a day of real use. A backup you have not verified is a hope, so run `db:backup:verify` now and then.
+- `npm run test:backup` tests all of this on throwaway databases (counts, accents, indexes, a damaged file, retention, and every refusal).

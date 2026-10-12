@@ -1,6 +1,7 @@
 // Removes everything we recorded about one learner (their practice history, ratings and hints).
 import { CodeSnapshot } from "../models/CodeSnapshot.js";
 import { ComplexityMeasurement } from "../models/ComplexityMeasurement.js";
+import { DebugRun } from "../models/DebugRun.js";
 import { HintEvent } from "../models/HintEvent.js";
 import { MetricEvent } from "../models/MetricEvent.js";
 import { whoHash } from "../core/metrics.js";
@@ -29,6 +30,7 @@ export async function eraseLearnerData(learnerId) {
   await ModelPrediction.deleteMany({ learnerId });
   await CodeSnapshot.deleteMany({ learnerId });
   await ComplexityMeasurement.deleteMany({ learnerId });
+  await DebugRun.deleteMany({ learnerId });
   await MetricEvent.deleteMany({ who: whoHash(learnerId) });
   return { deleted: submissions.deletedCount };
 }

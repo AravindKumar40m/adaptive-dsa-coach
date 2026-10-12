@@ -14,6 +14,7 @@ import placement from "./routes/placement.js";
 import snapshots from "./routes/snapshots.js";
 import quiz from "./routes/quiz.js";
 import complexity from "./routes/complexity.js";
+import debug from "./routes/debug.js";
 import { startMongoPing, timeRequests } from "./core/metrics.js";
 
 const app = express();
@@ -30,7 +31,7 @@ app.use("/api", google);
 app.use("/api", content); // problems and concepts are public
 
 // Everything about one learner needs a login, only their own id, and (for anything that records) current consent.
-app.use(["/api/run", "/api/submit", "/api/hint", "/api/feedback", "/api/problem-event", "/api/placement", "/api/snapshot", "/api/quiz", "/api/complexity", "/api/learners"], guardLearner);
+app.use(["/api/run", "/api/submit", "/api/hint", "/api/feedback", "/api/problem-event", "/api/placement", "/api/snapshot", "/api/quiz", "/api/complexity", "/api/debug", "/api/learners"], guardLearner);
 app.use("/api", run);
 app.use("/api", skills);
 app.use("/api", hints);
@@ -39,6 +40,7 @@ app.use("/api", placement);
 app.use("/api", snapshots);
 app.use("/api", quiz);
 app.use("/api", complexity);
+app.use("/api", debug);
 
 // last-resort error handler: never leak stack traces to the browser
 app.use((err, _req, res, _next) => {

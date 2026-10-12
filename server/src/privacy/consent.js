@@ -2,7 +2,7 @@
 // If you change the wording, change the version: everyone must then agree again before anything is recorded.
 // NOTE: this wording is a plain-language DRAFT written by the developer, not legal advice. Have it reviewed
 // (privacy law, minors, your country's rules) before real learners use the platform.
-export const CONSENT_VERSION = "2026-10-12.3";
+export const CONSENT_VERSION = "2026-10-13";
 
 export const CONSENT_TEXT = {
   version: CONSENT_VERSION,
@@ -18,6 +18,7 @@ export const CONSENT_TEXT = {
       "how fast your submitted solution runs on larger inputs that we generate (we run your correct solution again on bigger and bigger inputs and time it, to show how it scales)",
       "the code in the editor as it develops: a saved copy about every 30 seconds while you work, so we can see how a solution grows",
       "when we suggest a hint because you seem stuck, and whether you used it; when a topic is due for review",
+      "when you use \"Step through\": which input you ran it on, how many steps the run had and how it ended (the step-by-step recording is shown to you and is not stored; we run your code in our sandbox to make it)",
       "how long our server takes to answer each request (kept for 14 days, tied only to a scrambled id, never your email)",
       "your own answers about what you already know: an optional self-assessment, and an optional placement quiz (which option you chose for each question, whether it was right, and how long you took)",
       "your skill ratings, which are calculated from the above",

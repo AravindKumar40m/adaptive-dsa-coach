@@ -41,7 +41,7 @@ try {
   // ---------------------------------------------------------------- consent wording and version
   const consent = await (await fetch(`${base}/consent`)).json();
   const text = JSON.stringify(consent);
-  check(consent.version === CONSENT_VERSION && /^2026-10-12/.test(CONSENT_VERSION), "the consent version is the current one", `(${consent.version})`);
+  check(consent.version === CONSENT_VERSION && /^2026-10-\d\d/.test(CONSENT_VERSION), "the consent version is the current one", `(${consent.version})`);
   check(/30 seconds/.test(text) && /suggest a hint/.test(text) && /14 days/.test(text), "and the wording names the code copies, the hint suggestions and the timing data");
 
   // ---------------------------------------------------------------- code snapshots
