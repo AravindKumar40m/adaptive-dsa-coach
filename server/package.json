@@ -39,6 +39,8 @@
     "policies:sensitivity": "node --env-file=../.env scripts/arena/policy-sensitivity.js",
     "test:review": "node scripts/tests/test-review.js",
     "test:struggle": "node scripts/tests/test-struggle.js",
+    "test:insights": "node scripts/tests/test-insights.js",
+    "test:progress-flow": "node --env-file=../.env scripts/tests/test-progress-flow.js",
     "test:batch1-flow": "node --env-file=../.env scripts/tests/test-batch1-flow.js",
     "metrics": "node --env-file=../.env scripts/tools/metrics-report.js"
   },

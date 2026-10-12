@@ -26,6 +26,7 @@ See `CLAUDE.md` for the idea and decisions.
 | `recommend/` | `picker` (v1), `recommender2` (v2), `policy` (v1/v2/ab switch), `review` (spaced review) |
 | `help/` | `hints` (the ladder), `llm` (AI explanation), `struggle` (nudge rule), `nudge` (nudge, database side) |
 | `logging/` | `activity` (work pattern), `codeSignals`, `logSignals`, `sessions` |
+| `insights/` | reports built from what is already logged: `gain` (engaged time and learning gain per hour), `progress` (the Progress page report), `loadProgress` (its database side) |
 | `kt/` | the new knowledge model (shadow mode) |
 
 **`server/scripts/`**: `tests/` (every `test-*.js`, run with `npm run test:...`), `tools/` (owner tools: cleanup, orphans, reset-password, logs-summary, metrics-report, llm-live-check), `dev/` (fake AI, fake Google, dev-db-poke), `content/` (seed, validate-references), `arena/` (model and policy simulations), `lib/` (helpers shared by the scripts). **`server/content/`** holds the problems, tests and the Python build tools.
@@ -193,3 +194,11 @@ Plain-words write-up in the CLAUDE.md log (Day 5). Every new field is in `docs/d
 - **Observability:** every API request, Judge0 call, AI call and a once-a-minute MongoDB ping is timed into `metricevents` (kept 14 days, scrambled learner id). Read it with `npm run metrics` (add `-- --days 30` for a longer window): slow routes, failures and how many people they hit, Judge0 queue overhead, plus first-attempt success, completion, hint use, day-1/day-7 retention, sessions per week, reviews and nudges.
 - **Tests (from `server/`):** `test:review` and `test:struggle` need no services; `test:batch1-flow` needs MongoDB and Judge0 (it starts two extra API copies on 4109 and 4110).
 - The consent wording was extended and `CONSENT_VERSION` is now `2026-10-12`: everyone sees the "agree again" screen once.
+
+## Batch 2: progress page and learning gain per hour (Day 5)
+Nothing new is recorded: the page and the metric are built from data that already exists (so the consent wording did not change).
+- **Progress page** (`#/progress`, `client/src/pages/ProgressView.jsx`, API `GET /api/learners/:id/progress`): problems solved, time worked, pace, first-Submit success; every topic with its chance of solving a typical medium problem (Elo against difficulty 1200), rating and solved / total, with strongest and weakest topic once two topics are practised; the mistakes that happen most (every failed Run or Submit, in plain words, and "the mistake to watch" = the most common one that is not just a wrong answer); how much help the first solve of each problem needed (no hint, level 1, 2, 3 or 4); which topics are due for review and when the others come back; and the learner's pace. The report is built by `server/src/insights/progress.js` (pure) from `loadProgress.js`.
+- **Learning gain per hour** (`server/src/insights/gain.js`): net change of the skill ratings divided by engaged time. **Engaged time** is estimated from the times of every Run/Submit, hint, opened problem and code snapshot: the gap between two events counts, at most 5 minutes of it, and a gap of 30 minutes or more is a break that counts as nothing. Under 20 minutes of work in the window no rate is shown. It is a rough trend, not a score: early ratings move a lot (K = 40), a bad day is negative, and long silent thinking is under-counted.
+- **Owner report:** `npm run metrics` section 4 shows the spread (median, middle half, lowest, highest) of points per hour and problems per hour over all learners, last 7 days and all time, and a split by recommender when both v1 and v2 learners exist.
+- **Tests (from `server/`):** `test:insights` (maths against hand-worked numbers, no services), `test:progress-flow` (real accounts and Judge0; starts an API copy on port 4111).
+- **Not in this batch:** the "Complexity" panel (Optimal / Near-optimal / Too slow) needs the complexity checker (Batch 4).

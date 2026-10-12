@@ -51,7 +51,7 @@ function AccountMenu({ user, aiAvailable, onUser, onLogout, onDeleteData, onAcco
     <div className="popover-wrap" ref={ref}>
       <button className="btn btn-ghost" onClick={() => setOpen(!open)} aria-expanded={open} aria-label="Account">
         <span className="avatar">{initialOf(user.email)}</span>
-        <Chevron size={14} />
+        <span className="hide-xs"><Chevron size={14} /></span>
         <span className="sr-only">Account</span>
       </button>
       {open && (
@@ -98,7 +98,7 @@ function AccountMenu({ user, aiAvailable, onUser, onLogout, onDeleteData, onAcco
   );
 }
 
-const NAV = [["path", "#/", "Path"], ["problems", "#/problems", "Problems"], ["practice", null, "Practice"]];
+const NAV = [["path", "#/", "Path"], ["problems", "#/problems", "Problems"], ["practice", null, "Practice"], ["progress", "#/progress", "Progress"]];
 
 export function TopBar({ route, practiceHref, health, theme, onTheme, ...account }) {
   return (

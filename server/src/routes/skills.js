@@ -15,6 +15,7 @@ import { conceptStatus, pickNext } from "../recommend/picker.js";
 import { loadSolveHistory } from "../skill/history.js";
 import { REVIEW_COOLDOWN_PICKS, pickReview, reviewStates } from "../recommend/review.js";
 import { START_RATING } from "../skill/skill.js";
+import { loadProgress } from "../insights/loadProgress.js";
 
 const router = Router();
 const ID_PATTERN = /^[A-Za-z0-9-]{8,64}$/;
@@ -38,6 +39,17 @@ router.get("/learners/:learnerId/skills", async (req, res, next) => {
         missing: status.get(c.key).missing, // prerequisite concepts still to finish
       })),
     });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// The progress page: skills, strongest/weakest topic, mistakes, help used, reviews due, pace (insights/progress.js).
+// It only reshapes data that is already logged.
+router.get("/learners/:learnerId/progress", async (req, res, next) => {
+  try {
+    if (!ID_PATTERN.test(req.params.learnerId)) return res.status(400).json({ error: "bad learner id" });
+    res.json(await loadProgress(req.params.learnerId));
   } catch (err) {
     next(err);
   }

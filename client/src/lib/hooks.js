@@ -11,7 +11,7 @@ export function useTheme() {
   return [theme, setTheme];
 }
 
-// ---- tiny router on the URL hash:  #/  (path)   #/problems?concept=arrays   #/practice/peak-altitude
+// ---- tiny router on the URL hash:  #/  (path)   #/problems?concept=arrays   #/practice/peak-altitude   #/progress
 function parseHash() {
   const raw = window.location.hash.replace(/^#/, "") || "/";
   const [path, query = ""] = raw.split("?");
@@ -20,6 +20,7 @@ function parseHash() {
   if (parts[0] === "practice" && parts[1]) return { name: "practice", slug: decodeURIComponent(parts[1]), params };
   if (parts[0] === "problems") return { name: "problems", params };
   if (parts[0] === "placement") return { name: "placement", params };
+  if (parts[0] === "progress") return { name: "progress", params };
   return { name: "path", params };
 }
 export function useRoute() {

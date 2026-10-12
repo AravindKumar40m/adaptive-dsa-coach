@@ -80,6 +80,26 @@ kbd {
 .callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 10px 14px; border-radius: 0 var(--radius-s) var(--radius-s) 0; color: var(--text); }
 .callout.bad { border-left-color: var(--bad); background: var(--bad-soft); }
 .callout.ok { border-left-color: var(--ok); background: var(--ok-soft); }
+/* Progress page */
+.pad { padding: 16px 18px; }
+.card-title { font-size: 15px; font-weight: 650; margin-bottom: 10px; }
+.skill-list { padding: 6px 16px; }
+.skill-row { display: grid; grid-template-columns: minmax(110px, 170px) 1fr 52px 74px 64px; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.skill-row:last-child { border-bottom: 0; }
+.skill-row.locked { opacity: 0.55; }
+.skill-name { color: var(--text); text-transform: capitalize; }
+.skill-chance, .skill-rating, .skill-solved { text-align: right; font-size: 13px; }
+.two-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-top: 14px; }
+.plain-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.plain-list li { display: flex; justify-content: space-between; gap: 12px; }
+.help-bars { display: grid; grid-template-columns: 120px 1fr 28px; gap: 8px 12px; align-items: center; font-size: 14px; }
+.pace-row { display: grid; grid-template-columns: 100px 1fr; gap: 12px; padding: 4px 0; }
+@media (max-width: 640px) {
+  .skill-row { grid-template-columns: 1fr 48px 60px; row-gap: 4px; }
+  .skill-row .progress { grid-column: 1 / -1; grid-row: 2; }
+  .skill-solved { display: none; }
+  .pace-row { grid-template-columns: 1fr; gap: 2px; }
+}
 .callout.nudge { margin: 12px 0; }
 .nudge-actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
 .eyebrow { font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; color: var(--text-faint); }
@@ -332,7 +352,19 @@ kbd {
 @media (max-width: 560px) {
   .brand-name { display: none; }
   .brand { margin-right: 4px; }
-  .navlink { padding: 6px 7px; }
+  /* four links (Path, Problems, Practice, Progress) + theme + account must fit a 390 px phone */
+  .topbar { padding: 0 6px; gap: 2px; }
+  .navlinks { gap: 0; }
+  .navlink { padding: 6px 5px; font-size: 13.5px; }
+}
+/* very small phones (320-400 px): the account button keeps only its initial, the nav text shrinks a little more */
+@media (max-width: 400px) {
+  .hide-xs { display: none; }
+  .navlink { padding: 6px 4px; font-size: 12.5px; }
+  .brand svg { width: 22px; height: 22px; }
+}
+@media (max-width: 340px) {
+  .brand { display: none; } /* the Path link already goes home */
 }
 
 /* ---------- Google button ---------- */

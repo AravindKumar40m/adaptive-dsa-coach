@@ -5,6 +5,7 @@
 // learner logs. Percentages need enough learners to mean anything: with fewer than ~20, read them as examples, not as facts.
 import mongoose from "mongoose";
 import { config } from "../../src/config.js";
+import { loadProgress } from "../../src/insights/loadProgress.js";
 import { loadSolveHistory } from "../../src/skill/history.js";
 import { MetricEvent } from "../../src/models/MetricEvent.js";
 import { Problem } from "../../src/models/Problem.js";
@@ -121,5 +122,32 @@ const nudges = await ProblemEvent.aggregate([{ $match: { createdAt: { $gte: sinc
 const n = Object.fromEntries(nudges.map((x) => [x._id, x.n]));
 line("Nudges shown / opened hints / dismissed", `${n.nudge_shown ?? 0} / ${n.nudge_taken ?? 0} / ${n.nudge_dismissed ?? 0}`);
 
-console.log("\n(Learning gain per hour of learner time is Batch 2.)");
+// ---------------------------------------------------------------- 4. learning gain per hour of learner time (the metric to optimise)
+head("4. Learning gain per hour of learner time");
+console.log("  Skill points gained (net change of all topic ratings) per hour of ENGAGED time. Engaged time is estimated from our own");
+console.log("  event times: a pause counts for at most 5 minutes, a break of 30+ minutes for nothing (src/insights/gain.js). Learners with");
+console.log("  under 20 minutes of work in the window are left out of the rates. Early ratings move a lot, so read this as a trend.");
+const everyone = [...new Set([...joined.keys()])];
+const policyOf = new Map();
+for (const r of await RecommendationEvent.find({}).sort({ createdAt: 1 }).select("learnerId policy -_id").lean()) policyOf.set(r.learnerId, r.policy ?? "v1"); // the latest one wins
+const rows4 = [];
+for (const id of everyone) {
+  const p = await loadProgress(id);
+  rows4.push({ id, policy: policyOf.get(id) ?? "v1", week: p.pace.week, all: p.pace.allTime });
+}
+const spread = (xs) => {
+  const s = xs.filter((x) => x != null).sort((a, b) => a - b);
+  return s.length ? `median ${fmt(pct(s, 0.5))}   middle half ${fmt(pct(s, 0.25))} to ${fmt(pct(s, 0.75))}   lowest ${fmt(s[0])}   highest ${fmt(s.at(-1))}   (${s.length} learner${s.length === 1 ? "" : "s"})` : "- (no learner has enough work in this window yet)";
+};
+line("Points per hour, last 7 days", spread(rows4.map((r) => r.week.pointsPerHour)));
+line("Problems per hour, last 7 days", spread(rows4.map((r) => r.week.solvedPerHour)));
+line("Points per hour, all time", spread(rows4.map((r) => r.all.pointsPerHour)));
+const policies = [...new Set(rows4.map((r) => r.policy))];
+if (policies.length > 1) {
+  console.log("\n  By recommender (only meaningful with enough learners in each group; groups of a few people prove nothing):");
+  for (const pol of policies) line(`  ${pol}: points per hour, all time`, spread(rows4.filter((r) => r.policy === pol).map((r) => r.all.pointsPerHour)));
+}
+const totalHours = rows4.reduce((s, r) => s + r.all.engagedMin, 0) / 60;
+line("Total engaged time, all learners", `${fmt(totalHours, " h")}  (${rows4.filter((r) => r.all.engagedMin > 0).length} learners with any recorded work)`);
+
 await mongoose.disconnect();

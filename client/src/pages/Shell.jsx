@@ -4,6 +4,7 @@ import { clearDrafts, go, useRoute, useTheme } from "../lib/hooks.js";
 import { PathView } from "./PathView.jsx";
 import { PlacementView } from "./PlacementView.jsx";
 import { ProblemsView } from "./ProblemsView.jsx";
+import { ProgressView } from "./ProgressView.jsx";
 import { TopBar } from "../components/TopBar.jsx";
 import { Workspace } from "../workspace/Workspace.jsx";
 
@@ -21,6 +22,7 @@ export function Shell({ user, welcome = "", onWelcomeShown, onUser, onLogout, on
   const [toast, setToast] = useState(welcome);
   const [dataVersion, setDataVersion] = useState(0);
   const [placement, setPlacement] = useState(null); // { done, answers, experience }: the optional self-assessment
+  const [progress, setProgress] = useState(null); // the report behind the Progress page (loaded each time that page opens)
   const [lastSlug, setLastSlug] = useState(null);
   const learnerId = user.learnerId;
   useEffect(() => { onWelcomeShown?.(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -47,6 +49,11 @@ export function Shell({ user, welcome = "", onWelcomeShown, onUser, onLogout, on
   // coming back to the Path: make sure the recommendation reflects what was just solved
   useEffect(() => { if (route.name === "path") loadNext(skipped); }, [route.name]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (route.name === "practice") setLastSlug(route.slug); }, [route]);
+  // the Progress page always shows fresh numbers (it is cheap to compute and changes after every Submit)
+  useEffect(() => {
+    if (route.name !== "progress") return;
+    api(`/learners/${learnerId}/progress`).then((r) => r.ok && setProgress(r.data));
+  }, [route.name, learnerId, dataVersion]);
 
   // "skipSlug" = a problem the learner is moving past without solving; goToIt = open the new problem straight away
   async function advance(skipSlug, goToIt, reason) {
@@ -96,6 +103,7 @@ export function Shell({ user, welcome = "", onWelcomeShown, onUser, onLogout, on
           <PathView user={user} placement={placement} skills={skills} problems={problems} recommendation={recommendation} busy={nextBusy}
             onStart={(slug) => open(slug, "rec")} onSkip={(reason) => recommendation && !recommendation.done && advance(recommendation.problem.slug, false, reason)} />
         )}
+        {route.name === "progress" && <ProgressView progress={progress} />}
         {route.name === "problems" && (
           <ProblemsView key={route.params.concept ?? ""} problems={problems} skills={skills} initialConcept={route.params.concept}
             recommendedSlug={recommendation && !recommendation.done ? recommendation.problem.slug : null} onOpen={open} />
