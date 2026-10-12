@@ -6,6 +6,7 @@ import { whoHash } from "../core/metrics.js";
 import { KnowledgeState } from "../models/KnowledgeState.js";
 import { LearnerActivity } from "../models/LearnerActivity.js";
 import { ModelPrediction } from "../models/ModelPrediction.js";
+import { PlacementQuiz } from "../models/PlacementQuiz.js";
 import { PlacementSurvey } from "../models/PlacementSurvey.js";
 import { ProblemEvent } from "../models/ProblemEvent.js";
 import { RecommendationEvent } from "../models/RecommendationEvent.js";
@@ -23,6 +24,7 @@ export async function eraseLearnerData(learnerId) {
   await LearnerActivity.deleteMany({ learnerId });
   await KnowledgeState.deleteMany({ learnerId });
   await PlacementSurvey.deleteMany({ learnerId });
+  await PlacementQuiz.deleteMany({ learnerId });
   await ModelPrediction.deleteMany({ learnerId });
   await CodeSnapshot.deleteMany({ learnerId });
   await MetricEvent.deleteMany({ who: whoHash(learnerId) });

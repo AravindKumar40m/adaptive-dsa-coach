@@ -1,0 +1,773 @@
+{
+ "version": "placement-bank-1",
+ "items": [
+  {
+   "id": "arrays-L1",
+   "concept": "arrays",
+   "level": 1,
+   "kind": "mcq",
+   "prompt": "A list holds the values 10, 20, 30, 40. Which operation takes the same time however long the list is?",
+   "code": null,
+   "options": [
+    "Reading the value at position 2",
+    "Searching for the value 30",
+    "Inserting a new value at the front",
+    "Removing the value 20"
+   ],
+   "answer": 0,
+   "explain": "Reading by position jumps straight to the place (constant time). The other three scan the list or shift the values after them."
+  },
+  {
+   "id": "arrays-L2",
+   "concept": "arrays",
+   "level": 2,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "a = [4, 1, 3]\nb = a\nb.append(9)\na[0] = 7\nprint(a, b)",
+   "options": [
+    "[4, 1, 3] [4, 1, 3, 9]",
+    "[7, 1, 3, 9] [7, 1, 3, 9]",
+    "[7, 1, 3] [7, 1, 3, 9]",
+    "[4, 1, 3, 9] [7, 1, 3, 9]"
+   ],
+   "answer": 1,
+   "explain": "b = a does not copy the list: both names point at the same list, so a change through either name shows through both."
+  },
+  {
+   "id": "arrays-L3",
+   "concept": "arrays",
+   "level": 3,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "a = [1, 2, 3, 4, 5]\na[1:4] = [9]\na.insert(1, 8)\nprint(a, len(a))",
+   "options": [
+    "[1, 8, 9, 5] 4",
+    "[1, 9, 8, 5] 4",
+    "[1, 8, 9, 4, 5] 5",
+    "[1, 9, 5, 8] 4"
+   ],
+   "answer": 0,
+   "explain": "The slice a[1:4] (the values 2, 3, 4) is replaced by the single value 9, giving [1, 9, 5]. Inserting 8 at position 1 gives [1, 8, 9, 5]."
+  },
+  {
+   "id": "strings-L1",
+   "concept": "strings",
+   "level": 1,
+   "kind": "mcq",
+   "prompt": "In Python, what happens when you run  s = \"cat\"  and then  s[0] = \"b\" ?",
+   "code": null,
+   "options": [
+    "s becomes \"bat\"",
+    "It raises an error: strings cannot be changed in place",
+    "Nothing happens, silently",
+    "s stays \"cat\" and a new string \"bat\" is created"
+   ],
+   "answer": 1,
+   "explain": "Python strings are immutable. To get \"bat\" you build a new string, for example \"b\" + s[1:]."
+  },
+  {
+   "id": "strings-L2",
+   "concept": "strings",
+   "level": 2,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "s = \"banana\"\nprint(s.count(\"an\"), s.find(\"na\"), s[1:4])",
+   "options": [
+    "2 2 ana",
+    "3 2 ana",
+    "2 1 nan",
+    "2 2 nan"
+   ],
+   "answer": 0,
+   "explain": "\"an\" appears twice without overlapping (positions 1 and 3). \"na\" is first found at position 2. s[1:4] takes positions 1, 2 and 3: \"ana\"."
+  },
+  {
+   "id": "strings-L3",
+   "concept": "strings",
+   "level": 3,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "def f(s):\n    out = []\n    for ch in s:\n        if out and out[-1] == ch:\n            out.pop()\n        else:\n            out.append(ch)\n    return \"\".join(out)\n\nprint(f(\"abbaca\"), f(\"azxxzy\"))",
+   "options": [
+    "ca ay",
+    "ca azy",
+    "aaca ay",
+    "ca y"
+   ],
+   "answer": 0,
+   "explain": "Equal neighbours cancel, and the cancelling can chain: in abbaca the b's cancel, then the a's next to them cancel, leaving ca. In azxxzy the x's cancel, then the z's, leaving ay."
+  },
+  {
+   "id": "hashing-L1",
+   "concept": "hashing",
+   "level": 1,
+   "kind": "mcq",
+   "prompt": "Why use a dictionary (hash map) instead of a list when you look values up by key?",
+   "code": null,
+   "options": [
+    "Looking up a key takes about the same time however many items it holds",
+    "It keeps the keys in sorted order",
+    "It always uses less memory than a list",
+    "It allows the same key to appear twice"
+   ],
+   "answer": 0,
+   "explain": "A hash map jumps to where a key should be, so a lookup does not grow with the number of items (on average). It does not sort keys and each key appears once."
+  },
+  {
+   "id": "hashing-L2",
+   "concept": "hashing",
+   "level": 2,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "words = [\"eat\", \"tea\", \"tan\", \"ate\", \"nat\"]\ngroups = {}\nfor w in words:\n    key = \"\".join(sorted(w))\n    groups.setdefault(key, []).append(w)\nprint(len(groups), groups[\"aet\"])",
+   "options": [
+    "2 ['eat', 'tea', 'ate']",
+    "3 ['eat', 'tea', 'ate']",
+    "2 ['eat', 'tea']",
+    "5 ['eat']"
+   ],
+   "answer": 0,
+   "explain": "Sorting the letters gives the same key for anagrams: \"aet\" for eat, tea and ate, and \"ant\" for tan and nat. So there are 2 groups."
+  },
+  {
+   "id": "hashing-L3",
+   "concept": "hashing",
+   "level": 3,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "nums = [1, 2, 3, -3, 3]\nseen = {0: 1}\ntotal = 0\ncount = 0\nfor x in nums:\n    total += x\n    count += seen.get(total - 3, 0)\n    seen[total] = seen.get(total, 0) + 1\nprint(count)",
+   "options": [
+    "5",
+    "4",
+    "3",
+    "6"
+   ],
+   "answer": 0,
+   "explain": "It counts the stretches of the list that add up to 3, using running totals: a stretch ends here with sum 3 exactly when an earlier running total equals (total - 3). The five stretches are [1,2], [3], [1,2,3,-3], [3,-3,3] and the last [3]."
+  },
+  {
+   "id": "two_pointers-L1",
+   "concept": "two_pointers",
+   "level": 1,
+   "kind": "mcq",
+   "prompt": "A sorted list is given. You want to know if two of its values add up to a target. Which approach needs one pass and no extra memory?",
+   "code": null,
+   "options": [
+    "Put one pointer at each end and move them inward",
+    "Put every value into a set first",
+    "Try every pair with two nested loops",
+    "Sort the list again"
+   ],
+   "answer": 0,
+   "explain": "If the pair is too small move the left pointer right, if too big move the right pointer left. Each step discards a value, so it is one pass."
+  },
+  {
+   "id": "two_pointers-L2",
+   "concept": "two_pointers",
+   "level": 2,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "a = [1, 2, 4, 7, 11, 15]\nlo, hi = 0, len(a) - 1\nsteps = 0\nwhile lo < hi:\n    s = a[lo] + a[hi]\n    steps += 1\n    if s == 15:\n        break\n    if s < 15:\n        lo += 1\n    else:\n        hi -= 1\nprint(lo, hi, steps)",
+   "options": [
+    "2 4 4",
+    "2 4 3",
+    "3 4 4",
+    "1 4 4"
+   ],
+   "answer": 0,
+   "explain": "1+15=16 is too big (hi moves), 1+11=12 too small (lo moves), 2+11=13 too small (lo moves), 4+11=15 found on the 4th step with lo=2 and hi=4."
+  },
+  {
+   "id": "two_pointers-L3",
+   "concept": "two_pointers",
+   "level": 3,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "a = [0, 0, 1, 1, 1, 2, 2, 3]\nw = 1\nfor r in range(1, len(a)):\n    if a[r] != a[w - 1]:\n        a[w] = a[r]\n        w += 1\nprint(w, a[:w])",
+   "options": [
+    "4 [0, 1, 2, 3]",
+    "4 [0, 1, 1, 2]",
+    "5 [0, 1, 2, 2, 3]",
+    "3 [0, 1, 2]"
+   ],
+   "answer": 0,
+   "explain": "The write pointer w keeps the next free place for a new distinct value, the read pointer r scans. The distinct values 0, 1, 2, 3 end up in front, so w is 4."
+  },
+  {
+   "id": "sorting-L1",
+   "concept": "sorting",
+   "level": 1,
+   "kind": "mcq",
+   "prompt": "Which statement about sorting n items with a comparison-based method such as merge sort is correct?",
+   "code": null,
+   "options": [
+    "It needs on the order of n log n comparisons in the worst case",
+    "It can always be done with only n comparisons",
+    "Every method needs about n squared comparisons",
+    "It is fastest when the list is in reverse order"
+   ],
+   "answer": 0,
+   "explain": "Merge sort does about n log n comparisons, and no comparison-based method can do better in the worst case. n squared is only for simple methods such as insertion sort."
+  },
+  {
+   "id": "sorting-L2",
+   "concept": "sorting",
+   "level": 2,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "people = [(\"Ann\", 30), (\"Bob\", 25), (\"Cy\", 30), (\"Di\", 25)]\npeople.sort(key=lambda p: p[1])\nprint([p[0] for p in people])",
+   "options": [
+    "['Bob', 'Di', 'Ann', 'Cy']",
+    "['Di', 'Bob', 'Cy', 'Ann']",
+    "['Ann', 'Cy', 'Bob', 'Di']",
+    "['Bob', 'Di', 'Cy', 'Ann']"
+   ],
+   "answer": 0,
+   "explain": "Python's sort is stable: people with equal keys keep their original order. Ages 25 come first (Bob then Di), then ages 30 (Ann then Cy)."
+  },
+  {
+   "id": "sorting-L3",
+   "concept": "sorting",
+   "level": 3,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "a = [3, 1, 2, 5, 4]\nmoves = 0\nfor i in range(1, len(a)):\n    j = i\n    while j > 0 and a[j - 1] > a[j]:\n        a[j - 1], a[j] = a[j], a[j - 1]\n        moves += 1\n        j -= 1\nprint(moves, a)",
+   "options": [
+    "3 [1, 2, 3, 4, 5]",
+    "4 [1, 2, 3, 4, 5]",
+    "2 [1, 2, 3, 4, 5]",
+    "3 [1, 2, 3, 5, 4]"
+   ],
+   "answer": 0,
+   "explain": "Each swap fixes exactly one out-of-order pair, so the number of swaps equals the number of such pairs: (3,1), (3,2) and (5,4) = 3."
+  },
+  {
+   "id": "sliding_window-L1",
+   "concept": "sliding_window",
+   "level": 1,
+   "kind": "mcq",
+   "prompt": "What is a 'sliding window' on a list?",
+   "code": null,
+   "options": [
+    "A range of neighbouring values whose two ends move forward as you scan",
+    "A way to sort the list in place",
+    "A hash table that forgets its oldest keys",
+    "A recursion that splits the list in half"
+   ],
+   "answer": 0,
+   "explain": "The window is a stretch of neighbouring values. When it slides you add the new value at one end and drop the old one at the other, instead of recomputing from scratch."
+  },
+  {
+   "id": "sliding_window-L2",
+   "concept": "sliding_window",
+   "level": 2,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "a = [2, 1, 5, 1, 3, 2]\nk = 3\ncur = sum(a[:k])\nbest = cur\nfor i in range(k, len(a)):\n    cur += a[i] - a[i - k]\n    best = max(best, cur)\nprint(best)",
+   "options": [
+    "9",
+    "8",
+    "10",
+    "7"
+   ],
+   "answer": 0,
+   "explain": "The windows of three have sums 8, 7, 9 and 6. The largest is 9, from [5, 1, 3]."
+  },
+  {
+   "id": "sliding_window-L3",
+   "concept": "sliding_window",
+   "level": 3,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "s = \"abcabcbb\"\nlast = {}\nstart = 0\nbest = 0\nfor i, ch in enumerate(s):\n    if ch in last and last[ch] >= start:\n        start = last[ch] + 1\n    last[ch] = i\n    best = max(best, i - start + 1)\nprint(best, start)",
+   "options": [
+    "3 7",
+    "3 5",
+    "4 7",
+    "3 6"
+   ],
+   "answer": 0,
+   "explain": "start jumps just past the previous copy of a repeated letter. The longest stretch without a repeat is 3 (for example abc), and after the last letter start has reached 7."
+  },
+  {
+   "id": "stack_queue-L1",
+   "concept": "stack_queue",
+   "level": 1,
+   "kind": "mcq",
+   "prompt": "Which pair correctly names the order in which a stack and a queue give items back?",
+   "code": null,
+   "options": [
+    "Stack: last in, first out. Queue: first in, first out",
+    "Stack: first in, first out. Queue: last in, first out",
+    "Both give back the largest item first",
+    "Both give back items in sorted order"
+   ],
+   "answer": 0,
+   "explain": "A stack is like a pile of plates (the last plate put on is the first taken off). A queue is like a line of people (the first to arrive is served first)."
+  },
+  {
+   "id": "stack_queue-L2",
+   "concept": "stack_queue",
+   "level": 2,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "from collections import deque\nstack = [1, 2, 3]\nqueue = deque([4, 5])\nqueue.append(stack.pop())\nstack.append(queue.popleft())\nprint(stack, list(queue))",
+   "options": [
+    "[1, 2, 4] [5, 3]",
+    "[1, 2, 5] [4, 3]",
+    "[1, 2, 4] [3, 5]",
+    "[1, 2, 3] [5, 4]"
+   ],
+   "answer": 0,
+   "explain": "stack.pop() takes 3 off the top and queue.append puts it at the back: queue is [4, 5, 3]. queue.popleft() takes 4 from the front and pushes it on the stack: [1, 2, 4], with [5, 3] left."
+  },
+  {
+   "id": "stack_queue-L3",
+   "concept": "stack_queue",
+   "level": 3,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "temps = [73, 74, 75, 71, 69, 72, 76, 73]\nans = [0] * len(temps)\nst = []\nfor i, t in enumerate(temps):\n    while st and temps[st[-1]] < t:\n        j = st.pop()\n        ans[j] = i - j\n    st.append(i)\nprint(ans)",
+   "options": [
+    "[1, 1, 4, 2, 1, 1, 0, 0]",
+    "[1, 1, 4, 2, 1, 1, 1, 0]",
+    "[1, 1, 3, 2, 1, 1, 0, 0]",
+    "[1, 2, 4, 2, 1, 1, 0, 0]"
+   ],
+   "answer": 0,
+   "explain": "The stack holds the days still waiting for a warmer day. Each new temperature settles every waiting day that is colder than it, and the answer for that day is how many days it waited. For example the 74 on day 1 waits 1 day for the 75, while the 75 on day 2 waits 4 days for the 76 on day 6."
+  },
+  {
+   "id": "linked_list-L1",
+   "concept": "linked_list",
+   "level": 1,
+   "kind": "mcq",
+   "prompt": "Why is adding a node at the front of a singly linked list fast?",
+   "code": null,
+   "options": [
+    "Only a couple of links change; nothing has to be shifted",
+    "Because the list is kept sorted",
+    "Because all nodes sit in one block of memory",
+    "Because every node stores the length of the list"
+   ],
+   "answer": 0,
+   "explain": "The new node points at the old first node and becomes the head. Unlike a plain array, no other value has to move."
+  },
+  {
+   "id": "linked_list-L2",
+   "concept": "linked_list",
+   "level": 2,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "class Node:\n    def __init__(self, v, nxt=None):\n        self.v, self.nxt = v, nxt\n\nhead = Node(1, Node(2, Node(3)))\nprev = None\ncur = head\nwhile cur:\n    cur.nxt, prev, cur = prev, cur, cur.nxt\nout = []\nwhile prev:\n    out.append(prev.v)\n    prev = prev.nxt\nprint(out)",
+   "options": [
+    "[3, 2, 1]",
+    "[1, 2, 3]",
+    "[3]",
+    "[1]"
+   ],
+   "answer": 0,
+   "explain": "Each step turns the current node's link around to point at the previous node, then moves on. When it finishes, prev is the old last node, so the list reads 3, 2, 1."
+  },
+  {
+   "id": "linked_list-L3",
+   "concept": "linked_list",
+   "level": 3,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "class Node:\n    def __init__(self, v):\n        self.v, self.nxt = v, None\n\nnodes = [Node(i) for i in range(1, 8)]\nfor a, b in zip(nodes, nodes[1:]):\n    a.nxt = b\nnodes[6].nxt = nodes[2]\nslow = fast = nodes[0]\nsteps = 0\nwhile fast and fast.nxt:\n    slow = slow.nxt\n    fast = fast.nxt.nxt\n    steps += 1\n    if slow is fast:\n        break\nprint(slow.v, steps)",
+   "options": [
+    "6 5",
+    "5 4",
+    "7 6",
+    "3 2"
+   ],
+   "answer": 0,
+   "explain": "The last node points back to node 3, so there is a cycle (3-4-5-6-7). The fast pointer moves two steps for each one of the slow pointer and catches it inside the cycle, at node 6 after 5 steps."
+  },
+  {
+   "id": "recursion-L1",
+   "concept": "recursion",
+   "level": 1,
+   "kind": "mcq",
+   "prompt": "What must every correct recursive function have?",
+   "code": null,
+   "options": [
+    "A base case that stops the recursion",
+    "A loop inside it",
+    "A global variable that counts the calls",
+    "A list as its return value"
+   ],
+   "answer": 0,
+   "explain": "Without a base case the function calls itself forever (until the stack overflows). Loops, counters and lists are optional."
+  },
+  {
+   "id": "recursion-L2",
+   "concept": "recursion",
+   "level": 2,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "def f(n):\n    if n <= 1:\n        return 1\n    return f(n - 1) + f(n - 2)\n\nprint(f(5), f(6))",
+   "options": [
+    "8 13",
+    "5 8",
+    "13 21",
+    "8 21"
+   ],
+   "answer": 0,
+   "explain": "f(1)=1, f(2)=2, f(3)=3, f(4)=5, f(5)=8, f(6)=13: each value is the sum of the two before it."
+  },
+  {
+   "id": "recursion-L3",
+   "concept": "recursion",
+   "level": 3,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "def g(n):\n    if n == 0:\n        return []\n    return g(n - 1) + [n] + g(n - 1)\n\nprint(g(3))",
+   "options": [
+    "[1, 2, 1, 3, 1, 2, 1]",
+    "[1, 2, 3, 2, 1]",
+    "[3, 2, 1, 1, 2, 3]",
+    "[1, 2, 3, 1, 2, 3, 1]"
+   ],
+   "answer": 0,
+   "explain": "g(1) = [1]. g(2) = g(1) + [2] + g(1) = [1, 2, 1]. g(3) = [1, 2, 1] + [3] + [1, 2, 1]."
+  },
+  {
+   "id": "binary_search-L1",
+   "concept": "binary_search",
+   "level": 1,
+   "kind": "mcq",
+   "prompt": "What must be true of the data for binary search to work?",
+   "code": null,
+   "options": [
+    "It is sorted",
+    "All values are different",
+    "It is stored in a linked list",
+    "It is small enough to fit in the CPU cache"
+   ],
+   "answer": 0,
+   "explain": "Binary search compares with the middle value and throws away the half that cannot contain the answer. That only works if the values are in order."
+  },
+  {
+   "id": "binary_search-L2",
+   "concept": "binary_search",
+   "level": 2,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "a = [1, 3, 5, 7, 9, 11]\nlo, hi = 0, len(a) - 1\nx = 7\ncount = 0\nwhile lo <= hi:\n    mid = (lo + hi) // 2\n    count += 1\n    if a[mid] == x:\n        break\n    if a[mid] < x:\n        lo = mid + 1\n    else:\n        hi = mid - 1\nprint(mid, count)",
+   "options": [
+    "3 3",
+    "3 2",
+    "4 2",
+    "2 3"
+   ],
+   "answer": 0,
+   "explain": "The middles checked are position 2 (value 5, too small), position 4 (value 9, too big) and position 3 (value 7, found): 3 looks."
+  },
+  {
+   "id": "binary_search-L3",
+   "concept": "binary_search",
+   "level": 3,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "a = [1, 2, 2, 2, 3, 5]\nlo, hi = 0, len(a)\nwhile lo < hi:\n    mid = (lo + hi) // 2\n    if a[mid] < 2:\n        lo = mid + 1\n    else:\n        hi = mid\nfirst = lo\nlo, hi = 0, len(a)\nwhile lo < hi:\n    mid = (lo + hi) // 2\n    if a[mid] <= 2:\n        lo = mid + 1\n    else:\n        hi = mid\nprint(first, lo)",
+   "options": [
+    "1 4",
+    "1 3",
+    "2 4",
+    "0 4"
+   ],
+   "answer": 0,
+   "explain": "The first loop finds the first position whose value is at least 2 (position 1). The second finds the first position whose value is greater than 2 (position 4), just after the last 2."
+  },
+  {
+   "id": "trees-L1",
+   "concept": "trees",
+   "level": 1,
+   "kind": "mcq",
+   "prompt": "In a binary search tree, where are all the values smaller than a node's value?",
+   "code": null,
+   "options": [
+    "In its left subtree",
+    "In its right subtree",
+    "Only in its parent",
+    "Anywhere in the tree"
+   ],
+   "answer": 0,
+   "explain": "That is the defining rule: smaller values go left, larger values go right, at every node."
+  },
+  {
+   "id": "trees-L2",
+   "concept": "trees",
+   "level": 2,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "class T:\n    def __init__(self, v):\n        self.v, self.l, self.r = v, None, None\n\ndef insert(t, v):\n    if not t:\n        return T(v)\n    if v < t.v:\n        t.l = insert(t.l, v)\n    else:\n        t.r = insert(t.r, v)\n    return t\n\ndef inorder(t):\n    return inorder(t.l) + [t.v] + inorder(t.r) if t else []\n\ndef height(t):\n    return 1 + max(height(t.l), height(t.r)) if t else 0\n\nroot = None\nfor v in [5, 2, 8, 1, 3]:\n    root = insert(root, v)\nprint(inorder(root), height(root))",
+   "options": [
+    "[1, 2, 3, 5, 8] 3",
+    "[1, 2, 3, 5, 8] 2",
+    "[5, 2, 1, 3, 8] 3",
+    "[1, 2, 3, 5, 8] 5"
+   ],
+   "answer": 0,
+   "explain": "Reading a search tree left, node, right (in-order) always gives the values in sorted order. The longest path is 5, 2, 1 (or 3): 3 nodes."
+  },
+  {
+   "id": "trees-L3",
+   "concept": "trees",
+   "level": 3,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "from collections import deque\n\nclass T:\n    def __init__(self, v, l=None, r=None):\n        self.v, self.l, self.r = v, l, r\n\nroot = T(1, T(2, None, T(5)), T(3, None, T(4)))\nq = deque([root])\nview = []\nwhile q:\n    for i in range(len(q)):\n        node = q.popleft()\n        if i == 0:\n            view.append(node.v)\n        if node.r:\n            q.append(node.r)\n        if node.l:\n            q.append(node.l)\nprint(view)",
+   "options": [
+    "[1, 3, 4]",
+    "[1, 2, 5]",
+    "[1, 3, 5]",
+    "[1, 2, 3, 4, 5]"
+   ],
+   "answer": 0,
+   "explain": "It walks the tree level by level, adding the right child first, and records the first node of each level: that is the rightmost node of each level, 1, then 3, then 4."
+  },
+  {
+   "id": "heaps-L1",
+   "concept": "heaps",
+   "level": 1,
+   "kind": "mcq",
+   "prompt": "What does a min-heap guarantee?",
+   "code": null,
+   "options": [
+    "The smallest item is always at the top and can be read at once",
+    "All items are kept in fully sorted order",
+    "Any value can be found in constant time",
+    "Items stay in the order they were added"
+   ],
+   "answer": 0,
+   "explain": "A heap only keeps the top item correct, which makes adding and removing the smallest fast. The rest is only partly ordered."
+  },
+  {
+   "id": "heaps-L2",
+   "concept": "heaps",
+   "level": 2,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "import heapq\nh = []\nfor x in [5, 3, 8, 1, 9, 2]:\n    heapq.heappush(h, x)\nprint(heapq.heappop(h), heapq.heappop(h), h[0])",
+   "options": [
+    "1 2 3",
+    "1 2 5",
+    "1 3 2",
+    "9 8 5"
+   ],
+   "answer": 0,
+   "explain": "heappop always removes the smallest item: first 1, then 2. The smallest of what is left (3, 5, 8, 9) is 3."
+  },
+  {
+   "id": "heaps-L3",
+   "concept": "heaps",
+   "level": 3,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "import heapq\nk = 3\nh = []\nfor x in [4, 9, 1, 7, 3, 8, 6]:\n    heapq.heappush(h, x)\n    if len(h) > k:\n        heapq.heappop(h)\nprint(sorted(h), h[0])",
+   "options": [
+    "[7, 8, 9] 7",
+    "[1, 3, 4] 1",
+    "[7, 8, 9] 9",
+    "[6, 7, 8] 6"
+   ],
+   "answer": 0,
+   "explain": "Whenever the heap holds more than 3 items the smallest is thrown out, so it ends up holding the 3 largest values: 7, 8 and 9. The top of a min-heap is the smallest of them, 7."
+  },
+  {
+   "id": "graphs-L1",
+   "concept": "graphs",
+   "level": 1,
+   "kind": "mcq",
+   "prompt": "After the start node, what does breadth-first search (BFS) visit first?",
+   "code": null,
+   "options": [
+    "All of the start node's direct neighbours",
+    "One neighbour, then its neighbour, as deep as it can go",
+    "The node with the most edges",
+    "The node with the smallest label"
+   ],
+   "answer": 0,
+   "explain": "BFS explores in rings: first everything one step from the start, then everything two steps away, and so on. Going as deep as possible first is depth-first search."
+  },
+  {
+   "id": "graphs-L2",
+   "concept": "graphs",
+   "level": 2,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "from collections import deque\ng = {1: [3, 2], 2: [5], 3: [4], 4: [5], 5: []}\nseen = {1}\nq = deque([1])\norder = []\nwhile q:\n    u = q.popleft()\n    order.append(u)\n    for v in g[u]:\n        if v not in seen:\n            seen.add(v)\n            q.append(v)\nprint(order)",
+   "options": [
+    "[1, 3, 2, 4, 5]",
+    "[1, 2, 3, 4, 5]",
+    "[1, 3, 4, 5, 2]",
+    "[1, 2, 5, 3, 4]"
+   ],
+   "answer": 0,
+   "explain": "From 1 the neighbours are queued in the order 3, 2. So 3 is visited before 2, then 4 (from 3), then 5 (from 2)."
+  },
+  {
+   "id": "graphs-L3",
+   "concept": "graphs",
+   "level": 3,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "import heapq\ng = {\"A\": [(\"B\", 4), (\"C\", 1)], \"B\": [(\"D\", 1)], \"C\": [(\"B\", 2), (\"D\", 5)], \"D\": []}\ndist = {\"A\": 0}\nh = [(0, \"A\")]\nwhile h:\n    d, u = heapq.heappop(h)\n    if d > dist.get(u, 99):\n        continue\n    for v, w in g[u]:\n        nd = d + w\n        if nd < dist.get(v, 99):\n            dist[v] = nd\n            heapq.heappush(h, (nd, v))\nprint(dist[\"B\"], dist[\"D\"])",
+   "options": [
+    "3 4",
+    "4 5",
+    "3 6",
+    "4 4"
+   ],
+   "answer": 0,
+   "explain": "This is Dijkstra's shortest-path algorithm. The cheapest way to B is A to C to B (1 + 2 = 3), not the direct road (4). Then D is 3 + 1 = 4 through B, cheaper than 1 + 5 = 6 through C."
+  },
+  {
+   "id": "greedy-L1",
+   "concept": "greedy",
+   "level": 1,
+   "kind": "mcq",
+   "prompt": "What does a greedy algorithm do?",
+   "code": null,
+   "options": [
+    "It takes the best-looking choice at each step and never reconsiders it",
+    "It tries every possible combination",
+    "It always uses recursion",
+    "It needs the input to be a graph"
+   ],
+   "answer": 0,
+   "explain": "Greedy means committing to the locally best choice. It is fast and simple, and it is only correct for problems where that is provably enough."
+  },
+  {
+   "id": "greedy-L2",
+   "concept": "greedy",
+   "level": 2,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "coins = [25, 10, 5, 1]\nn = 63\nused = []\nfor c in coins:\n    while n >= c:\n        n -= c\n        used.append(c)\nprint(len(used), used.count(1))",
+   "options": [
+    "6 3",
+    "7 3",
+    "6 2",
+    "5 3"
+   ],
+   "answer": 0,
+   "explain": "63 = 25 + 25 + 10 + 1 + 1 + 1: six coins, three of them ones."
+  },
+  {
+   "id": "greedy-L3",
+   "concept": "greedy",
+   "level": 3,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "coins = [4, 3, 1]\nn = 6\nused = []\nfor c in coins:\n    while n >= c:\n        n -= c\n        used.append(c)\nprint(used, len(used))",
+   "options": [
+    "[4, 1, 1] 3",
+    "[3, 3] 2",
+    "[4, 1, 1] 2",
+    "[3, 1, 1, 1] 4"
+   ],
+   "answer": 0,
+   "explain": "Taking the biggest coin first gives 4 + 1 + 1 (three coins), but 3 + 3 uses only two. For these coin values greedy is not optimal: it only works for some coin systems."
+  },
+  {
+   "id": "backtracking-L1",
+   "concept": "backtracking",
+   "level": 1,
+   "kind": "mcq",
+   "prompt": "Which description fits backtracking?",
+   "code": null,
+   "options": [
+    "Build a solution step by step and undo a step when it cannot lead to a solution",
+    "Sort the input, then scan it once",
+    "Store the answers of subproblems in a table",
+    "Always pick the cheapest next step"
+   ],
+   "answer": 0,
+   "explain": "Backtracking explores choices depth first and goes back (undoes the last choice) when a path fails. Tables are dynamic programming; the cheapest step is greedy."
+  },
+  {
+   "id": "backtracking-L2",
+   "concept": "backtracking",
+   "level": 2,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "def subsets(a):\n    out = []\n    def go(i, cur):\n        if i == len(a):\n            out.append(cur[:])\n            return\n        go(i + 1, cur)\n        cur.append(a[i])\n        go(i + 1, cur)\n        cur.pop()\n    go(0, [])\n    return out\n\nprint(subsets([1, 2]))",
+   "options": [
+    "[[], [2], [1], [1, 2]]",
+    "[[], [1], [2], [1, 2]]",
+    "[[1, 2], [1], [2], []]",
+    "[[], [1], [1, 2], [2]]"
+   ],
+   "answer": 0,
+   "explain": "At each position the code first tries without the value, then with it. Following the calls: [] then [2] (value 1 left out), then [1] then [1, 2] (value 1 taken)."
+  },
+  {
+   "id": "backtracking-L3",
+   "concept": "backtracking",
+   "level": 3,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "def solve(n):\n    cols, d1, d2 = set(), set(), set()\n    def go(r):\n        if r == n:\n            return 1\n        total = 0\n        for c in range(n):\n            if c in cols or r - c in d1 or r + c in d2:\n                continue\n            cols.add(c); d1.add(r - c); d2.add(r + c)\n            total += go(r + 1)\n            cols.remove(c); d1.remove(r - c); d2.remove(r + c)\n        return total\n    return go(0)\n\nprint(solve(4), solve(5), solve(6))",
+   "options": [
+    "2 10 4",
+    "2 8 4",
+    "4 10 2",
+    "2 10 6"
+   ],
+   "answer": 0,
+   "explain": "This counts the ways to place n queens on an n by n board so that none attack each other. The known counts are 2 for n=4, 10 for n=5 and 4 for n=6."
+  },
+  {
+   "id": "dp-L1",
+   "concept": "dp",
+   "level": 1,
+   "kind": "mcq",
+   "prompt": "When does dynamic programming help most?",
+   "code": null,
+   "options": [
+    "When the same smaller subproblems come up again and again, so their answers can be stored and reused",
+    "When the input is already sorted",
+    "When the problem has only one possible answer",
+    "When the data is a graph with negative edges"
+   ],
+   "answer": 0,
+   "explain": "Dynamic programming avoids repeated work by remembering answers to overlapping subproblems (in a table or a cache)."
+  },
+  {
+   "id": "dp-L2",
+   "concept": "dp",
+   "level": 2,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "n = 6\ndp = [1, 1] + [0] * (n - 1)\nfor i in range(2, n + 1):\n    dp[i] = dp[i - 1] + dp[i - 2]\nprint(dp)",
+   "options": [
+    "[1, 1, 2, 3, 5, 8, 13]",
+    "[1, 1, 2, 4, 8, 16, 32]",
+    "[0, 1, 1, 2, 3, 5, 8]",
+    "[1, 2, 3, 5, 8, 13, 21]"
+   ],
+   "answer": 0,
+   "explain": "Each entry is the sum of the two before it, starting from 1 and 1: 1, 1, 2, 3, 5, 8, 13. The list has n + 1 = 7 entries."
+  },
+  {
+   "id": "dp-L3",
+   "concept": "dp",
+   "level": 3,
+   "kind": "trace",
+   "prompt": "What does this code print?",
+   "code": "coins = [1, 3, 4]\nn = 6\nINF = 99\ndp = [0] + [INF] * n\nfor a in range(1, n + 1):\n    for c in coins:\n        if c <= a:\n            dp[a] = min(dp[a], dp[a - c] + 1)\nprint(dp)",
+   "options": [
+    "[0, 1, 2, 1, 1, 2, 2]",
+    "[0, 1, 2, 3, 1, 2, 3]",
+    "[0, 1, 2, 1, 1, 2, 3]",
+    "[0, 1, 2, 1, 2, 2, 2]"
+   ],
+   "answer": 0,
+   "explain": "dp[a] is the fewest coins that make the amount a. For example dp[6] = 2 (3 + 3), better than the greedy 4 + 1 + 1. dp[5] = 2 (4 + 1) and dp[4] = 1."
+  }
+ ]
+}

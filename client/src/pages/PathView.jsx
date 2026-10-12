@@ -5,7 +5,7 @@ import { SkipWithReason } from "../workspace/Feedback.jsx";
 
 const SLOT_LABEL = { warmup: "Warm-up", core: "Core", stretch: "Stretch" };
 
-export function PathView({ user, placement, skills, problems, recommendation, onStart, onSkip, busy }) {
+export function PathView({ user, placement, quiz, skills, problems, recommendation, onStart, onSkip, busy }) {
   const solved = skills?.solvedProblems?.length ?? 0;
   const unlocked = skills ? skills.skills.filter((s) => s.unlocked && s.total > 0).length : 0;
   const topics = skills ? skills.skills.filter((s) => s.total > 0).length : 0;
@@ -52,7 +52,17 @@ export function PathView({ user, placement, skills, problems, recommendation, on
           )}
         </section>
 
-        {placement && !placement.done && (
+        {quiz?.available && !quiz.last && (
+          <section className="card" style={{ marginTop: 14, padding: "14px 18px", display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap", justifyContent: "space-between" }} aria-label="Optional placement quiz">
+            <div style={{ maxWidth: "62ch" }}>
+              <strong>Placement quiz (about 10 minutes, optional)</strong>
+              <div className="muted" style={{ fontSize: 13.5 }}>Short multiple-choice questions show what you already know, so you skip the warm-up in topics you are comfortable with and your first problems fit you.</div>
+            </div>
+            <a className="btn btn-primary" href="#/quiz">{quiz.inProgress ? `Continue (${quiz.inProgress.answered} answered)` : "Start the quiz"}</a>
+          </section>
+        )}
+
+        {placement && !placement.done && !quiz?.last && (
           <section className="card" style={{ marginTop: 14, padding: "14px 18px", display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap", justifyContent: "space-between" }} aria-label="Optional self-assessment">
             <div style={{ maxWidth: "62ch" }}>
               <strong>Tell us where you are (1 minute, optional)</strong>
@@ -79,6 +89,7 @@ export function PathView({ user, placement, skills, problems, recommendation, on
         {skills ? <SkillMap skills={skills.skills.filter((s) => s.total > 0)} startRating={skills.startRating} onOpen={(c) => (window.location.hash = `#/problems?concept=${c}`)} /> : <div className="card empty">Loading...</div>}
 
         {placement?.done && <p className="footnote" style={{ marginTop: 20 }}>You filled in the self-assessment. <a href="#/placement">Update it</a></p>}
+        {quiz?.last && <p className="footnote" style={{ marginTop: 20 }}>You took the placement quiz: {quiz.last.correct} of {quiz.last.answered} right, {quiz.last.placed} {quiz.last.placed === 1 ? "topic" : "topics"} placed out. <a href="#/quiz">See it or take it again</a></p>}
 
         <p className="footnote">
           Ratings start at {skills?.startRating ?? 1000} in every topic and move only when you press Submit. Run never changes them.

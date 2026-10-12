@@ -70,8 +70,8 @@ function reasonFor({ slot, parts, p, conceptName, warmup, target }) {
  *          slot?:string, weights?:object, tau?:number, deterministic?:boolean, rng?:()=>number}} s   model = a Kalman model, L its learner state
  * @returns {{done:true, reason}|{done:false, problem, p, slot, target, score, parts, propensity, explored, greedySlug, candidates, repeated, poolSize, openCount, reason}}
  */
-export function pickNextV2({ concepts, problems, solved, exclude = new Set(), model, L, now, slot = "core", weights = WEIGHTS, tau = TAU, deterministic = false, rng = Math.random }) {
-  const status = conceptStatus({ concepts, problems, solved });
+export function pickNextV2({ concepts, problems, solved, placed = new Set(), exclude = new Set(), model, L, now, slot = "core", weights = WEIGHTS, tau = TAU, deterministic = false, rng = Math.random }) {
+  const status = conceptStatus({ concepts, problems, solved, placed });
   const names = new Map(concepts.map((c) => [c.key, c.name]));
   const open = problems.filter((p) => !solved.has(p.slug) && status.get(p.concept).unlocked);
   if (open.length === 0) return { done: true, reason: "You have solved every available problem. More are coming." };

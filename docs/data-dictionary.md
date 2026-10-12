@@ -9,7 +9,7 @@ window focus, mouse movement or anything from other pages or apps. Learning data
 the email address lives only in `users`. All learning data is deleted by "Delete my learning data"; everything including
 the account by "Delete my account" (`server/src/privacy/erase.js`).
 
-Version tags written on rows: `LOGGING_VERSION = log-3`, `SCORING_VERSION = score-1`, `PICKER_VERSION = picker-3`, `REVIEW_VERSION = review-1`
+Version tags written on rows: `LOGGING_VERSION = log-3`, `SCORING_VERSION = score-1`, `PICKER_VERSION = picker-3`, `REVIEW_VERSION = review-1`, `PLACEMENT_VERSION = placement-1`
 (`server/src/core/versions.js`). Change a tag whenever that part's behaviour changes, so analysis can tell which rules produced a row.
 
 ## Accounts (not learning data)
@@ -44,7 +44,7 @@ Version tags written on rows: `LOGGING_VERSION = log-3`, `SCORING_VERSION = scor
 learnerId, concept, problem, submissionId, ratingBefore/After, difficultyBefore/After, expected (E), score (S), k, components {correctness, optimality, independence, efficiency}, attemptsOnConceptBefore, failsBefore, secondsSpent, hintLevel, sessionId, scoringVersion.
 
 ### `skillratings`, `problemdifficulties`
-Current rating per learner and concept (rating, attempts); current Elo difficulty per problem (shared by all learners, so deleting one learner's data does not undo it).
+Current rating per learner and concept (rating, attempts, and `source: "placement"` when the starting rating came from the placement quiz; `attempts` stays 0 until real counted attempts, so K stays 40); current Elo difficulty per problem (shared by all learners, so deleting one learner's data does not undo it).
 
 ### `hintevents`
 Each hint level opened (`kind: ladder`) and each AI explanation (`kind: feedback`, level 2): learnerId, problem, level, source, the text shown, sessionId.
@@ -82,6 +82,12 @@ learnerId, problem, language, code, chars, hash (sha256), trigger (`timer` = abo
 
 ### `metricevents` (operational timings; Batch 1)
 kind (`http` / `judge0` / `ai` / `mongo`), name (http: `POST /api/submit`, the route pattern with no ids; judge0: `lang71`; ai: model; mongo: `ping`), ms, ok, status, who (a scrambled learner id: first 10 hex of sha256, so "how many different people hit this error" can be counted without storing who), extra (judge0: {execSec, wallSec, overheadMs} where overhead = how long we waited minus how long the program ran = queue + start-up). MongoDB deletes rows after 14 days. `/api/health` is not recorded. Read them with `npm run metrics`. Erased with the learner's data (by the same scrambled id).
+
+### `placementquizzes` (the optional placement quiz; Batch 3)
+One row per attempt: learnerId, status (`in_progress` / `finished` / `abandoned`: "start again" abandons a quiz that has answers), and `answers[]` in the order asked: item (`arrays-L2`), concept, level (1 easy, 2 medium, 3 hard), kind (`mcq` / `trace`), chosen (the index of the option in the ORIGINAL order, or -1 for "I don't know"), correct, ms (time on the question, sent by the page, clamped to 10 minutes), order (the shuffled order the options were shown in), at. When finished: `result` {topics[{concept, rating, label, confidence (`low` from one question, `medium` from two), asked, correct, bestLevel}], placed[concepts at rating 1120 or more], answered, correct}, `applied[]` (topics whose rating was set from the quiz), `kept[]` (topics left alone because the learner already had counted attempts there), stoppedEarly, finishedAt, `bankVersion` (`placement-bank-1`), `algorithmVersion` (`placement-1`). The placed topics are read by `skill/learnerState.js` (`placed`) and count as solid in the curriculum unlock rule. Covered by the consent line about the optional placement quiz. Erased with the learner's data.
+
+### `placementitems` (our content: the quiz questions)
+id (`arrays-L2`), concept, level, kind, prompt, code, options[4], answer (index), explain, bankVersion. 48 rows loaded by `npm run content:placement` from `server/content/placement/items.py`. `answer` and `explain` never go to the browser before a quiz is finished.
 
 ### `placementsurveys` (the optional self-assessment)
 learnerId, answers {concept: 0..4} (0 never heard of it, 1 heard of it, 2 know the basics, 3 comfortable, 4 could teach it; a topic left out = no answer), experience (0 brand new ... 3 a lot, or empty). Saved exactly as given. It also sets a WEAK starting guess in `knowledgestates` for skills with no real attempts: `1000 + 30 x (answer - 2)` with the normal uncertainty, `n: 0`, `last: null` (so it cannot fade). Real attempts are never overwritten. Redoing the survey replaces the guess for unpractised skills only.

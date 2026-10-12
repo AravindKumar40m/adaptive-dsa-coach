@@ -2,6 +2,8 @@ import { Router } from "express";
 import { config } from "../config.js";
 import { RecommendationEvent } from "../models/RecommendationEvent.js";
 import { Submission } from "../models/Submission.js";
+import { PlacementQuiz } from "../models/PlacementQuiz.js";
+import { PlacementSurvey } from "../models/PlacementSurvey.js";
 import { touchSession } from "../logging/sessions.js";
 import { PICKER_VERSION, RECOMMENDER2_VERSION } from "../core/versions.js";
 import { createModel } from "../kt/models.js";
@@ -65,9 +67,14 @@ router.get("/learners/:learnerId/next", async (req, res, next) => {
     const policy = policyFor(learnerId); // v1 or v2 (see policy.js)
 
     // The same state gets the same pick: revisiting the page must not reshuffle a recommendation (and not log it twice).
-    // "State" = the learner's latest Submit plus the list of skipped problems.
-    const lastSubmit = await Submission.findOne({ learnerId, mode: "submit" }).sort({ createdAt: -1 }).select("_id").lean();
-    const stateKey = `${lastSubmit?._id ?? "none"}|${[...exclude].sort().join(",")}`;
+    // "State" = the learner's latest Submit, the list of skipped problems, and the placement quiz / self-assessment they last
+    // finished (they change ratings and unlocks, so a pick made before them must not be reused afterwards).
+    const [lastSubmit, lastQuiz, survey] = await Promise.all([
+      Submission.findOne({ learnerId, mode: "submit" }).sort({ createdAt: -1 }).select("_id").lean(),
+      PlacementQuiz.findOne({ learnerId, status: "finished" }).sort({ finishedAt: -1 }).select("_id").lean(),
+      PlacementSurvey.findOne({ learnerId }).select("updatedAt -_id").lean(),
+    ]);
+    const stateKey = `${lastSubmit?._id ?? "none"}|${[...exclude].sort().join(",")}|q${lastQuiz?._id ?? "-"}|s${survey?.updatedAt?.getTime() ?? "-"}`;
     const prev = await RecommendationEvent.findOne({ learnerId }).sort({ createdAt: -1 }).lean();
     if (prev && !prev.done && (prev.policy ?? "v1") === policy && prev.stateKey === stateKey && Date.now() - prev.createdAt.getTime() < 6 * 3600 * 1000 && (prev.mode === "review" || !state.solved.has(prev.chosen.slug))) { // a repeat review is a solved problem on purpose
       const problem = state.problems.find((p) => p.slug === prev.chosen.slug);
@@ -84,7 +91,7 @@ router.get("/learners/:learnerId/next", async (req, res, next) => {
       model.difficultyProvider = (item) => state.difficulty.get(item.slug) ?? item.seed; // the live, drifted difficulty
       const L = toLearner(model, await KnowledgeState.findOne({ learnerId }).lean());
       const attemptsInSession = sessionId ? await Submission.countDocuments({ learnerId, sessionId, mode: "submit" }) : 0;
-      const r = pickNextV2({ concepts: state.concepts, problems: state.problems, solved: state.solved, exclude, model, L, now: Date.now(), slot: slotFor(attemptsInSession) });
+      const r = pickNextV2({ concepts: state.concepts, problems: state.problems, solved: state.solved, placed: state.placed, exclude, model, L, now: Date.now(), slot: slotFor(attemptsInSession) });
       pick = r.done ? r : { ...r, expectedSuccess: r.p, mode: "v2" };
       v2info = r.done ? null : { slot: r.slot, target: r.target, score: r.score, parts: r.parts, warmup: r.warmup };
     } else {

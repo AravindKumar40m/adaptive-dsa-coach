@@ -19,15 +19,18 @@ export const WINDOW = 0.15; // a problem "fits" when its expected success is wit
 export const UNLOCK_SOLVED = 2;
 export const MAX_CANDIDATES = 12;
 
-/** For each concept: how many problems, how many solved, is it solid, is it unlocked, and which prerequisites block it. */
-export function conceptStatus({ concepts, problems, solved }) {
+/**
+ * For each concept: how many problems, how many solved, is it solid, is it unlocked, and which prerequisites block it.
+ * `placed` = topics the placement quiz showed the learner already knows: they count as solid without solved problems.
+ */
+export function conceptStatus({ concepts, problems, solved, placed = new Set() }) {
   const total = new Map();
   const done = new Map();
   for (const p of problems) {
     total.set(p.concept, (total.get(p.concept) ?? 0) + 1);
     if (solved.has(p.slug)) done.set(p.concept, (done.get(p.concept) ?? 0) + 1);
   }
-  const solid = (key) => (total.get(key) ?? 0) === 0 || (done.get(key) ?? 0) >= Math.min(UNLOCK_SOLVED, total.get(key));
+  const solid = (key) => (total.get(key) ?? 0) === 0 || (done.get(key) ?? 0) >= Math.min(UNLOCK_SOLVED, total.get(key)) || placed.has(key);
   const status = new Map();
   for (const c of concepts) {
     const missing = c.prerequisites.filter((pre) => !solid(pre));
@@ -51,8 +54,8 @@ const round3 = (x) => Math.round(x * 1000) / 1000;
  *   history (optional): last = concept -> the learner's latest solve there ({title, at, fails, hintLevel}); only adds facts to the reason text
  * @returns {{done:true, ...} | {done:false, problem, expectedSuccess, mode, reason, repeated, explored, propensity, greedySlug, candidates, fitsCount, poolSize, openCount, exploreRate}}
  */
-export function pickNext({ concepts, problems, difficulty, ratings, solved, exclude = new Set(), explore = { rate: 0 }, history = null }) {
-  const status = conceptStatus({ concepts, problems, solved });
+export function pickNext({ concepts, problems, difficulty, ratings, solved, placed = new Set(), exclude = new Set(), explore = { rate: 0 }, history = null }) {
+  const status = conceptStatus({ concepts, problems, solved, placed });
   const order = new Map(concepts.map((c, i) => [c.key, i]));
   const name = new Map(concepts.map((c) => [c.key, c.name]));
   const ratingOf = (concept) => ratings.get(concept) ?? START_RATING;

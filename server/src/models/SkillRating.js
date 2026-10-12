@@ -7,6 +7,7 @@ const schema = new mongoose.Schema(
     concept: { type: String, required: true },
     rating: { type: Number, required: true },
     attempts: { type: Number, default: 0 }, // counted updates on this concept (decides K)
+    source: String, // "placement" = the starting rating came from the placement quiz (attempts stays 0, so K is still 40)
   },
   { timestamps: true }
 );

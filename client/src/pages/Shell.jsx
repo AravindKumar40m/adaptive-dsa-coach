@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { api } from "../lib/api.js";
 import { clearDrafts, go, useRoute, useTheme } from "../lib/hooks.js";
 import { PathView } from "./PathView.jsx";
+import { PlacementQuizView } from "./PlacementQuizView.jsx";
 import { PlacementView } from "./PlacementView.jsx";
 import { ProblemsView } from "./ProblemsView.jsx";
 import { ProgressView } from "./ProgressView.jsx";
@@ -23,6 +24,8 @@ export function Shell({ user, welcome = "", onWelcomeShown, onUser, onLogout, on
   const [dataVersion, setDataVersion] = useState(0);
   const [placement, setPlacement] = useState(null); // { done, answers, experience }: the optional self-assessment
   const [progress, setProgress] = useState(null); // the report behind the Progress page (loaded each time that page opens)
+  const [quiz, setQuiz] = useState(null); // { available, inProgress, last }: the placement quiz status shown on the Path page
+  const refreshQuiz = useCallback(() => { api("/quiz/status").then((r) => r.ok && setQuiz(r.data)); }, []);
   const [lastSlug, setLastSlug] = useState(null);
   const learnerId = user.learnerId;
   useEffect(() => { onWelcomeShown?.(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -44,10 +47,12 @@ export function Shell({ user, welcome = "", onWelcomeShown, onUser, onLogout, on
     refreshSkills();
     loadNext([]);
     api(`/learners/${learnerId}/placement`).then((r) => r.ok && setPlacement(r.data));
-  }, [refreshSkills, loadNext, learnerId]);
+    refreshQuiz();
+  }, [refreshSkills, loadNext, learnerId, refreshQuiz]);
 
   // coming back to the Path: make sure the recommendation reflects what was just solved
-  useEffect(() => { if (route.name === "path") loadNext(skipped); }, [route.name]); // eslint-disable-line react-hooks/exhaustive-deps
+  // (and the placement quiz status: a quiz left half way must show "Continue" here, not "Start")
+  useEffect(() => { if (route.name === "path") { loadNext(skipped); refreshQuiz(); } }, [route.name]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (route.name === "practice") setLastSlug(route.slug); }, [route]);
   // the Progress page always shows fresh numbers (it is cheap to compute and changes after every Submit)
   useEffect(() => {
@@ -76,6 +81,7 @@ export function Shell({ user, welcome = "", onWelcomeShown, onUser, onLogout, on
     clearDrafts(learnerId);
     setDataVersion((v) => v + 1);
     setPlacement({ done: false, answers: {}, experience: null });
+    refreshQuiz();
     setSkipped([]);
     refreshSkills();
     loadNext([]);
@@ -100,10 +106,11 @@ export function Shell({ user, welcome = "", onWelcomeShown, onUser, onLogout, on
           <PlacementView skills={skills} existing={placement} onSaved={(p) => { setPlacement(p); setToast("Thanks. We will use your answers as a rough starting guess; real results always win."); refreshSkills(); loadNext(skipped); }} />
         )}
         {route.name === "path" && (
-          <PathView user={user} placement={placement} skills={skills} problems={problems} recommendation={recommendation} busy={nextBusy}
+          <PathView user={user} placement={placement} quiz={quiz} skills={skills} problems={problems} recommendation={recommendation} busy={nextBusy}
             onStart={(slug) => open(slug, "rec")} onSkip={(reason) => recommendation && !recommendation.done && advance(recommendation.problem.slug, false, reason)} />
         )}
         {route.name === "progress" && <ProgressView progress={progress} />}
+        {route.name === "quiz" && <PlacementQuizView onFinished={() => { refreshQuiz(); refreshSkills(); loadNext(skipped); }} />}
         {route.name === "problems" && (
           <ProblemsView key={route.params.concept ?? ""} problems={problems} skills={skills} initialConcept={route.params.concept}
             recommendedSlug={recommendation && !recommendation.done ? recommendation.problem.slug : null} onOpen={open} />

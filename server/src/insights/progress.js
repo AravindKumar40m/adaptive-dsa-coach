@@ -47,9 +47,9 @@ const labelOf = (key) => MISTAKE_LABELS[key] ?? "Another kind of crash";
  *  times: number[]                                             (every logged event time, for engaged time)
  *  now: number
  */
-export function buildProgress({ concepts, problems, ratings, attempts, solved, solves, submissions, updates, times, now }) {
+export function buildProgress({ concepts, problems, ratings, attempts, solved, placed = new Set(), solves, submissions, updates, times, now }) {
   // ---- skills
-  const status = conceptStatus({ concepts, problems, solved });
+  const status = conceptStatus({ concepts, problems, solved, placed });
   const skills = concepts.filter((c) => (status.get(c.key)?.total ?? 0) > 0).map((c) => {
     const s = status.get(c.key);
     const rating = ratings.get(c.key) ?? START_RATING;

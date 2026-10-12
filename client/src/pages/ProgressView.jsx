@@ -63,7 +63,7 @@ export function ProgressView({ progress }) {
               <a href={`#/problems?concept=${s.concept}`} className="skill-name">{s.name}</a>
               <div className="progress" role="img" aria-label={`${s.chance}% chance of solving a typical medium problem`}><i style={{ width: `${s.chance}%` }} /></div>
               <span className="num skill-chance">{s.chance}%</span>
-              <span className="num faint skill-rating">{s.attempts > 0 ? s.rating : "not rated"}</span>
+              <span className="num faint skill-rating" title={s.attempts === 0 && s.rating !== 1000 ? "A starting rating from the placement quiz. Real practice will move it." : undefined}>{s.attempts > 0 ? s.rating : s.rating !== 1000 ? `${s.rating} (quiz)` : "not rated"}</span>
               <span className="num faint skill-solved">{s.unlocked ? `${s.solved} / ${s.total}` : "locked"}</span>
             </div>
           ))}
