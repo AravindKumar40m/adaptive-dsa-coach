@@ -1,0 +1,24 @@
+{
+  "slug": "simplify-path",
+  "title": "Simplify a File Path",
+  "concept": "stack_queue",
+  "difficulty": "medium",
+  "statement": "`path` is an absolute path of a file system, starting with `/`. Return its **simplified** form by these rules:\n- a single dot `.` means the current folder and is dropped;\n- two dots `..` mean go up to the parent folder (at the top, `/..` stays at the top);\n- several slashes in a row count as one;\n- the result starts with one `/`, has no `/` at the end (unless it is just `/`), and contains only real folder or file names.\n\nA name such as `..hidden` or `a.b` is an ordinary name, not a dot rule.",
+  "constraints": [
+    "1 <= len(path) <= 3000",
+    "path starts with `/` and contains only letters, dots and slashes"
+  ],
+  "signature": { "name": "simplify_path", "params": [{ "name": "path", "type": "string" }], "returns": "string" },
+  "examples": [
+    { "args": ["/home//foo/"], "expected": "/home/foo", "explanation": "The double slash counts as one and the trailing slash is removed." },
+    { "args": ["/a/./b/../../c/"], "expected": "/c", "explanation": "/a/./b becomes /a/b; the first .. goes back to /a; the second .. goes back to /; then /c." }
+  ],
+  "edgeTests": [["/"], ["/../"], ["/a/b/c/../../.."], ["//"], ["/a//b////c/d//././/.."], ["/..hidden/x"]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Going up with `..` undoes the most recent step down. What structure undoes the most recent thing?",
+    "pattern": "A stack of folder names: split the path at the slashes, skip empty parts and `.`, pop for `..`, push everything else.",
+    "pseudocode": "stack = empty\nfor part in path split at '/':\n  if part is empty or '.': continue\n  if part is '..': pop if the stack is not empty\n  else: push part\nreturn '/' + the stack joined by '/'",
+    "walkthrough": "Cut the path into the pieces between slashes. Empty pieces come from repeated or trailing slashes and carry no information; a piece `.` changes nothing. A piece `..` removes the last folder that you went into, so keep the folders you are currently inside on a stack: pop when you meet `..` (and do nothing if you are already at the top: the stack is empty). Any other piece is a folder (or file) name: push it. Only the pieces that are exactly `.` or `..` are special: names like `..hidden` are pushed. At the end join the stack with slashes and put one `/` in front; an empty stack gives just `/`. O(n)."
+  }
+}

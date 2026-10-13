@@ -1,0 +1,24 @@
+{
+  "slug": "max-product-subarray",
+  "title": "Largest Product of a Stretch",
+  "concept": "dp",
+  "difficulty": "medium",
+  "statement": "`numbers` may contain positive numbers, negative numbers and zeros. Look at every **non-empty contiguous stretch** of the list and multiply its numbers together.\n\nReturn the **largest product** among all stretches. It is guaranteed that the product of every stretch fits in a 32-bit signed integer.",
+  "constraints": [
+    "1 <= len(numbers) <= 20000",
+    "-10 <= numbers[i] <= 10, and every stretch's product fits in a 32-bit signed integer"
+  ],
+  "signature": { "name": "max_product_subarray", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[2, -3, -2, 4]], "expected": 48, "explanation": "The whole list: 2 * -3 * -2 * 4 = 48. Two negative numbers make a positive product." },
+    { "args": [[0, -4]], "expected": 0, "explanation": "The stretches are [0] (0), [-4] (-4) and [0, -4] (0): the best is 0." }
+  ],
+  "edgeTests": [[[-5]], [[0]], [[1, 2, 3]], [[-1, -1]], [[-1, 0, -1]], [[3, -1, 4]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "A very negative product can become the biggest one after you multiply it by another negative number. So what two values should you remember about the stretches that END at the current position?",
+    "pattern": "Track both the largest and the smallest product of a stretch ending at the current element; a new element multiplies either of them (or starts a new stretch).",
+    "pseudocode": "best = maxHere = minHere = numbers[0]\nfor x in the rest:\n  candidates = (x, maxHere * x, minHere * x)\n  maxHere = max(candidates); minHere = min(candidates)\n  best = max(best, maxHere)\nreturn best",
+    "walkthrough": "Checking every stretch is O(n^2). For the sum version of this problem it is enough to remember the best stretch ending at each position; for products that is not enough, because a negative number turns the smallest product into the largest. So keep two values for the stretches ending at the current position: the largest product and the smallest (most negative) product. When the next number x arrives, the new stretch ending there is either x alone, or x appended to the best stretch (maxHere * x), or x appended to the worst stretch (minHere * x): the new largest is the biggest of the three and the new smallest is the least of the three (compute both from the OLD values). A zero resets both to 0 automatically, since all three candidates become 0 or x. Keep the overall best. O(n) time, O(1) memory."
+  }
+}

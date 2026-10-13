@@ -1,0 +1,24 @@
+{
+  "slug": "rotate-matrix-clockwise",
+  "title": "Rotate a Picture Clockwise",
+  "concept": "arrays",
+  "difficulty": "medium",
+  "statement": "`grid` is a square picture: `n` rows and `n` columns of numbers. Rotate the picture **90 degrees clockwise** (the left column becomes the top row, read from bottom to top).\n\nReturn the numbers of the **rotated** picture row by row, as one flat list.",
+  "constraints": [
+    "1 <= n <= 100 (the grid has n rows and n columns)",
+    "-1000 <= grid[r][c] <= 1000"
+  ],
+  "signature": { "name": "rotate_clockwise", "params": [{ "name": "grid", "type": "int[][]" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[[1, 2], [3, 4]]], "expected": [3, 1, 4, 2], "explanation": "The rotated picture is [[3, 1], [4, 2]]: the old left column (1, 3) is now the top row read bottom to top (3, 1)." },
+    { "args": [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]], "expected": [7, 4, 1, 8, 5, 2, 9, 6, 3], "explanation": "The rotated picture is [[7, 4, 1], [8, 5, 2], [9, 6, 3]]." }
+  ],
+  "edgeTests": [[[[5]]], [[[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]]], [[[0, 0], [0, 1]]], [[[-1, 2], [3, -4]]]],
+  "expected": { "time": "O(n^2)", "space": "O(1) extra" },
+  "hints": {
+    "nudge": "Where does the number at row r, column c end up after the rotation? Write its new row and column in terms of r, c and n.",
+    "pattern": "A clockwise rotation equals a transpose (swap rows and columns) followed by reversing every row.",
+    "pseudocode": "for i in 0..n-1: for j in i+1..n-1: swap grid[i][j] and grid[j][i]\nfor each row: reverse the row\nread the grid row by row",
+    "walkthrough": "Look at one number: the old cell (r, c) moves to the new cell (c, n - 1 - r). Instead of computing that for every number with a second grid, do it in two easy steps that need no extra grid. First transpose: swap the numbers at (i, j) and (j, i) for every pair above the diagonal; the left column becomes the top row, but in the wrong direction. Then reverse each row; the top row now reads bottom to top, which is exactly the clockwise result. Finally list the rows. O(n^2) time, O(1) extra memory besides the answer. If you may use a second grid, you can also fill it directly: new[r][c] = old[n - 1 - c][r]."
+  }
+}

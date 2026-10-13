@@ -1,0 +1,24 @@
+{
+  "slug": "min-rotated-with-duplicates",
+  "title": "Smallest Number in a Rotated List With Repeats",
+  "concept": "binary_search",
+  "difficulty": "hard",
+  "statement": "A list that was sorted in **non-decreasing** order (equal values are allowed) has been **rotated**: some number of elements were moved from the front to the back, keeping their order. For example `[0, 1, 2, 2, 5]` rotated by 3 gives `[2, 5, 0, 1, 2]`.\n\nReturn the **smallest value** in the rotated list, doing better than looking at every element whenever the repeats allow it. The list is not empty.",
+  "constraints": [
+    "1 <= len(numbers) <= 100000",
+    "-1000000000 <= numbers[i] <= 1000000000"
+  ],
+  "signature": { "name": "min_rotated_duplicates", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[2, 2, 2, 0, 1]], "expected": 0, "explanation": "The sorted list [0, 1, 2, 2, 2] was rotated; the smallest value is 0." },
+    { "args": [[3, 3, 1, 3]], "expected": 1, "explanation": "The sorted list [1, 3, 3, 3] was rotated by 2; the smallest value is 1." }
+  ],
+  "edgeTests": [[[5]], [[1, 1, 1]], [[2, 2, 0, 2, 2]], [[1, 2]], [[2, 1]], [[3, 1, 3, 3, 3]], [[1, 1, 1, 0, 1]]],
+  "expected": { "time": "O(log n) typical, O(n) worst case", "space": "O(1)" },
+  "hints": {
+    "nudge": "Compare the middle element with the LAST element. What does each of the three outcomes (smaller, larger, equal) tell you about where the smallest value is?",
+    "pattern": "Binary search against the right end: middle larger than the last means the minimum is to the right; middle smaller means it is at the middle or to the left; equal means you cannot tell, so drop only the last element.",
+    "pseudocode": "lo = 0; hi = n - 1\nwhile lo < hi:\n  mid = (lo + hi) / 2\n  if numbers[mid] > numbers[hi]: lo = mid + 1\n  elif numbers[mid] < numbers[hi]: hi = mid\n  else: hi = hi - 1\nreturn numbers[lo]",
+    "walkthrough": "Without repeats, comparing the middle with the last element is decisive: if the middle is larger, the 'drop' where values fall lies to its right, so the minimum is right of mid; if it is smaller, the right part mid..hi is sorted and the minimum is at mid or to its left. With repeats there is a third case: middle equal to last. Then the minimum could be on either side (compare [1, 1, 1, 0, 1] and [1, 0, 1, 1, 1]), so you cannot throw half away. What you CAN do safely is discard the last element: its value is also present at mid (or the last element IS the minimum, but then the equal value at mid still gives the same answer). This makes the search O(log n) for most inputs but O(n) when almost everything is equal. Stopping when lo == hi leaves the answer at numbers[lo]."
+  }
+}

@@ -1,0 +1,175 @@
+//### reverse-between
+class Solution {
+    public ListNode reverseBetween(ListNode head, int left, int right) {
+        ListNode dummy = new ListNode(0, head);
+        ListNode prev = dummy;
+        for (int i = 0; i < left - 1; i++) prev = prev.next;
+        ListNode cur = prev.next;
+        for (int i = 0; i < right - left; i++) {
+            ListNode nxt = cur.next;
+            cur.next = nxt.next;
+            nxt.next = prev.next;
+            prev.next = nxt;
+        }
+        return dummy.next;
+    }
+}
+//### height-balanced-tree
+class Solution {
+    private int check(TreeNode node) {
+        if (node == null) return 0;
+        int left = check(node.left);
+        if (left < 0) return -1;
+        int right = check(node.right);
+        if (right < 0 || Math.abs(left - right) > 1) return -1;
+        return 1 + Math.max(left, right);
+    }
+
+    public boolean isHeightBalanced(TreeNode root) {
+        return check(root) >= 0;
+    }
+}
+//### downward-paths-with-sum
+class Solution {
+    private Map<Long, Integer> seen;
+    private int target;
+
+    private int walk(TreeNode node, long total) {
+        if (node == null) return 0;
+        total += node.val;
+        int found = seen.getOrDefault(total - target, 0);
+        seen.merge(total, 1, Integer::sum);
+        found += walk(node.left, total) + walk(node.right, total);
+        seen.merge(total, -1, Integer::sum);
+        return found;
+    }
+
+    public int countPathsWithSum(TreeNode root, int target) {
+        this.target = target;
+        this.seen = new HashMap<>();
+        seen.put(0L, 1);
+        return walk(root, 0);
+    }
+}
+//### zigzag-levels
+class Solution {
+    public int[] zigzagLevels(TreeNode root) {
+        List<Integer> out = new ArrayList<>();
+        List<TreeNode> level = new ArrayList<>();
+        if (root != null) level.add(root);
+        boolean leftToRight = true;
+        while (!level.isEmpty()) {
+            List<Integer> values = new ArrayList<>();
+            for (TreeNode node : level) values.add(node.val);
+            if (!leftToRight) Collections.reverse(values);
+            out.addAll(values);
+            List<TreeNode> next = new ArrayList<>();
+            for (TreeNode node : level) {
+                if (node.left != null) next.add(node.left);
+                if (node.right != null) next.add(node.right);
+            }
+            level = next;
+            leftToRight = !leftToRight;
+        }
+        int[] result = new int[out.size()];
+        for (int i = 0; i < result.length; i++) result[i] = out.get(i);
+        return result;
+    }
+}
+//### bst-from-sorted-array
+class Solution {
+    private TreeNode build(int[] values, int lo, int hi) {
+        if (lo > hi) return null;
+        int mid = (lo + hi) >>> 1;
+        return new TreeNode(values[mid], build(values, lo, mid - 1), build(values, mid + 1, hi));
+    }
+
+    public TreeNode buildBalancedBst(int[] values) {
+        return build(values, 0, values.length - 1);
+    }
+}
+//### max-tree-width
+class Solution {
+    public int maxTreeWidth(TreeNode root) {
+        if (root == null) return 0;
+        long best = 0;
+        List<TreeNode> nodes = new ArrayList<>();
+        List<Long> places = new ArrayList<>();
+        nodes.add(root);
+        places.add(0L);
+        while (!nodes.isEmpty()) {
+            best = Math.max(best, places.get(places.size() - 1) - places.get(0) + 1);
+            long base = places.get(0);
+            List<TreeNode> nextNodes = new ArrayList<>();
+            List<Long> nextPlaces = new ArrayList<>();
+            for (int i = 0; i < nodes.size(); i++) {
+                long pos = places.get(i) - base;
+                TreeNode node = nodes.get(i);
+                if (node.left != null) { nextNodes.add(node.left); nextPlaces.add(2 * pos); }
+                if (node.right != null) { nextNodes.add(node.right); nextPlaces.add(2 * pos + 1); }
+            }
+            nodes = nextNodes;
+            places = nextPlaces;
+        }
+        return (int) best;
+    }
+}
+//### deepest-leaves-ancestor
+class Solution {
+    private static class Result {
+        int depth;
+        TreeNode node;
+        Result(int depth, TreeNode node) { this.depth = depth; this.node = node; }
+    }
+
+    private Result go(TreeNode node) {
+        if (node == null) return new Result(0, null);
+        Result left = go(node.left), right = go(node.right);
+        if (left.depth > right.depth) return new Result(left.depth + 1, left.node);
+        if (right.depth > left.depth) return new Result(right.depth + 1, right.node);
+        return new Result(left.depth + 1, node);
+    }
+
+    public int deepestCommonAncestor(TreeNode root) {
+        return go(root).node.val;
+    }
+}
+//### xor-subset-total
+class Solution {
+    public int xorSubsetTotal(int[] numbers) {
+        if (numbers.length == 0) return 0;
+        int combined = 0;
+        for (int x : numbers) combined |= x;
+        return combined * (1 << (numbers.length - 1));
+    }
+}
+//### gray-code-sequence
+class Solution {
+    public int[] grayCode(int bits) {
+        int[] seq = new int[1 << bits];
+        int size = 1;
+        for (int b = 0; b < bits; b++) {
+            for (int i = size - 1; i >= 0; i--) seq[size + (size - 1 - i)] = seq[i] | (1 << b);
+            size *= 2;
+        }
+        return seq;
+    }
+}
+//### kth-permutation
+class Solution {
+    public String kthPermutation(int n, int k) {
+        int[] fact = new int[n + 1];
+        fact[0] = 1;
+        for (int i = 1; i <= n; i++) fact[i] = fact[i - 1] * i;
+        List<Integer> digits = new ArrayList<>();
+        for (int d = 1; d <= n; d++) digits.add(d);
+        k -= 1;
+        StringBuilder out = new StringBuilder();
+        for (int i = n; i >= 1; i--) {
+            int index = k / fact[i - 1];
+            k %= fact[i - 1];
+            out.append(digits.remove(index));
+        }
+        return out.toString();
+    }
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "subarrays-divisible-count",
+  "title": "Stretches Divisible by K",
+  "concept": "hashing",
+  "difficulty": "medium",
+  "statement": "Count the **contiguous, non-empty stretches** of `numbers` whose **sum is divisible by `k`**. A sum of `0` is divisible by every `k`. The numbers may be negative.",
+  "constraints": [
+    "0 <= len(numbers) <= 30000",
+    "-10000 <= numbers[i] <= 10000",
+    "1 <= k <= 10000"
+  ],
+  "signature": { "name": "count_divisible_runs", "params": [{ "name": "numbers", "type": "int[]" }, { "name": "k", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[2, 4, 6], 3], "expected": 3, "explanation": "The stretches [6], [2, 4] (sum 6) and [2, 4, 6] (sum 12)." },
+    { "args": [[5, 5, 5], 5], "expected": 6, "explanation": "All 6 stretches have sums 5, 10 or 15." }
+  ],
+  "edgeTests": [[[], 3], [[7], 7], [[1], 2], [[-1, 1], 2], [[0, 0, 0], 4], [[4, 5, 0, -2, -3, 1], 5]],
+  "expected": { "time": "O(n + k)", "space": "O(k)" },
+  "hints": {
+    "nudge": "The sum of a stretch is a difference of two running totals. When is the difference of two numbers divisible by k?",
+    "pattern": "Prefix sums modulo k: two prefixes with the SAME remainder give a stretch whose sum is divisible by k. Count equal remainders with a hash map or an array.",
+    "pseudocode": "count[0] = 1 (the empty prefix); total = 0; answer = 0\nfor x in numbers:\n  total = ((total + x) mod k + k) mod k\n  answer += count[total]\n  count[total] += 1\nreturn answer",
+    "walkthrough": "Checking all stretches is O(n^2). Let P(i) be the sum of the first i numbers. The stretch between prefix a and prefix b has the sum P(b) - P(a), which is divisible by k exactly when P(a) and P(b) leave the same remainder when divided by k. So walk through the numbers, keep the running remainder, and keep a count of how many earlier prefixes (including the empty prefix at the start, with remainder 0) had each remainder. Every earlier prefix with the same remainder as the current one is the start of one valid stretch ending here: add that count to the answer, then record the current prefix. Remember that in many languages the remainder of a negative number is negative: normalise it with ((r % k) + k) % k. O(n + k)."
+  }
+}

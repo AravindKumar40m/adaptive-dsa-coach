@@ -1,0 +1,24 @@
+{
+  "slug": "zigzag-levels",
+  "title": "Zigzag Level Order",
+  "concept": "trees",
+  "difficulty": "medium",
+  "statement": "Read the values of a binary tree **level by level**, from the top: the root level first, then the next level, and so on. The first level is read **left to right**, the second **right to left**, the third left to right again, alternating like a zigzag.\n\nReturn all the values in this order as one flat list.",
+  "constraints": [
+    "0 <= number of nodes <= 5000",
+    "-1000 <= node value <= 1000"
+  ],
+  "signature": { "name": "zigzag_levels", "params": [{ "name": "root", "type": "TreeNode" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[3, 9, 20, null, null, 15, 7]], "expected": [3, 20, 9, 15, 7], "explanation": "Level 0: 3. Level 1 (right to left): 20, 9. Level 2 (left to right): 15, 7." },
+    { "args": [[1, 2, 3, 4, 5, 6, 7]], "expected": [1, 3, 2, 4, 5, 6, 7], "explanation": "Level 1 is reversed (3, 2); level 2 is read normally (4, 5, 6, 7)." }
+  ],
+  "edgeTests": [[[]], [[1]], [[1, 2]], [[1, null, 2]], [[1, 2, 3, 4, null, null, 5]]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "First get the levels in the normal order. Then, what do you do with every second level?",
+    "pattern": "Breadth-first search level by level, with a flag that flips after each level; reverse the level's values when the flag says right to left.",
+    "pseudocode": "level = [root]; leftToRight = true\nwhile level is not empty:\n  values = values of the nodes in level\n  if not leftToRight: reverse values\n  add values to the result\n  level = all children of the nodes in level (left child before right child)\n  leftToRight = not leftToRight",
+    "walkthrough": "A queue-based breadth-first search gives the nodes of one level at a time, always from left to right, if you add each node's left child before its right child. So process one level as a whole group: read the values, and for every second level reverse them before adding them to the answer. Then build the next level from the children of the current one, and flip the direction. Reversing a group of k values costs O(k), so the total over all levels is O(n). (A depth-first search that collects the values into one list per depth gives the same result.)"
+  }
+}

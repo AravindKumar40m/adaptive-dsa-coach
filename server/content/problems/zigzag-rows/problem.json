@@ -1,0 +1,25 @@
+{
+  "slug": "zigzag-rows",
+  "title": "Zigzag Reading",
+  "concept": "strings",
+  "difficulty": "medium",
+  "statement": "Write `text` in a zigzag on `rows` rows: go **down** the rows one letter at a time, then **up diagonally** back to the top, then down again, and so on. For `ABCDEFGHIJ` on 3 rows the zigzag looks like this:\n\n```\nA   E   I\nB D F H J\nC   G\n```\n\nThen read the letters **row by row**, from the top row to the bottom row, and return the result as one text (here `AEIBDFHJCG`).",
+  "constraints": [
+    "0 <= len(text) <= 1000",
+    "1 <= rows <= 1000",
+    "text contains letters and digits"
+  ],
+  "signature": { "name": "zigzag_read", "params": [{ "name": "text", "type": "string" }, { "name": "rows", "type": "int" }], "returns": "string" },
+  "examples": [
+    { "args": ["ABCDEFGHIJ", 3], "expected": "AEIBDFHJCG", "explanation": "Top row A E I, middle row B D F H J, bottom row C G." },
+    { "args": ["AB", 1], "expected": "AB", "explanation": "With one row there is no zigzag: the text stays as it is." }
+  ],
+  "edgeTests": [["", 3], ["A", 5], ["ABCD", 2], ["ABCDE", 4], ["abcdefg", 7], ["PAYPALISHIRING", 4]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Which row does the letter at position i land on? Write the row numbers of the first ten letters for 3 rows and look for the pattern.",
+    "pattern": "Simulate the walk: a row index that goes down to the last row, then up to the first row, and keep one list of letters per row.",
+    "pseudocode": "if rows == 1: return text\nlines = one empty list per row; row = 0; step = +1\nfor each letter: add it to lines[row]\n  if row == 0: step = +1; else if row == rows - 1: step = -1\n  row += step\nreturn all lines joined one after another",
+    "walkthrough": "The letters are placed row 0, 1, ..., rows - 1, then rows - 2, ..., 1, then 0 again, forever. So keep a current row and a direction: after placing a letter move one row in the current direction, and turn around when you reach the top or the bottom. With only one row you cannot move up or down, so handle it separately (otherwise the direction logic fails). Collect the letters of each row in its own list and join the lists at the end. Alternatively compute the row of position i directly: the pattern repeats every 2 * (rows - 1) letters, and the row is min(i mod cycle, cycle - i mod cycle). O(n) either way."
+  }
+}

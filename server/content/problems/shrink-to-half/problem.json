@@ -1,0 +1,24 @@
+{
+  "slug": "shrink-to-half",
+  "title": "Remove Values Until Half Is Gone",
+  "concept": "greedy",
+  "difficulty": "medium",
+  "statement": "You may pick some **values** and then remove **every** occurrence of each picked value from `numbers`. Choose as **few values** as possible so that **at most half** of the original elements remain (that is, the removed elements are at least half of all elements).\n\nReturn the smallest number of values you need to pick.",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "-1000000000 <= numbers[i] <= 1000000000"
+  ],
+  "signature": { "name": "min_values_to_remove", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[3, 3, 3, 5, 5, 7]], "expected": 1, "explanation": "Removing every 3 removes 3 of the 6 elements: exactly half, so one value is enough." },
+    { "args": [[1, 2, 3, 4]], "expected": 2, "explanation": "Every value occurs once, so two values must be removed to remove 2 of the 4 elements." }
+  ],
+  "edgeTests": [[[]], [[5]], [[1, 1]], [[1, 2]], [[1, 1, 2, 2, 3, 3]], [[4, 4, 4, 1, 2, 3, 5]], [[1, 2, 3, 4, 5, 6]], [[1, 2, 3, 4, 5, 6, 7, 8]], [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]]],
+  "expected": { "time": "O(n log n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Removing a value removes as many elements as it occurs. Which values give the most removed elements for each value you spend?",
+    "pattern": "Count the occurrences of every value, then take the most frequent values first until the removed elements reach half of the total.",
+    "pseudocode": "counts = occurrences of each distinct value, largest first\nremoved = 0; picked = 0\nfor c in counts: if removed * 2 >= n: stop; removed += c; picked += 1\nreturn picked",
+    "walkthrough": "You pay one 'pick' per value, and what you gain is the number of elements removed, which equals that value's frequency. To reach the target with the fewest picks, always pick the value with the highest frequency among those left: if a solution used a less frequent value while a more frequent one was unused, swapping them would remove at least as many elements. So count the frequencies with a hash map, sort them from largest to smallest, and add them one by one until the removed count is at least n / 2 (test removed * 2 >= n to avoid fractions). With no elements nothing needs to be removed: the answer is 0."
+  }
+}

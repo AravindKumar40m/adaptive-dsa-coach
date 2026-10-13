@@ -1,0 +1,24 @@
+{
+  "slug": "longest-harmonious-length",
+  "title": "Longest Harmonious Group",
+  "concept": "hashing",
+  "difficulty": "medium",
+  "statement": "A group of numbers picked from `numbers` (any positions, in any order) is **harmonious** if the difference between its **largest** and its **smallest** number is **exactly 1**.\n\nReturn the size of the largest harmonious group you can pick. If no harmonious group exists, return `0`.",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "-1000000000 <= numbers[i] <= 1000000000"
+  ],
+  "signature": { "name": "longest_harmonious", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[4, 4, 5, 5, 5, 6, 9]], "expected": 5, "explanation": "Take the two 4s and the three 5s: largest 5, smallest 4, difference 1, size 5. (The 5s with the 6 give only 4.)" },
+    { "args": [[1, 1, 1]], "expected": 0, "explanation": "All numbers are equal, so the difference is 0, never 1." }
+  ],
+  "edgeTests": [[[]], [[5]], [[1, 2]], [[1, 2, 3, 4]], [[-1, 0, -1, 0, 0]], [[7, 7, 8, 8, 9, 9, 9]]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "A harmonious group can only contain two different values. Which two values can they be?",
+    "pattern": "Count how often every value appears (hash map); the group is all copies of a value v plus all copies of v + 1.",
+    "pseudocode": "counts = how many times each value appears\nbest = 0\nfor each value v in counts:\n  if v + 1 is in counts: best = max(best, counts[v] + counts[v + 1])\nreturn best",
+    "walkthrough": "Because the largest minus the smallest must be exactly 1, the group has exactly two different values, v and v + 1, and to make it as large as possible you take EVERY copy of both. The order of the numbers does not matter at all, so you only need the counts. Build a hash map from value to count, then for every value v that also has a neighbour v + 1, the candidate size is counts[v] + counts[v + 1]; the answer is the largest candidate (0 if there is none). Trying all subsets would be 2^n; this is O(n)."
+  }
+}

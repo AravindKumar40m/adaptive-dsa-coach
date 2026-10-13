@@ -1,0 +1,25 @@
+{
+  "slug": "downward-paths-with-sum",
+  "title": "Downward Paths With a Given Sum",
+  "concept": "trees",
+  "difficulty": "medium",
+  "statement": "A **downward path** starts at any node and goes down through children (always from a parent to one of its children), ending at any node below or at the starting node itself. Count the downward paths whose node values add up to exactly `target`.\n\nThe path does not have to start at the root or end at a leaf. Paths with different nodes are different paths, even if their values are the same.",
+  "constraints": [
+    "0 <= number of nodes <= 1000",
+    "-1000 <= node value <= 1000",
+    "-100000 <= target <= 100000"
+  ],
+  "signature": { "name": "count_paths_with_sum", "params": [{ "name": "root", "type": "TreeNode" }, { "name": "target", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 2, 3], 3], "expected": 2, "explanation": "The single node 3, and the path 1 -> 2 (1 + 2 = 3)." },
+    { "args": [[1, -1, 1, 1], 1], "expected": 4, "explanation": "The root alone, the right child alone, the node 1 under the -1, and the path root -> -1 -> 1 (1 - 1 + 1 = 1)." }
+  ],
+  "edgeTests": [[[], 0], [[0], 0], [[0, 0, 0], 0], [[5], 5], [[1, 2], 5], [[-2, null, -3], -5]],
+  "expected": { "time": "O(n)", "space": "O(h)" },
+  "hints": {
+    "nudge": "A path from node a down to node b has the sum (running total down to b) - (running total down to the node just above a). Which of these totals can you remember while walking down?",
+    "pattern": "Prefix sums on the path from the root, kept in a hash map: when you reach a node, count how many earlier nodes ON THIS PATH have a total equal to (current total - target).",
+    "pseudocode": "seen = {0: 1}\nwalk(node, total):\n  if node missing: return 0\n  total += node.val\n  found = seen[total - target] (0 if absent)\n  seen[total] += 1\n  found += walk(left, total) + walk(right, total)\n  seen[total] -= 1     (leaving this node)\n  return found",
+    "walkthrough": "Starting a fresh downward search from every node is O(n * depth), which is O(n^2) on a chain. Use running sums instead. On the way down keep `total`, the sum from the root to the current node. A downward path that ends at the current node and starts just below some ancestor has the sum total - (the ancestor's running total), so you are looking for ancestors with a running total of total - target. Keep a hash map that counts the running totals of the nodes on the CURRENT root-to-node path (start it with 0 counted once, for paths that begin at the root). At each node add the count found for total - target, then record the current total, visit the children, and remove the current total again when you leave the node (so the map only ever describes the current path). O(n)."
+  }
+}

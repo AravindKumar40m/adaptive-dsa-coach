@@ -1,0 +1,23 @@
+{
+  "slug": "digital-root-recursive",
+  "title": "Add the Digits Until One Is Left",
+  "concept": "recursion",
+  "difficulty": "easy",
+  "statement": "Take a whole number and replace it by the **sum of its digits**. If the result still has more than one digit, do the same again, and keep going until a **single digit** is left. Return that digit.\n\nFor `38`: `3 + 8 = 11`, then `1 + 1 = 2`, so the answer is `2`. The number `0` gives `0`.",
+  "constraints": [
+    "0 <= number <= 2147483647"
+  ],
+  "signature": { "name": "digital_root", "params": [{ "name": "number", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [38], "expected": 2, "explanation": "38 -> 3 + 8 = 11 -> 1 + 1 = 2." },
+    { "args": [99999], "expected": 9, "explanation": "99999 -> 45 -> 9." }
+  ],
+  "edgeTests": [[0], [9], [10], [18], [2147483647], [1000000000]],
+  "expected": { "time": "O(1)", "space": "O(1)" },
+  "hints": {
+    "nudge": "This is a task that repeats itself on a smaller number. What is the base case, the number for which you can answer at once?",
+    "pattern": "Recursion: a number below 10 is its own answer; otherwise the answer for the number is the answer for the sum of its digits. There is also a short formula using the remainder modulo 9.",
+    "pseudocode": "root(n):\n  if n < 10: return n\n  return root(sum of the digits of n)\nshortcut: if n == 0 return 0 else return 1 + (n - 1) mod 9",
+    "walkthrough": "The recursion follows the story directly: a single digit is finished; for anything bigger, add up the digits and ask the same question about the sum, which is smaller than the number, so the recursion ends (a 10-digit number gives a sum of at most 90 in the first step). To see the shortcut: a number and the sum of its digits leave the same remainder when divided by 9 (because 10 leaves remainder 1). So the final single digit has the same remainder as the original number. For a positive number the answer is the digit from 1 to 9 with that remainder, which is 1 + (n - 1) mod 9; zero stays zero. The formula costs O(1); the recursion costs a few steps."
+  }
+}

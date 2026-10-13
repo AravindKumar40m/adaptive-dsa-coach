@@ -1,0 +1,24 @@
+{
+  "slug": "kth-permutation",
+  "title": "The K-th Permutation",
+  "concept": "recursion",
+  "difficulty": "hard",
+  "statement": "The digits `1` to `n` can be arranged in `n!` different orders. List all of these arrangements as texts in **increasing (dictionary) order**: for `n = 3` they are `123`, `132`, `213`, `231`, `312`, `321`.\n\nReturn the `k`-th arrangement of this list (counting from `1`) **without generating all the arrangements before it**.",
+  "constraints": [
+    "1 <= n <= 9",
+    "1 <= k <= n!"
+  ],
+  "signature": { "name": "kth_permutation", "params": [{ "name": "n", "type": "int" }, { "name": "k", "type": "int" }], "returns": "string" },
+  "examples": [
+    { "args": [3, 5], "expected": "312", "explanation": "The sorted list is 123, 132, 213, 231, 312, 321: the 5th is 312." },
+    { "args": [1, 1], "expected": "1", "explanation": "There is a single arrangement." }
+  ],
+  "edgeTests": [[2, 1], [2, 2], [4, 1], [4, 24], [9, 1], [9, 362880]],
+  "expected": { "time": "O(n^2)", "space": "O(n)" },
+  "hints": {
+    "nudge": "How many arrangements start with the digit 1? With the digit 2? Is that enough to know the first digit of the k-th arrangement?",
+    "pattern": "Factorial number system: the arrangements are grouped by their first digit in blocks of (n - 1)! arrangements; pick the block that contains k and repeat for the rest.",
+    "pseudocode": "digits = [1, 2, ..., n]; k = k - 1 (counting from 0)\nresult = empty\nfor i from n down to 1:\n  block = (i - 1)!\n  index = k div block; k = k mod block\n  append digits[index] to result and remove it from digits\nreturn result",
+    "walkthrough": "Generating the arrangements one by one up to the k-th takes up to n! steps. But the sorted list has a clear structure: the first (n - 1)! arrangements all start with the smallest digit, the next (n - 1)! with the second smallest, and so on. So the first digit of the k-th arrangement is the digit with index (k - 1) div (n - 1)! among the available digits (counting from 0). Remove that digit, replace k by the position inside its block, (k - 1) mod (n - 1)!, and solve the same problem for the remaining digits with blocks of (n - 2)!, and so on. Counting k from 0 makes the division exact. Removing from a list of at most 9 digits is cheap: O(n^2) in total."
+  }
+}

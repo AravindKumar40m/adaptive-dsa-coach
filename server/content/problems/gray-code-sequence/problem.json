@@ -1,0 +1,23 @@
+{
+  "slug": "gray-code-sequence",
+  "title": "Gray Code",
+  "concept": "recursion",
+  "difficulty": "medium",
+  "statement": "A **Gray code** of `bits` bits is a list of all `2^bits` numbers from `0` to `2^bits - 1` in an order where **neighbouring numbers differ in exactly one bit** of their binary form. Return the **reflected Gray code**, defined like this:\n- for `0` bits it is `[0]`;\n- the code for `b` bits is the code for `b - 1` bits, followed by the same list **in reverse order** with the bit `2^(b-1)` added (set) to each number.\n\nFor example the 2-bit code is `[0, 1, 3, 2]`.",
+  "constraints": [
+    "0 <= bits <= 16"
+  ],
+  "signature": { "name": "gray_code", "params": [{ "name": "bits", "type": "int" }], "returns": "int[]" },
+  "examples": [
+    { "args": [2], "expected": [0, 1, 3, 2], "explanation": "From [0, 1]: reversed is [1, 0], with bit 2 added: [3, 2]. Together [0, 1, 3, 2]." },
+    { "args": [3], "expected": [0, 1, 3, 2, 6, 7, 5, 4], "explanation": "The 2-bit code, then its reverse [2, 3, 1, 0] with 4 added: [6, 7, 5, 4]." }
+  ],
+  "edgeTests": [[0], [1], [4], [5], [6], [7], [8], [10], [12]],
+  "expected": { "time": "O(2^bits)", "space": "O(2^bits)" },
+  "hints": {
+    "nudge": "Look at the 2-bit code and the 3-bit code written under each other. How is the second half of the 3-bit code made from the first half?",
+    "pattern": "Build the code for b bits from the code for b - 1 bits by reflecting it: append the reversed list with the new top bit set.",
+    "pseudocode": "code = [0]\nfor b in 0 .. bits - 1:\n  for x in code in REVERSE order (of the list as it was before this step): append x + 2^b\nreturn code",
+    "walkthrough": "The definition is itself a recursion: the code for b bits is made from the code for b - 1 bits. Going from the end of the first half to the start of the second half, the last number of the first half and the first number of the second half are the same except for the new top bit, so they differ in exactly one bit; inside the second half the neighbours were neighbours before and still differ in one bit. So the property is kept at every step. Implement it with a loop: start with [0], and for each new bit go through the list from the last element to the first, appending each number with the new bit added. Be careful not to extend the list while you are reading it from the front: read it backwards from its original length. O(2^bits). (A closed formula exists too: the i-th number is i XOR (i >> 1).)"
+  }
+}

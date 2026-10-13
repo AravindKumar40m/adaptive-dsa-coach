@@ -1,0 +1,24 @@
+{
+  "slug": "longest-valid-brackets",
+  "title": "Longest Balanced Stretch",
+  "concept": "stack_queue",
+  "difficulty": "hard",
+  "statement": "`text` contains only `(` and `)`. A text is **balanced** if every `(` is closed by a later `)` and every `)` closes an earlier `(`, each used once, with the pairs properly nested (like in `(()())`).\n\nFind the longest **contiguous stretch** of `text` that is balanced and return its length (`0` if there is none).",
+  "constraints": [
+    "0 <= len(text) <= 100000",
+    "text contains only ( and )"
+  ],
+  "signature": { "name": "longest_valid_brackets", "params": [{ "name": "text", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["(()"], "expected": 2, "explanation": "The stretch `()` at the end is balanced; the first `(` has no partner." },
+    { "args": [")()())"], "expected": 4, "explanation": "The stretch `()()` in the middle is balanced; the first and last `)` have no partner." }
+  ],
+  "edgeTests": [[""], ["()"], [")("], ["()(()"], ["()(())"], ["((()))(("], ["(()())"]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "A balanced stretch cannot contain a closing bracket that has nothing to close. Where do such brackets split the text?",
+    "pattern": "A stack of positions: keep the position just BEFORE the current balanced stretch at the bottom, push the position of every `(`, and measure the length from the new top after each `)`.",
+    "pseudocode": "stack = [-1]; best = 0\nfor i, ch in text:\n  if ch == '(': push i\n  else:\n    pop\n    if stack is empty: push i      (this ')' has no partner: it is the new start boundary)\n    else: best = max(best, i - stack.top)\nreturn best",
+    "walkthrough": "Checking every stretch for balance is O(n^3), or O(n^2) with a running counter. With a stack you can do it in one pass. Store positions, not brackets. At the bottom keep the position just before the current valid stretch (start with -1). Every `(` is pushed with its position. A `)` pops the top: if that was a `(`, they form a pair, and the balanced stretch ending here reaches back to the position that is NOW on top of the stack (everything between is balanced), so its length is i - top. If the pop removed the bottom marker, this `)` had no partner: it cannot be inside any balanced stretch, so push its position as the new bottom marker. The answer is the largest length seen. O(n) time and memory."
+  }
+}

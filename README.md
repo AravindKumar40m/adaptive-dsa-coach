@@ -107,8 +107,8 @@ Extra-language solutions live in `server/content/other-languages/<lang>.txt` and
 - The page opens on the recommended problem, explains why, and has a "Next problem" / "Skip to another problem" button.
 - Tests (from `server/`): `npm run test:picker` (16 unit tests, no services), `npm run test:picker-flow` (API must be running: a simulated learner solves all 30 problems in the order the picker offers; dev database only).
 
-## Content at the target size: 120 problems (Day 3)
-41 easy, 60 medium, 19 hard; every one of the 16 concepts has 6 to 9 problems. 2,626 tests; 623 reference solutions (Python brute/better/optimal + JavaScript, Java and C++), all verified through the real harness.
+## Content: 280 problems (120 on Day 3, 180 on Day 6, 280 on Day 7)
+66 easy, 171 medium, 43 hard; the 16 concepts have 15 to 25 problems each (dp 25, graphs 23, trees 20, the rest 15 to 17). 6,129 tests; 1,432 reference solutions (Python brute/better/optimal + JavaScript, Java and C++), all verified through the real harness and Judge0. The statements, hints and skill tags were written and checked by Claude only: a human read is still needed.
 - Types: parameters `int`, `int[]`, `int[][]`, `string`, `ListNode`, `CycleList`, `TreeNode`; returns `int`, `bool`, `int[]`, `string`, `ListNode`, `TreeNode`. Linked lists and trees are shown as plain lists in the statements (trees level by level with `null`); the harness builds the real nodes in each language.
 - Add a problem: create `server/content/problems/<slug>/{problem.json,solutions.py}` and add the optimal solution to `server/content/other-languages/<lang>.<batch>.txt` (one section per slug, `//### <slug>`).
 - Check content (from `server/`): `npm run content:build` (agreement checks), `python content/check_quality.py` (test variety), `npm run content:seed`, `npm run content:validate` (all) or `node --env-file=../.env scripts/content/validate-references.js slug1,slug2` (some).
@@ -236,12 +236,13 @@ Scenario: a Run passes the 2 visible examples, then the Submit says "6 of 21 tes
 - **Tests (from `server/`):** `test:reveal` (the choice rule, no services) and `test:reveal-flow` (real accounts and Judge0: a solution that passes the examples but not the hidden tests; a crash; a hang; JavaScript and C++; nothing shown for accepted code or compile errors; no other input leaks; scoring unchanged; starts an API copy on port 4119).
 
 ## Step through my code: a Python time-travel debugger (Day 6)
-A **Step through** button next to Run (Python only, 105 of the 120 problems; linked lists and trees later). It runs your code once with tracing on, then you replay it in the browser: forwards, backwards, over a call, out of a function, to the next change, to a breakpoint (click a line number), with a slider and keyboard keys. Every variable is shown at every step; positions (`i`, `j`, `lo`, `hi` ...) are drawn as markers under the array cell they point at; recursion shows a call tree and flags repeated identical calls; each step has a sentence in plain words, errors explain themselves with the real numbers. Inputs: an example, **the failing hidden test** (one click from the failed Submit), or your own.
+A **Step through** button next to Run (Python only, the 105 of the first 120 problems whose inputs are plain values and lists; linked lists and trees later; the 160 problems added after that were not checked with it). It runs your code once with tracing on, then you replay it in the browser: forwards, backwards, over a call, out of a function, to the next change, to a breakpoint (click a line number), with a slider and keyboard keys. Every variable is shown at every step; positions (`i`, `j`, `lo`, `hi` ...) are drawn as markers under the array cell they point at; recursion shows a call tree and flags repeated identical calls; each step has a sentence in plain words, errors explain themselves with the real numbers. Inputs: an example, **the failing hidden test** (one click from the failed Submit), or your own.
 - **Not a rating event and not help.** No reference answer is shown for your own input (it would leak hidden answers). Capped at 2,000 steps and 2.5 s; an endless loop shows its first 2,000 steps and the lines that ran most.
 - **Why this design:** record once, replay: no delay per step and stepping back is free (LeetCode's Premium debugger asks a server at every step).
 - Full write-up, research on how debuggers work, what is different and the limits: `docs/step-through-debugger.md`. API: `POST /api/debug`. Tests (from `server/`): `test:debug`, `test:debug-view`, `test:debug-flow`.
 
 ## Backups (added after the live database was lost on 2026-10-13)
+- **See what is in the live database (read-only):** `npm run db:counts` in `server/` prints the number of documents in every collection. It never writes; use it before and after anything that touches the database.
 The database holds real learning data, so it is backed up by commands that only READ it. Run these from `server/`:
 
 | Command | What it does |

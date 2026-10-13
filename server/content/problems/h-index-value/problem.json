@@ -1,0 +1,24 @@
+{
+  "slug": "h-index-value",
+  "title": "The H-Index",
+  "concept": "sorting",
+  "difficulty": "medium",
+  "statement": "`citations[i]` is how many times paper `i` of a researcher has been cited. The researcher's **h-index** is the largest number `h` such that **at least `h` papers have at least `h` citations each**. (If no such `h` above 0 exists, the h-index is `0`.)\n\nReturn the h-index.",
+  "constraints": [
+    "1 <= len(citations) <= 100000",
+    "0 <= citations[i] <= 1000000"
+  ],
+  "signature": { "name": "h_index", "params": [{ "name": "citations", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[10, 8, 5, 4, 3]], "expected": 4, "explanation": "Four papers (10, 8, 5, 4) have at least 4 citations; five papers with at least 5 do not exist." },
+    { "args": [[0, 0]], "expected": 0, "explanation": "No paper has even 1 citation." }
+  ],
+  "edgeTests": [[[0]], [[100]], [[1, 1, 1]], [[5, 5, 5, 5, 5]], [[2, 2]], [[6, 1]]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "If you sort the papers from most cited to least cited, what does the paper at position i tell you about h?",
+    "pattern": "Sort descending: the h-index is the largest position i (counting from 1) where the i-th paper still has at least i citations. A counting version avoids the sort.",
+    "pseudocode": "sort citations from largest to smallest\nh = 0\nfor i in 1..n: if citations[i-1] >= i: h = i\nreturn h",
+    "walkthrough": "After sorting from most to least cited, the first i papers all have at least citations[i - 1] citations, so if citations[i - 1] >= i then at least i papers have at least i citations. The h-index is the largest i for which that holds. The condition stays true up to the answer and then stays false, so you can stop at the first failure. For O(n) time, notice that h can never exceed n: count how many papers have exactly c citations for c = 0..n (anything above n counts as n), then walk h from n down to 0 adding up the counts; the first h where the running total reaches h is the answer."
+  }
+}

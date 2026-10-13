@@ -1,0 +1,24 @@
+{
+  "slug": "min-stack-queries",
+  "title": "A Stack That Knows Its Minimum",
+  "concept": "stack_queue",
+  "difficulty": "medium",
+  "statement": "A stack starts empty. `ops` is a list of operations, each written as a number:\n- a number **greater than 0** means **push** that number;\n- `0` means **pop** the top number (nothing happens if the stack is empty);\n- `-1` means **report the smallest number currently in the stack**, or `0` if the stack is empty.\n\nReturn the list of all reported numbers, in the order they were asked for.",
+  "constraints": [
+    "0 <= len(ops) <= 100000",
+    "each push value is between 1 and 1000000000; the other operations are 0 and -1"
+  ],
+  "signature": { "name": "min_stack_answers", "params": [{ "name": "ops", "type": "int[]" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[5, 3, -1, 0, -1, 0, -1]], "expected": [3, 5, 0], "explanation": "Push 5, push 3, minimum is 3; pop the 3, minimum is 5; pop the 5, the stack is empty so the report is 0." },
+    { "args": [[-1, 2, 2, -1, 0, -1]], "expected": [0, 2, 2], "explanation": "The first report is on an empty stack. After pushing 2 twice the minimum is 2; after one pop it is still 2." }
+  ],
+  "edgeTests": [[[]], [[0]], [[4, -1]], [[3, 1, 2, -1, 0, -1, 0, -1]], [[-1]], [[2, 1, 1, 0, -1, 0, -1]]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "When you pop the top, the minimum may change. What information could you have saved at the time of the push so that the pop can restore it?",
+    "pattern": "Keep a second stack that holds, for every entry of the main stack, the minimum of the stack up to and including that entry.",
+    "pseudocode": "values = empty; mins = empty\nfor op in ops:\n  if op > 0: push op on values; push min(op, mins.top if any) on mins\n  elif op == 0: if values not empty: pop both\n  else: report mins.top if any, else 0",
+    "walkthrough": "Searching the whole stack for the minimum at each report is O(n) per report. Instead store the answer in advance: next to every pushed value keep the minimum of everything that is in the stack at that moment, which is min(the new value, the previous stored minimum). The stored minimum of the top entry is then always the current minimum of the stack. Pop removes the value and its stored minimum together, which automatically brings back the previous minimum. A report is just a look at the top of the second stack (0 if the stack is empty). Everything is O(1) per operation, O(n) in total."
+  }
+}

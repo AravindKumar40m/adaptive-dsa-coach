@@ -1,0 +1,24 @@
+{
+  "slug": "taps-to-water-garden",
+  "title": "Fewest Taps to Water the Garden",
+  "concept": "greedy",
+  "difficulty": "hard",
+  "statement": "A garden is the line segment from `0` to `n`. There is a tap at every whole number position `0, 1, ..., n`, and `ranges[i]` is how far tap `i` reaches: if it is turned on it waters the segment `[i - ranges[i], i + ranges[i]]` (a range of `0` waters only a single point).\n\nReturn the **smallest number of taps** that must be turned on to water the **whole** garden `[0, n]` without gaps, or `-1` if that is impossible. Here `n = len(ranges) - 1`.",
+  "constraints": [
+    "2 <= len(ranges) <= 10001",
+    "0 <= ranges[i] <= 100"
+  ],
+  "signature": { "name": "min_taps", "params": [{ "name": "ranges", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[2, 1, 0, 1, 2]], "expected": 2, "explanation": "n = 4. Tap 0 waters [0, 2] and tap 3 waters [2, 4]: together the whole garden." },
+    { "args": [[0, 0, 0]], "expected": -1, "explanation": "Every tap waters only its own point; the stretches between points are dry." }
+  ],
+  "edgeTests": [[[1, 0]], [[0, 1]], [[0, 0]], [[3, 0, 0, 0]], [[1, 1, 1, 1]], [[1, 0, 0, 1, 0, 0, 1]]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Think of every tap as a segment. Starting from point 0, among all segments that begin at or before the point you have reached, which one takes you furthest?",
+    "pattern": "Interval covering as a greedy jump game: for every left end store the furthest right end of any segment starting there; then repeatedly jump to the furthest reachable right end.",
+    "pseudocode": "furthest[left] = max right end of any segment starting at left (left = max(0, i - r), right = i + r)\ntaps = 0; currentEnd = 0; far = 0\nfor i in 0 .. n - 1:\n  far = max(far, furthest[i])\n  if i == currentEnd:\n    if far <= i: return -1\n    taps += 1; currentEnd = far\n    if currentEnd >= n: return taps\nreturn -1",
+    "walkthrough": "Trying every subset of taps is exponential, and a table 'fewest taps to cover [0, x]' costs O(n^2). The greedy works like the jump game: the watered part always starts at 0 and grows to the right. Turn every tap into a segment [max(0, i - r), i + r] and note for each left end the furthest right end among the segments that start there. Walk through the points 0 to n - 1 and keep `far`, the furthest point you could reach with segments starting at or before the current point. When you arrive at the end of the part already covered (currentEnd), you must add one more tap: choose the segment that reaches `far`. If `far` is not beyond the current point, nothing continues the covered part, so the garden cannot be watered: -1. Count the taps and stop as soon as the covered part reaches n."
+  }
+}

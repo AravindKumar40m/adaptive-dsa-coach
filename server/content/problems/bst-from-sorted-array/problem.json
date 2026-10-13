@@ -1,0 +1,24 @@
+{
+  "slug": "bst-from-sorted-array",
+  "title": "Balanced Search Tree From a Sorted List",
+  "concept": "trees",
+  "difficulty": "medium",
+  "statement": "`values` is sorted in **strictly increasing** order. Build a **height-balanced binary search tree** from it and return its root.\n\nTo make the answer unique, always choose as the root of a part the element at position `(lo + hi) / 2` (rounded down) of that part, where `lo` and `hi` are its first and last positions. The left part builds the left subtree and the right part the right subtree, by the same rule.",
+  "constraints": [
+    "0 <= len(values) <= 100000",
+    "-1000000000 <= values[i] <= 1000000000, strictly increasing"
+  ],
+  "signature": { "name": "build_balanced_bst", "params": [{ "name": "values", "type": "int[]" }], "returns": "TreeNode" },
+  "examples": [
+    { "args": [[1, 2, 3, 4]], "expected": [2, 1, 3, null, null, null, 4], "explanation": "The root is the element at position (0 + 3) / 2 = 1, which is 2. The right part [3, 4] has its root at position (2 + 3) / 2 = 2, which is 3, with 4 as its right child." },
+    { "args": [[1, 2, 3]], "expected": [2, 1, 3], "explanation": "The middle element 2 is the root; 1 and 3 are its children." }
+  ],
+  "edgeTests": [[[]], [[5]], [[1, 2]], [[1, 2, 3, 4, 5, 6, 7]], [[1, 2, 3, 4, 5]], [[-3, 0, 4]]],
+  "expected": { "time": "O(n)", "space": "O(log n)" },
+  "hints": {
+    "nudge": "In a search tree the root splits the values into the smaller ones and the larger ones. Which element should be the root so that both sides get about the same number of values?",
+    "pattern": "Recursion on index ranges: the middle element is the root, the left range builds the left subtree, the right range builds the right subtree.",
+    "pseudocode": "build(lo, hi):\n  if lo > hi: return missing\n  mid = (lo + hi) / 2 (round down)\n  return node(values[mid], build(lo, mid - 1), build(mid + 1, hi))\nreturn build(0, n - 1)",
+    "walkthrough": "Choosing the first element as the root would give a chain: a tree as tall as the list. Choosing the middle element halves the problem: everything before it is smaller, so it forms the left subtree, and everything after it forms the right subtree, and each half is solved the same way. Pass index boundaries (lo and hi) instead of copying sub-lists, so that every call costs O(1) and the whole build is O(n) time. The height is about log2(n), so the recursion is shallow. The rule `(lo + hi) / 2` rounded down decides which of two middle elements is taken for parts of even length."
+  }
+}

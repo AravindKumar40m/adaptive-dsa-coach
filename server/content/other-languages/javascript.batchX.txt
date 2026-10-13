@@ -1,0 +1,215 @@
+//### max-distinct-window-sum
+function maxDistinctWindowSum(numbers, k) {
+  const counts = new Map();
+  let total = 0, best = 0;
+  for (let i = 0; i < numbers.length; i++) {
+    const x = numbers[i];
+    counts.set(x, (counts.get(x) || 0) + 1);
+    total += x;
+    if (i >= k) {
+      const y = numbers[i - k];
+      counts.set(y, counts.get(y) - 1);
+      if (counts.get(y) === 0) counts.delete(y);
+      total -= y;
+    }
+    if (i >= k - 1 && counts.size === k) best = Math.max(best, total);
+  }
+  return best;
+}
+//### window-distinct-counts
+function windowDistinctCounts(numbers, k) {
+  const counts = new Map(), out = [];
+  for (let i = 0; i < numbers.length; i++) {
+    counts.set(numbers[i], (counts.get(numbers[i]) || 0) + 1);
+    if (i >= k) {
+      const y = numbers[i - k];
+      counts.set(y, counts.get(y) - 1);
+      if (counts.get(y) === 0) counts.delete(y);
+    }
+    if (i >= k - 1) out.push(counts.size);
+  }
+  return out;
+}
+//### longest-substring-at-least-k-each
+function longestSubstringKEach(text, k) {
+  let best = 0;
+  for (let target = 1; target <= 26; target++) {
+    const freq = new Array(26).fill(0);
+    let left = 0, unique = 0, enough = 0;
+    for (let right = 0; right < text.length; right++) {
+      const c = text.charCodeAt(right) - 97;
+      if (freq[c] === 0) unique++;
+      freq[c]++;
+      if (freq[c] === k) enough++;
+      while (unique > target) {
+        const d = text.charCodeAt(left) - 97;
+        if (freq[d] === k) enough--;
+        freq[d]--;
+        if (freq[d] === 0) unique--;
+        left++;
+      }
+      if (unique === target && enough === target) best = Math.max(best, right - left + 1);
+    }
+  }
+  return best;
+}
+//### min-knight-moves
+function minKnightMoves(size, startRow, startCol, targetRow, targetCol) {
+  const dr = [1, 2, 2, 1, -1, -2, -2, -1], dc = [2, 1, -1, -2, -2, -1, 1, 2];
+  const dist = [];
+  for (let r = 0; r < size; r++) dist.push(new Array(size).fill(-1));
+  dist[startRow][startCol] = 0;
+  const queue = [[startRow, startCol]];
+  for (let head = 0; head < queue.length; head++) {
+    const [r, c] = queue[head];
+    if (r === targetRow && c === targetCol) return dist[r][c];
+    for (let m = 0; m < 8; m++) {
+      const nr = r + dr[m], nc = c + dc[m];
+      if (nr >= 0 && nr < size && nc >= 0 && nc < size && dist[nr][nc] < 0) {
+        dist[nr][nc] = dist[r][c] + 1;
+        queue.push([nr, nc]);
+      }
+    }
+  }
+  return -1;
+}
+//### smallest-build-order
+function smallestBuildOrder(n, pairs) {
+  const count = new Array(n).fill(0), later = [];
+  for (let i = 0; i < n; i++) later.push([]);
+  for (const [a, b] of pairs) { count[b]++; later[a].push(b); }
+  const heap = [];
+  const push = (x) => {
+    heap.push(x);
+    let i = heap.length - 1;
+    while (i > 0) {
+      const p = (i - 1) >> 1;
+      if (heap[i] < heap[p]) { const t = heap[i]; heap[i] = heap[p]; heap[p] = t; i = p; } else break;
+    }
+  };
+  const pop = () => {
+    const top = heap[0], last = heap.pop();
+    if (heap.length > 0) {
+      heap[0] = last;
+      let i = 0;
+      for (;;) {
+        const l = 2 * i + 1, r = l + 1;
+        let m = i;
+        if (l < heap.length && heap[l] < heap[m]) m = l;
+        if (r < heap.length && heap[r] < heap[m]) m = r;
+        if (m === i) break;
+        const t = heap[i]; heap[i] = heap[m]; heap[m] = t;
+        i = m;
+      }
+    }
+    return top;
+  };
+  for (let job = 0; job < n; job++) if (count[job] === 0) push(job);
+  const order = [];
+  while (heap.length > 0) {
+    const job = pop();
+    order.push(job);
+    for (const b of later[job]) {
+      count[b]--;
+      if (count[b] === 0) push(b);
+    }
+  }
+  return order.length === n ? order : [];
+}
+//### cables-to-connect-all
+function cableMovesNeeded(n, cables) {
+  if (cables.length < n - 1) return -1;
+  const parent = [];
+  for (let i = 0; i < n; i++) parent.push(i);
+  function find(x) {
+    while (parent[x] !== x) { parent[x] = parent[parent[x]]; x = parent[x]; }
+    return x;
+  }
+  let groups = n;
+  for (const [a, b] of cables) {
+    const ra = find(a), rb = find(b);
+    if (ra !== rb) { parent[ra] = rb; groups--; }
+  }
+  return groups - 1;
+}
+//### safe-nodes
+function eventuallySafeNodes(graph) {
+  const n = graph.length;
+  const remaining = graph.map((targets) => targets.length);
+  const reverse = [];
+  for (let i = 0; i < n; i++) reverse.push([]);
+  for (let u = 0; u < n; u++) for (const v of graph[u]) reverse[v].push(u);
+  const queue = [], safe = new Array(n).fill(false);
+  for (let i = 0; i < n; i++) if (remaining[i] === 0) queue.push(i);
+  while (queue.length > 0) {
+    const v = queue.pop();
+    safe[v] = true;
+    for (const u of reverse[v]) {
+      remaining[u]--;
+      if (remaining[u] === 0) queue.push(u);
+    }
+  }
+  const out = [];
+  for (let i = 0; i < n; i++) if (safe[i]) out.push(i);
+  return out;
+}
+//### negative-cycle-exists
+function hasNegativeCycle(n, edges) {
+  const dist = new Array(n).fill(0);
+  for (let round = 0; round < n; round++) {
+    let changed = false;
+    for (const [u, v, w] of edges) {
+      if (dist[u] + w < dist[v]) { dist[v] = dist[u] + w; changed = true; }
+    }
+    if (!changed) return false;
+  }
+  return true;
+}
+//### enclosed-land-count
+function enclosedLandCells(grid) {
+  const rows = grid.length, cols = grid[0].length;
+  const marked = [];
+  for (let r = 0; r < rows; r++) marked.push(new Array(cols).fill(false));
+  const stack = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if ((r === 0 || c === 0 || r === rows - 1 || c === cols - 1) && grid[r][c] === 1) {
+        marked[r][c] = true;
+        stack.push([r, c]);
+      }
+    }
+  }
+  const dr = [1, -1, 0, 0], dc = [0, 0, 1, -1];
+  while (stack.length > 0) {
+    const [r, c] = stack.pop();
+    for (let m = 0; m < 4; m++) {
+      const nr = r + dr[m], nc = c + dc[m];
+      if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && grid[nr][nc] === 1 && !marked[nr][nc]) {
+        marked[nr][nc] = true;
+        stack.push([nr, nc]);
+      }
+    }
+  }
+  let count = 0;
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) if (grid[r][c] === 1 && !marked[r][c]) count++;
+  return count;
+}
+//### water-supply-min-cost
+function minWaterCost(wells, pipes) {
+  const n = wells.length;
+  const edges = pipes.map(([a, b, cost]) => [cost, a, b]);
+  for (let i = 0; i < n; i++) edges.push([wells[i], i, n]);
+  edges.sort((x, y) => x[0] - y[0]);
+  const parent = [];
+  for (let i = 0; i <= n; i++) parent.push(i);
+  function find(x) {
+    while (parent[x] !== x) { parent[x] = parent[parent[x]]; x = parent[x]; }
+    return x;
+  }
+  let total = 0;
+  for (const [cost, a, b] of edges) {
+    const ra = find(a), rb = find(b);
+    if (ra !== rb) { parent[ra] = rb; total += cost; }
+  }
+  return total;
+}

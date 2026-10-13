@@ -1,0 +1,24 @@
+{
+  "slug": "parse-integer-text",
+  "title": "Read a Number From Text",
+  "concept": "strings",
+  "difficulty": "medium",
+  "statement": "Turn the beginning of `text` into a whole number, following these rules in order:\n1. Skip any **spaces** at the start (only the space character).\n2. If the next character is `+` or `-`, it is the sign (no sign means positive).\n3. Read digits until the first character that is not a digit (or the end). Ignore everything after that.\n4. If there were no digits, the result is `0`.\n5. If the number is outside the range of a 32-bit signed integer (`-2147483648` to `2147483647`), return the nearest end of that range.",
+  "constraints": [
+    "0 <= len(text) <= 200",
+    "text contains letters, digits, spaces, `+`, `-` and `.`"
+  ],
+  "signature": { "name": "parse_integer", "params": [{ "name": "text", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["   -42abc"], "expected": -42, "explanation": "Skip the spaces, the sign is `-`, the digits are 42, and `abc` is ignored." },
+    { "args": ["words 987"], "expected": 0, "explanation": "The first character after the (no) spaces is `w`: not a sign and not a digit, so there are no digits." }
+  ],
+  "edgeTests": [[""], ["   "], ["+-12"], ["2147483648"], ["-91283472332"], ["0032"], ["-0"], ["3.14"], ["+7"]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Follow the rules like a recipe: one pointer that moves through the text and stops each step when the rule is finished.",
+    "pattern": "A single left-to-right scan with a position index: spaces, then one optional sign, then digits, building the value as value * 10 + digit.",
+    "pseudocode": "i = 0; skip while text[i] == ' '\nsign = +1; if text[i] is '+' or '-': remember the sign; i += 1\nvalue = 0\nwhile text[i] is a digit: value = value * 10 + digit; if value > 2147483648: stop; i += 1\nresult = sign * value; clamp to [-2147483648, 2147483647]",
+    "walkthrough": "Handle each rule once, moving the index forward and never going back. Skip spaces. Look at one character: if it is a sign, record it and move on (a second sign right after is NOT part of the number, it ends the digits, so `+-12` gives 0). Then read digits while they are digits, multiplying the value so far by 10 and adding the digit. In languages with fixed-size integers the value can overflow while you read a long number: use a 64-bit variable and stop reading as soon as the value is already above 2147483648, since the answer will be clamped anyway. Finally apply the sign and clamp. Remember `-0` is simply 0 and leading zeros do not matter."
+  }
+}

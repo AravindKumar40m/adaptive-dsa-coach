@@ -1,0 +1,24 @@
+{
+  "slug": "cables-to-connect-all",
+  "title": "Moving Cables to Connect Every Computer",
+  "concept": "graphs",
+  "difficulty": "medium",
+  "statement": "A network has `n` computers numbered `0` to `n - 1`. `cables[i] = [a, b]` is a cable between computers `a` and `b`. A computer can reach another one if there is a chain of cables between them.\n\nIn one **move** you may take **any one cable** off its two plugs and plug it between **any two computers** you like. Return the **smallest number of moves** after which every computer can reach every other one, or `-1` if that is impossible.",
+  "constraints": [
+    "1 <= n <= 100000",
+    "0 <= len(cables) <= 100000, 0 <= a, b < n, a != b (two computers may be joined by several cables)"
+  ],
+  "signature": { "name": "cable_moves_needed", "params": [{ "name": "n", "type": "int" }, { "name": "cables", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [5, [[0, 1], [1, 2], [2, 0], [3, 4]]], "expected": 1, "explanation": "There are two groups: {0, 1, 2} and {3, 4}. The cable between 2 and 0 is redundant (those three are connected without it): move it to join the two groups." },
+    { "args": [5, [[0, 1], [1, 2]]], "expected": -1, "explanation": "Connecting 5 computers takes at least 4 cables, and there are only 2." }
+  ],
+  "edgeTests": [[1, []], [2, []], [2, [[0, 1]]], [3, [[0, 1], [0, 1]]], [4, [[0, 1], [2, 3], [0, 1]]], [6, [[0, 1], [1, 2], [3, 4], [4, 5], [3, 5]]]],
+  "expected": { "time": "O(n + m)", "space": "O(n)" },
+  "hints": {
+    "nudge": "First count the groups of computers that are already connected. What do you need to join g groups together, and where could the cables come from?",
+    "pattern": "Count the connected groups (union-find or a search). Joining g groups takes g - 1 cables; it is possible exactly when the total number of cables is at least n - 1, and then the answer is g - 1.",
+    "pseudocode": "if len(cables) < n - 1: return -1\ngroups = number of connected components (union-find: n minus the number of successful unions)\nreturn groups - 1",
+    "walkthrough": "To connect n computers into one network you need at least n - 1 cables, whatever their arrangement: with fewer cables the answer is -1. If there are enough cables, then a cable that closes a loop inside a group (a redundant one) can be moved without disconnecting anything, and the number of redundant cables is (cables) - (n - groups), which is at least groups - 1 whenever cables >= n - 1. Each move joins two groups, so exactly groups - 1 moves are needed, no fewer (one move joins at most two groups) and no more (there are enough redundant cables). Count the groups with a union-find structure: start with n groups and subtract one for every cable that joins two different groups. O((n + m) times the very slow-growing inverse Ackermann function)."
+  }
+}

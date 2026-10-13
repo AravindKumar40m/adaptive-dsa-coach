@@ -1,0 +1,108 @@
+//### sort-by-bit-count
+function sortByBits(numbers) {
+  const bits = (x) => { let c = 0; while (x > 0) { x &= x - 1; c++; } return c; };
+  return numbers.slice().sort((a, b) => bits(a) - bits(b) || a - b);
+}
+//### largest-triangle-perimeter
+function largestTrianglePerimeter(sticks) {
+  const a = sticks.slice().sort((p, q) => q - p);
+  for (let i = 0; i + 2 < a.length; i++) {
+    if (a[i + 1] + a[i + 2] > a[i]) return a[i] + a[i + 1] + a[i + 2];
+  }
+  return 0;
+}
+//### valid-palindrome-one-delete
+function almostPalindrome(text) {
+  function pal(l, r) {
+    while (l < r) {
+      if (text[l] !== text[r]) return false;
+      l++;
+      r--;
+    }
+    return true;
+  }
+  let l = 0, r = text.length - 1;
+  while (l < r) {
+    if (text[l] !== text[r]) return pal(l + 1, r) || pal(l, r - 1);
+    l++;
+    r--;
+  }
+  return true;
+}
+//### count-pairs-with-difference
+function countPairsWithGap(numbers, gap) {
+  let count = 0, j = 0;
+  for (let i = 0; i < numbers.length; i++) {
+    if (j <= i) j = i + 1;
+    while (j < numbers.length && numbers[j] - numbers[i] < gap) j++;
+    if (j < numbers.length && numbers[j] - numbers[i] === gap) count++;
+  }
+  return count;
+}
+//### boats-needed
+function boatsNeeded(weights, limit) {
+  const a = weights.slice().sort((p, q) => p - q);
+  let light = 0, heavy = a.length - 1, boats = 0;
+  while (light <= heavy) {
+    if (a[light] + a[heavy] <= limit) light++;
+    heavy--;
+    boats++;
+  }
+  return boats;
+}
+//### sort-three-colors
+function sortThreeValues(numbers) {
+  const a = numbers.slice();
+  let low = 0, mid = 0, high = a.length - 1;
+  while (mid <= high) {
+    if (a[mid] === 0) { [a[low], a[mid]] = [a[mid], a[low]]; low++; mid++; }
+    else if (a[mid] === 1) mid++;
+    else { [a[mid], a[high]] = [a[high], a[mid]]; high--; }
+  }
+  return a;
+}
+//### remove-value-length
+function removeValue(numbers, value) {
+  const a = numbers.slice();
+  let write = 0;
+  for (let read = 0; read < a.length; read++) {
+    if (a[read] !== value) { a[write] = a[read]; write++; }
+  }
+  return a.slice(0, write);
+}
+//### triplets-sum-below
+function countTriplesBelow(numbers, limit) {
+  const a = numbers.slice().sort((p, q) => p - q);
+  let count = 0;
+  for (let i = 0; i + 2 < a.length; i++) {
+    let lo = i + 1, hi = a.length - 1;
+    while (lo < hi) {
+      if (a[i] + a[lo] + a[hi] < limit) { count += hi - lo; lo++; }
+      else hi--;
+    }
+  }
+  return count;
+}
+//### isomorphic-texts
+function areIsomorphic(first, second) {
+  const forward = new Map(), backward = new Map();
+  for (let i = 0; i < first.length; i++) {
+    const a = first[i], b = second[i];
+    if (forward.has(a) && forward.get(a) !== b) return false;
+    if (backward.has(b) && backward.get(b) !== a) return false;
+    forward.set(a, b);
+    backward.set(b, a);
+  }
+  return true;
+}
+//### subarrays-divisible-count
+function countDivisibleRuns(numbers, k) {
+  const seen = new Map([[0, 1]]);
+  let total = 0, answer = 0;
+  for (const x of numbers) {
+    total = (((total + x) % k) + k) % k;
+    answer += seen.get(total) || 0;
+    seen.set(total, (seen.get(total) || 0) + 1);
+  }
+  return answer;
+}

@@ -1,0 +1,220 @@
+//### max-distinct-window-sum
+class Solution {
+    public int maxDistinctWindowSum(int[] numbers, int k) {
+        Map<Integer, Integer> counts = new HashMap<>();
+        long total = 0, best = 0;
+        for (int i = 0; i < numbers.length; i++) {
+            counts.merge(numbers[i], 1, Integer::sum);
+            total += numbers[i];
+            if (i >= k) {
+                int y = numbers[i - k];
+                if (counts.merge(y, -1, Integer::sum) == 0) counts.remove(y);
+                total -= y;
+            }
+            if (i >= k - 1 && counts.size() == k) best = Math.max(best, total);
+        }
+        return (int) best;
+    }
+}
+//### window-distinct-counts
+class Solution {
+    public int[] windowDistinctCounts(int[] numbers, int k) {
+        Map<Integer, Integer> counts = new HashMap<>();
+        List<Integer> out = new ArrayList<>();
+        for (int i = 0; i < numbers.length; i++) {
+            counts.merge(numbers[i], 1, Integer::sum);
+            if (i >= k) {
+                int y = numbers[i - k];
+                if (counts.merge(y, -1, Integer::sum) == 0) counts.remove(y);
+            }
+            if (i >= k - 1) out.add(counts.size());
+        }
+        int[] result = new int[out.size()];
+        for (int i = 0; i < result.length; i++) result[i] = out.get(i);
+        return result;
+    }
+}
+//### longest-substring-at-least-k-each
+class Solution {
+    public int longestSubstringKEach(String text, int k) {
+        int best = 0;
+        for (int target = 1; target <= 26; target++) {
+            int[] freq = new int[26];
+            int left = 0, unique = 0, enough = 0;
+            for (int right = 0; right < text.length(); right++) {
+                int c = text.charAt(right) - 'a';
+                if (freq[c] == 0) unique++;
+                freq[c]++;
+                if (freq[c] == k) enough++;
+                while (unique > target) {
+                    int d = text.charAt(left) - 'a';
+                    if (freq[d] == k) enough--;
+                    freq[d]--;
+                    if (freq[d] == 0) unique--;
+                    left++;
+                }
+                if (unique == target && enough == target) best = Math.max(best, right - left + 1);
+            }
+        }
+        return best;
+    }
+}
+//### min-knight-moves
+class Solution {
+    public int minKnightMoves(int size, int startRow, int startCol, int targetRow, int targetCol) {
+        int[] dr = {1, 2, 2, 1, -1, -2, -2, -1}, dc = {2, 1, -1, -2, -2, -1, 1, 2};
+        int[][] dist = new int[size][size];
+        for (int[] row : dist) Arrays.fill(row, -1);
+        dist[startRow][startCol] = 0;
+        ArrayDeque<int[]> queue = new ArrayDeque<>();
+        queue.add(new int[]{startRow, startCol});
+        while (!queue.isEmpty()) {
+            int[] cur = queue.poll();
+            int r = cur[0], c = cur[1];
+            if (r == targetRow && c == targetCol) return dist[r][c];
+            for (int m = 0; m < 8; m++) {
+                int nr = r + dr[m], nc = c + dc[m];
+                if (nr >= 0 && nr < size && nc >= 0 && nc < size && dist[nr][nc] < 0) {
+                    dist[nr][nc] = dist[r][c] + 1;
+                    queue.add(new int[]{nr, nc});
+                }
+            }
+        }
+        return -1;
+    }
+}
+//### smallest-build-order
+class Solution {
+    public int[] smallestBuildOrder(int n, int[][] pairs) {
+        int[] count = new int[n];
+        List<List<Integer>> later = new ArrayList<>();
+        for (int i = 0; i < n; i++) later.add(new ArrayList<>());
+        for (int[] pair : pairs) { count[pair[1]]++; later.get(pair[0]).add(pair[1]); }
+        PriorityQueue<Integer> heap = new PriorityQueue<>();
+        for (int job = 0; job < n; job++) if (count[job] == 0) heap.add(job);
+        int[] order = new int[n];
+        int placed = 0;
+        while (!heap.isEmpty()) {
+            int job = heap.poll();
+            order[placed++] = job;
+            for (int b : later.get(job)) {
+                if (--count[b] == 0) heap.add(b);
+            }
+        }
+        return placed == n ? order : new int[0];
+    }
+}
+//### cables-to-connect-all
+class Solution {
+    private int find(int[] parent, int x) {
+        while (parent[x] != x) { parent[x] = parent[parent[x]]; x = parent[x]; }
+        return x;
+    }
+
+    public int cableMovesNeeded(int n, int[][] cables) {
+        if (cables.length < n - 1) return -1;
+        int[] parent = new int[n];
+        for (int i = 0; i < n; i++) parent[i] = i;
+        int groups = n;
+        for (int[] cable : cables) {
+            int ra = find(parent, cable[0]), rb = find(parent, cable[1]);
+            if (ra != rb) { parent[ra] = rb; groups--; }
+        }
+        return groups - 1;
+    }
+}
+//### safe-nodes
+class Solution {
+    public int[] eventuallySafeNodes(int[][] graph) {
+        int n = graph.length;
+        int[] remaining = new int[n];
+        List<List<Integer>> reverse = new ArrayList<>();
+        for (int i = 0; i < n; i++) reverse.add(new ArrayList<>());
+        for (int u = 0; u < n; u++) {
+            remaining[u] = graph[u].length;
+            for (int v : graph[u]) reverse.get(v).add(u);
+        }
+        ArrayDeque<Integer> queue = new ArrayDeque<>();
+        boolean[] safe = new boolean[n];
+        for (int i = 0; i < n; i++) if (remaining[i] == 0) queue.add(i);
+        while (!queue.isEmpty()) {
+            int v = queue.poll();
+            safe[v] = true;
+            for (int u : reverse.get(v)) {
+                if (--remaining[u] == 0) queue.add(u);
+            }
+        }
+        List<Integer> out = new ArrayList<>();
+        for (int i = 0; i < n; i++) if (safe[i]) out.add(i);
+        int[] result = new int[out.size()];
+        for (int i = 0; i < result.length; i++) result[i] = out.get(i);
+        return result;
+    }
+}
+//### negative-cycle-exists
+class Solution {
+    public boolean hasNegativeCycle(int n, int[][] edges) {
+        long[] dist = new long[n];
+        for (int round = 0; round < n; round++) {
+            boolean changed = false;
+            for (int[] e : edges) {
+                if (dist[e[0]] + e[2] < dist[e[1]]) { dist[e[1]] = dist[e[0]] + e[2]; changed = true; }
+            }
+            if (!changed) return false;
+        }
+        return true;
+    }
+}
+//### enclosed-land-count
+class Solution {
+    public int enclosedLandCells(int[][] grid) {
+        int rows = grid.length, cols = grid[0].length;
+        boolean[][] marked = new boolean[rows][cols];
+        ArrayDeque<int[]> stack = new ArrayDeque<>();
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                if ((r == 0 || c == 0 || r == rows - 1 || c == cols - 1) && grid[r][c] == 1) {
+                    marked[r][c] = true;
+                    stack.push(new int[]{r, c});
+                }
+            }
+        }
+        int[] dr = {1, -1, 0, 0}, dc = {0, 0, 1, -1};
+        while (!stack.isEmpty()) {
+            int[] cur = stack.pop();
+            for (int m = 0; m < 4; m++) {
+                int nr = cur[0] + dr[m], nc = cur[1] + dc[m];
+                if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && grid[nr][nc] == 1 && !marked[nr][nc]) {
+                    marked[nr][nc] = true;
+                    stack.push(new int[]{nr, nc});
+                }
+            }
+        }
+        int count = 0;
+        for (int r = 0; r < rows; r++) for (int c = 0; c < cols; c++) if (grid[r][c] == 1 && !marked[r][c]) count++;
+        return count;
+    }
+}
+//### water-supply-min-cost
+class Solution {
+    private int find(int[] parent, int x) {
+        while (parent[x] != x) { parent[x] = parent[parent[x]]; x = parent[x]; }
+        return x;
+    }
+
+    public int minWaterCost(int[] wells, int[][] pipes) {
+        int n = wells.length;
+        List<int[]> edges = new ArrayList<>();
+        for (int[] pipe : pipes) edges.add(new int[]{pipe[2], pipe[0], pipe[1]});
+        for (int i = 0; i < n; i++) edges.add(new int[]{wells[i], i, n});
+        edges.sort((x, y) -> Integer.compare(x[0], y[0]));
+        int[] parent = new int[n + 1];
+        for (int i = 0; i <= n; i++) parent[i] = i;
+        long total = 0;
+        for (int[] e : edges) {
+            int ra = find(parent, e[1]), rb = find(parent, e[2]);
+            if (ra != rb) { parent[ra] = rb; total += e[0]; }
+        }
+        return (int) total;
+    }
+}

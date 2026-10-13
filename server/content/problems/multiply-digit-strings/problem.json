@@ -1,0 +1,24 @@
+{
+  "slug": "multiply-digit-strings",
+  "title": "Multiply Two Big Numbers",
+  "concept": "strings",
+  "difficulty": "medium",
+  "statement": "Two non-negative whole numbers are given as **texts of digits** (no leading zeros, except the number `0` itself). Return their **product**, also as a text of digits.\n\nThe numbers can be hundreds of digits long, far too big for a normal integer, so work digit by digit like multiplication on paper.",
+  "constraints": [
+    "1 <= len(first), len(second) <= 200",
+    "digits only, no leading zeros except the single digit 0"
+  ],
+  "signature": { "name": "multiply_digits", "params": [{ "name": "first", "type": "string" }, { "name": "second", "type": "string" }], "returns": "string" },
+  "examples": [
+    { "args": ["123", "456"], "expected": "56088", "explanation": "123 * 456 = 56088." },
+    { "args": ["9", "9"], "expected": "81", "explanation": "9 * 9 = 81." }
+  ],
+  "edgeTests": [["0", "123"], ["1", "1"], ["99", "99"], ["1000", "1000"], ["5", "0"], ["999999", "999999"]],
+  "expected": { "time": "O(n * m)", "space": "O(n + m)" },
+  "hints": {
+    "nudge": "On paper, multiplying digit i of one number by digit j of the other adds something to ONE column of the answer. Which column?",
+    "pattern": "An array of n + m digit slots: digit i times digit j goes into slot i + j + 1 (and its carry into slot i + j), counting from the left.",
+    "pseudocode": "if either number is '0': return '0'\nresult = array of n + m zeros\nfor i from n-1 down to 0:\n  for j from m-1 down to 0:\n    total = digit(first[i]) * digit(second[j]) + result[i + j + 1]\n    result[i + j + 1] = total mod 10\n    result[i + j] += total / 10\nskip leading zeros of the result and join the digits",
+    "walkthrough": "A product of an n-digit and an m-digit number has at most n + m digits, so prepare that many slots, all 0. The digit at position i (from the left) of the first number has place value 10^(n-1-i), and the digit at position j of the second has 10^(m-1-j), so their product belongs to the place value 10^(n+m-2-i-j), which is slot i + j + 1 counted from the left (and the carry goes one slot further left, i + j). Multiply every pair, add the product to the slot's current content, keep one digit in the slot and push the carry to the left slot. The slots always stay small enough to carry later. At the end remove the leading zeros (the product has n + m or n + m - 1 digits). Handle zero separately so that you return `0`, not `00`. O(n * m)."
+  }
+}

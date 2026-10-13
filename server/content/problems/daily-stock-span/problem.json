@@ -1,0 +1,24 @@
+{
+  "slug": "daily-stock-span",
+  "title": "Daily Price Span",
+  "concept": "stack_queue",
+  "difficulty": "medium",
+  "statement": "`prices[i]` is the price of a share on day `i`. The **span** of day `i` is the number of consecutive days, counting backwards from day `i` and including day `i` itself, on which the price was **less than or equal to** the price on day `i`. The count stops at the first earlier day with a **higher** price.\n\nReturn the span of every day.",
+  "constraints": [
+    "0 <= len(prices) <= 100000",
+    "1 <= prices[i] <= 1000000000"
+  ],
+  "signature": { "name": "stock_spans", "params": [{ "name": "prices", "type": "int[]" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[3, 3, 5, 2, 4, 8]], "expected": [1, 2, 3, 1, 2, 6], "explanation": "Day 2 (price 5) looks back over 3, 3, 5: span 3. Day 4 (price 4) sees 2 and 4, then stops at the 5: span 2. Day 5 (price 8) is at least every earlier price: span 6." },
+    { "args": [[5, 4, 3]], "expected": [1, 1, 1], "explanation": "Each price is lower than the day before, so every span is 1." }
+  ],
+  "edgeTests": [[[]], [[7]], [[1, 2, 3, 4]], [[2, 2, 2]], [[9, 1, 9]], [[4, 3, 2, 1, 5]]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "If day i is higher than the previous day, you can jump over everything the previous day already covered. What do you need to remember about earlier days to make those jumps?",
+    "pattern": "A monotonic stack of (price, span): pop every earlier day that is not higher than today and add its span to today's span.",
+    "pseudocode": "stack = empty\nfor each price p:\n  span = 1\n  while stack not empty and top.price <= p: span += top.span; pop\n  push (p, span)\n  output span",
+    "walkthrough": "Walking backwards from every day costs O(n^2) when prices rise. Notice that if the previous day had span s, then the s days it covers all have prices at most its own price. If today's price is at least the previous price, those days are also covered by today, so you can add s in one step instead of visiting them. Keep a stack of the days that still matter, each with its price and the span it covers. For a new day pop the entries whose price is not higher than today's (their spans are absorbed into today's span) and stop at the first higher price, which is exactly where the count must stop. Push today's entry. Each day is pushed and popped once: O(n)."
+  }
+}

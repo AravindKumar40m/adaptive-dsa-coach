@@ -1,0 +1,25 @@
+{
+  "slug": "water-supply-min-cost",
+  "title": "Cheapest Way to Bring Water to a Village",
+  "concept": "graphs",
+  "difficulty": "hard",
+  "statement": "A village has `n` houses numbered `0` to `n - 1`, and every house must get water. For each house you may choose one of two things: dig a **well** in it at cost `wells[i]`, or **connect** it by pipes to another house that has water. `pipes[j] = [a, b, cost]` means you can lay a pipe between houses `a` and `b` for that cost; water flows through pipes in both directions, so a house gets water if some chain of pipes leads to a house with a well.\n\nReturn the **smallest total cost** of wells and pipes so that every house has water.",
+  "constraints": [
+    "1 <= n <= 10000",
+    "0 <= len(pipes) <= 10000, 0 <= a, b < n, a != b",
+    "1 <= wells[i], cost <= 100000"
+  ],
+  "signature": { "name": "min_water_cost", "params": [{ "name": "wells", "type": "int[]" }, { "name": "pipes", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [[4, 1, 3, 6], [[0, 1, 2], [1, 2, 2], [2, 3, 1]]], "expected": 6, "explanation": "Dig one well in house 1 (cost 1) and lay the pipes 1-0 (2), 1-2 (2) and 2-3 (1): 1 + 2 + 2 + 1 = 6." },
+    { "args": [[5], []], "expected": 5, "explanation": "One house: it needs its own well." }
+  ],
+  "edgeTests": [[[3, 3], []], [[3, 3], [[0, 1, 1]]], [[1, 1, 1], [[0, 1, 5], [1, 2, 5]]], [[10, 1], [[0, 1, 2]]], [[2, 2], [[0, 1, 2]]]],
+  "expected": { "time": "O((n + m) log(n + m))", "space": "O(n + m)" },
+  "hints": {
+    "nudge": "A well is like a pipe to the water source. What if you added one imaginary house, the water source, and treated every well as a pipe to it?",
+    "pattern": "Minimum spanning tree: add a virtual node 'source' with an edge to every house whose cost is the well price, then run Kruskal (sort the edges, join with union-find) over all the edges.",
+    "pseudocode": "edges = the pipes, plus (house i, source, wells[i]) for every house\nsort edges by cost; union-find over n + 1 nodes\ntotal = 0\nfor each edge in order: if its ends are in different groups: join them; total += cost\nreturn total",
+    "walkthrough": "Deciding which houses get wells and then connecting the rest is a hard-looking combination. Remove the difference between the two kinds of cost: invent a node called the source (water supply) and add an edge from the source to house i with cost wells[i]. Now 'house i has a well' means 'house i is connected to the source by that edge', and 'house i gets water' means 'house i is connected to the source through any chain'. The cheapest way to make every node of this graph connected is a minimum spanning tree, which Kruskal's algorithm finds: sort all the edges by cost, and take an edge if it joins two groups that are not yet connected (union-find). Since the source is joined to every house, a spanning tree always exists. The tree has n edges for n + 1 nodes, and its total cost is the answer; sums can reach 10^9, so use a 64-bit number while adding."
+  }
+}

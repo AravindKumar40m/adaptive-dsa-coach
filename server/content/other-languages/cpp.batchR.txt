@@ -1,0 +1,137 @@
+//### longest-harmonious-length
+int longest_harmonious(vector<int>& numbers) {
+    unordered_map<long long, int> counts;
+    for (int x : numbers) counts[x]++;
+    int best = 0;
+    for (auto& e : counts) {
+        auto it = counts.find(e.first + 1);
+        if (it != counts.end()) best = max(best, e.second + it->second);
+    }
+    return best;
+}
+//### anagram-window-count
+int count_anagram_windows(string text, string pattern) {
+    int m = (int) pattern.size();
+    if ((int) text.size() < m) return 0;
+    vector<int> need(26, 0), have(26, 0);
+    for (int i = 0; i < m; i++) { need[pattern[i] - 'a']++; have[text[i] - 'a']++; }
+    int result = need == have ? 1 : 0;
+    for (int i = m; i < (int) text.size(); i++) {
+        have[text[i] - 'a']++;
+        have[text[i - m] - 'a']--;
+        if (need == have) result++;
+    }
+    return result;
+}
+//### unique-sum
+int sum_of_unique(vector<int>& numbers) {
+    unordered_map<int, int> counts;
+    for (int x : numbers) counts[x]++;
+    int total = 0;
+    for (auto& e : counts) if (e.second == 1) total += e.first;
+    return total;
+}
+//### max-points-on-line
+int gcd_of(int a, int b) { return b == 0 ? a : gcd_of(b, a % b); }
+
+int max_points_on_line(vector<vector<int>>& points) {
+    int best = 1;
+    for (size_t i = 0; i < points.size(); i++) {
+        map<pair<int,int>, int> slopes;
+        for (size_t j = i + 1; j < points.size(); j++) {
+            int dx = points[j][0] - points[i][0], dy = points[j][1] - points[i][1];
+            int g = gcd_of(abs(dx), abs(dy));
+            dx /= g;
+            dy /= g;
+            if (dx < 0 || (dx == 0 && dy < 0)) { dx = -dx; dy = -dy; }
+            int c = ++slopes[{dx, dy}];
+            best = max(best, c + 1);
+        }
+    }
+    return best;
+}
+//### common-prefix-length
+int common_prefix_length(string first, string second, string third) {
+    size_t i = 0;
+    while (i < first.size() && i < second.size() && i < third.size() && first[i] == second[i] && second[i] == third[i]) i++;
+    return (int) i;
+}
+//### parse-integer-text
+int parse_integer(string text) {
+    size_t i = 0, n = text.size();
+    while (i < n && text[i] == ' ') i++;
+    int sign = 1;
+    if (i < n && (text[i] == '+' || text[i] == '-')) { sign = text[i] == '-' ? -1 : 1; i++; }
+    long long value = 0;
+    while (i < n && text[i] >= '0' && text[i] <= '9') {
+        value = value * 10 + (text[i] - '0');
+        if (value > 2147483648LL) break;
+        i++;
+    }
+    long long result = sign * value;
+    if (result > INT_MAX) return INT_MAX;
+    if (result < INT_MIN) return INT_MIN;
+    return (int) result;
+}
+//### zigzag-rows
+string zigzag_read(string text, int rows) {
+    if (rows == 1 || rows >= (int) text.size()) return text;
+    vector<string> lines(rows);
+    int row = 0, step = 1;
+    for (char ch : text) {
+        lines[row] += ch;
+        if (row == 0) step = 1;
+        else if (row == rows - 1) step = -1;
+        row += step;
+    }
+    string out;
+    for (auto& line : lines) out += line;
+    return out;
+}
+//### one-edit-apart
+bool one_edit_apart(string first, string second) {
+    string a = first, b = second;
+    if (a.size() > b.size()) swap(a, b);
+    if (b.size() - a.size() > 1) return false;
+    size_t i = 0;
+    while (i < a.size() && a[i] == b[i]) i++;
+    if (i == a.size()) return b.size() - a.size() == 1;
+    if (a.size() == b.size()) return a.substr(i + 1) == b.substr(i + 1);
+    return a.substr(i) == b.substr(i + 1);
+}
+//### multiply-digit-strings
+string multiply_digits(string first, string second) {
+    if (first == "0" || second == "0") return "0";
+    vector<int> result(first.size() + second.size(), 0);
+    for (int i = (int) first.size() - 1; i >= 0; i--) {
+        for (int j = (int) second.size() - 1; j >= 0; j--) {
+            int total = (first[i] - '0') * (second[j] - '0') + result[i + j + 1];
+            result[i + j + 1] = total % 10;
+            result[i + j] += total / 10;
+        }
+    }
+    size_t start = 0;
+    while (start + 1 < result.size() && result[start] == 0) start++;
+    string out;
+    for (size_t k = start; k < result.size(); k++) out += (char) ('0' + result[k]);
+    return out;
+}
+//### pattern-occurrences
+int count_occurrences(string text, string pattern) {
+    int m = (int) pattern.size();
+    vector<int> fail(m, 0);
+    int k = 0;
+    for (int i = 1; i < m; i++) {
+        while (k > 0 && pattern[i] != pattern[k]) k = fail[k - 1];
+        if (pattern[i] == pattern[k]) k++;
+        fail[i] = k;
+    }
+    int count = 0;
+    k = 0;
+    for (char ch : text) {
+        while (k > 0 && ch != pattern[k]) k = fail[k - 1];
+        if (ch == pattern[k]) k++;
+        if (k == m) { count++; k = fail[k - 1]; }
+    }
+    return count;
+}

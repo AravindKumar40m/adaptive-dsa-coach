@@ -1,0 +1,24 @@
+{
+  "slug": "largest-triangle-perimeter",
+  "title": "Biggest Triangle From Sticks",
+  "concept": "sorting",
+  "difficulty": "easy",
+  "statement": "`sticks[i]` is the length of stick `i`. Choose **three different sticks** that can form a triangle with a **positive area**: the two shorter lengths must add up to **more than** the longest one. Among all such choices, return the largest possible **perimeter** (the sum of the three lengths).\n\nIf no three sticks can form a triangle, return `0`.",
+  "constraints": [
+    "0 <= len(sticks) <= 100000",
+    "1 <= sticks[i] <= 1000000"
+  ],
+  "signature": { "name": "largest_triangle_perimeter", "params": [{ "name": "sticks", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[2, 1, 2]], "expected": 5, "explanation": "The sticks 2, 2 and 1 work: 2 + 1 is more than 2." },
+    { "args": [[1, 2, 1, 10]], "expected": 0, "explanation": "The 10 is too long for any other two sticks, and 2 + 1 + 1 do not form a triangle either (1 + 1 is not more than 2)." }
+  ],
+  "edgeTests": [[[]], [[3, 3, 3]], [[1, 1, 10]], [[4, 6, 3, 9, 5]], [[1, 2, 3]], [[5, 5]]],
+  "expected": { "time": "O(n log n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "To get the biggest perimeter you would like to use the longest sticks. When do the longest sticks fail, and what is the next best thing to try?",
+    "pattern": "Sort the lengths from longest to shortest and test neighbouring triples: the first triple that works is the best.",
+    "pseudocode": "sort sticks from longest to shortest\nfor i in 0..n-3:\n  if sticks[i+1] + sticks[i+2] > sticks[i]: return sticks[i] + sticks[i+1] + sticks[i+2]\nreturn 0",
+    "walkthrough": "Trying all triples is O(n^3). After sorting from longest to shortest, take a stick as the longest side. The best partners for it are the next two longest sticks, because they make the sum of the two shorter sides as large as possible. If even those two do not add up to more than it, no other pair can, so this stick can never be the longest side: move on to the next stick. The first position where the next two sticks do add up to more is the answer, because any triple with a longer stick was already ruled out and the perimeter of this triple is the largest among the remaining ones. If you run out, return 0. O(n log n)."
+  }
+}

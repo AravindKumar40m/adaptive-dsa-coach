@@ -1,0 +1,25 @@
+{
+  "slug": "max-points-on-line",
+  "title": "Most Points on One Line",
+  "concept": "hashing",
+  "difficulty": "hard",
+  "statement": "`points` lists **different** points on a flat map, each as `[x, y]`. Find the straight line (it may be sloped, horizontal or vertical) that passes through the **most** of these points, and return how many points lie on it.\n\nOne point alone is on a line (any line through it), so the answer is at least `1` when there are points, and at least `2` when there are two or more.",
+  "constraints": [
+    "1 <= len(points) <= 300",
+    "-10000 <= x, y <= 10000",
+    "all points are different"
+  ],
+  "signature": { "name": "max_points_on_line", "params": [{ "name": "points", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [[[0, 0], [1, 2], [2, 4], [3, 1]]], "expected": 3, "explanation": "(0,0), (1,2) and (2,4) lie on the line y = 2x. The point (3,1) is on no line with two others." },
+    { "args": [[[1, 1], [2, 3]]], "expected": 2, "explanation": "Two points always lie on one line." }
+  ],
+  "edgeTests": [[[[0, 0]]], [[[0, 0], [0, 5], [0, 9]]], [[[0, 0], [4, 0], [9, 0], [1, 1]]], [[[1, 1], [2, 2], [3, 3], [4, 4]]], [[[0, 0], [1, 0], [0, 1], [1, 1]]]],
+  "expected": { "time": "O(n^2)", "space": "O(n)" },
+  "hints": {
+    "nudge": "If you stand on one point, what single number tells you which line each other point is on?",
+    "pattern": "For every point as an anchor, count the other points by their direction (slope) in a hash map; the largest count + 1 is the best line through that anchor.",
+    "pseudocode": "best = 1\nfor each anchor point i:\n  slopes = empty map\n  for each point j after i:\n    dx = xj - xi; dy = yj - yi; divide both by gcd(|dx|, |dy|); make the direction unique (dx >= 0, and dy >= 0 when dx == 0)\n    slopes[(dx, dy)] += 1\n  best = max(best, largest count in slopes + 1)\nreturn best",
+    "walkthrough": "Checking every pair of points and then every third point for being on that line is O(n^3). Instead fix an anchor point. Two other points are on the same line through the anchor exactly when they are in the same DIRECTION from it. Describe a direction by (dx, dy) after dividing both by their greatest common divisor, so (2, 4) and (1, 2) become the same key, and flip the sign when needed so that opposite directions also give the same key (a line goes both ways). A vertical line has dx = 0 and a horizontal one dy = 0, with no division by zero because you never divide by dx. Count the points per direction in a hash map; the biggest count plus the anchor itself is the largest line through the anchor. Doing this for every anchor gives O(n^2). Do not use floating-point slopes: they can make different lines look equal."
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "slug": "swap-adjacent-nodes",
+  "title": "Swap Neighbouring Nodes",
+  "concept": "linked_list",
+  "difficulty": "medium",
+  "statement": "Swap every two **adjacent nodes** of the linked list: the 1st with the 2nd, the 3rd with the 4th, and so on. If the length is odd, the last node stays where it is. Return the head of the new list.\n\nYou must change the **links** between nodes, not just the values stored in them.",
+  "constraints": [
+    "0 <= number of nodes <= 100000",
+    "-1000000000 <= node value <= 1000000000"
+  ],
+  "signature": { "name": "swap_pairs", "params": [{ "name": "head", "type": "ListNode" }], "returns": "ListNode" },
+  "examples": [
+    { "args": [[1, 2, 3, 4]], "expected": [2, 1, 4, 3], "explanation": "(1, 2) and (3, 4) are swapped." },
+    { "args": [[1, 2, 3]], "expected": [2, 1, 3], "explanation": "The last node 3 has no partner and stays." }
+  ],
+  "edgeTests": [[[]], [[1]], [[1, 2]], [[1, 2, 3, 4, 5]], [[7, 7, 8, 8]], [[5, 4, 3, 2, 1, 0]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "To swap two neighbouring nodes you need to change THREE links: the one coming into the pair, the one between the two nodes, and the one going out of the pair. Which node must you keep hold of for the first link?",
+    "pattern": "A dummy node before the head and a `prev` pointer standing before each pair; relink the pair, then move `prev` to the second node of the pair (the old first).",
+    "pseudocode": "dummy.next = head; prev = dummy\nwhile prev.next and prev.next.next:\n  a = prev.next; b = a.next\n  a.next = b.next\n  b.next = a\n  prev.next = b\n  prev = a\nreturn dummy.next",
+    "walkthrough": "Standing on the node `prev` just before a pair, call the pair a (first) and b (second). After the swap the order must be prev -> b -> a -> (what came after b). Do it in an order that does not lose any node: first a.next = b.next (a now points past the pair), then b.next = a (b points back to a), then prev.next = b (the list enters the pair at b). Now a is the last node of the swapped pair, so it is the `prev` for the next pair. A dummy node in front of the head lets the first pair be handled like every other one, and its next is the new head. Stop when fewer than two nodes remain. O(n) time, O(1) memory."
+  }
+}

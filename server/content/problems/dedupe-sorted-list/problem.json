@@ -1,0 +1,24 @@
+{
+  "slug": "dedupe-sorted-list",
+  "title": "Remove Repeated Values From a Sorted List",
+  "concept": "linked_list",
+  "difficulty": "easy",
+  "statement": "`head` is the head of a linked list whose values are **sorted from smallest to largest**. Remove nodes so that **each value appears only once** (keep the first node of every run of equal values), and return the head of the resulting list.\n\nRe-link the existing nodes; do not build a new list.",
+  "constraints": [
+    "0 <= number of nodes <= 100000",
+    "-1000000000 <= node value <= 1000000000, in non-decreasing order"
+  ],
+  "signature": { "name": "remove_duplicates_sorted", "params": [{ "name": "head", "type": "ListNode" }], "returns": "ListNode" },
+  "examples": [
+    { "args": [[1, 1, 2, 3, 3]], "expected": [1, 2, 3], "explanation": "The second 1 and the second 3 are removed." },
+    { "args": [[2, 2, 2]], "expected": [2], "explanation": "Only the first of the three 2s stays." }
+  ],
+  "edgeTests": [[[]], [[5]], [[1, 2, 3]], [[-1, -1, 0, 0, 1]], [[1, 1]], [[1, 2, 2, 2, 3, 3]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Because the list is sorted, equal values are next to each other. Which node do you compare a node with?",
+    "pattern": "Walk with one pointer: if the next node has the same value, skip it by re-linking; otherwise move on.",
+    "pseudocode": "cur = head\nwhile cur and cur.next:\n  if cur.val == cur.next.val: cur.next = cur.next.next\n  else: cur = cur.next\nreturn head",
+    "walkthrough": "You never need a set of seen values, because equal values form one block. Stand on a node and look at the node after it. If it has the same value, unlink it (cur.next = cur.next.next) and look again from the same node, since the next one may also be equal. If the values differ, step forward. The first node of every block is always kept, so the head never changes. Each step either removes a node or advances, so the loop is O(n) and uses O(1) memory."
+  }
+}

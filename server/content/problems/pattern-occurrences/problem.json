@@ -1,0 +1,25 @@
+{
+  "slug": "pattern-occurrences",
+  "title": "Count Every Occurrence of a Pattern",
+  "concept": "strings",
+  "difficulty": "hard",
+  "statement": "Count how many times `pattern` appears as a block of consecutive letters inside `text`. Occurrences are allowed to **overlap**: in `aaaa` the pattern `aa` appears at positions 0, 1 and 2, which is **3** times.\n\nA slow search compares the pattern with the text at every position and can take `n * m` steps on bad inputs. Aim for time proportional to `n + m`.",
+  "constraints": [
+    "0 <= len(text) <= 100000",
+    "1 <= len(pattern) <= 100000",
+    "both use only lowercase English letters"
+  ],
+  "signature": { "name": "count_occurrences", "params": [{ "name": "text", "type": "string" }, { "name": "pattern", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["abababa", "aba"], "expected": 3, "explanation": "`aba` starts at positions 0, 2 and 4 (the occurrences overlap)." },
+    { "args": ["aaaa", "aa"], "expected": 3, "explanation": "Positions 0, 1 and 2." }
+  ],
+  "edgeTests": [["", "a"], ["a", "a"], ["hello", "xyz"], ["aaaaa", "aaa"], ["abcabcabc", "abcabc"], ["abab", "abab"]],
+  "expected": { "time": "O(n + m)", "space": "O(m)" },
+  "hints": {
+    "nudge": "After a mismatch, do you really have to go back and compare the pattern again from the next text position? What do you already know about the letters you have just matched?",
+    "pattern": "Knuth-Morris-Pratt: precompute, for every prefix of the pattern, the length of its longest proper prefix that is also a suffix; use it to continue after a mismatch without moving back in the text.",
+    "pseudocode": "fail[i] = length of the longest proper prefix of pattern[0..i] that is also a suffix of it\nk = 0 (letters matched); count = 0\nfor each letter ch of the text:\n  while k > 0 and ch != pattern[k]: k = fail[k - 1]\n  if ch == pattern[k]: k += 1\n  if k == len(pattern): count += 1; k = fail[k - 1]\nreturn count",
+    "walkthrough": "The simple search tries every start position and may re-compare the same text letters many times (for text aaaaaaaaab and pattern aaaaaab it is about n * m steps). KMP never moves backwards in the text. Step 1: for the pattern alone, compute fail[i], the length of the longest prefix of the pattern that is also a suffix of pattern[0..i] (but is shorter than that part). Step 2: scan the text with k = how many pattern letters are currently matched. If the next text letter extends the match, k grows. If not, the pattern letters you matched have a prefix that is also a suffix: instead of starting over, drop to k = fail[k - 1] and try again (repeat until it matches or k is 0). When k reaches the pattern length you found an occurrence; to allow overlaps continue with k = fail[k - 1]. Each text letter makes k grow at most once, and every drop lowers k, so the whole scan is O(n + m)."
+  }
+}

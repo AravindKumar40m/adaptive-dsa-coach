@@ -1,0 +1,24 @@
+{
+  "slug": "common-prefix-length",
+  "title": "Shared Beginning of Three Words",
+  "concept": "strings",
+  "difficulty": "easy",
+  "statement": "Return the length of the longest **prefix** (beginning) that all three texts `first`, `second` and `third` have in common. If they do not even share their first letter, the answer is `0`. A text may be empty.",
+  "constraints": [
+    "0 <= len(first), len(second), len(third) <= 100000",
+    "all texts use only lowercase English letters"
+  ],
+  "signature": { "name": "common_prefix_length", "params": [{ "name": "first", "type": "string" }, { "name": "second", "type": "string" }, { "name": "third", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["flower", "flow", "flight"], "expected": 2, "explanation": "All three start with `fl`; then the letters differ (o, o, i)." },
+    { "args": ["dog", "racecar", "car"], "expected": 0, "explanation": "The first letters d, r, c all differ." }
+  ],
+  "edgeTests": [["", "a", "a"], ["abc", "abc", "abc"], ["ab", "abc", "abd"], ["a", "a", "b"], ["xyz", "xy", "xyzz"]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Compare the three texts position by position from the start. When do you have to stop?",
+    "pattern": "One loop over the positions: stop at the first position where a text has ended or the three letters are not all equal.",
+    "pseudocode": "i = 0\nwhile i < len(first) and i < len(second) and i < len(third) and first[i] == second[i] == third[i]: i += 1\nreturn i",
+    "walkthrough": "The common prefix can be at most as long as the shortest text. Walk from position 0: if all three texts still have a letter at position i, and those three letters are equal, the prefix is at least i + 1 long, so continue; otherwise position i is the first place where the texts differ (or one of them ended), and i is the answer. Do not build substrings and compare them again and again; comparing letters directly is O(length of the prefix) in total."
+  }
+}

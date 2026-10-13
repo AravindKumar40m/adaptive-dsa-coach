@@ -1,0 +1,25 @@
+{
+  "slug": "max-tree-width",
+  "title": "Widest Level of a Tree",
+  "concept": "trees",
+  "difficulty": "medium",
+  "statement": "Imagine the tree drawn as in a **complete binary tree**: the root at the top, and each node's children in the two places below it, even where a child is missing. The **width of a level** is the distance between its leftmost and its rightmost existing node, counted in places (so missing nodes between them count too): `rightmost place - leftmost place + 1`.\n\nReturn the largest width of any level. An empty tree has width `0`. The answer fits in a 32-bit integer.",
+  "constraints": [
+    "0 <= number of nodes <= 3000",
+    "-1000 <= node value <= 1000",
+    "the answer fits in a 32-bit signed integer"
+  ],
+  "signature": { "name": "max_tree_width", "params": [{ "name": "root", "type": "TreeNode" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 2, 3, 4, null, null, 5]], "expected": 4, "explanation": "The last level has nodes 4 (leftmost place) and 5 (rightmost place), with two missing places between them: width 4." },
+    { "args": [[7]], "expected": 1, "explanation": "A single node: width 1." }
+  ],
+  "edgeTests": [[[]], [[1, 2, 3]], [[1, null, 2, null, 3]], [[1, 2, 3, 4, 5, 6, 7]], [[1, 2, null, 3, null, 4]]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Give every node a place number as in an array-stored complete binary tree. What are the place numbers of a node's two children?",
+    "pattern": "Breadth-first search carrying the place number: the left child of place p is 2p and the right child is 2p + 1; the width of a level is last place - first place + 1.",
+    "pseudocode": "level = [(root, 0)]; best = 0\nwhile level not empty:\n  best = max(best, last.place - first.place + 1)\n  base = first.place\n  next = []\n  for (node, place) in level: place -= base; add (node.left, 2*place) and (node.right, 2*place + 1) when they exist\n  level = next",
+    "walkthrough": "Number the places like in a heap: the root is place 0, and the node at place p has its children at places 2p and 2p + 1. On one level the leftmost and rightmost existing nodes then have the smallest and largest place numbers, and the width is their difference plus 1. Process the tree level by level and remember the place of every node. The place numbers double with every level, so on a deep tree they overflow; avoid that by subtracting the first place of the level from all places of that level before computing the children (the differences, which is all that matters, stay the same). Use a 64-bit variable anyway. O(n)."
+  }
+}

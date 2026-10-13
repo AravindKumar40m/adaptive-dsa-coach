@@ -1,0 +1,24 @@
+{
+  "slug": "safe-nodes",
+  "title": "Nodes That Never Loop",
+  "concept": "graphs",
+  "difficulty": "medium",
+  "statement": "A directed graph has nodes `0` to `n - 1`. `graph[i]` is the list of nodes that node `i` points to. A node with an empty list is a **dead end**.\n\nA node is **safe** if **every** path that starts at it ends in a dead end after a finite number of steps (so it cannot reach a cycle, and it is not on one). Return all safe nodes in **increasing order**.",
+  "constraints": [
+    "0 <= n <= 10000",
+    "0 <= graph[i][j] < n; the total number of edges is at most 100000; a node may point to itself"
+  ],
+  "signature": { "name": "eventually_safe_nodes", "params": [{ "name": "graph", "type": "int[][]" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[[1], [2], [0], [], [3]]], "expected": [3, 4], "explanation": "Nodes 0, 1 and 2 form a cycle, so none of them is safe. Node 3 is a dead end and node 4 leads only to it." },
+    { "args": [[[], [0], [1]]], "expected": [0, 1, 2], "explanation": "Every path ends at node 0, a dead end." }
+  ],
+  "edgeTests": [[[]], [[[]]], [[[0]]], [[[1], [0]]], [[[1, 2], [3], [3], []]], [[[2], [2], []]]],
+  "expected": { "time": "O(n + m)", "space": "O(n + m)" },
+  "hints": {
+    "nudge": "Dead ends are safe. Which nodes become safe once you know that some nodes are safe?",
+    "pattern": "Peel the graph from the dead ends: reverse the edges, and repeatedly mark a node safe when all the nodes it points to are already safe (a topological sort on the reversed graph).",
+    "pseudocode": "remaining[i] = number of nodes i points to; reverse[v] = the nodes that point to v\nqueue = all nodes with remaining 0 (dead ends)\nwhile queue is not empty:\n  v = pop; mark v safe\n  for u in reverse[v]: remaining[u] -= 1; if remaining[u] == 0: push u\nreturn the safe nodes in increasing order",
+    "walkthrough": "Following every path from every node to see whether it loops can take very long. Think in the other direction: a dead end is safe; a node is safe exactly when everything it points to is safe. So keep, for each node, how many of its targets are not known to be safe yet; start the queue with the nodes that have none (the dead ends). When a node is marked safe, every node pointing to it has one target fewer to wait for; if that count reaches 0, that node is safe as well. Nodes on a cycle (or leading into one) never reach 0, because a target on the cycle never becomes safe. A self-loop makes the count of that node never reach 0 as well. Finally list the safe nodes in increasing order. Each edge is looked at once: O(n + m)."
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "slug": "distinct-subsets-count",
+  "title": "Count the Different Subsets",
+  "concept": "backtracking",
+  "difficulty": "medium",
+  "statement": "`numbers` may contain repeated values. A **subset** is any selection of positions, including choosing none or all. Two subsets are **the same** if they contain the same values the same number of times (order does not matter), so choosing the first 2 or the second 2 gives the same subset.\n\nReturn the number of **different subsets**, counting the empty subset.",
+  "constraints": [
+    "0 <= len(numbers) <= 20",
+    "-10 <= numbers[i] <= 10"
+  ],
+  "signature": { "name": "count_distinct_subsets", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 2, 2]], "expected": 6, "explanation": "{}, {1}, {2}, {1, 2}, {2, 2}, {1, 2, 2}." },
+    { "args": [[0]], "expected": 2, "explanation": "The empty subset and {0}." }
+  ],
+  "edgeTests": [[[]], [[5, 5, 5]], [[1, 2, 3]], [[1, 1, 2, 2]], [[-1, -1, 0]], [[7, 7]]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Instead of looking at positions, look at the DIFFERENT values. How many choices do you have for how many copies of one value to take?",
+    "pattern": "A value that appears c times can be taken 0, 1, ..., c times: c + 1 choices. The choices for different values are independent, so multiply.",
+    "pseudocode": "counts = how many times each distinct value appears\nresult = 1\nfor each count c: result = result * (c + 1)\nreturn result",
+    "walkthrough": "Generating all 2^n selections of positions and removing the duplicates with a set works for small n (backtracking: sort the numbers and skip a value that equals the previous one at the same level of the search). But the structure gives a direct answer. Group equal values: a value that occurs c times can appear in a subset 0, 1, 2, ..., c times, which is c + 1 possibilities. A subset is exactly one such choice for every distinct value, and the choices are independent, so the number of different subsets is the product of (c + 1) over all distinct values. Check with [1, 2, 2]: values 1 (once) and 2 (twice): (1 + 1) * (2 + 1) = 6. The empty list gives the empty product 1 (just the empty subset)."
+  }
+}

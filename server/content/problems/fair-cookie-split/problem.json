@@ -1,0 +1,25 @@
+{
+  "slug": "fair-cookie-split",
+  "title": "The Fairest Cookie Split",
+  "concept": "backtracking",
+  "difficulty": "hard",
+  "statement": "`bags[i]` is the number of cookies in bag `i`. Every bag must be given **whole** to exactly one of `children` children (a bag cannot be split, and a child may get several bags or none). The **unfairness** of a split is the **largest total** of cookies that any single child receives.\n\nReturn the **smallest unfairness** that any split can reach.",
+  "constraints": [
+    "1 <= len(bags) <= 8",
+    "1 <= children <= len(bags)",
+    "1 <= bags[i] <= 100000"
+  ],
+  "signature": { "name": "fair_cookie_split", "params": [{ "name": "bags", "type": "int[]" }, { "name": "children", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[5, 3, 8, 2], 2], "expected": 10, "explanation": "Give one child the bags 8 and 2 (10) and the other the bags 5 and 3 (8): unfairness 10. No split does better." },
+    { "args": [[4, 4, 4], 3], "expected": 4, "explanation": "One bag per child." }
+  ],
+  "edgeTests": [[[7], 1], [[1, 2, 3], 1], [[1, 2, 3], 3], [[5, 5, 5, 5], 2], [[9, 1, 1, 1, 1, 1], 2]],
+  "expected": { "time": "O(k^n) worst case, much less with pruning", "space": "O(n)" },
+  "hints": {
+    "nudge": "Give the bags out one at a time. For one bag, which children could receive it, and can you ever skip a choice that gives the same result as another?",
+    "pattern": "Backtracking over the bags with the current totals of all children; prune with the best answer found so far, try the biggest bags first, and never try two children that currently have the same total.",
+    "pseudocode": "sort bags from biggest to smallest; totals = zero for every child; best = infinity\ngo(i):\n  if i == n: best = min(best, max(totals)); return\n  seen = empty set\n  for each child c:\n    if totals[c] in seen: continue           (same situation as an earlier child)\n    seen.add(totals[c])\n    if totals[c] + bags[i] >= best: continue (cannot beat the best)\n    totals[c] += bags[i]; go(i + 1); totals[c] -= bags[i]",
+    "walkthrough": "The plain search gives each bag to each child: k^n possibilities (for 8 bags and 4 children, 65,536: fine here, but it grows quickly). Three ideas cut most of the work. 1) Place the biggest bags first: they create large totals early, and a branch whose total already reaches the best known unfairness can be dropped at once. 2) If two children currently have the same total, giving the next bag to either leads to equivalent situations (just swap the children), so try only one of them: keep a set of totals already tried for this bag. 3) Remember the best result found so far and never continue a branch that cannot beat it. At the end of a branch (all bags given) the unfairness is the largest total; keep the smallest. Remember to take a bag back (subtract it) after the recursive call."
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "task-cooldown-time",
+  "title": "Tasks With a Cooldown",
+  "concept": "heaps",
+  "difficulty": "medium",
+  "statement": "`tasks` is a text of capital letters; every letter is one task, and a task takes **one time unit**. The tasks can be done in **any order**. After doing a task of some type, you must wait **at least `cooldown` time units** before doing another task of the **same type** (you may do other tasks, or stay idle, during the wait).\n\nReturn the **smallest total number of time units** needed to finish all tasks.",
+  "constraints": [
+    "0 <= len(tasks) <= 10000",
+    "tasks contains only the letters A to Z",
+    "0 <= cooldown <= 100"
+  ],
+  "signature": { "name": "task_cooldown_time", "params": [{ "name": "tasks", "type": "string" }, { "name": "cooldown", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": ["AAABBB", 2], "expected": 8, "explanation": "A B _ A B _ A B: after each A or B two other units must pass, so idle units are needed." },
+    { "args": ["AAAB", 2], "expected": 7, "explanation": "A B _ A _ _ A: the three As need two units between them." }
+  ],
+  "edgeTests": [["", 3], ["A", 5], ["AAAA", 2], ["ABCDEF", 2], ["AABBCC", 1], ["AAAAAABCDEFG", 2]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "The most frequent task is the problem: its copies need the most waiting. In what order would you do the tasks to waste as little time as possible?",
+    "pattern": "Greedy with a max-heap of remaining counts: at every time unit do the available task with the most copies left. A counting shortcut: the most frequent task creates (maxCount - 1) blocks of (cooldown + 1) units, plus a final row.",
+    "pseudocode": "simulation: each time unit take, among the types that are not cooling down, the one with the largest remaining count; if none, stay idle\nshortcut: maxCount = highest count; numMax = how many types have it\nanswer = max(len(tasks), (maxCount - 1) * (cooldown + 1) + numMax)",
+    "walkthrough": "Always doing the type with the most copies left (among those allowed) is the right greedy: it keeps the heavy types from piling up at the end. You can simulate it with a max-heap of counts and a waiting list for types that are cooling down; the simulation advances one time unit at a time and records an idle unit when nothing is allowed. There is also a formula. Put the most frequent task A, maxCount times, spaced cooldown + 1 units apart: that frame has (maxCount - 1) full blocks of length cooldown + 1, and a last row holding one copy of every type that ties for the maximum (numMax of them). The other tasks fit into the gaps. If there are so many other tasks that the gaps overflow, no idle time is needed at all and the answer is simply the number of tasks. So the answer is max(len(tasks), (maxCount - 1) * (cooldown + 1) + numMax); an empty text gives 0."
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "slug": "decode-ways-count",
+  "title": "Ways to Read a Number as Letters",
+  "concept": "dp",
+  "difficulty": "medium",
+  "statement": "A secret message was written by replacing the letters `A` to `Z` with the numbers `1` to `26` (`A` = 1, `B` = 2, ..., `Z` = 26) and writing all the numbers one after another without separators. `digits` is such a written message.\n\nCount in **how many ways** it can be read back as letters. A number with a leading zero, such as `06`, is **not** a valid code, and `0` alone is not a code either. If the text cannot be read at all, the answer is `0`.",
+  "constraints": [
+    "1 <= len(digits) <= 40",
+    "digits contains only the characters 0 to 9"
+  ],
+  "signature": { "name": "decode_ways", "params": [{ "name": "digits", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["1263"], "expected": 3, "explanation": "1-2-6-3, 12-6-3 and 1-26-3. (12-63 is not allowed: 63 is too big.)" },
+    { "args": ["306"], "expected": 0, "explanation": "30 is too big, and a 0 cannot stand alone, so the 0 cannot be used." }
+  ],
+  "edgeTests": [["0"], ["10"], ["27"], ["100"], ["2101"], ["1111111111111111111111111111111111111111"]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Look only at the END of the text. The last letter is made from the last digit alone or from the last two digits. How many ways does each choice leave for the rest?",
+    "pattern": "Dynamic programming over the prefix length: ways[i] = (ways[i - 1] if the last digit is not 0) + (ways[i - 2] if the last two digits form a number from 10 to 26).",
+    "pseudocode": "ways[0] = 1 (the empty prefix)\nfor i in 1 .. n:\n  ways[i] = 0\n  if digits[i - 1] != '0': ways[i] += ways[i - 1]\n  if i >= 2 and 10 <= number(digits[i - 2], digits[i - 1]) <= 26: ways[i] += ways[i - 2]\nreturn ways[n]",
+    "walkthrough": "Trying all ways to cut the text is exponential in the worst case (a text of all ones follows the Fibonacci numbers). But the ways to read the first i digits only depend on the ways to read the first i - 1 and the first i - 2 digits. The last letter of the first i digits is either a single digit (valid when it is 1 to 9, i.e. not 0) and then the first i - 1 digits are read freely, or a pair of digits (valid when the pair is 10 to 26, which also rules out a leading zero) and then the first i - 2 digits are read freely. Add the two counts. Start with ways for the empty prefix = 1 and keep only the last two values: O(n) time and O(1) memory. For 40 digits the largest possible answer, 165,580,141, fits in a 32-bit integer."
+  }
+}

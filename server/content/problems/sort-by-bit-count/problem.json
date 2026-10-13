@@ -1,0 +1,24 @@
+{
+  "slug": "sort-by-bit-count",
+  "title": "Sort by Number of 1 Bits",
+  "concept": "sorting",
+  "difficulty": "medium",
+  "statement": "Sort `numbers` by the **number of `1` bits** in each number's binary form, fewest first. Numbers with the same count of `1` bits go in **increasing numeric order**. For example `7` is `111` in binary (three 1 bits) and `8` is `1000` (one 1 bit), so `8` comes before `7`.\n\nReturn the sorted list.",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "0 <= numbers[i] <= 1000000000"
+  ],
+  "signature": { "name": "sort_by_bits", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[9, 7, 12, 5, 3]], "expected": [3, 5, 9, 12, 7], "explanation": "9 (1001), 12 (1100), 5 (101) and 3 (11) each have two 1 bits, so they come first in numeric order; 7 (111) has three." },
+    { "args": [[8, 4, 2, 1]], "expected": [1, 2, 4, 8], "explanation": "All four have exactly one 1 bit, so they are sorted by value." }
+  ],
+  "edgeTests": [[[]], [[0]], [[5, 5, 1]], [[15, 8, 7]], [[1023, 1, 512]], [[0, 1, 2, 3, 4, 5, 6, 7, 8]]],
+  "expected": { "time": "O(n log n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Sorting normally compares numbers. What if each number were first turned into a pair of facts: how many 1 bits it has, and the number itself?",
+    "pattern": "Sort with a two-part key: (count of 1 bits, value).",
+    "pseudocode": "bits(x): count = 0; while x > 0: x = x AND (x - 1); count += 1; return count\nsort numbers by (bits(x), x)",
+    "walkthrough": "A custom sort needs a rule for which of two numbers goes first: compare their counts of 1 bits, and only if the counts are equal compare the numbers themselves. Counting the bits of one number is easy: the trick x AND (x - 1) removes the lowest 1 bit, so the number of times you can do it before reaching 0 is the bit count (many languages also have a built-in popcount). Compute the count once per number, then sort by the pair. O(n log n) for the sort plus O(n * 30) for the counts."
+  }
+}

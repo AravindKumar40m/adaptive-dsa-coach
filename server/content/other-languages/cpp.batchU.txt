@@ -1,0 +1,143 @@
+//### digital-root-recursive
+int digital_root(int number) {
+    return number == 0 ? 0 : 1 + (number - 1) % 9;
+}
+//### count-good-numbers
+long long good_power(long long base, long long exponent) {
+    const long long MOD = 1000000007LL;
+    if (exponent == 0) return 1;
+    long long half = good_power(base, exponent / 2);
+    long long result = half * half % MOD;
+    return exponent % 2 == 1 ? result * base % MOD : result;
+}
+
+int count_good_numbers(int length) {
+    const long long MOD = 1000000007LL;
+    long long n = length;
+    return (int) (good_power(5, (n + 1) / 2) * good_power(4, n / 2) % MOD);
+}
+//### ackermann-value
+int ackermann(int m, int n) {
+    if (m == 0) return n + 1;
+    if (m == 1) return n + 2;
+    if (m == 2) return 2 * n + 3;
+    return (1 << (n + 3)) - 3;
+}
+//### restore-ip-count
+int ip_go(const string& digits, int pos, int parts) {
+    if (parts == 4) return pos == (int) digits.size() ? 1 : 0;
+    int total = 0;
+    for (int size = 1; size <= 3; size++) {
+        if (pos + size > (int) digits.size()) break;
+        string part = digits.substr(pos, size);
+        if ((size > 1 && part[0] == '0') || stoi(part) > 255) continue;
+        total += ip_go(digits, pos + size, parts + 1);
+    }
+    return total;
+}
+
+int count_ip_addresses(string digits) {
+    return ip_go(digits, 0, 0);
+}
+//### combination-sum-distinct-count
+int combos_go(const vector<int>& a, int start, int left) {
+    if (left == 0) return 1;
+    int total = 0;
+    for (int i = start; i < (int) a.size(); i++) {
+        if (i > start && a[i] == a[i - 1]) continue;
+        if (a[i] > left) break;
+        total += combos_go(a, i + 1, left - a[i]);
+    }
+    return total;
+}
+
+int count_combinations(vector<int>& numbers, int target) {
+    vector<int> a = numbers;
+    sort(a.begin(), a.end());
+    return combos_go(a, 0, target);
+}
+//### distinct-subsets-count
+int count_distinct_subsets(vector<int>& numbers) {
+    map<int, int> counts;
+    for (int x : numbers) counts[x]++;
+    long long result = 1;
+    for (auto& entry : counts) result *= entry.second + 1;
+    return (int) result;
+}
+//### close-neighbour-orders
+int smooth_go(const vector<int>& numbers, vector<char>& used, int gap, int placed, int last) {
+    if (placed == (int) numbers.size()) return 1;
+    int total = 0;
+    for (int i = 0; i < (int) numbers.size(); i++) {
+        if (!used[i] && (placed == 0 || abs(numbers[i] - last) <= gap)) {
+            used[i] = 1;
+            total += smooth_go(numbers, used, gap, placed + 1, numbers[i]);
+            used[i] = 0;
+        }
+    }
+    return total;
+}
+
+int count_smooth_orders(vector<int>& numbers, int gap) {
+    vector<char> used(numbers.size(), 0);
+    return smooth_go(numbers, used, gap, 0, 0);
+}
+//### target-expression-count
+int expr_go(const string& digits, long long target, int pos, long long value, long long last) {
+    int n = (int) digits.size();
+    if (pos == n) return value == target ? 1 : 0;
+    int total = 0;
+    for (int end = pos + 1; end <= n; end++) {
+        if (end - pos > 1 && digits[pos] == '0') break;
+        long long num = stoll(digits.substr(pos, end - pos));
+        if (pos == 0) total += expr_go(digits, target, end, num, num);
+        else {
+            total += expr_go(digits, target, end, value + num, num);
+            total += expr_go(digits, target, end, value - num, -num);
+            total += expr_go(digits, target, end, value - last + last * num, last * num);
+        }
+    }
+    return total;
+}
+
+int count_expressions(string digits, int target) {
+    return expr_go(digits, target, 0, 0, 0);
+}
+//### fair-cookie-split
+void cookie_go(const vector<int>& items, vector<int>& totals, int& best, int i) {
+    if (i == (int) items.size()) {
+        best = min(best, *max_element(totals.begin(), totals.end()));
+        return;
+    }
+    set<int> seen;
+    for (size_t c = 0; c < totals.size(); c++) {
+        if (seen.count(totals[c])) continue;
+        seen.insert(totals[c]);
+        if (totals[c] + items[i] >= best) continue;
+        totals[c] += items[i];
+        cookie_go(items, totals, best, i + 1);
+        totals[c] -= items[i];
+    }
+}
+
+int fair_cookie_split(vector<int>& bags, int children) {
+    vector<int> items = bags;
+    sort(items.begin(), items.end(), greater<int>());
+    vector<int> totals(children, 0);
+    int best = 1;
+    for (int x : items) best += x;
+    cookie_go(items, totals, best, 0);
+    return best;
+}
+//### matrix-search-sorted-rows
+bool search_matrix(vector<vector<int>>& matrix, int target) {
+    int cols = (int) matrix[0].size();
+    int lo = 0, hi = (int) matrix.size() * cols - 1;
+    while (lo <= hi) {
+        int mid = lo + (hi - lo) / 2;
+        int value = matrix[mid / cols][mid % cols];
+        if (value == target) return true;
+        if (value < target) lo = mid + 1; else hi = mid - 1;
+    }
+    return false;
+}

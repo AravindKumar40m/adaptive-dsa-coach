@@ -1,0 +1,23 @@
+{
+  "slug": "monotone-digits-number",
+  "title": "Largest Number With Rising Digits",
+  "concept": "greedy",
+  "difficulty": "medium",
+  "statement": "A number has **rising digits** if, reading its digits from left to right, each digit is **greater than or equal to** the digit before it (`1234`, `1334` and `7` qualify; `332` does not).\n\nGiven a whole number `number`, return the **largest number that is at most `number`** and has rising digits.",
+  "constraints": [
+    "0 <= number <= 1000000000"
+  ],
+  "signature": { "name": "largest_monotone", "params": [{ "name": "number", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [332], "expected": 299, "explanation": "332 does not rise (3, 3, 2). No number from 300 to 332 rises, and 299 does." },
+    { "args": [1234], "expected": 1234, "explanation": "Already rising." }
+  ],
+  "edgeTests": [[0], [9], [10], [20], [98], [100], [120], [111], [1000000000], [999999999]],
+  "expected": { "time": "O(number of digits)", "space": "O(number of digits)" },
+  "hints": {
+    "nudge": "Find the first place where the digits stop rising. Making just that digit smaller is not enough: what happens to the digits after it?",
+    "pattern": "Greedy on the digits: from the right, whenever a digit is smaller than the one before it, lower the earlier digit by 1 and remember that every digit from there on can become 9.",
+    "pseudocode": "digits = the digits of number; mark = number of digits\nfor i from last down to 1:\n  if digits[i - 1] > digits[i]: digits[i - 1] -= 1; mark = i\nset every digit from position mark to the end to 9\nreturn the number written by the digits",
+    "walkthrough": "Subtracting 1 until the digits rise works for small numbers but needs up to a billion steps for big ones. Look at the digits instead. If they already rise, the number is its own answer. Otherwise some digit is larger than the digit to its right (in 332 the second 3 is larger than the 2). To get below the number you must lower such a digit by 1, and then every digit to its right can be 9, which keeps the number as large as possible. But lowering a digit can make it smaller than the digit on ITS left (in 332 the second 3 becomes 2, which is smaller than the first 3), so the repair has to continue to the left. Scan from the right to the left: whenever a digit is larger than its right neighbour, subtract 1 from it and remember its right neighbour's position. At the end set every digit from the leftmost remembered position to the last one to 9. For 332: the second 3 becomes 2 (position 2 remembered), then the first 3 becomes 2 (position 1 remembered), and the digits from position 1 on become 9: 299. This takes one pass over the digits."
+  }
+}

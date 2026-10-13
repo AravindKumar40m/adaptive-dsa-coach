@@ -1,0 +1,25 @@
+{
+  "slug": "target-expression-count",
+  "title": "Count the Expressions That Reach the Target",
+  "concept": "backtracking",
+  "difficulty": "hard",
+  "statement": "`digits` is a text of digits. Between every two neighbouring digits you may put **nothing** (so the digits join into one longer number), a `+`, a `-` or a `*`. This gives an arithmetic expression, evaluated with the usual rule that `*` is done before `+` and `-`.\n\nA number inside an expression must not have a **leading zero** (`05` is not allowed, but a lone `0` is). Count the expressions whose value is exactly `target`.",
+  "constraints": [
+    "1 <= len(digits) <= 9",
+    "digits contains only the characters 0 to 9",
+    "-2000000000 <= target <= 2000000000"
+  ],
+  "signature": { "name": "count_expressions", "params": [{ "name": "digits", "type": "string" }, { "name": "target", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": ["123", 6], "expected": 2, "explanation": "1+2+3 and 1*2*3." },
+    { "args": ["232", 8], "expected": 2, "explanation": "2*3+2 and 2+3*2." }
+  ],
+  "edgeTests": [["1", 1], ["1", 2], ["00", 0], ["105", 5], ["12", 12], ["999999999", 999999999]],
+  "expected": { "time": "O(4^n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "A multiplication binds tighter than the addition before it. How can you evaluate the expression while you build it, without a separate evaluator?",
+    "pattern": "Backtracking that keeps the value so far AND the last term (the part that a following `*` would multiply); on `*` take the last term back out of the value and put the product in.",
+    "pseudocode": "go(pos, value, last):\n  if pos == n: return 1 if value == target else 0\n  for end in pos+1 .. n:\n    if the part digits[pos..end) has a leading zero (and more than one digit): break\n    num = number of the part\n    if pos == 0: total += go(end, num, num)\n    else: total += go(end, value + num, num)            (+)\n                + go(end, value - num, -num)            (-)\n                + go(end, value - last + last * num, last * num)   (*)",
+    "walkthrough": "There are at most 4^8 = 65,536 ways to choose the operators for 9 digits, so a complete search is fine; the difficulty is evaluating each expression correctly. Instead of building a string and evaluating it, carry two numbers through the recursion: `value`, the value of the expression so far, and `last`, the last term that was added or subtracted (for `-` it is the negated number). A new `+` or `-` simply adds or subtracts the new number to the value and the new number becomes the last term. A `*` must multiply the LAST TERM, not the whole value: undo it (value - last) and add the product (last * num); the last term becomes last * num, so that another `*` after it keeps working. The first number has no operator in front of it. Reject numbers with leading zeros: once a part starts with `0` it can only be that single digit. Use 64-bit numbers, the products can be large."
+  }
+}

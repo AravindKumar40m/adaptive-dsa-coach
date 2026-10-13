@@ -1,0 +1,24 @@
+{
+  "slug": "spread-out-stalls",
+  "title": "Spread Out the Stalls",
+  "concept": "binary_search",
+  "difficulty": "medium",
+  "statement": "A barn has stalls at the given `positions` along a line (all different, in any order). You must put `animals` animals in **different stalls** so that the **smallest distance between any two animals** is as **large** as possible.\n\nReturn that largest possible smallest distance.",
+  "constraints": [
+    "2 <= animals <= len(positions) <= 100000",
+    "0 <= positions[i] <= 1000000000, all different"
+  ],
+  "signature": { "name": "spread_stalls", "params": [{ "name": "positions", "type": "int[]" }, { "name": "animals", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 2, 8, 4, 9], 3], "expected": 3, "explanation": "Use the stalls 1, 4 and 8 (or 1, 4 and 9): the closest pair is 3 apart. A distance of 4 is not possible: after 1 the next stall at least 4 away is 8, and then none is left." },
+    { "args": [[4, 1, 7], 3], "expected": 3, "explanation": "All three stalls must be used: positions 1, 4, 7 are 3 apart." }
+  ],
+  "edgeTests": [[[1, 2], 2], [[1, 100], 2], [[1, 2, 3, 4, 5, 6], 3], [[1, 2, 3, 4, 5, 6], 6], [[10, 0, 20, 30], 2], [[1, 2, 4, 8, 9], 4]],
+  "expected": { "time": "O(n log n + n log(max position))", "space": "O(1)" },
+  "hints": {
+    "nudge": "Suppose somebody claims 'the smallest distance can be d'. Can you check the claim quickly, by placing the animals greedily from the left?",
+    "pattern": "Binary search on the distance: a distance is possible if a greedy placement (always take the leftmost stall that is far enough from the last animal) fits all the animals; if d is possible, every smaller distance is possible too.",
+    "pseudocode": "sort positions\nfits(d): placed = 1; last = positions[0]; for p in the rest: if p - last >= d: placed += 1; last = p; return placed >= animals\nlo = 1; hi = max - min\nwhile lo < hi: mid = (lo + hi + 1) / 2; if fits(mid) lo = mid else hi = mid - 1\nreturn lo",
+    "walkthrough": "Trying every way to choose the stalls is exponential. Turn the problem around: fix a distance d and ask whether the animals fit with every two at least d apart. Greedy works for that question: put the first animal in the leftmost stall, then always the next animal into the first stall that is at least d from the previous one (an earlier stall can never be worse, it leaves the most room). If you can place all the animals, d is possible. If d is possible then every smaller distance is possible too, so the possible distances form a prefix 1, 2, ..., D and you want its end D: binary search for the last distance that fits. Because you look for the LAST true value, round the middle UP ((lo + hi + 1) / 2) or the loop will not end. d = 1 always fits (the stalls are all different and there are enough of them)."
+  }
+}

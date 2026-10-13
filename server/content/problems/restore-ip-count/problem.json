@@ -1,0 +1,24 @@
+{
+  "slug": "restore-ip-count",
+  "title": "Ways to Make an IP Address",
+  "concept": "backtracking",
+  "difficulty": "medium",
+  "statement": "An **IPv4 address** has exactly **four numbers** separated by dots, and each number is between `0` and `255`, written **without leading zeros** (`0` is fine, `01` is not).\n\n`digits` is a text of digits. Count the ways to put **three dots** into it (without removing or reordering any digit) so that it becomes a valid IPv4 address.",
+  "constraints": [
+    "1 <= len(digits) <= 20",
+    "digits contains only the characters 0 to 9"
+  ],
+  "signature": { "name": "count_ip_addresses", "params": [{ "name": "digits", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["25525511135"], "expected": 2, "explanation": "255.255.11.135 and 255.255.111.35." },
+    { "args": ["0000"], "expected": 1, "explanation": "Only 0.0.0.0 works: any longer part such as 00 would have a leading zero." }
+  ],
+  "edgeTests": [["1111"], ["010010"], ["123"], ["1234567890123"], ["101023"], ["256256256256"]],
+  "expected": { "time": "O(3^4)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Each of the four numbers uses 1, 2 or 3 digits. What do you check before you accept a part of the text as one number?",
+    "pattern": "Backtracking over the cut positions: for each of the four parts try lengths 1, 2 and 3, keep only valid parts, and succeed when exactly four parts use up exactly all the digits.",
+    "pseudocode": "count(pos, parts):\n  if parts == 4: return 1 if pos == len(digits) else 0\n  total = 0\n  for size in 1, 2, 3:\n    if pos + size > len(digits): break\n    part = digits[pos .. pos + size)\n    if part has a leading zero (size > 1 and starts with '0') or its value > 255: continue\n    total += count(pos + size, parts + 1)\n  return total",
+    "walkthrough": "Choose the four parts one after another. A part has 1, 2 or 3 digits, which gives at most 3^4 = 81 combinations: tiny, so a plain search works. For every candidate part check the two rules: no leading zero unless the part is exactly `0`, and a value of at most 255. Stop early when the digits run out. When four parts have been chosen, the combination counts only if there are no digits left over; if there are more digits than 12 or fewer than 4, the answer is 0 at once. Counting works like the search for the addresses themselves, just adding 1 at every success instead of storing the address."
+  }
+}

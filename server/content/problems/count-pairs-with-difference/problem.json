@@ -1,0 +1,25 @@
+{
+  "slug": "count-pairs-with-difference",
+  "title": "Pairs With an Exact Gap",
+  "concept": "two_pointers",
+  "difficulty": "medium",
+  "statement": "`numbers` is sorted from smallest to largest and all numbers are **different**. Count the pairs of numbers whose **difference is exactly `gap`** (the larger minus the smaller). `gap` is at least `1`.\n\nA pair is two different positions; the pair (a, b) and (b, a) count as one.",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "-1000000000 <= numbers[i] <= 1000000000, strictly increasing",
+    "1 <= gap <= 1000000000"
+  ],
+  "signature": { "name": "count_pairs_with_gap", "params": [{ "name": "numbers", "type": "int[]" }, { "name": "gap", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 3, 5, 7, 9], 4], "expected": 3, "explanation": "(1, 5), (3, 7) and (5, 9)." },
+    { "args": [[1, 2, 3], 5], "expected": 0, "explanation": "The biggest difference is 2." }
+  ],
+  "edgeTests": [[[], 3], [[4], 1], [[1, 2, 3, 4], 1], [[0, 10, 20, 30], 10], [[-5, -1, 3, 7], 4], [[1, 100], 99]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "For one number, the partner you want is a single value: number + gap. Because the list is sorted, how can you find it without searching from scratch each time?",
+    "pattern": "Two pointers that only move forward: for each left number, advance the right pointer until the difference is at least gap.",
+    "pseudocode": "j = 0; count = 0\nfor i in 0..n-1:\n  if j <= i: j = i + 1\n  while j < n and numbers[j] - numbers[i] < gap: j += 1\n  if j < n and numbers[j] - numbers[i] == gap: count += 1\nreturn count",
+    "walkthrough": "Checking every pair is O(n^2). Fix the smaller number numbers[i]. Its partner must be exactly numbers[i] + gap; since all numbers are different there is at most one such partner. As i moves to the right, the number you look for gets larger, so the position j of the partner never moves left: keep j between rounds and only push it forward while the difference is still smaller than the gap. After the loop, either numbers[j] - numbers[i] equals the gap (one pair found) or it is larger (no partner for this i). Both pointers only move forward: O(n). (A hash set of the numbers also gives O(n), but the sorted order lets you use O(1) memory.)"
+  }
+}

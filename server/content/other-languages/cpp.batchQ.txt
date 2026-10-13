@@ -1,0 +1,119 @@
+//### sort-by-bit-count
+vector<int> sort_by_bits(vector<int>& numbers) {
+    vector<int> out = numbers;
+    sort(out.begin(), out.end(), [](int a, int b) {
+        int ca = __builtin_popcount(a), cb = __builtin_popcount(b);
+        return ca != cb ? ca < cb : a < b;
+    });
+    return out;
+}
+//### largest-triangle-perimeter
+int largest_triangle_perimeter(vector<int>& sticks) {
+    vector<int> a = sticks;
+    sort(a.begin(), a.end());
+    for (int i = (int) a.size() - 3; i >= 0; i--) {
+        if ((long long) a[i] + a[i + 1] > a[i + 2]) return a[i] + a[i + 1] + a[i + 2];
+    }
+    return 0;
+}
+//### valid-palindrome-one-delete
+bool pal_between(const string& text, int l, int r) {
+    while (l < r) {
+        if (text[l] != text[r]) return false;
+        l++;
+        r--;
+    }
+    return true;
+}
+
+bool almost_palindrome(string text) {
+    int l = 0, r = (int) text.size() - 1;
+    while (l < r) {
+        if (text[l] != text[r]) return pal_between(text, l + 1, r) || pal_between(text, l, r - 1);
+        l++;
+        r--;
+    }
+    return true;
+}
+//### count-pairs-with-difference
+int count_pairs_with_gap(vector<int>& numbers, int gap) {
+    int count = 0, j = 0;
+    int n = (int) numbers.size();
+    for (int i = 0; i < n; i++) {
+        if (j <= i) j = i + 1;
+        while (j < n && (long long) numbers[j] - numbers[i] < gap) j++;
+        if (j < n && (long long) numbers[j] - numbers[i] == gap) count++;
+    }
+    return count;
+}
+//### boats-needed
+int boats_needed(vector<int>& weights, int limit) {
+    vector<int> a = weights;
+    sort(a.begin(), a.end());
+    int light = 0, heavy = (int) a.size() - 1, boats = 0;
+    while (light <= heavy) {
+        if (a[light] + a[heavy] <= limit) light++;
+        heavy--;
+        boats++;
+    }
+    return boats;
+}
+//### sort-three-colors
+vector<int> sort_three_values(vector<int>& numbers) {
+    vector<int> a = numbers;
+    int low = 0, mid = 0, high = (int) a.size() - 1;
+    while (mid <= high) {
+        if (a[mid] == 0) { swap(a[low], a[mid]); low++; mid++; }
+        else if (a[mid] == 1) mid++;
+        else { swap(a[mid], a[high]); high--; }
+    }
+    return a;
+}
+//### remove-value-length
+vector<int> remove_value(vector<int>& numbers, int value) {
+    vector<int> a = numbers;
+    int write = 0;
+    for (int read = 0; read < (int) a.size(); read++) {
+        if (a[read] != value) { a[write] = a[read]; write++; }
+    }
+    a.resize(write);
+    return a;
+}
+//### triplets-sum-below
+int count_triples_below(vector<int>& numbers, int limit) {
+    vector<int> a = numbers;
+    sort(a.begin(), a.end());
+    long long count = 0;
+    for (int i = 0; i + 2 < (int) a.size(); i++) {
+        int lo = i + 1, hi = (int) a.size() - 1;
+        while (lo < hi) {
+            if (a[i] + a[lo] + a[hi] < limit) { count += hi - lo; lo++; }
+            else hi--;
+        }
+    }
+    return (int) count;
+}
+//### isomorphic-texts
+bool are_isomorphic(string first, string second) {
+    int forward[128] = {0}, backward[128] = {0};
+    for (size_t i = 0; i < first.size(); i++) {
+        int a = first[i], b = second[i];
+        if (forward[a] != 0 && forward[a] != b) return false;
+        if (backward[b] != 0 && backward[b] != a) return false;
+        forward[a] = b;
+        backward[b] = a;
+    }
+    return true;
+}
+//### subarrays-divisible-count
+int count_divisible_runs(vector<int>& numbers, int k) {
+    vector<int> seen(k, 0);
+    seen[0] = 1;
+    long long total = 0, answer = 0;
+    for (int x : numbers) {
+        total = (((total + x) % k) + k) % k;
+        answer += seen[total];
+        seen[total]++;
+    }
+    return (int) answer;
+}

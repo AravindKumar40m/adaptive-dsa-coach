@@ -1,0 +1,23 @@
+{
+  "slug": "nth-smooth-number",
+  "title": "The N-th Number Made of 2s, 3s and 5s",
+  "concept": "heaps",
+  "difficulty": "medium",
+  "statement": "A positive whole number is **smooth** if it has no prime factor other than `2`, `3` and `5` (so it can be written as `2^a * 3^b * 5^c`). The number `1` counts as smooth (all exponents are zero).\n\nThe smooth numbers in increasing order are `1, 2, 3, 4, 5, 6, 8, 9, 10, 12, ...` (7 is not smooth, 11 is not, 14 is not). Return the `n`-th one, counting from `1`.",
+  "constraints": [
+    "1 <= n <= 1000"
+  ],
+  "signature": { "name": "nth_smooth", "params": [{ "name": "n", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [10], "expected": 12, "explanation": "The first ten smooth numbers are 1, 2, 3, 4, 5, 6, 8, 9, 10, 12." },
+    { "args": [1], "expected": 1, "explanation": "The first one is 1." }
+  ],
+  "edgeTests": [[2], [7], [11], [15], [100], [1000]],
+  "expected": { "time": "O(n log n) with a heap, O(n) with three pointers", "space": "O(n)" },
+  "hints": {
+    "nudge": "Every smooth number except 1 is a smaller smooth number multiplied by 2, 3 or 5. How can you produce the smooth numbers in increasing order from that fact?",
+    "pattern": "A min-heap of candidates (start with 1; pop the smallest x, push 2x, 3x and 5x, skipping numbers already seen). Or three pointers into the list built so far.",
+    "pseudocode": "heap = [1]; seen = {1}\nrepeat n times:\n  x = pop the smallest\n  for p in 2, 3, 5: if x * p not in seen: add it to seen and push it\nreturn the last x popped",
+    "walkthrough": "Testing every integer for smoothness (divide out 2s, 3s and 5s and see whether 1 is left) works but wastes time on the many numbers that are not smooth. Generate them instead. The smallest smooth number is 1. Whenever x is smooth, so are 2x, 3x and 5x, and every smooth number is reached this way from a smaller one. Keep a min-heap of the numbers found but not yet 'used': pop the smallest (this is the next smooth number in order), and push its three multiples. The same number can be produced in different ways (6 = 2 * 3 = 3 * 2), so remember what was already pushed in a set. After n pops the last popped value is the answer. A faster way keeps the list of smooth numbers found and three pointers (for the next multiple of 2, 3 and 5 to try): the next number is the smallest of the three candidates, and every pointer whose candidate was taken moves on."
+  }
+}

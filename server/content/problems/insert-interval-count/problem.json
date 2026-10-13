@@ -1,0 +1,25 @@
+{
+  "slug": "insert-interval-count",
+  "title": "Groups After Inserting One Interval",
+  "concept": "sorting",
+  "difficulty": "medium",
+  "statement": "`intervals` is a list of stretches `[start, end]` (both ends included), **sorted by start** and **separated**: each one starts strictly after the previous one ends. A new stretch `new_interval` is added to the list. Stretches that share at least one point (touching counts) are merged into one.\n\nReturn how many stretches the list has after the new one has been added and all merging is done.",
+  "constraints": [
+    "0 <= len(intervals) <= 10000",
+    "0 <= start <= end <= 1000000000; each interval starts strictly after the previous one ends",
+    "new_interval is [start, end] with 0 <= start <= end <= 1000000000"
+  ],
+  "signature": { "name": "groups_after_insert", "params": [{ "name": "intervals", "type": "int[][]" }, { "name": "new_interval", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[[1, 3], [6, 9]], [2, 5]], "expected": 2, "explanation": "[2, 5] merges with [1, 3] into [1, 5]; [6, 9] stays separate: 2 stretches." },
+    { "args": [[[1, 2], [4, 5], [7, 8]], [3, 6]], "expected": 3, "explanation": "[3, 6] swallows [4, 5] and gives [3, 6]; the result is [1, 2], [3, 6], [7, 8]." }
+  ],
+  "edgeTests": [[[], [1, 2]], [[[1, 5]], [2, 3]], [[[1, 2]], [2, 3]], [[[1, 2], [5, 6]], [3, 4]], [[[1, 2], [3, 4], [5, 6]], [0, 10]], [[[1, 2]], [0, 0]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "The list is already sorted and separated. Which existing stretches can the new one NOT touch?",
+    "pattern": "Count the stretches completely before the new one, the stretches completely after it, and add one for the merged stretch.",
+    "pseudocode": "before = number of intervals with end < new.start\nafter = number of intervals with start > new.end\nreturn before + after + 1",
+    "walkthrough": "You do not need to build the merged list. A stretch ends strictly before the new one starts, or starts strictly after the new one ends, or it touches the new one. The first two kinds are untouched and stay as they are; every stretch of the third kind is absorbed into the one merged stretch (they all touch the growing merged interval, because the list is sorted and separated). So the answer is (stretches entirely before) + (stretches entirely after) + 1. One pass counting is O(n); because the list is sorted you could even find the two boundaries with binary search in O(log n)."
+  }
+}

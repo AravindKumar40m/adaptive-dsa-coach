@@ -1,0 +1,115 @@
+//### rotate-matrix-clockwise
+vector<int> rotate_clockwise(vector<vector<int>>& grid) {
+    int n = (int) grid.size();
+    vector<vector<int>> a = grid;
+    for (int i = 0; i < n; i++) {
+        for (int j = i + 1; j < n; j++) swap(a[i][j], a[j][i]);
+    }
+    vector<int> out;
+    for (auto& row : a) {
+        reverse(row.begin(), row.end());
+        for (int x : row) out.push_back(x);
+    }
+    return out;
+}
+//### max-circular-subarray
+int max_circular_sum(vector<int>& numbers) {
+    long long total = numbers[0], best = numbers[0], cur = numbers[0], worst = numbers[0], cur_min = numbers[0];
+    for (size_t i = 1; i < numbers.size(); i++) {
+        long long x = numbers[i];
+        total += x;
+        cur = max(x, cur + x);
+        best = max(best, cur);
+        cur_min = min(x, cur_min + x);
+        worst = min(worst, cur_min);
+    }
+    return (int) (best < 0 ? best : max(best, total - worst));
+}
+//### find-all-duplicates
+vector<int> find_duplicates(vector<int>& numbers) {
+    vector<int> a = numbers;
+    vector<int> out;
+    for (size_t k = 0; k < a.size(); k++) {
+        int x = a[k];
+        int i = abs(x) - 1;
+        if (a[i] < 0) out.push_back(abs(x));
+        else a[i] = -a[i];
+    }
+    sort(out.begin(), out.end());
+    return out;
+}
+//### zero-matrix-total
+int zero_out_total(vector<vector<int>>& grid) {
+    int rows = (int) grid.size(), cols = (int) grid[0].size();
+    vector<char> bad_row(rows, 0), bad_col(cols, 0);
+    for (int r = 0; r < rows; r++) {
+        for (int c = 0; c < cols; c++) {
+            if (grid[r][c] == 0) { bad_row[r] = 1; bad_col[c] = 1; }
+        }
+    }
+    int total = 0;
+    for (int r = 0; r < rows; r++) {
+        for (int c = 0; c < cols; c++) if (!bad_row[r] && !bad_col[c]) total += grid[r][c];
+    }
+    return total;
+}
+//### best-sightseeing-pair
+int best_pair_score(vector<int>& values) {
+    int best_left = values[0], answer = INT_MIN;
+    for (int j = 1; j < (int) values.size(); j++) {
+        answer = max(answer, best_left + values[j] - j);
+        best_left = max(best_left, values[j] + j);
+    }
+    return answer;
+}
+//### right-side-leaders
+int count_leaders(vector<int>& numbers) {
+    int count = 0;
+    long long biggest = LLONG_MIN;
+    for (int i = (int) numbers.size() - 1; i >= 0; i--) {
+        if (numbers[i] > biggest) { count++; biggest = numbers[i]; }
+    }
+    return count;
+}
+//### can-attend-all
+bool can_attend_all(vector<vector<int>>& meetings) {
+    vector<vector<int>> ordered = meetings;
+    sort(ordered.begin(), ordered.end(), [](const vector<int>& p, const vector<int>& q) { return p[0] < q[0]; });
+    for (size_t i = 1; i < ordered.size(); i++) {
+        if (ordered[i][0] < ordered[i - 1][1]) return false;
+    }
+    return true;
+}
+//### insert-interval-count
+int groups_after_insert(vector<vector<int>>& intervals, vector<int>& new_interval) {
+    int s = new_interval[0], e = new_interval[1];
+    int before = 0, after = 0;
+    for (auto& iv : intervals) {
+        if (iv[1] < s) before++;
+        else if (iv[0] > e) after++;
+    }
+    return before + after + 1;
+}
+//### h-index-value
+int h_index(vector<int>& citations) {
+    int n = (int) citations.size();
+    vector<int> buckets(n + 1, 0);
+    for (int c : citations) buckets[min(c, n)]++;
+    int papers = 0;
+    for (int h = n; h >= 0; h--) {
+        papers += buckets[h];
+        if (papers >= h) return h;
+    }
+    return 0;
+}
+//### min-arrows-count
+int min_arrows(vector<vector<int>>& balloons) {
+    vector<vector<int>> sorted_b = balloons;
+    sort(sorted_b.begin(), sorted_b.end(), [](const vector<int>& p, const vector<int>& q) { return p[1] < q[1]; });
+    int arrows = 0;
+    long long last = LLONG_MIN;
+    for (auto& b : sorted_b) {
+        if (arrows == 0 || b[0] > last) { arrows++; last = b[1]; }
+    }
+    return arrows;
+}

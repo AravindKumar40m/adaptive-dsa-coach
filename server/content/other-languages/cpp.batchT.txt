@@ -1,0 +1,144 @@
+//### reverse-between
+ListNode* reverse_between(ListNode* head, int left, int right) {
+    ListNode dummy(0);
+    dummy.next = head;
+    ListNode* prev = &dummy;
+    for (int i = 0; i < left - 1; i++) prev = prev->next;
+    ListNode* cur = prev->next;
+    for (int i = 0; i < right - left; i++) {
+        ListNode* nxt = cur->next;
+        cur->next = nxt->next;
+        nxt->next = prev->next;
+        prev->next = nxt;
+    }
+    return dummy.next;
+}
+//### height-balanced-tree
+int balance_height(TreeNode* node) {
+    if (node == nullptr) return 0;
+    int left = balance_height(node->left);
+    if (left < 0) return -1;
+    int right = balance_height(node->right);
+    if (right < 0 || abs(left - right) > 1) return -1;
+    return 1 + max(left, right);
+}
+
+bool is_height_balanced(TreeNode* root) {
+    return balance_height(root) >= 0;
+}
+//### downward-paths-with-sum
+int paths_walk(TreeNode* node, long long total, int target, unordered_map<long long, int>& seen) {
+    if (node == nullptr) return 0;
+    total += node->val;
+    int found = 0;
+    auto it = seen.find(total - target);
+    if (it != seen.end()) found = it->second;
+    seen[total]++;
+    found += paths_walk(node->left, total, target, seen) + paths_walk(node->right, total, target, seen);
+    seen[total]--;
+    return found;
+}
+
+int count_paths_with_sum(TreeNode* root, int target) {
+    unordered_map<long long, int> seen;
+    seen[0] = 1;
+    return paths_walk(root, 0, target, seen);
+}
+//### zigzag-levels
+vector<int> zigzag_levels(TreeNode* root) {
+    vector<int> out;
+    vector<TreeNode*> level;
+    if (root != nullptr) level.push_back(root);
+    bool left_to_right = true;
+    while (!level.empty()) {
+        vector<int> values;
+        for (TreeNode* node : level) values.push_back(node->val);
+        if (!left_to_right) reverse(values.begin(), values.end());
+        for (int v : values) out.push_back(v);
+        vector<TreeNode*> next;
+        for (TreeNode* node : level) {
+            if (node->left != nullptr) next.push_back(node->left);
+            if (node->right != nullptr) next.push_back(node->right);
+        }
+        level = next;
+        left_to_right = !left_to_right;
+    }
+    return out;
+}
+//### bst-from-sorted-array
+TreeNode* build_part(vector<int>& values, int lo, int hi) {
+    if (lo > hi) return nullptr;
+    int mid = lo + (hi - lo) / 2;
+    TreeNode* node = new TreeNode(values[mid]);
+    node->left = build_part(values, lo, mid - 1);
+    node->right = build_part(values, mid + 1, hi);
+    return node;
+}
+
+TreeNode* build_balanced_bst(vector<int>& values) {
+    return build_part(values, 0, (int) values.size() - 1);
+}
+//### max-tree-width
+int max_tree_width(TreeNode* root) {
+    if (root == nullptr) return 0;
+    long long best = 0;
+    vector<pair<TreeNode*, long long>> level;
+    level.push_back({root, 0});
+    while (!level.empty()) {
+        best = max(best, level.back().second - level.front().second + 1);
+        long long base = level.front().second;
+        vector<pair<TreeNode*, long long>> next;
+        for (auto& entry : level) {
+            long long pos = entry.second - base;
+            if (entry.first->left != nullptr) next.push_back({entry.first->left, 2 * pos});
+            if (entry.first->right != nullptr) next.push_back({entry.first->right, 2 * pos + 1});
+        }
+        level = next;
+    }
+    return (int) best;
+}
+//### deepest-leaves-ancestor
+pair<int, TreeNode*> deepest_go(TreeNode* node) {
+    if (node == nullptr) return {0, nullptr};
+    auto left = deepest_go(node->left);
+    auto right = deepest_go(node->right);
+    if (left.first > right.first) return {left.first + 1, left.second};
+    if (right.first > left.first) return {right.first + 1, right.second};
+    return {left.first + 1, node};
+}
+
+int deepest_common_ancestor(TreeNode* root) {
+    return deepest_go(root).second->val;
+}
+//### xor-subset-total
+int xor_subset_total(vector<int>& numbers) {
+    if (numbers.empty()) return 0;
+    int combined = 0;
+    for (int x : numbers) combined |= x;
+    return combined * (1 << (numbers.size() - 1));
+}
+//### gray-code-sequence
+vector<int> gray_code(int bits) {
+    vector<int> seq;
+    seq.push_back(0);
+    for (int b = 0; b < bits; b++) {
+        for (int i = (int) seq.size() - 1; i >= 0; i--) seq.push_back(seq[i] | (1 << b));
+    }
+    return seq;
+}
+//### kth-permutation
+string kth_permutation(int n, int k) {
+    vector<int> fact(n + 1, 1);
+    for (int i = 1; i <= n; i++) fact[i] = fact[i - 1] * i;
+    vector<int> digits;
+    for (int d = 1; d <= n; d++) digits.push_back(d);
+    k -= 1;
+    string out;
+    for (int i = n; i >= 1; i--) {
+        int index = k / fact[i - 1];
+        k %= fact[i - 1];
+        out += (char) ('0' + digits[index]);
+        digits.erase(digits.begin() + index);
+    }
+    return out;
+}

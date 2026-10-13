@@ -1,0 +1,23 @@
+{
+  "slug": "count-good-numbers",
+  "title": "Count the Good Digit Strings",
+  "concept": "recursion",
+  "difficulty": "medium",
+  "statement": "A digit string is **good** if the digits at **even positions** (counting from 0: positions 0, 2, 4, ...) are **even digits** (0, 2, 4, 6, 8) and the digits at **odd positions** (1, 3, 5, ...) are **prime digits** (2, 3, 5, 7).\n\nCount the good digit strings of exactly `length` digits (leading zeros are allowed). The count can be huge, so return it **modulo 1,000,000,007**.",
+  "constraints": [
+    "1 <= length <= 2147483647"
+  ],
+  "signature": { "name": "count_good_numbers", "params": [{ "name": "length", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [1], "expected": 5, "explanation": "One digit at position 0: it can be 0, 2, 4, 6 or 8." },
+    { "args": [4], "expected": 400, "explanation": "5 choices * 4 choices * 5 choices * 4 choices = 400." }
+  ],
+  "edgeTests": [[2], [3], [1000], [1000000000], [2147483647]],
+  "expected": { "time": "O(log length)", "space": "O(log length)" },
+  "hints": {
+    "nudge": "Each position can be chosen independently. So the count is a product: how many choices does each kind of position have, and how many positions of each kind are there?",
+    "pattern": "The answer is 5^(even positions) * 4^(odd positions); compute the big powers by repeated squaring (divide and conquer recursion), reducing modulo 1,000,000,007 as you go.",
+    "pseudocode": "evenPositions = (length + 1) / 2; oddPositions = length / 2\npower(base, e): if e == 0: return 1\n  half = power(base, e / 2); result = half * half mod M\n  if e is odd: result = result * base mod M\n  return result\nreturn power(5, evenPositions) * power(4, oddPositions) mod M",
+    "walkthrough": "Even positions have 5 choices and odd positions have 4 choices (the prime digits 2, 3, 5, 7). With length digits there are (length + 1) / 2 even positions and length / 2 odd positions (rounded down). The total is 5^a * 4^b. Multiplying one position at a time takes up to two billion steps, which is far too slow. Use the identity base^e = (base^(e/2))^2, times one more base when e is odd: this halves the exponent each time, so only about 31 recursive calls are needed. Take the remainder after every multiplication, and use a 64-bit type so that the product of two remainders (about 10^18) does not overflow."
+  }
+}

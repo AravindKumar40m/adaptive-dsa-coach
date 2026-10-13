@@ -1,0 +1,25 @@
+{
+  "slug": "combination-sum-distinct-count",
+  "title": "Distinct Combinations With a Given Sum",
+  "concept": "backtracking",
+  "difficulty": "medium",
+  "statement": "`numbers` may contain **repeated values**. Choose some of the numbers (each position at most once) so that they **add up to exactly `target`**. Two choices count as the **same combination** if they use the same values the same number of times, no matter which positions were picked (so picking either of two equal 2s gives the same combination).\n\nReturn the number of **different combinations**. At least one number must be chosen.",
+  "constraints": [
+    "0 <= len(numbers) <= 20",
+    "1 <= numbers[i] <= 50",
+    "1 <= target <= 100"
+  ],
+  "signature": { "name": "count_combinations", "params": [{ "name": "numbers", "type": "int[]" }, { "name": "target", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[2, 2, 3, 5], 7], "expected": 2, "explanation": "2 + 2 + 3 and 2 + 5. Using the first 2 or the second 2 with the 5 is the same combination." },
+    { "args": [[3, 3, 3], 6], "expected": 1, "explanation": "Two 3s: always the same combination, however you pick them." }
+  ],
+  "edgeTests": [[[], 5], [[5], 5], [[5], 4], [[1, 1, 1], 2], [[1, 2, 3], 6], [[4, 4, 4, 4], 8]],
+  "expected": { "time": "O(2^n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "If you pick positions freely you count the same combination several times. What happens if you sort the numbers first?",
+    "pattern": "Backtracking over the sorted numbers: at each step choose the next number to include, and skip a number that equals the previous one at the same level of choice.",
+    "pseudocode": "sort numbers\ngo(start, left):\n  if left == 0: return 1\n  total = 0\n  for i in start .. n - 1:\n    if i > start and numbers[i] == numbers[i - 1]: continue   (same value already tried at this level)\n    if numbers[i] > left: break                                (the rest are larger)\n    total += go(i + 1, left - numbers[i])\n  return total",
+    "walkthrough": "Listing every subset of positions and putting their sorted values in a set works for small inputs. A cleaner search sorts the numbers and builds each combination in increasing order. At each level of the search you pick the next number to use from the positions after the last picked one. To avoid counting the same combination twice, never start a level with a value that already started a branch at that same level: skip position i if it equals position i - 1 and i - 1 was available at this level (i > start). Because the numbers are sorted, once a number is larger than what is left to reach the target, all following numbers are too, so you can stop the loop (pruning). Reaching exactly 0 left counts one combination."
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "anagram-window-count",
+  "title": "Windows That Are Anagrams",
+  "concept": "hashing",
+  "difficulty": "medium",
+  "statement": "Two texts are **anagrams** if one is a rearrangement of the other (the same letters with the same counts). Look at every **window** of `text` of the same length as `pattern` (consecutive letters, starting at every possible position).\n\nReturn how many of these windows are anagrams of `pattern`. Windows at different positions count separately even if they look the same.",
+  "constraints": [
+    "0 <= len(text) <= 100000",
+    "1 <= len(pattern) <= 100000",
+    "both use only lowercase English letters"
+  ],
+  "signature": { "name": "count_anagram_windows", "params": [{ "name": "text", "type": "string" }, { "name": "pattern", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["abxaba", "ab"], "expected": 3, "explanation": "The windows are ab, bx, xa, ab, ba: three of them (positions 0, 3 and 4) use exactly one a and one b." },
+    { "args": ["aaaa", "aa"], "expected": 3, "explanation": "Positions 0, 1 and 2 all give the window aa." }
+  ],
+  "edgeTests": [["", "a"], ["a", "a"], ["ab", "abc"], ["abab", "ab"], ["zzzz", "zy"], ["cbaebabacd", "abc"]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Two windows next to each other share almost all their letters. What changes when the window moves one step to the right?",
+    "pattern": "Sliding window with letter counts: add the letter that enters, remove the letter that leaves, compare the 26 counts with the pattern's counts.",
+    "pseudocode": "need[c] = count of c in pattern; have[c] = counts in the first window\nresult = 1 if have == need else 0\nfor each next position:\n  have[new letter] += 1; have[letter that left] -= 1\n  if have == need: result += 1\nreturn result",
+    "walkthrough": "Sorting every window and comparing it with the sorted pattern costs O(m log m) per window. An anagram is decided by the count of each letter, and there are only 26 letters. Count the letters of the pattern once. Count the letters of the first window of the text. Then slide the window one letter at a time: the new letter on the right is added to the counts and the letter that leaves on the left is subtracted, so the counts of the new window cost O(1) to update. After each move compare the two arrays of 26 numbers (a constant amount of work) and add 1 when they are equal. If the text is shorter than the pattern, the answer is 0. O(n) overall."
+  }
+}

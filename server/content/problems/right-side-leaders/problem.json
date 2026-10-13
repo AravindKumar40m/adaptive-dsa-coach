@@ -1,0 +1,24 @@
+{
+  "slug": "right-side-leaders",
+  "title": "Count the Leaders",
+  "concept": "arrays",
+  "difficulty": "easy",
+  "statement": "A number in `numbers` is a **leader** if it is **strictly greater than every number to its right**. The last number is always a leader (nothing is to its right).\n\nReturn how many leaders there are.",
+  "constraints": [
+    "1 <= len(numbers) <= 100000",
+    "-1000000000 <= numbers[i] <= 1000000000"
+  ],
+  "signature": { "name": "count_leaders", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[16, 17, 4, 3, 5, 2]], "expected": 3, "explanation": "17 is bigger than everything after it, 5 is bigger than 2, and 2 is last: three leaders." },
+    { "args": [[4, 4, 4]], "expected": 1, "explanation": "Equal numbers do not count as bigger, so only the last 4 is a leader." }
+  ],
+  "edgeTests": [[[7]], [[1, 2, 3, 4]], [[4, 3, 2, 1]], [[5, 1, 5]], [[-3, -1, -2]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "To decide whether a number is a leader you only need ONE fact about everything to its right. Which one?",
+    "pattern": "Scan from the right and carry the maximum seen so far.",
+    "pseudocode": "count = 0; biggest = -infinity\nfor i from the last index down to 0:\n  if numbers[i] > biggest: count += 1; biggest = numbers[i]\nreturn count",
+    "walkthrough": "Comparing every number with all numbers to its right is O(n^2). But a number beats everything to its right exactly when it beats the MAXIMUM to its right. Walk from the last number to the first and remember the largest value seen so far. Whenever the current number is strictly larger than that maximum, it is a leader: count it and make it the new maximum. The last number is always a leader because the starting maximum is smaller than any number. O(n) time, O(1) memory."
+  }
+}

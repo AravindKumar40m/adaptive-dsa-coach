@@ -1,0 +1,128 @@
+//### reverse-between
+function reverseBetween(head, left, right) {
+  const dummy = new ListNode(0, head);
+  let prev = dummy;
+  for (let i = 0; i < left - 1; i++) prev = prev.next;
+  const cur = prev.next;
+  for (let i = 0; i < right - left; i++) {
+    const nxt = cur.next;
+    cur.next = nxt.next;
+    nxt.next = prev.next;
+    prev.next = nxt;
+  }
+  return dummy.next;
+}
+//### height-balanced-tree
+function isHeightBalanced(root) {
+  function check(node) {
+    if (node === null) return 0;
+    const left = check(node.left);
+    if (left < 0) return -1;
+    const right = check(node.right);
+    if (right < 0 || Math.abs(left - right) > 1) return -1;
+    return 1 + Math.max(left, right);
+  }
+  return check(root) >= 0;
+}
+//### downward-paths-with-sum
+function countPathsWithSum(root, target) {
+  const seen = new Map([[0, 1]]);
+  function walk(node, total) {
+    if (node === null) return 0;
+    total += node.val;
+    let found = seen.get(total - target) || 0;
+    seen.set(total, (seen.get(total) || 0) + 1);
+    found += walk(node.left, total) + walk(node.right, total);
+    seen.set(total, seen.get(total) - 1);
+    return found;
+  }
+  return walk(root, 0);
+}
+//### zigzag-levels
+function zigzagLevels(root) {
+  const out = [];
+  let level = root === null ? [] : [root];
+  let leftToRight = true;
+  while (level.length > 0) {
+    const values = level.map((node) => node.val);
+    if (!leftToRight) values.reverse();
+    for (const v of values) out.push(v);
+    const next = [];
+    for (const node of level) {
+      if (node.left !== null) next.push(node.left);
+      if (node.right !== null) next.push(node.right);
+    }
+    level = next;
+    leftToRight = !leftToRight;
+  }
+  return out;
+}
+//### bst-from-sorted-array
+function buildBalancedBst(values) {
+  function build(lo, hi) {
+    if (lo > hi) return null;
+    const mid = (lo + hi) >> 1;
+    return new TreeNode(values[mid], build(lo, mid - 1), build(mid + 1, hi));
+  }
+  return build(0, values.length - 1);
+}
+//### max-tree-width
+function maxTreeWidth(root) {
+  if (root === null) return 0;
+  let best = 0;
+  let level = [[root, 0]];
+  while (level.length > 0) {
+    best = Math.max(best, level[level.length - 1][1] - level[0][1] + 1);
+    const base = level[0][1];
+    const next = [];
+    for (const [node, p] of level) {
+      const pos = p - base;
+      if (node.left !== null) next.push([node.left, 2 * pos]);
+      if (node.right !== null) next.push([node.right, 2 * pos + 1]);
+    }
+    level = next;
+  }
+  return best;
+}
+//### deepest-leaves-ancestor
+function deepestCommonAncestor(root) {
+  function go(node) {
+    if (node === null) return [0, null];
+    const [ld, ln] = go(node.left);
+    const [rd, rn] = go(node.right);
+    if (ld > rd) return [ld + 1, ln];
+    if (rd > ld) return [rd + 1, rn];
+    return [ld + 1, node];
+  }
+  return go(root)[1].val;
+}
+//### xor-subset-total
+function xorSubsetTotal(numbers) {
+  if (numbers.length === 0) return 0;
+  let combined = 0;
+  for (const x of numbers) combined |= x;
+  return combined * Math.pow(2, numbers.length - 1);
+}
+//### gray-code-sequence
+function grayCode(bits) {
+  const seq = [0];
+  for (let b = 0; b < bits; b++) {
+    for (let i = seq.length - 1; i >= 0; i--) seq.push(seq[i] | (1 << b));
+  }
+  return seq;
+}
+//### kth-permutation
+function kthPermutation(n, k) {
+  const fact = [1];
+  for (let i = 1; i <= n; i++) fact.push(fact[i - 1] * i);
+  const digits = [];
+  for (let d = 1; d <= n; d++) digits.push(String(d));
+  k -= 1;
+  let out = "";
+  for (let i = n; i >= 1; i--) {
+    const index = Math.floor(k / fact[i - 1]);
+    k %= fact[i - 1];
+    out += digits.splice(index, 1)[0];
+  }
+  return out;
+}

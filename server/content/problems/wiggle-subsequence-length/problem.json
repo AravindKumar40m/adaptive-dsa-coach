@@ -1,0 +1,24 @@
+{
+  "slug": "wiggle-subsequence-length",
+  "title": "The Longest Zigzag Subsequence",
+  "concept": "greedy",
+  "difficulty": "medium",
+  "statement": "A **zigzag** is a sequence whose differences between neighbouring numbers are **strictly alternating** in sign: up, down, up, down... or down, up, down, up... A single number is a zigzag, and so are two **different** numbers; two equal numbers are not.\n\nA **subsequence** keeps some of the numbers of `numbers` in their original order (it may delete any of them). Return the length of the **longest zigzag subsequence** of `numbers`.",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "-1000000000 <= numbers[i] <= 1000000000"
+  ],
+  "signature": { "name": "longest_wiggle", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[2, 2, 5, 3, 3, 8]], "expected": 4, "explanation": "2, 5, 3, 8 goes up, down, up. The repeated 2 and 3 cannot be used next to each other." },
+    { "args": [[1, 2, 3, 4, 5]], "expected": 2, "explanation": "Always going up: you can only keep two numbers (one up step)." }
+  ],
+  "edgeTests": [[[]], [[7]], [[4, 4, 4]], [[1, 2]], [[3, 1]], [[1, 3, 2, 2, 4, 1]], [[5, 4, 3, 2, 1]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "In a long run that only goes up, which numbers do you actually need to keep for a zigzag?",
+    "pattern": "Greedy: count the turning points. Keep two counters, the length of the best zigzag that ends going up and the one that ends going down, and update them whenever the next number is higher or lower than the previous one.",
+    "pseudocode": "if empty: return 0\nup = 1; down = 1\nfor i in 1 .. n - 1:\n  if numbers[i] > numbers[i - 1]: up = down + 1\n  elif numbers[i] < numbers[i - 1]: down = up + 1\nreturn max(up, down)",
+    "walkthrough": "A slow solution computes, for every position, the best zigzag ending there going up and going down, looking back at all earlier positions: O(n^2). The greedy view: within a stretch that keeps going up you only need its last number (the highest point), and within a stretch going down only the lowest point, so the answer is the number of 'turns' plus one. Walk through the list once with two counters: `up` = longest zigzag so far whose last step goes up, `down` = the same for down. When the next number is higher than the previous, a zigzag that ended going down can be extended by an up step: up = down + 1; when it is lower, down = up + 1; when it is equal, nothing changes. The longer of the two is the answer. O(n) time, O(1) memory."
+  }
+}

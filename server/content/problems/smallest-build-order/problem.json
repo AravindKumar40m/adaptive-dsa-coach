@@ -1,0 +1,24 @@
+{
+  "slug": "smallest-build-order",
+  "title": "The Smallest Valid Build Order",
+  "concept": "graphs",
+  "difficulty": "medium",
+  "statement": "There are `n` jobs numbered `0` to `n - 1`, to be done one at a time. Each pair `[a, b]` in `pairs` means job `a` must be done **before** job `b`.\n\nReturn an order of all `n` jobs that respects every pair. If several orders work, return the **smallest** one: compare the orders position by position, and the order that has the smaller job number at the first position where they differ wins. If no valid order exists (the pairs contain a cycle), return an **empty list**.",
+  "constraints": [
+    "1 <= n <= 100000",
+    "0 <= len(pairs) <= 200000, 0 <= a, b < n, a != b (the same pair may appear more than once)"
+  ],
+  "signature": { "name": "smallest_build_order", "params": [{ "name": "n", "type": "int" }, { "name": "pairs", "type": "int[][]" }], "returns": "int[]" },
+  "examples": [
+    { "args": [4, [[2, 1], [3, 1], [0, 3]]], "expected": [0, 2, 3, 1], "explanation": "Job 0 can start (nothing before it) and so can job 2; 0 is smaller. After 0, job 3 is free too; 2 is smaller than 3. Then 3, and finally 1 (it needs 2 and 3)." },
+    { "args": [2, [[0, 1], [1, 0]]], "expected": [], "explanation": "Each job must come before the other: impossible." }
+  ],
+  "edgeTests": [[1, []], [3, []], [3, [[2, 0]]], [3, [[2, 1], [1, 0]]], [4, [[0, 1], [2, 3]]], [3, [[0, 1], [0, 1]]]],
+  "expected": { "time": "O((n + m) log n)", "space": "O(n + m)" },
+  "hints": {
+    "nudge": "At any moment some jobs are free to do (everything before them is done). Which free job should you choose to get the smallest order?",
+    "pattern": "Topological sort (Kahn's algorithm) with a min-heap for the free jobs, so that the smallest free job is always taken first.",
+    "pseudocode": "count[b] = number of pairs [a, b] (jobs that must come before b); next[a] = the jobs b that need a\nheap = all jobs with count 0\norder = []\nwhile heap is not empty:\n  job = pop the smallest; order.append(job)\n  for b in next[job]: count[b] -= 1; if count[b] == 0: push b\nreturn order if it has n jobs, otherwise an empty list",
+    "walkthrough": "Trying all n! orders and keeping the first valid one in dictionary order only works for a handful of jobs. Instead, build the order one job at a time. A job is free when all the jobs that must precede it are done, which you track with a counter of unfinished predecessors per job. Among the free jobs the smallest number must come next: any valid order that starts with a different free job would be larger at this position, and choosing the smallest free job never makes the rest impossible. A min-heap gives the smallest free job in O(log n). After taking a job, decrease the counters of the jobs that depend on it and add those that reach 0 to the heap. If the heap runs empty before all n jobs are placed, the remaining jobs wait for each other in a cycle: return the empty list. Pairs that appear twice simply count twice on both sides, so the counters still work."
+  }
+}

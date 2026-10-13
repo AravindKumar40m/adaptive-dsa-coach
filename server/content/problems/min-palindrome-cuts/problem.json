@@ -1,0 +1,24 @@
+{
+  "slug": "min-palindrome-cuts",
+  "title": "Fewest Cuts Into Palindromes",
+  "concept": "dp",
+  "difficulty": "hard",
+  "statement": "Cut the text `text` into **pieces of consecutive letters** (together they must give back the whole text, in order) so that **every piece is a palindrome** (reads the same forwards and backwards). A single letter is a palindrome.\n\nReturn the **smallest number of cuts** needed. A text that is already a palindrome needs `0` cuts.",
+  "constraints": [
+    "1 <= len(text) <= 2000",
+    "text contains lowercase letters"
+  ],
+  "signature": { "name": "min_palindrome_cuts", "params": [{ "name": "text", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["abacd"], "expected": 2, "explanation": "aba | c | d: two cuts, three pieces. One cut is not enough: no split into two palindromes exists." },
+    { "args": ["racecar"], "expected": 0, "explanation": "The whole text is a palindrome." }
+  ],
+  "edgeTests": [["a"], ["ab"], ["aaaa"], ["abcde"], ["abbab"], ["abcdefghijklmnopqrstuvwxyz"], ["abababababababababababababababab"]],
+  "expected": { "time": "O(n^2)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Let cuts[i] be the fewest cuts for the first i letters. The last piece of that prefix is some palindrome that ends at letter i. How can you use this?",
+    "pattern": "Dynamic programming over prefixes: cuts[i] = min over palindromes text[j .. i - 1] of cuts[j] + 1; find all palindromes quickly by expanding around every centre.",
+    "pseudocode": "cuts[i] = i - 1 for i in 0 .. n   (every letter alone; cuts[0] = -1 so that a whole-prefix palindrome costs 0)\nfor each centre c (a letter, then a gap between two letters):\n  l = r = c (or l = c, r = c + 1); while l >= 0 and r < n and text[l] == text[r]:\n    cuts[r + 1] = min(cuts[r + 1], cuts[l] + 1); l -= 1; r += 1\nreturn cuts[n]",
+    "walkthrough": "Trying every set of cut positions is 2^(n-1). The last piece of the first i letters is a palindrome text[j .. i - 1]; the letters before it are cut in cuts[j] ways, so cuts[i] = min over such j of cuts[j] + 1 (and 0 if the whole prefix is a palindrome, which the trick cuts[0] = -1 handles automatically). Checking whether each text[j .. i - 1] is a palindrome naively makes it O(n^3). Instead of testing, GENERATE the palindromes: every palindrome grows from a centre (one letter for odd length, a gap between two letters for even length) by comparing the letters on both sides. Whenever the expansion covers text[l .. r], update cuts[r + 1] with cuts[l] + 1. Process the centres from left to right so that cuts[l] is final when it is used. There are 2n - 1 centres and each expansion is at most n long: O(n^2)."
+  }
+}

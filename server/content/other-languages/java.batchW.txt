@@ -1,0 +1,163 @@
+//### nth-smooth-number
+class Solution {
+    public int nthSmooth(int n) {
+        int[] smooth = new int[n];
+        smooth[0] = 1;
+        int i2 = 0, i3 = 0, i5 = 0;
+        for (int i = 1; i < n; i++) {
+            int next = Math.min(smooth[i2] * 2, Math.min(smooth[i3] * 3, smooth[i5] * 5));
+            smooth[i] = next;
+            if (next == smooth[i2] * 2) i2++;
+            if (next == smooth[i3] * 3) i3++;
+            if (next == smooth[i5] * 5) i5++;
+        }
+        return smooth[n - 1];
+    }
+}
+//### most-valuable-load
+class Solution {
+    public int maxLoadUnits(int[][] boxes, int truckSize) {
+        int[][] sorted = boxes.clone();
+        Arrays.sort(sorted, (a, b) -> Integer.compare(b[1], a[1]));
+        int room = truckSize;
+        long total = 0;
+        for (int[] kind : sorted) {
+            if (room == 0) break;
+            int take = Math.min(kind[0], room);
+            total += (long) take * kind[1];
+            room -= take;
+        }
+        return (int) total;
+    }
+}
+//### shrink-to-half
+class Solution {
+    public int minValuesToRemove(int[] numbers) {
+        Map<Integer, Integer> counts = new HashMap<>();
+        for (int x : numbers) counts.merge(x, 1, Integer::sum);
+        List<Integer> sorted = new ArrayList<>(counts.values());
+        sorted.sort(Collections.reverseOrder());
+        int n = numbers.length, removed = 0, picked = 0;
+        for (int c : sorted) {
+            if (removed * 2 >= n) break;
+            removed += c;
+            picked++;
+        }
+        return picked;
+    }
+}
+//### wiggle-subsequence-length
+class Solution {
+    public int longestWiggle(int[] numbers) {
+        if (numbers.length == 0) return 0;
+        int up = 1, down = 1;
+        for (int i = 1; i < numbers.length; i++) {
+            if (numbers[i] > numbers[i - 1]) up = down + 1;
+            else if (numbers[i] < numbers[i - 1]) down = up + 1;
+        }
+        return Math.max(up, down);
+    }
+}
+//### taps-to-water-garden
+class Solution {
+    public int minTaps(int[] ranges) {
+        int n = ranges.length - 1;
+        int[] furthest = new int[n + 1];
+        for (int i = 0; i <= n; i++) {
+            int left = Math.max(0, i - ranges[i]);
+            furthest[left] = Math.max(furthest[left], i + ranges[i]);
+        }
+        int taps = 0, currentEnd = 0, far = 0;
+        for (int i = 0; i < n; i++) {
+            far = Math.max(far, furthest[i]);
+            if (i == currentEnd) {
+                if (far <= i) return -1;
+                taps++;
+                currentEnd = far;
+                if (currentEnd >= n) return taps;
+            }
+        }
+        return -1;
+    }
+}
+//### job-sequencing-profit
+class Solution {
+    public int maxJobProfit(int[][] jobs) {
+        int[][] sorted = jobs.clone();
+        Arrays.sort(sorted, (a, b) -> Integer.compare(a[0], b[0]));
+        PriorityQueue<Integer> heap = new PriorityQueue<>();
+        for (int[] job : sorted) {
+            heap.add(job[1]);
+            if (heap.size() > job[0]) heap.poll();
+        }
+        long total = 0;
+        for (int p : heap) total += p;
+        return (int) total;
+    }
+}
+//### monotone-digits-number
+class Solution {
+    public int largestMonotone(int number) {
+        char[] digits = String.valueOf(number).toCharArray();
+        int mark = digits.length;
+        for (int i = digits.length - 1; i > 0; i--) {
+            if (digits[i - 1] > digits[i]) { digits[i - 1]--; mark = i; }
+        }
+        for (int i = mark; i < digits.length; i++) digits[i] = '9';
+        return Integer.parseInt(new String(digits));
+    }
+}
+//### group-ones-swaps
+class Solution {
+    public int minSwapsGroupOnes(int[] bits) {
+        int k = 0;
+        for (int b : bits) k += b;
+        if (k <= 1) return 0;
+        int window = 0;
+        for (int i = 0; i < k; i++) window += bits[i];
+        int best = window;
+        for (int i = k; i < bits.length; i++) {
+            window += bits[i] - bits[i - k];
+            best = Math.max(best, window);
+        }
+        return k - best;
+    }
+}
+//### subarrays-exactly-k-distinct
+class Solution {
+    private long atMost(int[] numbers, int limit) {
+        Map<Integer, Integer> freq = new HashMap<>();
+        int left = 0;
+        long total = 0;
+        for (int right = 0; right < numbers.length; right++) {
+            freq.merge(numbers[right], 1, Integer::sum);
+            while (freq.size() > limit) {
+                int y = numbers[left];
+                if (freq.merge(y, -1, Integer::sum) == 0) freq.remove(y);
+                left++;
+            }
+            total += right - left + 1;
+        }
+        return total;
+    }
+
+    public int countExactlyKDistinct(int[] numbers, int k) {
+        return (int) (atMost(numbers, k) - atMost(numbers, k - 1));
+    }
+}
+//### max-points-from-ends
+class Solution {
+    public int maxPointsFromEnds(int[] cards, int k) {
+        int n = cards.length, size = n - k;
+        long total = 0;
+        for (int c : cards) total += c;
+        long window = 0;
+        for (int i = 0; i < size; i++) window += cards[i];
+        long smallest = window;
+        for (int i = size; i < n; i++) {
+            window += cards[i] - cards[i - size];
+            smallest = Math.min(smallest, window);
+        }
+        return (int) (total - smallest);
+    }
+}

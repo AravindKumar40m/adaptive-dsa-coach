@@ -1,0 +1,197 @@
+//### max-distinct-window-sum
+int max_distinct_window_sum(vector<int>& numbers, int k) {
+    unordered_map<int, int> counts;
+    long long total = 0, best = 0;
+    for (int i = 0; i < (int) numbers.size(); i++) {
+        counts[numbers[i]]++;
+        total += numbers[i];
+        if (i >= k) {
+            int y = numbers[i - k];
+            if (--counts[y] == 0) counts.erase(y);
+            total -= y;
+        }
+        if (i >= k - 1 && (int) counts.size() == k) best = max(best, total);
+    }
+    return (int) best;
+}
+//### window-distinct-counts
+vector<int> window_distinct_counts(vector<int>& numbers, int k) {
+    unordered_map<int, int> counts;
+    vector<int> out;
+    for (int i = 0; i < (int) numbers.size(); i++) {
+        counts[numbers[i]]++;
+        if (i >= k) {
+            int y = numbers[i - k];
+            if (--counts[y] == 0) counts.erase(y);
+        }
+        if (i >= k - 1) out.push_back((int) counts.size());
+    }
+    return out;
+}
+//### longest-substring-at-least-k-each
+int longest_substring_k_each(string text, int k) {
+    int best = 0;
+    for (int target = 1; target <= 26; target++) {
+        vector<int> freq(26, 0);
+        int left = 0, unique = 0, enough = 0;
+        for (int right = 0; right < (int) text.size(); right++) {
+            int c = text[right] - 'a';
+            if (freq[c] == 0) unique++;
+            freq[c]++;
+            if (freq[c] == k) enough++;
+            while (unique > target) {
+                int d = text[left] - 'a';
+                if (freq[d] == k) enough--;
+                freq[d]--;
+                if (freq[d] == 0) unique--;
+                left++;
+            }
+            if (unique == target && enough == target) best = max(best, right - left + 1);
+        }
+    }
+    return best;
+}
+//### min-knight-moves
+int min_knight_moves(int size, int start_row, int start_col, int target_row, int target_col) {
+    int dr[8] = {1, 2, 2, 1, -1, -2, -2, -1}, dc[8] = {2, 1, -1, -2, -2, -1, 1, 2};
+    vector<vector<int>> dist(size, vector<int>(size, -1));
+    dist[start_row][start_col] = 0;
+    queue<pair<int,int>> q;
+    q.push({start_row, start_col});
+    while (!q.empty()) {
+        pair<int,int> cur = q.front();
+        q.pop();
+        int r = cur.first, c = cur.second;
+        if (r == target_row && c == target_col) return dist[r][c];
+        for (int m = 0; m < 8; m++) {
+            int nr = r + dr[m], nc = c + dc[m];
+            if (nr >= 0 && nr < size && nc >= 0 && nc < size && dist[nr][nc] < 0) {
+                dist[nr][nc] = dist[r][c] + 1;
+                q.push({nr, nc});
+            }
+        }
+    }
+    return -1;
+}
+//### smallest-build-order
+vector<int> smallest_build_order(int n, vector<vector<int>>& pairs) {
+    vector<int> count(n, 0);
+    vector<vector<int>> later(n);
+    for (auto& pair : pairs) { count[pair[1]]++; later[pair[0]].push_back(pair[1]); }
+    priority_queue<int, vector<int>, greater<int>> heap;
+    for (int job = 0; job < n; job++) if (count[job] == 0) heap.push(job);
+    vector<int> order;
+    while (!heap.empty()) {
+        int job = heap.top();
+        heap.pop();
+        order.push_back(job);
+        for (int b : later[job]) {
+            if (--count[b] == 0) heap.push(b);
+        }
+    }
+    if ((int) order.size() != n) return vector<int>();
+    return order;
+}
+//### cables-to-connect-all
+int dsu_find(vector<int>& parent, int x) {
+    while (parent[x] != x) { parent[x] = parent[parent[x]]; x = parent[x]; }
+    return x;
+}
+
+int cable_moves_needed(int n, vector<vector<int>>& cables) {
+    if ((int) cables.size() < n - 1) return -1;
+    vector<int> parent(n);
+    for (int i = 0; i < n; i++) parent[i] = i;
+    int groups = n;
+    for (auto& cable : cables) {
+        int ra = dsu_find(parent, cable[0]), rb = dsu_find(parent, cable[1]);
+        if (ra != rb) { parent[ra] = rb; groups--; }
+    }
+    return groups - 1;
+}
+//### safe-nodes
+vector<int> eventually_safe_nodes(vector<vector<int>>& graph) {
+    int n = (int) graph.size();
+    vector<int> remaining(n);
+    vector<vector<int>> reverse_edges(n);
+    for (int u = 0; u < n; u++) {
+        remaining[u] = (int) graph[u].size();
+        for (int v : graph[u]) reverse_edges[v].push_back(u);
+    }
+    queue<int> q;
+    vector<char> safe(n, 0);
+    for (int i = 0; i < n; i++) if (remaining[i] == 0) q.push(i);
+    while (!q.empty()) {
+        int v = q.front();
+        q.pop();
+        safe[v] = 1;
+        for (int u : reverse_edges[v]) {
+            if (--remaining[u] == 0) q.push(u);
+        }
+    }
+    vector<int> out;
+    for (int i = 0; i < n; i++) if (safe[i]) out.push_back(i);
+    return out;
+}
+//### negative-cycle-exists
+bool has_negative_cycle(int n, vector<vector<int>>& edges) {
+    vector<long long> dist(n, 0);
+    for (int round = 0; round < n; round++) {
+        bool changed = false;
+        for (auto& e : edges) {
+            if (dist[e[0]] + e[2] < dist[e[1]]) { dist[e[1]] = dist[e[0]] + e[2]; changed = true; }
+        }
+        if (!changed) return false;
+    }
+    return true;
+}
+//### enclosed-land-count
+int enclosed_land_cells(vector<vector<int>>& grid) {
+    int rows = (int) grid.size(), cols = (int) grid[0].size();
+    vector<vector<char>> marked(rows, vector<char>(cols, 0));
+    vector<pair<int,int>> stack;
+    for (int r = 0; r < rows; r++) {
+        for (int c = 0; c < cols; c++) {
+            if ((r == 0 || c == 0 || r == rows - 1 || c == cols - 1) && grid[r][c] == 1) {
+                marked[r][c] = 1;
+                stack.push_back({r, c});
+            }
+        }
+    }
+    int dr[4] = {1, -1, 0, 0}, dc[4] = {0, 0, 1, -1};
+    while (!stack.empty()) {
+        pair<int,int> cur = stack.back();
+        stack.pop_back();
+        for (int m = 0; m < 4; m++) {
+            int nr = cur.first + dr[m], nc = cur.second + dc[m];
+            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && grid[nr][nc] == 1 && !marked[nr][nc]) {
+                marked[nr][nc] = 1;
+                stack.push_back({nr, nc});
+            }
+        }
+    }
+    int count = 0;
+    for (int r = 0; r < rows; r++) for (int c = 0; c < cols; c++) if (grid[r][c] == 1 && !marked[r][c]) count++;
+    return count;
+}
+//### water-supply-min-cost
+int water_find(vector<int>& parent, int x) {
+    while (parent[x] != x) { parent[x] = parent[parent[x]]; x = parent[x]; }
+    return x;
+}
+
+int min_water_cost(vector<int>& wells, vector<vector<int>>& pipes) {
+    int n = (int) wells.size();
+    vector<array<int,3>> edges;
+    for (auto& pipe : pipes) edges.push_back({pipe[2], pipe[0], pipe[1]});
+    for (int i = 0; i < n; i++) edges.push_back({wells[i], i, n});
+    sort(edges.begin(), edges.end());
+    vector<int> parent(n + 1);
+    for (int i = 0; i <= n; i++) parent[i] = i;
+    long long total = 0;
+    for (auto& e : edges) {
+        int ra = water_find(parent, e[1]), rb = water_find(parent, e[2]);
+        if (ra != rb) { parent[ra] = rb; total += e[0]; }
+    }
+    return (int) total;
+}

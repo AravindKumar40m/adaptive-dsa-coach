@@ -1,0 +1,24 @@
+{
+  "slug": "matrix-search-sorted-rows",
+  "title": "Find a Number in a Sorted Grid",
+  "concept": "binary_search",
+  "difficulty": "medium",
+  "statement": "`matrix` is a grid of numbers where **each row is sorted** from left to right, and the **first number of every row is larger than the last number of the previous row**. So if you read the grid row after row, the whole list of numbers is sorted.\n\nReturn `true` if `target` is in the grid, otherwise `false`. Aim for time that grows with the **logarithm** of the number of cells.",
+  "constraints": [
+    "1 <= rows, columns <= 300",
+    "-1000000000 <= matrix[r][c], target <= 1000000000"
+  ],
+  "signature": { "name": "search_matrix", "params": [{ "name": "matrix", "type": "int[][]" }, { "name": "target", "type": "int" }], "returns": "bool" },
+  "examples": [
+    { "args": [[[2, 4, 6], [8, 10, 12]], 10], "expected": true, "explanation": "10 is in the second row." },
+    { "args": [[[2, 4, 6], [8, 10, 12]], 7], "expected": false, "explanation": "7 falls between 6 and 8: it is not in the grid." }
+  ],
+  "edgeTests": [[[[5]], 5], [[[5]], 4], [[[1, 2, 3]], 2], [[[1], [3], [5]], 3], [[[1], [3], [5]], 4], [[[1, 3], [5, 7]], 8], [[[1, 3], [5, 7]], 0]],
+  "expected": { "time": "O(log(rows * columns))", "space": "O(1)" },
+  "hints": {
+    "nudge": "If you wrote all the numbers in one long row, row after row, what would the list look like? And how could you find the grid position of the number at position p of that list?",
+    "pattern": "Binary search over the positions 0 .. rows * columns - 1 of the imaginary flat list; position p is row p / columns, column p mod columns.",
+    "pseudocode": "lo = 0; hi = rows * columns - 1\nwhile lo <= hi:\n  mid = (lo + hi) / 2\n  value = matrix[mid / columns][mid mod columns]\n  if value == target: return true\n  if value < target: lo = mid + 1 else: hi = mid - 1\nreturn false",
+    "walkthrough": "Searching every cell is O(rows * columns). Because the rows follow each other in order, the grid read row by row is one sorted list, so ordinary binary search applies. You do not have to copy the grid into a list: the number at position p of the flat list lives in row p / columns (whole-number division) and column p mod columns. Look at the middle position, compare with the target, and discard the half that cannot contain it, as usual. The search takes about log2(rows * columns) steps. (Two binary searches also work: first find the row, then search inside it.) Compute the middle as lo + (hi - lo) / 2 if the numbers could be huge."
+  }
+}

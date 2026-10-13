@@ -1,0 +1,24 @@
+{
+  "slug": "enclosed-land-count",
+  "title": "Land That Cannot Reach the Edge",
+  "concept": "graphs",
+  "difficulty": "medium",
+  "statement": "`grid` is a map made of `1` (land) and `0` (water). From a land cell you can walk to the land cell directly above, below, left or right of it. Walking **off the edge** of the map from a land cell that lies on the border means leaving the map.\n\nCount the land cells from which it is **impossible to walk off the edge** of the map, however you walk over land.",
+  "constraints": [
+    "1 <= rows, columns <= 300",
+    "grid[r][c] is 0 or 1"
+  ],
+  "signature": { "name": "enclosed_land_cells", "params": [{ "name": "grid", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [[[0, 1, 0, 0, 0], [0, 0, 1, 1, 0], [0, 0, 1, 1, 0], [1, 0, 0, 0, 0]]], "expected": 4, "explanation": "The land cell at the top (row 0) and the one at the bottom left are on the border. The block of four land cells in the middle is surrounded by water and does not touch the border." },
+    { "args": [[[1, 1], [1, 1]]], "expected": 0, "explanation": "Every cell is on the border." }
+  ],
+  "edgeTests": [[[[0]]], [[[1]]], [[[1, 1, 1], [1, 1, 1], [1, 1, 1]]], [[[1, 0, 1], [0, 1, 0], [1, 0, 1]]], [[[0, 0, 0], [0, 1, 0], [0, 0, 0]]], [[[1, 1, 1, 1], [1, 0, 0, 1], [1, 1, 1, 1]]]],
+  "expected": { "time": "O(rows * columns)", "space": "O(rows * columns)" },
+  "hints": {
+    "nudge": "Instead of asking, for every land cell, whether it can escape, ask the opposite: which land cells CAN reach the edge?",
+    "pattern": "Flood fill (depth-first or breadth-first search) starting from all border land cells; the land cells that were never reached are the answer.",
+    "pseudocode": "mark = grid of false; stack = all land cells on the border (mark them)\nwhile stack not empty: cell = pop; for each of the 4 neighbours that is land and not marked: mark it; push it\nreturn the number of land cells that are not marked",
+    "walkthrough": "Starting a search from every land cell is slow (O(cells^2) for a big island). A land cell can reach the edge exactly when it is connected, through land, to a land cell that is itself on the border. So search once, from all the border land cells together: mark each border land cell, then repeatedly spread to the neighbouring land cells (up, down, left, right) that are not marked yet. Every marked cell can escape. After the search, count the land cells that are not marked: those are enclosed. Each cell is marked at most once: O(rows * columns). Use a stack or queue instead of recursion, because a big map can be 90,000 cells deep."
+  }
+}

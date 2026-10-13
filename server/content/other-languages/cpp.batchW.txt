@@ -1,0 +1,144 @@
+//### nth-smooth-number
+int nth_smooth(int n) {
+    vector<int> smooth(n);
+    smooth[0] = 1;
+    int i2 = 0, i3 = 0, i5 = 0;
+    for (int i = 1; i < n; i++) {
+        int next = min(smooth[i2] * 2, min(smooth[i3] * 3, smooth[i5] * 5));
+        smooth[i] = next;
+        if (next == smooth[i2] * 2) i2++;
+        if (next == smooth[i3] * 3) i3++;
+        if (next == smooth[i5] * 5) i5++;
+    }
+    return smooth[n - 1];
+}
+//### most-valuable-load
+int max_load_units(vector<vector<int>>& boxes, int truck_size) {
+    vector<vector<int>> sorted_boxes = boxes;
+    sort(sorted_boxes.begin(), sorted_boxes.end(), [](const vector<int>& a, const vector<int>& b) { return a[1] > b[1]; });
+    int room = truck_size;
+    long long total = 0;
+    for (auto& kind : sorted_boxes) {
+        if (room == 0) break;
+        int take = min(kind[0], room);
+        total += (long long) take * kind[1];
+        room -= take;
+    }
+    return (int) total;
+}
+//### shrink-to-half
+int min_values_to_remove(vector<int>& numbers) {
+    map<int, int> counts;
+    for (int x : numbers) counts[x]++;
+    vector<int> sorted_counts;
+    for (auto& entry : counts) sorted_counts.push_back(entry.second);
+    sort(sorted_counts.begin(), sorted_counts.end(), greater<int>());
+    int n = (int) numbers.size(), removed = 0, picked = 0;
+    for (int c : sorted_counts) {
+        if (removed * 2 >= n) break;
+        removed += c;
+        picked++;
+    }
+    return picked;
+}
+//### wiggle-subsequence-length
+int longest_wiggle(vector<int>& numbers) {
+    if (numbers.empty()) return 0;
+    int up = 1, down = 1;
+    for (size_t i = 1; i < numbers.size(); i++) {
+        if (numbers[i] > numbers[i - 1]) up = down + 1;
+        else if (numbers[i] < numbers[i - 1]) down = up + 1;
+    }
+    return max(up, down);
+}
+//### taps-to-water-garden
+int min_taps(vector<int>& ranges) {
+    int n = (int) ranges.size() - 1;
+    vector<int> furthest(n + 1, 0);
+    for (int i = 0; i <= n; i++) {
+        int left = max(0, i - ranges[i]);
+        furthest[left] = max(furthest[left], i + ranges[i]);
+    }
+    int taps = 0, current_end = 0, far = 0;
+    for (int i = 0; i < n; i++) {
+        far = max(far, furthest[i]);
+        if (i == current_end) {
+            if (far <= i) return -1;
+            taps++;
+            current_end = far;
+            if (current_end >= n) return taps;
+        }
+    }
+    return -1;
+}
+//### job-sequencing-profit
+int max_job_profit(vector<vector<int>>& jobs) {
+    vector<vector<int>> sorted_jobs = jobs;
+    sort(sorted_jobs.begin(), sorted_jobs.end(), [](const vector<int>& a, const vector<int>& b) { return a[0] < b[0]; });
+    priority_queue<int, vector<int>, greater<int>> heap;
+    for (auto& job : sorted_jobs) {
+        heap.push(job[1]);
+        if ((long long) heap.size() > job[0]) heap.pop();
+    }
+    long long total = 0;
+    while (!heap.empty()) { total += heap.top(); heap.pop(); }
+    return (int) total;
+}
+//### monotone-digits-number
+int largest_monotone(int number) {
+    string digits = to_string(number);
+    int mark = (int) digits.size();
+    for (int i = (int) digits.size() - 1; i > 0; i--) {
+        if (digits[i - 1] > digits[i]) { digits[i - 1]--; mark = i; }
+    }
+    for (int i = mark; i < (int) digits.size(); i++) digits[i] = '9';
+    return stoi(digits);
+}
+//### group-ones-swaps
+int min_swaps_group_ones(vector<int>& bits) {
+    int k = 0;
+    for (int b : bits) k += b;
+    if (k <= 1) return 0;
+    int window = 0;
+    for (int i = 0; i < k; i++) window += bits[i];
+    int best = window;
+    for (int i = k; i < (int) bits.size(); i++) {
+        window += bits[i] - bits[i - k];
+        best = max(best, window);
+    }
+    return k - best;
+}
+//### subarrays-exactly-k-distinct
+long long at_most_distinct(const vector<int>& numbers, int limit) {
+    unordered_map<int, int> freq;
+    int left = 0;
+    long long total = 0;
+    for (int right = 0; right < (int) numbers.size(); right++) {
+        freq[numbers[right]]++;
+        while ((int) freq.size() > limit) {
+            int y = numbers[left];
+            if (--freq[y] == 0) freq.erase(y);
+            left++;
+        }
+        total += right - left + 1;
+    }
+    return total;
+}
+
+int count_exactly_k_distinct(vector<int>& numbers, int k) {
+    return (int) (at_most_distinct(numbers, k) - at_most_distinct(numbers, k - 1));
+}
+//### max-points-from-ends
+int max_points_from_ends(vector<int>& cards, int k) {
+    int n = (int) cards.size(), size = n - k;
+    long long total = 0;
+    for (int c : cards) total += c;
+    long long window = 0;
+    for (int i = 0; i < size; i++) window += cards[i];
+    long long smallest = window;
+    for (int i = size; i < n; i++) {
+        window += cards[i] - cards[i - size];
+        smallest = min(smallest, window);
+    }
+    return (int) (total - smallest);
+}

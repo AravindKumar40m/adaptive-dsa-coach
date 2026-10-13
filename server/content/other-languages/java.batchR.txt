@@ -1,0 +1,161 @@
+//### longest-harmonious-length
+class Solution {
+    public int longestHarmonious(int[] numbers) {
+        Map<Long, Integer> counts = new HashMap<>();
+        for (int x : numbers) counts.merge((long) x, 1, Integer::sum);
+        int best = 0;
+        for (Map.Entry<Long, Integer> e : counts.entrySet()) {
+            Integer next = counts.get(e.getKey() + 1);
+            if (next != null) best = Math.max(best, e.getValue() + next);
+        }
+        return best;
+    }
+}
+//### anagram-window-count
+class Solution {
+    public int countAnagramWindows(String text, String pattern) {
+        int m = pattern.length();
+        if (text.length() < m) return 0;
+        int[] need = new int[26], have = new int[26];
+        for (int i = 0; i < m; i++) { need[pattern.charAt(i) - 'a']++; have[text.charAt(i) - 'a']++; }
+        int result = Arrays.equals(need, have) ? 1 : 0;
+        for (int i = m; i < text.length(); i++) {
+            have[text.charAt(i) - 'a']++;
+            have[text.charAt(i - m) - 'a']--;
+            if (Arrays.equals(need, have)) result++;
+        }
+        return result;
+    }
+}
+//### unique-sum
+class Solution {
+    public int sumOfUnique(int[] numbers) {
+        Map<Integer, Integer> counts = new HashMap<>();
+        for (int x : numbers) counts.merge(x, 1, Integer::sum);
+        int total = 0;
+        for (Map.Entry<Integer, Integer> e : counts.entrySet()) if (e.getValue() == 1) total += e.getKey();
+        return total;
+    }
+}
+//### max-points-on-line
+class Solution {
+    private int gcd(int a, int b) { return b == 0 ? a : gcd(b, a % b); }
+
+    public int maxPointsOnLine(int[][] points) {
+        int best = 1;
+        for (int i = 0; i < points.length; i++) {
+            Map<Long, Integer> slopes = new HashMap<>();
+            for (int j = i + 1; j < points.length; j++) {
+                int dx = points[j][0] - points[i][0], dy = points[j][1] - points[i][1];
+                int g = gcd(Math.abs(dx), Math.abs(dy));
+                dx /= g;
+                dy /= g;
+                if (dx < 0 || (dx == 0 && dy < 0)) { dx = -dx; dy = -dy; }
+                long key = (long) (dx + 20000) * 50000L + (dy + 20000);
+                int c = slopes.merge(key, 1, Integer::sum);
+                best = Math.max(best, c + 1);
+            }
+        }
+        return best;
+    }
+}
+//### common-prefix-length
+class Solution {
+    public int commonPrefixLength(String first, String second, String third) {
+        int i = 0;
+        while (i < first.length() && i < second.length() && i < third.length()
+                && first.charAt(i) == second.charAt(i) && second.charAt(i) == third.charAt(i)) i++;
+        return i;
+    }
+}
+//### parse-integer-text
+class Solution {
+    public int parseInteger(String text) {
+        int i = 0, n = text.length();
+        while (i < n && text.charAt(i) == ' ') i++;
+        int sign = 1;
+        if (i < n && (text.charAt(i) == '+' || text.charAt(i) == '-')) { sign = text.charAt(i) == '-' ? -1 : 1; i++; }
+        long value = 0;
+        while (i < n && text.charAt(i) >= '0' && text.charAt(i) <= '9') {
+            value = value * 10 + (text.charAt(i) - '0');
+            if (value > 2147483648L) break;
+            i++;
+        }
+        long result = sign * value;
+        if (result > Integer.MAX_VALUE) return Integer.MAX_VALUE;
+        if (result < Integer.MIN_VALUE) return Integer.MIN_VALUE;
+        return (int) result;
+    }
+}
+//### zigzag-rows
+class Solution {
+    public String zigzagRead(String text, int rows) {
+        if (rows == 1 || rows >= text.length()) return text;
+        StringBuilder[] lines = new StringBuilder[rows];
+        for (int i = 0; i < rows; i++) lines[i] = new StringBuilder();
+        int row = 0, step = 1;
+        for (char ch : text.toCharArray()) {
+            lines[row].append(ch);
+            if (row == 0) step = 1;
+            else if (row == rows - 1) step = -1;
+            row += step;
+        }
+        StringBuilder out = new StringBuilder();
+        for (StringBuilder line : lines) out.append(line);
+        return out.toString();
+    }
+}
+//### one-edit-apart
+class Solution {
+    public boolean oneEditApart(String first, String second) {
+        String a = first, b = second;
+        if (a.length() > b.length()) { String t = a; a = b; b = t; }
+        if (b.length() - a.length() > 1) return false;
+        int i = 0;
+        while (i < a.length() && a.charAt(i) == b.charAt(i)) i++;
+        if (i == a.length()) return b.length() - a.length() == 1;
+        if (a.length() == b.length()) return a.substring(i + 1).equals(b.substring(i + 1));
+        return a.substring(i).equals(b.substring(i + 1));
+    }
+}
+//### multiply-digit-strings
+class Solution {
+    public String multiplyDigits(String first, String second) {
+        if (first.equals("0") || second.equals("0")) return "0";
+        int[] result = new int[first.length() + second.length()];
+        for (int i = first.length() - 1; i >= 0; i--) {
+            for (int j = second.length() - 1; j >= 0; j--) {
+                int total = (first.charAt(i) - '0') * (second.charAt(j) - '0') + result[i + j + 1];
+                result[i + j + 1] = total % 10;
+                result[i + j] += total / 10;
+            }
+        }
+        int start = 0;
+        while (start < result.length - 1 && result[start] == 0) start++;
+        StringBuilder out = new StringBuilder();
+        for (int k = start; k < result.length; k++) out.append(result[k]);
+        return out.toString();
+    }
+}
+//### pattern-occurrences
+class Solution {
+    public int countOccurrences(String text, String pattern) {
+        int m = pattern.length();
+        int[] fail = new int[m];
+        int k = 0;
+        for (int i = 1; i < m; i++) {
+            while (k > 0 && pattern.charAt(i) != pattern.charAt(k)) k = fail[k - 1];
+            if (pattern.charAt(i) == pattern.charAt(k)) k++;
+            fail[i] = k;
+        }
+        int count = 0;
+        k = 0;
+        for (int i = 0; i < text.length(); i++) {
+            char ch = text.charAt(i);
+            while (k > 0 && ch != pattern.charAt(k)) k = fail[k - 1];
+            if (ch == pattern.charAt(k)) k++;
+            if (k == m) { count++; k = fail[k - 1]; }
+        }
+        return count;
+    }
+}

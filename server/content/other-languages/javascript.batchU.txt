@@ -1,0 +1,131 @@
+//### digital-root-recursive
+function digitalRoot(number) {
+  return number === 0 ? 0 : 1 + ((number - 1) % 9);
+}
+//### count-good-numbers
+function countGoodNumbers(length) {
+  const MOD = 1000000007n;
+  function power(base, exponent) {
+    if (exponent === 0n) return 1n;
+    const half = power(base, exponent / 2n);
+    const result = (half * half) % MOD;
+    return exponent % 2n === 1n ? (result * base) % MOD : result;
+  }
+  const n = BigInt(length);
+  return Number((power(5n, (n + 1n) / 2n) * power(4n, n / 2n)) % MOD);
+}
+//### ackermann-value
+function ackermann(m, n) {
+  if (m === 0) return n + 1;
+  if (m === 1) return n + 2;
+  if (m === 2) return 2 * n + 3;
+  return Math.pow(2, n + 3) - 3;
+}
+//### restore-ip-count
+function countIpAddresses(digits) {
+  function go(pos, parts) {
+    if (parts === 4) return pos === digits.length ? 1 : 0;
+    let total = 0;
+    for (let size = 1; size <= 3; size++) {
+      if (pos + size > digits.length) break;
+      const part = digits.slice(pos, pos + size);
+      if ((size > 1 && part[0] === "0") || Number(part) > 255) continue;
+      total += go(pos + size, parts + 1);
+    }
+    return total;
+  }
+  return go(0, 0);
+}
+//### combination-sum-distinct-count
+function countCombinations(numbers, target) {
+  const a = numbers.slice().sort((p, q) => p - q);
+  function go(start, left) {
+    if (left === 0) return 1;
+    let total = 0;
+    for (let i = start; i < a.length; i++) {
+      if (i > start && a[i] === a[i - 1]) continue;
+      if (a[i] > left) break;
+      total += go(i + 1, left - a[i]);
+    }
+    return total;
+  }
+  return go(0, target);
+}
+//### distinct-subsets-count
+function countDistinctSubsets(numbers) {
+  const counts = new Map();
+  for (const x of numbers) counts.set(x, (counts.get(x) || 0) + 1);
+  let result = 1;
+  for (const c of counts.values()) result *= c + 1;
+  return result;
+}
+//### close-neighbour-orders
+function countSmoothOrders(numbers, gap) {
+  const n = numbers.length;
+  const used = new Array(n).fill(false);
+  function go(placed, last) {
+    if (placed === n) return 1;
+    let total = 0;
+    for (let i = 0; i < n; i++) {
+      if (!used[i] && (placed === 0 || Math.abs(numbers[i] - last) <= gap)) {
+        used[i] = true;
+        total += go(placed + 1, numbers[i]);
+        used[i] = false;
+      }
+    }
+    return total;
+  }
+  return go(0, 0);
+}
+//### target-expression-count
+function countExpressions(digits, target) {
+  const n = digits.length;
+  function go(pos, value, last) {
+    if (pos === n) return value === target ? 1 : 0;
+    let total = 0;
+    for (let end = pos + 1; end <= n; end++) {
+      if (end - pos > 1 && digits[pos] === "0") break;
+      const num = Number(digits.slice(pos, end));
+      if (pos === 0) total += go(end, num, num);
+      else {
+        total += go(end, value + num, num);
+        total += go(end, value - num, -num);
+        total += go(end, value - last + last * num, last * num);
+      }
+    }
+    return total;
+  }
+  return go(0, 0, 0);
+}
+//### fair-cookie-split
+function fairCookieSplit(bags, children) {
+  const items = bags.slice().sort((p, q) => q - p);
+  const totals = new Array(children).fill(0);
+  let best = items.reduce((a, b) => a + b, 0) + 1;
+  function go(i) {
+    if (i === items.length) { best = Math.min(best, Math.max(...totals)); return; }
+    const seen = new Set();
+    for (let c = 0; c < children; c++) {
+      if (seen.has(totals[c])) continue;
+      seen.add(totals[c]);
+      if (totals[c] + items[i] >= best) continue;
+      totals[c] += items[i];
+      go(i + 1);
+      totals[c] -= items[i];
+    }
+  }
+  go(0);
+  return best;
+}
+//### matrix-search-sorted-rows
+function searchMatrix(matrix, target) {
+  const cols = matrix[0].length;
+  let lo = 0, hi = matrix.length * cols - 1;
+  while (lo <= hi) {
+    const mid = lo + Math.floor((hi - lo) / 2);
+    const value = matrix[Math.floor(mid / cols)][mid % cols];
+    if (value === target) return true;
+    if (value < target) lo = mid + 1; else hi = mid - 1;
+  }
+  return false;
+}

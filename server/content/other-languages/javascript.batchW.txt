@@ -1,0 +1,164 @@
+//### nth-smooth-number
+function nthSmooth(n) {
+  const smooth = [1];
+  let i2 = 0, i3 = 0, i5 = 0;
+  while (smooth.length < n) {
+    const next = Math.min(smooth[i2] * 2, smooth[i3] * 3, smooth[i5] * 5);
+    smooth.push(next);
+    if (next === smooth[i2] * 2) i2++;
+    if (next === smooth[i3] * 3) i3++;
+    if (next === smooth[i5] * 5) i5++;
+  }
+  return smooth[n - 1];
+}
+//### most-valuable-load
+function maxLoadUnits(boxes, truckSize) {
+  let room = truckSize, total = 0;
+  const sorted = boxes.slice().sort((a, b) => b[1] - a[1]);
+  for (const [count, units] of sorted) {
+    if (room === 0) break;
+    const take = Math.min(count, room);
+    total += take * units;
+    room -= take;
+  }
+  return total;
+}
+//### shrink-to-half
+function minValuesToRemove(numbers) {
+  const counts = new Map();
+  for (const x of numbers) counts.set(x, (counts.get(x) || 0) + 1);
+  const n = numbers.length;
+  const sorted = Array.from(counts.values()).sort((a, b) => b - a);
+  let removed = 0, picked = 0;
+  for (const c of sorted) {
+    if (removed * 2 >= n) break;
+    removed += c;
+    picked++;
+  }
+  return picked;
+}
+//### wiggle-subsequence-length
+function longestWiggle(numbers) {
+  if (numbers.length === 0) return 0;
+  let up = 1, down = 1;
+  for (let i = 1; i < numbers.length; i++) {
+    if (numbers[i] > numbers[i - 1]) up = down + 1;
+    else if (numbers[i] < numbers[i - 1]) down = up + 1;
+  }
+  return Math.max(up, down);
+}
+//### taps-to-water-garden
+function minTaps(ranges) {
+  const n = ranges.length - 1;
+  const furthest = new Array(n + 1).fill(0);
+  for (let i = 0; i <= n; i++) {
+    const left = Math.max(0, i - ranges[i]);
+    furthest[left] = Math.max(furthest[left], i + ranges[i]);
+  }
+  let taps = 0, currentEnd = 0, far = 0;
+  for (let i = 0; i < n; i++) {
+    far = Math.max(far, furthest[i]);
+    if (i === currentEnd) {
+      if (far <= i) return -1;
+      taps++;
+      currentEnd = far;
+      if (currentEnd >= n) return taps;
+    }
+  }
+  return -1;
+}
+//### job-sequencing-profit
+function heapPush(a, x) {
+  a.push(x);
+  let i = a.length - 1;
+  while (i > 0) {
+    const p = (i - 1) >> 1;
+    if (a[i] < a[p]) { const t = a[i]; a[i] = a[p]; a[p] = t; i = p; } else break;
+  }
+}
+function heapPop(a) {
+  const top = a[0];
+  const last = a.pop();
+  if (a.length > 0) {
+    a[0] = last;
+    let i = 0;
+    for (;;) {
+      const l = 2 * i + 1, r = l + 1;
+      let m = i;
+      if (l < a.length && a[l] < a[m]) m = l;
+      if (r < a.length && a[r] < a[m]) m = r;
+      if (m === i) break;
+      const t = a[i]; a[i] = a[m]; a[m] = t;
+      i = m;
+    }
+  }
+  return top;
+}
+function maxJobProfit(jobs) {
+  const sorted = jobs.slice().sort((a, b) => a[0] - b[0]);
+  const heap = [];
+  for (const [deadline, profit] of sorted) {
+    heapPush(heap, profit);
+    if (heap.length > deadline) heapPop(heap);
+  }
+  let total = 0;
+  for (const p of heap) total += p;
+  return total;
+}
+//### monotone-digits-number
+function largestMonotone(number) {
+  const digits = String(number).split("").map(Number);
+  let mark = digits.length;
+  for (let i = digits.length - 1; i > 0; i--) {
+    if (digits[i - 1] > digits[i]) { digits[i - 1]--; mark = i; }
+  }
+  for (let i = mark; i < digits.length; i++) digits[i] = 9;
+  return Number(digits.join(""));
+}
+//### group-ones-swaps
+function minSwapsGroupOnes(bits) {
+  let k = 0;
+  for (const b of bits) k += b;
+  if (k <= 1) return 0;
+  let window = 0;
+  for (let i = 0; i < k; i++) window += bits[i];
+  let best = window;
+  for (let i = k; i < bits.length; i++) {
+    window += bits[i] - bits[i - k];
+    if (window > best) best = window;
+  }
+  return k - best;
+}
+//### subarrays-exactly-k-distinct
+function countExactlyKDistinct(numbers, k) {
+  function atMost(limit) {
+    const freq = new Map();
+    let left = 0, total = 0;
+    for (let right = 0; right < numbers.length; right++) {
+      freq.set(numbers[right], (freq.get(numbers[right]) || 0) + 1);
+      while (freq.size > limit) {
+        const y = numbers[left];
+        freq.set(y, freq.get(y) - 1);
+        if (freq.get(y) === 0) freq.delete(y);
+        left++;
+      }
+      total += right - left + 1;
+    }
+    return total;
+  }
+  return atMost(k) - atMost(k - 1);
+}
+//### max-points-from-ends
+function maxPointsFromEnds(cards, k) {
+  const n = cards.length, size = n - k;
+  let total = 0;
+  for (const c of cards) total += c;
+  let window = 0;
+  for (let i = 0; i < size; i++) window += cards[i];
+  let smallest = window;
+  for (let i = size; i < n; i++) {
+    window += cards[i] - cards[i - size];
+    if (window < smallest) smallest = window;
+  }
+  return total - smallest;
+}

@@ -1,0 +1,171 @@
+//### bouquet-days
+bool bouquets_enough(const vector<int>& bloom, int m, int k, int day) {
+    int run = 0, bouquets = 0;
+    for (int b : bloom) {
+        if (b <= day) {
+            run++;
+            if (run == k) { bouquets++; run = 0; }
+        } else run = 0;
+    }
+    return bouquets >= m;
+}
+
+int bouquet_days(vector<int>& bloom, int m, int k) {
+    if ((long long) m * k > (long long) bloom.size()) return -1;
+    int lo = *min_element(bloom.begin(), bloom.end());
+    int hi = *max_element(bloom.begin(), bloom.end());
+    while (lo < hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (bouquets_enough(bloom, m, k, mid)) hi = mid; else lo = mid + 1;
+    }
+    return lo;
+}
+//### min-rotated-with-duplicates
+int min_rotated_duplicates(vector<int>& numbers) {
+    int lo = 0, hi = (int) numbers.size() - 1;
+    while (lo < hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (numbers[mid] > numbers[hi]) lo = mid + 1;
+        else if (numbers[mid] < numbers[hi]) hi = mid;
+        else hi--;
+    }
+    return numbers[lo];
+}
+//### kth-smallest-pair-distance
+long long pair_count_within(const vector<int>& a, int d) {
+    int j = 0;
+    long long total = 0;
+    for (int i = 0; i < (int) a.size(); i++) {
+        while (a[i] - a[j] > d) j++;
+        total += i - j;
+    }
+    return total;
+}
+
+int kth_pair_distance(vector<int>& numbers, int k) {
+    vector<int> a = numbers;
+    sort(a.begin(), a.end());
+    int lo = 0, hi = a.back() - a.front();
+    while (lo < hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (pair_count_within(a, mid) >= k) hi = mid; else lo = mid + 1;
+    }
+    return lo;
+}
+//### spread-out-stalls
+bool stalls_fit(const vector<int>& a, int animals, int d) {
+    int placed = 1, last = a[0];
+    for (size_t i = 1; i < a.size(); i++) {
+        if (a[i] - last >= d) { placed++; last = a[i]; }
+    }
+    return placed >= animals;
+}
+
+int spread_stalls(vector<int>& positions, int animals) {
+    vector<int> a = positions;
+    sort(a.begin(), a.end());
+    int lo = 1, hi = a.back() - a.front();
+    while (lo < hi) {
+        int mid = lo + (hi - lo + 1) / 2;
+        if (stalls_fit(a, animals, mid)) lo = mid; else hi = mid - 1;
+    }
+    return lo;
+}
+//### search-in-bitonic-array
+int search_bitonic(vector<int>& numbers, int target) {
+    int n = (int) numbers.size();
+    if (n == 0) return -1;
+    int lo = 0, hi = n - 1;
+    while (lo < hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (numbers[mid] < numbers[mid + 1]) lo = mid + 1; else hi = mid;
+    }
+    int peak = lo;
+    lo = 0; hi = peak;
+    while (lo <= hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (numbers[mid] == target) return mid;
+        if (numbers[mid] < target) lo = mid + 1; else hi = mid - 1;
+    }
+    lo = peak + 1; hi = n - 1;
+    while (lo <= hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (numbers[mid] == target) return mid;
+        if (numbers[mid] > target) lo = mid + 1; else hi = mid - 1;
+    }
+    return -1;
+}
+//### k-smallest-pair-sums
+vector<int> k_smallest_pair_sums(vector<int>& first, vector<int>& second, int k) {
+    vector<int> out;
+    if (first.empty() || second.empty()) return out;
+    typedef tuple<int, int, int> Item;
+    priority_queue<Item, vector<Item>, greater<Item>> heap;
+    for (int i = 0; i < min((int) first.size(), k); i++) heap.push(Item(first[i] + second[0], i, 0));
+    while (!heap.empty() && (int) out.size() < k) {
+        Item top = heap.top();
+        heap.pop();
+        out.push_back(get<0>(top));
+        int i = get<1>(top), j = get<2>(top);
+        if (j + 1 < (int) second.size()) heap.push(Item(first[i] + second[j + 1], i, j + 1));
+    }
+    return out;
+}
+//### k-closest-elements
+vector<int> k_closest_elements(vector<int>& numbers, int k, int x) {
+    int lo = 0, hi = (int) numbers.size() - k;
+    while (lo < hi) {
+        int mid = lo + (hi - lo) / 2;
+        if ((long long) x - numbers[mid] > (long long) numbers[mid + k] - x) lo = mid + 1; else hi = mid;
+    }
+    return vector<int>(numbers.begin() + lo, numbers.begin() + lo + k);
+}
+//### task-cooldown-time
+int task_cooldown_time(string tasks, int cooldown) {
+    if (tasks.empty()) return 0;
+    vector<int> counts(26, 0);
+    for (char ch : tasks) counts[ch - 'A']++;
+    int top = *max_element(counts.begin(), counts.end());
+    int num_top = 0;
+    for (int c : counts) if (c == top) num_top++;
+    return max((int) tasks.size(), (top - 1) * (cooldown + 1) + num_top);
+}
+//### max-capital-after-projects
+int max_capital(int k, int w, vector<int>& profits, vector<int>& capital) {
+    int n = (int) profits.size();
+    vector<pair<int,int>> projects;
+    for (int i = 0; i < n; i++) projects.push_back({capital[i], profits[i]});
+    sort(projects.begin(), projects.end());
+    priority_queue<int> heap;
+    long long coins = w;
+    int next = 0;
+    for (int step = 0; step < k; step++) {
+        while (next < n && projects[next].first <= coins) { heap.push(projects[next].second); next++; }
+        if (heap.empty()) break;
+        coins += heap.top();
+        heap.pop();
+    }
+    return (int) coins;
+}
+//### smallest-covering-range
+vector<int> smallest_covering_range(vector<vector<int>>& lists) {
+    typedef tuple<int, int, int> Item;
+    priority_queue<Item, vector<Item>, greater<Item>> heap;
+    int high = lists[0][0];
+    for (int r = 0; r < (int) lists.size(); r++) {
+        heap.push(Item(lists[r][0], r, 0));
+        high = max(high, lists[r][0]);
+    }
+    int best_low = get<0>(heap.top()), best_high = high;
+    while (true) {
+        Item top = heap.top();
+        heap.pop();
+        int low = get<0>(top), r = get<1>(top), c = get<2>(top);
+        if (high - low < best_high - best_low) { best_low = low; best_high = high; }
+        if (c + 1 == (int) lists[r].size()) break;
+        int next = lists[r][c + 1];
+        high = max(high, next);
+        heap.push(Item(next, r, c + 1));
+    }
+    return vector<int>{best_low, best_high};
+}

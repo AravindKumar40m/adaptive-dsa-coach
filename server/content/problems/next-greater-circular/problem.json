@@ -1,0 +1,24 @@
+{
+  "slug": "next-greater-circular",
+  "title": "Next Greater on a Ring",
+  "concept": "stack_queue",
+  "difficulty": "medium",
+  "statement": "The numbers of `numbers` are arranged on a **ring**: after the last number comes the first one again. For every number, find the **first strictly greater** number you meet when you walk to the right (continuing around the ring if needed, but never more than one full circle). If there is none, the answer for that number is `-1`.\n\nReturn the answers in the original order.",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "-1000000000 <= numbers[i] <= 1000000000"
+  ],
+  "signature": { "name": "next_greater_circular", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[1, 2, 1]], "expected": [2, -1, 2], "explanation": "For the first 1 the next greater is 2. The 2 is the largest, so -1. For the last 1, walking right wraps around to the first 1 (not greater) and then 2." },
+    { "args": [[3, 8, 4, 1, 2]], "expected": [8, -1, 8, 2, 3], "explanation": "For 4: after it come 1 and 2 (smaller), then the ring wraps to 3 (smaller) and 8. For the last 2 the first greater is the wrapped 3." }
+  ],
+  "edgeTests": [[[]], [[5]], [[2, 2]], [[1, 2, 3, 4, 3]], [[5, 4, 3, 2, 1]], [[4, 1, 4]]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "A ring of n numbers is the same as a list of 2n numbers where the second half repeats the first. How does that help for the numbers near the end?",
+    "pattern": "Monotonic stack, scanned over the list twice (positions 0 to 2n - 1, using the position modulo n); answers are recorded only on the first lap.",
+    "pseudocode": "answer = [-1] * n; stack = empty (holds positions)\nfor i in 0 .. 2n - 1:\n  while stack not empty and numbers[stack.top] < numbers[i mod n]: answer[stack.pop()] = numbers[i mod n]\n  if i < n: push i\nreturn answer",
+    "walkthrough": "The straightforward way looks at up to n - 1 following numbers for each number: O(n^2). A stack holds the positions whose answer has not been found yet, always with non-increasing values from bottom to top. When a new number arrives, every waiting number on the stack that is smaller than it has just found its first greater number: pop them and record it. Because a number on a ring can find its answer in the wrapped-around part, run through the positions twice (0 to 2n - 1, reading numbers[i mod n]); only push new positions during the first lap, so that every position waits at most one full circle. Whatever is still on the stack at the end has no greater number: it stays -1. O(n)."
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "rotate-list-right",
+  "title": "Rotate a List to the Right",
+  "concept": "linked_list",
+  "difficulty": "medium",
+  "statement": "Rotate the linked list to the **right** by `k` places: every node moves `k` positions towards the end, and the nodes that fall off the end come back at the front (in the same order). Return the head of the rotated list.\n\n`k` can be much larger than the length of the list.",
+  "constraints": [
+    "0 <= number of nodes <= 100000",
+    "-1000000000 <= node value <= 1000000000",
+    "0 <= k <= 1000000000"
+  ],
+  "signature": { "name": "rotate_list", "params": [{ "name": "head", "type": "ListNode" }, { "name": "k", "type": "int" }], "returns": "ListNode" },
+  "examples": [
+    { "args": [[1, 2, 3, 4, 5], 2], "expected": [4, 5, 1, 2, 3], "explanation": "The last two nodes (4 and 5) move to the front." },
+    { "args": [[0, 1, 2], 4], "expected": [2, 0, 1], "explanation": "Rotating by 4 is the same as rotating by 4 mod 3 = 1." }
+  ],
+  "edgeTests": [[[], 3], [[7], 100], [[1, 2], 0], [[1, 2, 3], 3], [[1, 2, 3], 1], [[1, 2, 3, 4], 7]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Rotating by the length of the list brings you back to the start. So how many rotations do you really have to do?",
+    "pattern": "Count the length, reduce k modulo the length, make the list circular, and cut it at the right place.",
+    "pseudocode": "if list is empty or has one node: return head\nlength = number of nodes; tail = last node\nk = k mod length; if k == 0: return head\ntail.next = head          (make a ring)\nnewTail = the node at position length - k - 1 (counting from 0)\nnewHead = newTail.next; newTail.next = null\nreturn newHead",
+    "walkthrough": "Rotating one place at a time would be O(n * k) and k can be a billion. First find the length n and the last node in one pass. Rotating by n changes nothing, so use k mod n; if that is 0 there is nothing to do. Now join the last node to the first to form a ring. In the rotated list the old node at position n - k becomes the head, so the node before it, at position n - k - 1 (counting from 0), becomes the new last node: walk to it, take its next as the new head, and set its next to null to break the ring. O(n) time, O(1) memory."
+  }
+}

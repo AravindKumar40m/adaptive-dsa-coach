@@ -1,0 +1,141 @@
+//### shortest-cycle-length
+int shortest_cycle_length(int n, vector<vector<int>>& edges) {
+    vector<vector<int>> adjacent(n);
+    for (auto& e : edges) { adjacent[e[0]].push_back(e[1]); adjacent[e[1]].push_back(e[0]); }
+    int best = INT_MAX;
+    for (int s = 0; s < n; s++) {
+        vector<int> dist(n, -1), parent(n, -1);
+        dist[s] = 0;
+        queue<int> q;
+        q.push(s);
+        while (!q.empty()) {
+            int u = q.front();
+            q.pop();
+            for (int v : adjacent[u]) {
+                if (dist[v] == -1) { dist[v] = dist[u] + 1; parent[v] = u; q.push(v); }
+                else if (parent[u] != v) best = min(best, dist[u] + dist[v] + 1);
+            }
+        }
+    }
+    return best == INT_MAX ? -1 : best;
+}
+//### decode-ways-count
+int decode_ways(string digits) {
+    if (digits[0] == '0') return 0;
+    long long previous2 = 1, previous1 = 1;
+    for (size_t i = 1; i < digits.size(); i++) {
+        long long current = 0;
+        if (digits[i] != '0') current += previous1;
+        int two = stoi(digits.substr(i - 1, 2));
+        if (two >= 10 && two <= 26) current += previous2;
+        previous2 = previous1;
+        previous1 = current;
+    }
+    return (int) previous1;
+}
+//### tree-robbery-max
+pair<int, int> treasure_go(TreeNode* node) {
+    if (node == nullptr) return {0, 0};
+    pair<int, int> left = treasure_go(node->left), right = treasure_go(node->right);
+    int take = node->val + left.second + right.second;
+    int skip = max(left.first, left.second) + max(right.first, right.second);
+    return {take, skip};
+}
+
+int max_tree_treasure(TreeNode* root) {
+    pair<int, int> result = treasure_go(root);
+    return max(result.first, result.second);
+}
+//### unique-bst-count
+int count_unique_bsts(int n) {
+    vector<long long> table(n + 2, 0);
+    table[0] = 1; table[1] = 1;
+    for (int k = 2; k <= n; k++) {
+        for (int left = 0; left < k; left++) table[k] += table[left] * table[k - 1 - left];
+    }
+    return (int) table[n];
+}
+//### min-palindrome-cuts
+int min_palindrome_cuts(string text) {
+    int n = (int) text.size();
+    vector<int> cuts(n + 1);
+    for (int i = 0; i <= n; i++) cuts[i] = i - 1;
+    for (int center = 0; center < n; center++) {
+        for (int side = 0; side < 2; side++) {
+            int left = center, right = center + side;
+            while (left >= 0 && right < n && text[left] == text[right]) {
+                cuts[right + 1] = min(cuts[right + 1], cuts[left] + 1);
+                left--;
+                right++;
+            }
+        }
+    }
+    return cuts[n];
+}
+//### max-product-subarray
+int max_product_subarray(vector<int>& numbers) {
+    long long best = numbers[0], max_here = numbers[0], min_here = numbers[0];
+    for (size_t i = 1; i < numbers.size(); i++) {
+        long long x = numbers[i];
+        long long a = x, b = max_here * x, c = min_here * x;
+        max_here = max(a, max(b, c));
+        min_here = min(a, min(b, c));
+        best = max(best, max_here);
+    }
+    return (int) best;
+}
+//### stock-profit-cooldown
+int stock_profit_with_rest(vector<int>& prices) {
+    int hold = -1000000000, sold = 0, rest = 0;
+    for (int price : prices) {
+        int previous_sold = sold;
+        sold = hold + price;
+        hold = max(hold, rest - price);
+        rest = max(rest, previous_sold);
+    }
+    return max(sold, rest);
+}
+//### stock-profit-k-trades
+int stock_profit_k_trades(int k, vector<int>& prices) {
+    vector<int> buy(k + 1, -1000000000), sell(k + 1, 0);
+    for (int price : prices) {
+        for (int t = 1; t <= k; t++) {
+            buy[t] = max(buy[t], sell[t - 1] - price);
+            sell[t] = max(sell[t], buy[t] + price);
+        }
+    }
+    return sell[k];
+}
+//### perfect-squares-min
+bool is_square_number(int x) {
+    int r = (int) llround(sqrt((double) x));
+    return r * r == x;
+}
+
+int min_perfect_squares(int n) {
+    if (is_square_number(n)) return 1;
+    int m = n;
+    while (m % 4 == 0) m /= 4;
+    if (m % 8 == 7) return 4;
+    for (int i = 1; i * i <= n; i++) {
+        if (is_square_number(n - i * i)) return 2;
+    }
+    return 3;
+}
+//### largest-square-of-ones
+int largest_square_area(vector<vector<int>>& grid) {
+    int rows = (int) grid.size(), cols = (int) grid[0].size();
+    vector<int> previous(cols + 1, 0);
+    int best = 0;
+    for (int r = 0; r < rows; r++) {
+        vector<int> current(cols + 1, 0);
+        for (int c = 0; c < cols; c++) {
+            if (grid[r][c] == 1) {
+                current[c + 1] = 1 + min(previous[c + 1], min(current[c], previous[c]));
+                best = max(best, current[c + 1]);
+            }
+        }
+        previous = current;
+    }
+    return best * best;
+}

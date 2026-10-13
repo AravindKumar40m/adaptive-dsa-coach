@@ -1,0 +1,114 @@
+//### rotate-matrix-clockwise
+function rotateClockwise(grid) {
+  const n = grid.length;
+  const a = grid.map((row) => row.slice());
+  for (let i = 0; i < n; i++) {
+    for (let j = i + 1; j < n; j++) {
+      const tmp = a[i][j];
+      a[i][j] = a[j][i];
+      a[j][i] = tmp;
+    }
+  }
+  const out = [];
+  for (const row of a) {
+    row.reverse();
+    for (const x of row) out.push(x);
+  }
+  return out;
+}
+//### max-circular-subarray
+function maxCircularSum(numbers) {
+  let total = numbers[0], best = numbers[0], cur = numbers[0], worst = numbers[0], curMin = numbers[0];
+  for (let i = 1; i < numbers.length; i++) {
+    const x = numbers[i];
+    total += x;
+    cur = Math.max(x, cur + x);
+    best = Math.max(best, cur);
+    curMin = Math.min(x, curMin + x);
+    worst = Math.min(worst, curMin);
+  }
+  return best < 0 ? best : Math.max(best, total - worst);
+}
+//### find-all-duplicates
+function findDuplicates(numbers) {
+  const a = numbers.slice();
+  const out = [];
+  for (const x of a) {
+    const i = Math.abs(x) - 1;
+    if (a[i] < 0) out.push(Math.abs(x));
+    else a[i] = -a[i];
+  }
+  out.sort((p, q) => p - q);
+  return out;
+}
+//### zero-matrix-total
+function zeroOutTotal(grid) {
+  const rows = grid.length, cols = grid[0].length;
+  const badRow = new Array(rows).fill(false), badCol = new Array(cols).fill(false);
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (grid[r][c] === 0) { badRow[r] = true; badCol[c] = true; }
+    }
+  }
+  let total = 0;
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) if (!badRow[r] && !badCol[c]) total += grid[r][c];
+  }
+  return total;
+}
+//### best-sightseeing-pair
+function bestPairScore(values) {
+  let bestLeft = values[0], answer = -Infinity;
+  for (let j = 1; j < values.length; j++) {
+    answer = Math.max(answer, bestLeft + values[j] - j);
+    bestLeft = Math.max(bestLeft, values[j] + j);
+  }
+  return answer;
+}
+//### right-side-leaders
+function countLeaders(numbers) {
+  let count = 0, biggest = -Infinity;
+  for (let i = numbers.length - 1; i >= 0; i--) {
+    if (numbers[i] > biggest) { count++; biggest = numbers[i]; }
+  }
+  return count;
+}
+//### can-attend-all
+function canAttendAll(meetings) {
+  const ordered = meetings.slice().sort((p, q) => p[0] - q[0]);
+  for (let i = 1; i < ordered.length; i++) {
+    if (ordered[i][0] < ordered[i - 1][1]) return false;
+  }
+  return true;
+}
+//### insert-interval-count
+function groupsAfterInsert(intervals, newInterval) {
+  const s = newInterval[0], e = newInterval[1];
+  let before = 0, after = 0;
+  for (const [a, b] of intervals) {
+    if (b < s) before++;
+    else if (a > e) after++;
+  }
+  return before + after + 1;
+}
+//### h-index-value
+function hIndex(citations) {
+  const n = citations.length;
+  const buckets = new Array(n + 1).fill(0);
+  for (const c of citations) buckets[Math.min(c, n)]++;
+  let papers = 0;
+  for (let h = n; h >= 0; h--) {
+    papers += buckets[h];
+    if (papers >= h) return h;
+  }
+  return 0;
+}
+//### min-arrows-count
+function minArrows(balloons) {
+  const sorted = balloons.slice().sort((p, q) => p[1] - q[1]);
+  let arrows = 0, last = null;
+  for (const [s, e] of sorted) {
+    if (last === null || s > last) { arrows++; last = e; }
+  }
+  return arrows;
+}

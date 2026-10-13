@@ -1,0 +1,25 @@
+{
+  "slug": "smallest-covering-range",
+  "title": "Narrowest Range Covering Every List",
+  "concept": "heaps",
+  "difficulty": "hard",
+  "statement": "`lists` holds several lists of numbers, each **sorted from smallest to largest** and **not empty**. A range `[low, high]` **covers** the lists if it contains **at least one number from every list**.\n\nReturn the covering range `[low, high]` that is the **narrowest** (smallest `high - low`). If several are equally narrow, return the one with the **smaller `low`**.",
+  "constraints": [
+    "1 <= number of lists <= 3500",
+    "each list is not empty; the total count of numbers is at most 100000",
+    "-100000 <= value <= 100000"
+  ],
+  "signature": { "name": "smallest_covering_range", "params": [{ "name": "lists", "type": "int[][]" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[[1, 5, 9], [2, 6], [4, 8, 12]]], "expected": [4, 6], "explanation": "4 comes from the third list, 5 from the first, 6 from the second: width 2. A width of 1 would need two neighbouring integers to hold three different lists' numbers, which does not happen here." },
+    { "args": [[[10], [2, 20]]], "expected": [2, 10], "explanation": "Two ranges cover both lists: [2, 10] (width 8) and [10, 20] (width 10). The first is narrower." }
+  ],
+  "edgeTests": [[[[5]]], [[[1, 2, 3], [1, 2, 3]]], [[[1, 2, 3]]], [[[1], [100]]], [[[1, 4, 7], [2, 5, 8], [3, 6, 9]]]],
+  "expected": { "time": "O(N log k)", "space": "O(k)" },
+  "hints": {
+    "nudge": "Choose one number from every list. The narrowest range around your choices runs from the smallest of them to the largest. How would you improve a choice?",
+    "pattern": "A min-heap holding the current number of each list while you track the largest of them; move the list that holds the smallest number one step forward, and remember the narrowest range seen.",
+    "pseudocode": "heap = (first number of each list, list, position); high = largest first number\nbest = [smallest first number, high]\nloop:\n  (low, list, position) = pop the smallest\n  if high - low < best width: best = [low, high]\n  if that list has no next number: stop\n  next = the list's next number; high = max(high, next); push it\nreturn best",
+    "walkthrough": "A covering range needs one number per list. For any such choice the narrowest range is [smallest chosen, largest chosen]. With these choices the range cannot get narrower unless the smallest chosen number is replaced (the largest is already needed to cover its own list), and the only useful replacement is the next number of the SAME list as the smallest, which is larger or equal. A min-heap with exactly one number per list gives the smallest in O(log k); keep a separate variable for the largest (it only ever grows when you push a bigger number). After each step compare the current width with the best so far and only replace it when strictly smaller, so equal widths keep the earlier (smaller low) range. Stop when the list that gave the smallest number has no more numbers: from then on no range can cover that list with something larger. Each of the N numbers is pushed and popped once: O(N log k)."
+  }
+}

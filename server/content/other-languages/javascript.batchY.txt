@@ -1,0 +1,135 @@
+//### shortest-cycle-length
+function shortestCycleLength(n, edges) {
+  const adjacent = [];
+  for (let i = 0; i < n; i++) adjacent.push([]);
+  for (const [a, b] of edges) { adjacent[a].push(b); adjacent[b].push(a); }
+  let best = Infinity;
+  for (let s = 0; s < n; s++) {
+    const dist = new Array(n).fill(-1), parent = new Array(n).fill(-1);
+    dist[s] = 0;
+    const queue = [s];
+    for (let head = 0; head < queue.length; head++) {
+      const u = queue[head];
+      for (const v of adjacent[u]) {
+        if (dist[v] === -1) { dist[v] = dist[u] + 1; parent[v] = u; queue.push(v); }
+        else if (parent[u] !== v) best = Math.min(best, dist[u] + dist[v] + 1);
+      }
+    }
+  }
+  return best === Infinity ? -1 : best;
+}
+//### decode-ways-count
+function decodeWays(digits) {
+  if (digits[0] === "0") return 0;
+  let previous2 = 1, previous1 = 1;
+  for (let i = 1; i < digits.length; i++) {
+    let current = 0;
+    if (digits[i] !== "0") current += previous1;
+    const two = Number(digits.substring(i - 1, i + 1));
+    if (two >= 10 && two <= 26) current += previous2;
+    previous2 = previous1;
+    previous1 = current;
+  }
+  return previous1;
+}
+//### tree-robbery-max
+function maxTreeTreasure(root) {
+  function go(node) {
+    if (node === null) return [0, 0];
+    const [leftTake, leftSkip] = go(node.left);
+    const [rightTake, rightSkip] = go(node.right);
+    const take = node.val + leftSkip + rightSkip;
+    const skip = Math.max(leftTake, leftSkip) + Math.max(rightTake, rightSkip);
+    return [take, skip];
+  }
+  const [take, skip] = go(root);
+  return Math.max(take, skip);
+}
+//### unique-bst-count
+function countUniqueBsts(n) {
+  const table = new Array(n + 2).fill(0);
+  table[0] = 1; table[1] = 1;
+  for (let k = 2; k <= n; k++) {
+    for (let left = 0; left < k; left++) table[k] += table[left] * table[k - 1 - left];
+  }
+  return table[n];
+}
+//### min-palindrome-cuts
+function minPalindromeCuts(text) {
+  const n = text.length;
+  const cuts = [];
+  for (let i = 0; i <= n; i++) cuts.push(i - 1);
+  for (let center = 0; center < n; center++) {
+    for (let side = 0; side < 2; side++) {
+      let left = center, right = center + side;
+      while (left >= 0 && right < n && text[left] === text[right]) {
+        cuts[right + 1] = Math.min(cuts[right + 1], cuts[left] + 1);
+        left--;
+        right++;
+      }
+    }
+  }
+  return cuts[n];
+}
+//### max-product-subarray
+function maxProductSubarray(numbers) {
+  let best = numbers[0], maxHere = numbers[0], minHere = numbers[0];
+  for (let i = 1; i < numbers.length; i++) {
+    const x = numbers[i];
+    const a = x, b = maxHere * x, c = minHere * x;
+    maxHere = Math.max(a, b, c);
+    minHere = Math.min(a, b, c);
+    best = Math.max(best, maxHere);
+  }
+  return best;
+}
+//### stock-profit-cooldown
+function stockProfitWithRest(prices) {
+  let hold = -1000000000, sold = 0, rest = 0;
+  for (const price of prices) {
+    const previousSold = sold;
+    sold = hold + price;
+    hold = Math.max(hold, rest - price);
+    rest = Math.max(rest, previousSold);
+  }
+  return Math.max(sold, rest);
+}
+//### stock-profit-k-trades
+function stockProfitKTrades(k, prices) {
+  const buy = new Array(k + 1).fill(-1000000000), sell = new Array(k + 1).fill(0);
+  for (const price of prices) {
+    for (let t = 1; t <= k; t++) {
+      buy[t] = Math.max(buy[t], sell[t - 1] - price);
+      sell[t] = Math.max(sell[t], buy[t] + price);
+    }
+  }
+  return sell[k];
+}
+//### perfect-squares-min
+function minPerfectSquares(n) {
+  const isSquare = (x) => { const r = Math.round(Math.sqrt(x)); return r * r === x; };
+  if (isSquare(n)) return 1;
+  let m = n;
+  while (m % 4 === 0) m /= 4;
+  if (m % 8 === 7) return 4;
+  for (let i = 1; i * i <= n; i++) {
+    if (isSquare(n - i * i)) return 2;
+  }
+  return 3;
+}
+//### largest-square-of-ones
+function largestSquareArea(grid) {
+  const rows = grid.length, cols = grid[0].length;
+  let previous = new Array(cols + 1).fill(0), best = 0;
+  for (let r = 0; r < rows; r++) {
+    const current = new Array(cols + 1).fill(0);
+    for (let c = 0; c < cols; c++) {
+      if (grid[r][c] === 1) {
+        current[c + 1] = 1 + Math.min(previous[c + 1], current[c], previous[c]);
+        best = Math.max(best, current[c + 1]);
+      }
+    }
+    previous = current;
+  }
+  return best * best;
+}

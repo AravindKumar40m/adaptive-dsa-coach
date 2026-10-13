@@ -1,0 +1,25 @@
+{
+  "slug": "most-valuable-load",
+  "title": "The Most Valuable Truck Load",
+  "concept": "greedy",
+  "difficulty": "easy",
+  "statement": "A warehouse has several kinds of boxes. `boxes[i] = [count, units]` means there are `count` identical boxes of kind `i`, and each of them holds `units` units of goods. The truck can carry **at most `truck_size` boxes** in total (all boxes are the same size, whatever they hold).\n\nChoose the boxes to load so that the **total number of units** on the truck is as large as possible, and return that total.",
+  "constraints": [
+    "0 <= len(boxes) <= 100000",
+    "1 <= count <= 100000, 1 <= units <= 1000",
+    "0 <= truck_size <= 100000"
+  ],
+  "signature": { "name": "max_load_units", "params": [{ "name": "boxes", "type": "int[][]" }, { "name": "truck_size", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[[2, 3], [3, 1], [1, 5]], 4], "expected": 12, "explanation": "Take the one box of 5 units, then the two boxes of 3 units, then one box of 1 unit: 5 + 6 + 1 = 12." },
+    { "args": [[[5, 10]], 3], "expected": 30, "explanation": "Only one kind of box; the truck takes 3 of the 5 boxes." }
+  ],
+  "edgeTests": [[[], 5], [[[1, 1]], 0], [[[2, 2], [2, 2]], 10], [[[3, 4], [3, 4]], 4], [[[1, 7], [1, 9], [1, 8]], 2]],
+  "expected": { "time": "O(n log n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Every box takes the same room on the truck. Which boxes would you load first?",
+    "pattern": "Greedy: sort the kinds of boxes by units per box, largest first, and take as many boxes of each kind as still fit.",
+    "pseudocode": "sort boxes by units, largest first\nroom = truck_size; total = 0\nfor each kind (count, units): take = min(count, room); total += take * units; room -= take; stop when room is 0\nreturn total",
+    "walkthrough": "All boxes use the same space, so the only thing that matters is how much each one holds. If a box with fewer units is on the truck while a box with more units stays behind, swapping them gives a better load, so the best load always takes the most valuable boxes first. Sort the kinds by units per box, largest first; for each kind take as many boxes as are available and as still fit (min of the count and the remaining room), add take * units to the total and reduce the room. Stop when the truck is full or the kinds run out. Sorting is O(n log n); the load itself is O(n)."
+  }
+}

@@ -1,0 +1,164 @@
+//### shortest-cycle-length
+class Solution {
+    public int shortestCycleLength(int n, int[][] edges) {
+        List<List<Integer>> adjacent = new ArrayList<>();
+        for (int i = 0; i < n; i++) adjacent.add(new ArrayList<>());
+        for (int[] e : edges) { adjacent.get(e[0]).add(e[1]); adjacent.get(e[1]).add(e[0]); }
+        int best = Integer.MAX_VALUE;
+        for (int s = 0; s < n; s++) {
+            int[] dist = new int[n], parent = new int[n];
+            Arrays.fill(dist, -1);
+            Arrays.fill(parent, -1);
+            dist[s] = 0;
+            ArrayDeque<Integer> queue = new ArrayDeque<>();
+            queue.add(s);
+            while (!queue.isEmpty()) {
+                int u = queue.poll();
+                for (int v : adjacent.get(u)) {
+                    if (dist[v] == -1) { dist[v] = dist[u] + 1; parent[v] = u; queue.add(v); }
+                    else if (parent[u] != v) best = Math.min(best, dist[u] + dist[v] + 1);
+                }
+            }
+        }
+        return best == Integer.MAX_VALUE ? -1 : best;
+    }
+}
+//### decode-ways-count
+class Solution {
+    public int decodeWays(String digits) {
+        if (digits.charAt(0) == '0') return 0;
+        long previous2 = 1, previous1 = 1;
+        for (int i = 1; i < digits.length(); i++) {
+            long current = 0;
+            if (digits.charAt(i) != '0') current += previous1;
+            int two = Integer.parseInt(digits.substring(i - 1, i + 1));
+            if (two >= 10 && two <= 26) current += previous2;
+            previous2 = previous1;
+            previous1 = current;
+        }
+        return (int) previous1;
+    }
+}
+//### tree-robbery-max
+class Solution {
+    private int[] go(TreeNode node) {
+        if (node == null) return new int[]{0, 0};
+        int[] left = go(node.left), right = go(node.right);
+        int take = node.val + left[1] + right[1];
+        int skip = Math.max(left[0], left[1]) + Math.max(right[0], right[1]);
+        return new int[]{take, skip};
+    }
+
+    public int maxTreeTreasure(TreeNode root) {
+        int[] result = go(root);
+        return Math.max(result[0], result[1]);
+    }
+}
+//### unique-bst-count
+class Solution {
+    public int countUniqueBsts(int n) {
+        long[] table = new long[n + 2];
+        table[0] = 1; table[1] = 1;
+        for (int k = 2; k <= n; k++) {
+            for (int left = 0; left < k; left++) table[k] += table[left] * table[k - 1 - left];
+        }
+        return (int) table[n];
+    }
+}
+//### min-palindrome-cuts
+class Solution {
+    public int minPalindromeCuts(String text) {
+        int n = text.length();
+        int[] cuts = new int[n + 1];
+        for (int i = 0; i <= n; i++) cuts[i] = i - 1;
+        for (int center = 0; center < n; center++) {
+            for (int side = 0; side < 2; side++) {
+                int left = center, right = center + side;
+                while (left >= 0 && right < n && text.charAt(left) == text.charAt(right)) {
+                    cuts[right + 1] = Math.min(cuts[right + 1], cuts[left] + 1);
+                    left--;
+                    right++;
+                }
+            }
+        }
+        return cuts[n];
+    }
+}
+//### max-product-subarray
+class Solution {
+    public int maxProductSubarray(int[] numbers) {
+        long best = numbers[0], maxHere = numbers[0], minHere = numbers[0];
+        for (int i = 1; i < numbers.length; i++) {
+            long x = numbers[i];
+            long a = x, b = maxHere * x, c = minHere * x;
+            maxHere = Math.max(a, Math.max(b, c));
+            minHere = Math.min(a, Math.min(b, c));
+            best = Math.max(best, maxHere);
+        }
+        return (int) best;
+    }
+}
+//### stock-profit-cooldown
+class Solution {
+    public int stockProfitWithRest(int[] prices) {
+        int hold = -1000000000, sold = 0, rest = 0;
+        for (int price : prices) {
+            int previousSold = sold;
+            sold = hold + price;
+            hold = Math.max(hold, rest - price);
+            rest = Math.max(rest, previousSold);
+        }
+        return Math.max(sold, rest);
+    }
+}
+//### stock-profit-k-trades
+class Solution {
+    public int stockProfitKTrades(int k, int[] prices) {
+        int[] buy = new int[k + 1], sell = new int[k + 1];
+        Arrays.fill(buy, -1000000000);
+        for (int price : prices) {
+            for (int t = 1; t <= k; t++) {
+                buy[t] = Math.max(buy[t], sell[t - 1] - price);
+                sell[t] = Math.max(sell[t], buy[t] + price);
+            }
+        }
+        return sell[k];
+    }
+}
+//### perfect-squares-min
+class Solution {
+    private boolean isSquare(int x) {
+        int r = (int) Math.round(Math.sqrt(x));
+        return r * r == x;
+    }
+
+    public int minPerfectSquares(int n) {
+        if (isSquare(n)) return 1;
+        int m = n;
+        while (m % 4 == 0) m /= 4;
+        if (m % 8 == 7) return 4;
+        for (int i = 1; i * i <= n; i++) {
+            if (isSquare(n - i * i)) return 2;
+        }
+        return 3;
+    }
+}
+//### largest-square-of-ones
+class Solution {
+    public int largestSquareArea(int[][] grid) {
+        int rows = grid.length, cols = grid[0].length;
+        int[] previous = new int[cols + 1];
+        int best = 0;
+        for (int r = 0; r < rows; r++) {
+            int[] current = new int[cols + 1];
+            for (int c = 0; c < cols; c++) {
+                if (grid[r][c] == 1) {
+                    current[c + 1] = 1 + Math.min(previous[c + 1], Math.min(current[c], previous[c]));
+                    best = Math.max(best, current[c + 1]);
+                }
+            }
+            previous = current;
+        }
+        return best * best;
+    }
+}

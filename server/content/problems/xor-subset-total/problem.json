@@ -1,0 +1,24 @@
+{
+  "slug": "xor-subset-total",
+  "title": "Sum of All Subset XORs",
+  "concept": "recursion",
+  "difficulty": "easy",
+  "statement": "The **XOR** of a group of numbers is the result of combining them with the bitwise XOR operation (`^`); the XOR of an empty group is `0`. Look at **every subset** of `numbers` (each number is either in the subset or not; the empty subset and the full list both count; equal numbers at different positions are different elements).\n\nReturn the **sum of the XOR values of all these subsets**.",
+  "constraints": [
+    "0 <= len(numbers) <= 12",
+    "0 <= numbers[i] <= 20"
+  ],
+  "signature": { "name": "xor_subset_total", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[2, 4]], "expected": 12, "explanation": "Subsets: {} = 0, {2} = 2, {4} = 4, {2, 4} = 6. Total 12." },
+    { "args": [[1, 1, 1]], "expected": 4, "explanation": "Three single 1s give 3; the three pairs give 1 ^ 1 = 0 each; the triple gives 1. Total 4." }
+  ],
+  "edgeTests": [[[]], [[0]], [[7]], [[1, 2, 4]], [[5, 1, 6]], [[3, 3]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Each number is either in or out of a subset. Write that as a recursion first. Then ask: in how many subsets does a particular BIT of the result equal 1?",
+    "pattern": "Recursion with two choices (take the number or skip it). The shortcut: a bit that is set in at least one number is set in the XOR of exactly half of all subsets.",
+    "pseudocode": "recursive: total(i, current) = if i == n: current else total(i+1, current) + total(i+1, current XOR numbers[i])\nshortcut: OR all numbers together; the answer is (that OR) * 2^(n-1), and 0 for an empty list",
+    "walkthrough": "The recursive version follows the definition: at each number decide to leave it out or XOR it into the current value; when all numbers have been decided, the current value is the XOR of one subset, and you add up all of them. That is 2^n branches, fine for n up to 12. For the shortcut look at one bit position. If some number has that bit set, then exactly half of all subsets have an odd number of numbers with the bit set (pair every subset with the one that differs in one such number: exactly one of the two has the bit in its XOR). So that bit contributes (bit value) * 2^(n-1) to the total, and the bits that no number has contribute nothing. Adding the bits up gives (OR of all numbers) * 2^(n-1). With no numbers the answer is 0."
+  }
+}

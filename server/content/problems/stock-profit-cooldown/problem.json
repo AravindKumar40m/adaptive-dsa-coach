@@ -1,0 +1,24 @@
+{
+  "slug": "stock-profit-cooldown",
+  "title": "Stock Trading With a Rest Day",
+  "concept": "dp",
+  "difficulty": "medium",
+  "statement": "`prices[i]` is the price of a stock on day `i`. You can buy and sell as often as you like, but with these rules: you hold **at most one share** at a time (sell before you buy again), and **after you sell you must wait one full day** before you can buy again (you cannot buy on the day right after a sale). Buying and selling on the same day is not allowed.\n\nReturn the **largest total profit**.",
+  "constraints": [
+    "0 <= len(prices) <= 100000",
+    "1 <= prices[i] <= 10000"
+  ],
+  "signature": { "name": "stock_profit_with_rest", "params": [{ "name": "prices", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[3, 8, 2, 9, 10]], "expected": 8, "explanation": "Skip the first two days, buy at 2 on day 2, sell at 10 on day 4: profit 8. (Selling at 8 on day 1 and trading again leaves day 2 as the rest day, which only allows a profit of 6.)" },
+    { "args": [[5, 4, 3]], "expected": 0, "explanation": "Prices only fall: do not trade." }
+  ],
+  "edgeTests": [[[]], [[7]], [[1, 2]], [[1, 2, 4]], [[2, 1, 4, 5, 2, 9, 7]], [[6, 1, 3, 2, 4, 7]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "At the end of each day you are in one of three situations: holding a share, just sold it today, or free to buy (holding nothing and not just sold). What can each situation turn into the next day?",
+    "pattern": "Dynamic programming with three states per day: hold, sold (just sold today) and rest (nothing in hand, free to buy).",
+    "pseudocode": "hold = -infinity; sold = 0; rest = 0\nfor price in prices:\n  previousSold = sold\n  sold = hold + price            (sell today)\n  hold = max(hold, rest - price) (keep, or buy today from a free state)\n  rest = max(rest, previousSold) (stay free, or become free after yesterday's sale)\nreturn max(sold, rest)",
+    "walkthrough": "Trying every buy/sell plan is exponential. Describe the end of each day by one of three states and keep the best profit for each: `hold` (you own a share), `sold` (you sold it today, so tomorrow you cannot buy), and `rest` (you own nothing and may buy tomorrow). Transitions: to hold today you either held yesterday, or bought today from rest (not from sold: that is the cooldown); to be in sold today you must have held yesterday and sell at today's price; to be in rest today you either rested yesterday or were in sold yesterday (the rest day has passed). Update the three values for every price, using yesterday's `sold` for the rest update. The answer is the best of sold and rest on the last day (holding a share at the end is never better). O(n) time, O(1) memory."
+  }
+}

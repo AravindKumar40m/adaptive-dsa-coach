@@ -1,0 +1,24 @@
+{
+  "slug": "deepest-leaves-ancestor",
+  "title": "Common Ancestor of the Deepest Leaves",
+  "concept": "trees",
+  "difficulty": "medium",
+  "statement": "The **deepest leaves** of a binary tree are the leaves that are farthest from the root. Find the **lowest node** whose subtree contains **all** of the deepest leaves (it can be one of them, when there is only one), and return its **value**.\n\nThe tree has at least one node.",
+  "constraints": [
+    "1 <= number of nodes <= 5000",
+    "-1000 <= node value <= 1000 (values may repeat)"
+  ],
+  "signature": { "name": "deepest_common_ancestor", "params": [{ "name": "root", "type": "TreeNode" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 2, 3, 4, null, null, 5]], "expected": 1, "explanation": "The deepest leaves are 4 (left) and 5 (right), both at depth 2. Their lowest common ancestor is the root, 1." },
+    { "args": [[1, 2, 3, 4]], "expected": 4, "explanation": "The only deepest leaf is 4, so the answer is that leaf itself." }
+  ],
+  "edgeTests": [[[7]], [[1, 2]], [[1, 2, 3]], [[1, 2, 3, 4, 5]], [[1, null, 2, null, 3]]],
+  "expected": { "time": "O(n)", "space": "O(h)" },
+  "hints": {
+    "nudge": "For a node, compare how deep the deepest leaf is on its left with how deep it is on its right. What does the comparison tell you about where the answer is?",
+    "pattern": "A post-order recursion returning (depth of the subtree, the answer node of the subtree): the deeper side wins; on a tie, the current node is the answer.",
+    "pseudocode": "go(node):\n  if missing: return (0, none)\n  (ld, ln) = go(left); (rd, rn) = go(right)\n  if ld > rd: return (ld + 1, ln)\n  if rd > ld: return (rd + 1, rn)\n  return (ld + 1, node)\nreturn go(root).node.val",
+    "walkthrough": "A slow way: find the maximum depth, collect the deepest leaves, then test every node for whether its subtree contains all of them, and take the lowest such node. A neat single pass returns two things for every subtree: how deep it is, and the lowest node that is an ancestor of ALL deepest leaves of that subtree. At a node, if the left subtree is deeper, the deepest leaves of the whole subtree are all on the left, so the answer is the left subtree's answer. If the right is deeper, the same on the right. If both are equally deep, the deepest leaves are on both sides, so this node is the lowest common ancestor. A missing child has depth 0 and no answer. The value returned at the root is the answer. O(n)."
+  }
+}

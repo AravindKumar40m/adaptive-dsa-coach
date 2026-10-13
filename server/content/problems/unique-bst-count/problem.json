@@ -1,0 +1,23 @@
+{
+  "slug": "unique-bst-count",
+  "title": "How Many Different Search Trees",
+  "concept": "dp",
+  "difficulty": "medium",
+  "statement": "A **binary search tree** (BST) stores values so that, for every node, everything in its left subtree is smaller and everything in its right subtree is larger. Using each of the numbers `1, 2, ..., n` exactly once, count the **structurally different** BSTs you can build (two trees are different if their shapes, with the values in them, differ).",
+  "constraints": [
+    "1 <= n <= 19"
+  ],
+  "signature": { "name": "count_unique_bsts", "params": [{ "name": "n", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [3], "expected": 5, "explanation": "Root 1 (two shapes for 2 and 3 on the right), root 2 (one shape), root 3 (two shapes for 1 and 2 on the left): 2 + 1 + 2 = 5." },
+    { "args": [4], "expected": 14, "explanation": "Sum over the root: 5 + 2 + 2 + 5 = 14." }
+  ],
+  "edgeTests": [[1], [2], [5], [6], [7], [8], [9], [10], [11], [12], [13], [14], [15], [16], [17], [18], [19]],
+  "expected": { "time": "O(n^2)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Pick the value of the root. Which values can be in its left subtree and which in its right subtree? And how many shapes does each side have by itself?",
+    "pattern": "Dynamic programming on the number of nodes: count[k] = sum over the root position i of count[i - 1] * count[k - i] (these are the Catalan numbers).",
+    "pseudocode": "count[0] = 1; count[1] = 1\nfor k in 2 .. n:\n  count[k] = 0\n  for left in 0 .. k - 1: count[k] += count[left] * count[k - 1 - left]\nreturn count[n]",
+    "walkthrough": "If the root is the value r, then the smaller values 1 to r - 1 must form the left subtree and the larger values r + 1 to n the right subtree. The left subtree can have any of count[r - 1] shapes and the right subtree any of count[n - r] shapes, independently, so there are count[r - 1] * count[n - r] trees with root r. Add this over every possible root. Only the NUMBER of values matters, not which values they are (the shape of a BST on 5, 6, 7 is the same story as on 1, 2, 3), so you can compute count[k] for k = 0, 1, 2, ... in order, with count[0] = 1 for the empty tree. The plain recursion recomputes the same sizes many times; the table needs O(n^2) steps. The results are the Catalan numbers; for n = 19 the answer is 1,767,263,190, which still fits in a 32-bit integer (n = 20 would not)."
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "slug": "calculator-with-brackets",
+  "title": "Calculator With Brackets",
+  "concept": "stack_queue",
+  "difficulty": "hard",
+  "statement": "`expression` is a valid arithmetic expression made of **non-negative whole numbers**, the signs `+` and `-`, **brackets** `(` and `)`, and **spaces** (which you ignore). There is no multiplication and no negative number written directly (like `-5`); a minus sign always has something on its left, but a bracket can be subtracted: `10 - (2 + 3)`.\n\nReturn the value of the expression. Do not use a built-in expression evaluator.",
+  "constraints": [
+    "1 <= len(expression) <= 3000",
+    "only digits, + - ( ) and spaces; the expression is valid; the value and every partial result fit in a 32-bit signed integer"
+  ],
+  "signature": { "name": "calculate_expression", "params": [{ "name": "expression", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["10-(2+3)-(4-1)"], "expected": 2, "explanation": "10 - 5 - 3 = 2." },
+    { "args": ["((2+3)-(1-4))+10"], "expected": 18, "explanation": "(5 - (-3)) + 10 = 8 + 10 = 18." }
+  ],
+  "edgeTests": [["0"], ["1-1"], ["(((5)))"], ["100-(50-(20-5))"], [" 3 - ( 4 ) "], ["7"], ["1 + 1"]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "A minus sign in front of a bracket flips the sign of everything inside it. When you enter a bracket, what do you need to remember so that you can leave it correctly?",
+    "pattern": "A stack for the context outside the brackets: before entering a bracket, save the result so far and the sign in front of the bracket.",
+    "pseudocode": "result = 0; number = 0; sign = +1; stack = empty\nfor each character:\n  digit: number = number * 10 + digit\n  + or -: result += sign * number; number = 0; sign = +1 or -1\n  '(': push result, push sign; result = 0; sign = +1\n  ')': result += sign * number; number = 0; result = result * (popped sign) + (popped result)\nreturn result + sign * number",
+    "walkthrough": "Think of the expression as a running total, the number being read, and the sign that will apply to the next number. A `+` or `-` completes the number just read: add it to the total with the current sign, then set the sign for the next number. A `(` starts a fresh calculation, but when it ends its whole value must be added to (or subtracted from) the total that existed BEFORE the bracket, with the sign that stood in front of the bracket. So on `(` push the old total and that sign onto the stack and start over with total 0 and sign +. On `)` finish the number inside, then take the sign and the old total off the stack: new total = old total + sign * (total inside). At the end add the last number. Nesting works because the stack remembers one context per open bracket. Spaces are skipped. O(n)."
+  }
+}

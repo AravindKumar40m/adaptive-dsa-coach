@@ -1,0 +1,25 @@
+{
+  "slug": "longest-substring-at-least-k-each",
+  "title": "Longest Stretch Where Every Letter Repeats",
+  "concept": "sliding_window",
+  "difficulty": "hard",
+  "statement": "`text` contains lowercase letters. Find the **longest substring** (a contiguous part of `text`) in which **every letter that appears at all appears at least `k` times**. Letters that do not occur in the substring do not matter.\n\nReturn the length of that substring, or `0` if there is none.",
+  "constraints": [
+    "0 <= len(text) <= 100000",
+    "text contains only the letters a to z",
+    "1 <= k <= 100000"
+  ],
+  "signature": { "name": "longest_substring_k_each", "params": [{ "name": "text", "type": "string" }, { "name": "k", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": ["aabbcdd", 2], "expected": 4, "explanation": "The letter c appears once, so no good substring contains it. The best parts are aabb (every letter twice) and dd; the longest has length 4." },
+    { "args": ["xyz", 2], "expected": 0, "explanation": "Every letter appears only once." }
+  ],
+  "edgeTests": [["", 1], ["a", 1], ["a", 2], ["aaa", 3], ["ababab", 3], ["baaabcb", 3]],
+  "expected": { "time": "O(26 * n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "A normal window cannot be shrunk by a simple rule here, because adding a letter can make the window better or worse. What if you FIX how many different letters the window may contain?",
+    "pattern": "For each target u from 1 to 26, slide a window that holds exactly u different letters, and track how many of them already appear at least k times; the window is good when all u do.",
+    "pseudocode": "best = 0\nfor target in 1 .. 26:\n  window with counts per letter, unique = letters present, enough = letters with count >= k\n  for each right end: add the letter (update unique, enough)\n    while unique > target: remove the left letter (update unique, enough); left += 1\n    if unique == target and enough == target: best = max(best, right - left + 1)\nreturn best",
+    "walkthrough": "Checking every substring is O(n^2) (or worse). The difficulty is that a window can only be judged when you know how many different letters it should have. So try each possible number of different letters, target = 1 .. 26, and for a fixed target run a normal two-pointer window: extend to the right, and while the window has more than `target` different letters move the left end. Keep two counters: `unique` (letters currently in the window) and `enough` (letters in the window with count at least k). When unique == target and enough == target, every letter in the window appears at least k times, so the window is valid: record its length. Each target costs one pass, so the total is 26 passes: O(26 n). (Another solution splits the text at letters that occur fewer than k times in the whole text and solves the pieces recursively.)"
+  }
+}

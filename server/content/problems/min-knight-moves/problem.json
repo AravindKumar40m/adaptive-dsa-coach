@@ -1,0 +1,24 @@
+{
+  "slug": "min-knight-moves",
+  "title": "Fewest Knight Moves",
+  "concept": "graphs",
+  "difficulty": "medium",
+  "statement": "A chessboard has `size` rows and `size` columns (rows and columns are numbered from 0). A **knight** moves two squares in one direction and one square in a perpendicular direction (8 possible moves, like an L), and it must stay on the board.\n\nReturn the **smallest number of moves** needed to go from `(start_row, start_col)` to `(target_row, target_col)`, or `-1` if it cannot get there. If both squares are the same, the answer is `0`.",
+  "constraints": [
+    "1 <= size <= 50",
+    "0 <= start_row, start_col, target_row, target_col < size"
+  ],
+  "signature": { "name": "min_knight_moves", "params": [{ "name": "size", "type": "int" }, { "name": "start_row", "type": "int" }, { "name": "start_col", "type": "int" }, { "name": "target_row", "type": "int" }, { "name": "target_col", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [3, 0, 0, 2, 1], "expected": 1, "explanation": "Two rows down and one column right is a single knight move." },
+    { "args": [3, 0, 0, 1, 1], "expected": -1, "explanation": "On a 3 by 3 board the knight can never reach the middle square." }
+  ],
+  "edgeTests": [[1, 0, 0, 0, 0], [2, 0, 0, 1, 1], [2, 0, 0, 0, 0], [8, 0, 0, 7, 7], [4, 0, 0, 3, 3], [6, 2, 2, 2, 3]],
+  "expected": { "time": "O(size^2)", "space": "O(size^2)" },
+  "hints": {
+    "nudge": "Think of every square as a point and every knight move as a line between two points. All lines count the same (one move). What search finds the fewest lines between two points?",
+    "pattern": "Breadth-first search from the start square: all squares one move away, then two moves away, and so on; the first time you reach the target, the number of steps is the answer.",
+    "pseudocode": "dist = grid of -1; dist[start] = 0; queue = [start]\nwhile queue is not empty:\n  cell = pop the front\n  if cell is the target: return dist[cell]\n  for each of the 8 knight moves: if the new cell is on the board and dist is -1: dist[new] = dist[cell] + 1; push it\nreturn -1",
+    "walkthrough": "The squares and the knight moves form a graph in which every edge has the same length, so a breadth-first search finds the shortest path: it visits the squares in order of their distance from the start. Keep a distance for each square (-1 = not seen) and a queue. Take a square from the front; for each of the 8 moves (+-1, +-2 and +-2, +-1) that stays inside the board and leads to an unseen square, set its distance to the current distance + 1 and add it to the back of the queue. Return the distance when the target square is taken from the queue. If the queue becomes empty the target cannot be reached (for example on tiny boards): -1. Every square is added once: O(size^2)."
+  }
+}

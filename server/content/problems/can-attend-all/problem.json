@@ -1,0 +1,24 @@
+{
+  "slug": "can-attend-all",
+  "title": "Can One Person Attend Everything",
+  "concept": "sorting",
+  "difficulty": "easy",
+  "statement": "Each entry `[start, end]` of `meetings` is a meeting that begins at time `start` and finishes at time `end`. A person can leave one meeting at the exact moment another begins, so a meeting that ends at time `t` does **not** clash with one that starts at time `t`.\n\nReturn `true` if one person can attend **all** the meetings, otherwise `false`. The meetings are in no particular order.",
+  "constraints": [
+    "0 <= len(meetings) <= 10000",
+    "0 <= start < end <= 1000000000"
+  ],
+  "signature": { "name": "can_attend_all", "params": [{ "name": "meetings", "type": "int[][]" }], "returns": "bool" },
+  "examples": [
+    { "args": [[[9, 10], [10, 12], [12, 15]]], "expected": true, "explanation": "Each meeting starts exactly when the previous one ends: no clash." },
+    { "args": [[[1, 4], [3, 6]]], "expected": false, "explanation": "Between 3 and 4 the person would have to be in both meetings." }
+  ],
+  "edgeTests": [[[]], [[[1, 2]]], [[[1, 3], [1, 3]]], [[[5, 8], [1, 5]]], [[[2, 9], [3, 4]]]],
+  "expected": { "time": "O(n log n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "If the meetings were in order of their start time, which pairs of meetings would you need to compare?",
+    "pattern": "Sort by start time, then look only at neighbours: each meeting must start at or after the end of the one before it.",
+    "pseudocode": "sort meetings by start\nfor i in 1..n-1:\n  if meetings[i].start < meetings[i-1].end: return false\nreturn true",
+    "walkthrough": "Comparing every pair of meetings is O(n^2). Sort the meetings by start time instead. Then it is enough to compare each meeting with the one just before it: if every meeting starts at or after the end of the previous one, then every end is at least as large as the one before it (a meeting ends after it starts, and it starts at or after the previous end), so all earlier meetings have already ended by the time this one starts. If some meeting starts before the previous one ends, those two clash and the answer is false. One pass over the sorted list: O(n log n) for the sort, O(n) after."
+  }
+}

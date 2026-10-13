@@ -1,0 +1,25 @@
+{
+  "slug": "window-distinct-counts",
+  "title": "Different Values in Every Window",
+  "concept": "sliding_window",
+  "difficulty": "easy",
+  "statement": "For every block of **`k` consecutive numbers** in `numbers` (from left to right), count how many **different values** the block contains.\n\nReturn these counts as a list, one per block. If `k` is larger than the length of the list there are no blocks and the result is an empty list.",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "1 <= numbers[i] <= 1000000000",
+    "1 <= k <= 100000"
+  ],
+  "signature": { "name": "window_distinct_counts", "params": [{ "name": "numbers", "type": "int[]" }, { "name": "k", "type": "int" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[1, 2, 1, 3, 2], 3], "expected": [2, 3, 3], "explanation": "[1, 2, 1] has 2 different values, [2, 1, 3] has 3, [1, 3, 2] has 3." },
+    { "args": [[4, 4, 4], 2], "expected": [1, 1], "explanation": "Both blocks contain only the value 4." }
+  ],
+  "edgeTests": [[[], 1], [[1], 1], [[1, 2], 3], [[1, 2, 3], 3], [[1, 1, 2, 2], 2], [[5, 5, 6, 6, 7], 1]],
+  "expected": { "time": "O(n)", "space": "O(k)" },
+  "hints": {
+    "nudge": "When the block moves one step, only one number leaves and one number enters. Could you update the count instead of counting again?",
+    "pattern": "A sliding window with a map from value to how many times it occurs in the window; the number of entries of the map is the answer for the window.",
+    "pseudocode": "counts = empty map; result = []\nfor i in 0 .. n - 1:\n  counts[numbers[i]] += 1\n  if i >= k: counts[numbers[i - k]] -= 1; delete the entry if it reaches 0\n  if i >= k - 1: result.append(number of entries in counts)\nreturn result",
+    "walkthrough": "Making a set of every block costs O(k) per block, O(n * k) in total. Neighbouring blocks share k - 1 numbers, so keep one map for the current block: add the new number (count + 1) and, once the block is longer than k, remove the number that left (count - 1, and delete the entry when it reaches 0, otherwise the size would be wrong). The number of entries in the map is the number of different values in the block. Record it each time the block has k numbers, i.e. from position k - 1 on. Each number is added once and removed once: O(n)."
+  }
+}

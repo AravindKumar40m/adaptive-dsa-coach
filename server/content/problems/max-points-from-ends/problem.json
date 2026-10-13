@@ -1,0 +1,24 @@
+{
+  "slug": "max-points-from-ends",
+  "title": "Best Cards From Both Ends",
+  "concept": "sliding_window",
+  "difficulty": "medium",
+  "statement": "`cards[i]` is the number of points written on card `i`, laid out in a row. You must take **exactly `k` cards**, one at a time, and each time you may take the **first** card or the **last** card of the row that is left.\n\nReturn the **largest total number of points** you can collect.",
+  "constraints": [
+    "0 <= k <= len(cards) <= 100000",
+    "1 <= cards[i] <= 10000"
+  ],
+  "signature": { "name": "max_points_from_ends", "params": [{ "name": "cards", "type": "int[]" }, { "name": "k", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[4, 1, 1, 7, 2], 3], "expected": 13, "explanation": "Take the 4 from the front, then the 2 and the 7 from the back: 4 + 2 + 7 = 13." },
+    { "args": [[2, 9], 1], "expected": 9, "explanation": "One card: the larger end, 9." }
+  ],
+  "edgeTests": [[[], 0], [[5], 1], [[1, 2, 3], 0], [[1, 2, 3], 3], [[9, 1, 1, 9], 2], [[1, 100, 1], 2]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "The cards you take always form a block at the front plus a block at the back. What does the set of cards you do NOT take look like?",
+    "pattern": "The cards left behind are one contiguous block of n - k cards in the middle. Slide a window of that length and find the cheapest one; the answer is the total minus it.",
+    "pseudocode": "size = n - k\nwindow = sum of the first `size` cards; smallest = window\nfor i in size .. n - 1: window += cards[i] - cards[i - size]; smallest = min(smallest, window)\nreturn sum of all cards - smallest",
+    "walkthrough": "Trying every sequence of front/back choices is 2^k. Notice that after taking l cards from the front and k - l from the back, the cards that remain are a block of exactly n - k consecutive cards, whatever the order of picking was. Every block of that length is possible (it corresponds to one value of l). So maximizing the points you take is the same as minimizing the points that remain: find the block of n - k consecutive cards with the smallest sum using a sliding window (add the card that enters, subtract the one that leaves), and subtract it from the total. When k equals n the block is empty (sum 0) and you take everything. O(n)."
+  }
+}

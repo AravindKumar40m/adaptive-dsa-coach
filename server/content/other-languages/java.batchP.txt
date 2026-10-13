@@ -1,0 +1,141 @@
+//### rotate-matrix-clockwise
+class Solution {
+    public int[] rotateClockwise(int[][] grid) {
+        int n = grid.length;
+        int[][] a = new int[n][];
+        for (int i = 0; i < n; i++) a[i] = grid[i].clone();
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int tmp = a[i][j];
+                a[i][j] = a[j][i];
+                a[j][i] = tmp;
+            }
+        }
+        int[] out = new int[n * n];
+        int k = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = n - 1; j >= 0; j--) out[k++] = a[i][j];
+        }
+        return out;
+    }
+}
+//### max-circular-subarray
+class Solution {
+    public int maxCircularSum(int[] numbers) {
+        long total = numbers[0], best = numbers[0], cur = numbers[0], worst = numbers[0], curMin = numbers[0];
+        for (int i = 1; i < numbers.length; i++) {
+            long x = numbers[i];
+            total += x;
+            cur = Math.max(x, cur + x);
+            best = Math.max(best, cur);
+            curMin = Math.min(x, curMin + x);
+            worst = Math.min(worst, curMin);
+        }
+        return (int) (best < 0 ? best : Math.max(best, total - worst));
+    }
+}
+//### find-all-duplicates
+class Solution {
+    public int[] findDuplicates(int[] numbers) {
+        int[] a = numbers.clone();
+        List<Integer> out = new ArrayList<>();
+        for (int x : a) {
+            int i = Math.abs(x) - 1;
+            if (a[i] < 0) out.add(Math.abs(x));
+            else a[i] = -a[i];
+        }
+        Collections.sort(out);
+        int[] result = new int[out.size()];
+        for (int k = 0; k < result.length; k++) result[k] = out.get(k);
+        return result;
+    }
+}
+//### zero-matrix-total
+class Solution {
+    public int zeroOutTotal(int[][] grid) {
+        int rows = grid.length, cols = grid[0].length;
+        boolean[] badRow = new boolean[rows], badCol = new boolean[cols];
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                if (grid[r][c] == 0) { badRow[r] = true; badCol[c] = true; }
+            }
+        }
+        int total = 0;
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) if (!badRow[r] && !badCol[c]) total += grid[r][c];
+        }
+        return total;
+    }
+}
+//### best-sightseeing-pair
+class Solution {
+    public int bestPairScore(int[] values) {
+        int bestLeft = values[0], answer = Integer.MIN_VALUE;
+        for (int j = 1; j < values.length; j++) {
+            answer = Math.max(answer, bestLeft + values[j] - j);
+            bestLeft = Math.max(bestLeft, values[j] + j);
+        }
+        return answer;
+    }
+}
+//### right-side-leaders
+class Solution {
+    public int countLeaders(int[] numbers) {
+        int count = 0;
+        long biggest = Long.MIN_VALUE;
+        for (int i = numbers.length - 1; i >= 0; i--) {
+            if (numbers[i] > biggest) { count++; biggest = numbers[i]; }
+        }
+        return count;
+    }
+}
+//### can-attend-all
+class Solution {
+    public boolean canAttendAll(int[][] meetings) {
+        int[][] ordered = meetings.clone();
+        Arrays.sort(ordered, (p, q) -> Integer.compare(p[0], q[0]));
+        for (int i = 1; i < ordered.length; i++) {
+            if (ordered[i][0] < ordered[i - 1][1]) return false;
+        }
+        return true;
+    }
+}
+//### insert-interval-count
+class Solution {
+    public int groupsAfterInsert(int[][] intervals, int[] newInterval) {
+        int s = newInterval[0], e = newInterval[1];
+        int before = 0, after = 0;
+        for (int[] iv : intervals) {
+            if (iv[1] < s) before++;
+            else if (iv[0] > e) after++;
+        }
+        return before + after + 1;
+    }
+}
+//### h-index-value
+class Solution {
+    public int hIndex(int[] citations) {
+        int n = citations.length;
+        int[] buckets = new int[n + 1];
+        for (int c : citations) buckets[Math.min(c, n)]++;
+        int papers = 0;
+        for (int h = n; h >= 0; h--) {
+            papers += buckets[h];
+            if (papers >= h) return h;
+        }
+        return 0;
+    }
+}
+//### min-arrows-count
+class Solution {
+    public int minArrows(int[][] balloons) {
+        int[][] sorted = balloons.clone();
+        Arrays.sort(sorted, (p, q) -> Integer.compare(p[1], q[1]));
+        int arrows = 0;
+        long last = Long.MIN_VALUE;
+        for (int[] b : sorted) {
+            if (arrows == 0 || b[0] > last) { arrows++; last = b[1]; }
+        }
+        return arrows;
+    }
+}

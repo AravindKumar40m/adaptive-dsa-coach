@@ -1,0 +1,25 @@
+{
+  "slug": "reverse-between",
+  "title": "Reverse Part of a List",
+  "concept": "linked_list",
+  "difficulty": "medium",
+  "statement": "Reverse the nodes of a linked list from position `left` to position `right` (both counted from `1`, both included) and leave all other nodes where they are. Return the head of the list.\n\nDo it by re-linking the existing nodes, in a single pass.",
+  "constraints": [
+    "1 <= number of nodes <= 100000",
+    "1 <= left <= right <= number of nodes",
+    "-1000000000 <= node value <= 1000000000"
+  ],
+  "signature": { "name": "reverse_between", "params": [{ "name": "head", "type": "ListNode" }, { "name": "left", "type": "int" }, { "name": "right", "type": "int" }], "returns": "ListNode" },
+  "examples": [
+    { "args": [[1, 2, 3, 4, 5], 2, 4], "expected": [1, 4, 3, 2, 5], "explanation": "The nodes at positions 2 to 4 (2, 3, 4) are reversed: 4, 3, 2." },
+    { "args": [[5], 1, 1], "expected": [5], "explanation": "Reversing a single node changes nothing." }
+  ],
+  "edgeTests": [[[1, 2], 1, 2], [[1, 2, 3], 2, 2], [[1, 2, 3, 4], 1, 4], [[1, 2, 3, 4, 5], 3, 5], [[1, 2, 3], 1, 2]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Only the part between the two positions changes. Which node must you hold on to so that the reversed part can be linked back in?",
+    "pattern": "A dummy node, a `prev` pointer standing just before position `left`, and repeated moving of the node after `cur` to the front of the reversed part.",
+    "pseudocode": "dummy.next = head; prev = dummy\nmove prev forward left - 1 times\ncur = prev.next\nrepeat right - left times:\n  nxt = cur.next\n  cur.next = nxt.next\n  nxt.next = prev.next\n  prev.next = nxt\nreturn dummy.next",
+    "walkthrough": "Walk to the node `prev` right before the first node to reverse; a dummy node in front of the head makes this work even when left is 1. Let `cur` be the first node of the part (it will end up as its LAST node). Now take the node right after `cur` and move it to the front of the part (right after `prev`): cur.next skips it, it points to what was first, and prev.next points to it. Doing this right - left times turns the part around, and `cur` keeps pointing at the old first node, which stays in place while the others are inserted before it. No nodes are created, one pass, O(n) time and O(1) memory."
+  }
+}

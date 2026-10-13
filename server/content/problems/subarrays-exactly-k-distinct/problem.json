@@ -1,0 +1,25 @@
+{
+  "slug": "subarrays-exactly-k-distinct",
+  "title": "Subarrays With Exactly K Different Values",
+  "concept": "sliding_window",
+  "difficulty": "hard",
+  "statement": "Count the **contiguous subarrays** of `numbers` that contain **exactly `k` different values** (a value that appears several times counts once). Subarrays at different positions are counted separately, even if they look the same.",
+  "constraints": [
+    "0 <= len(numbers) <= 20000",
+    "1 <= numbers[i] <= 1000000000",
+    "1 <= k <= 20000"
+  ],
+  "signature": { "name": "count_exactly_k_distinct", "params": [{ "name": "numbers", "type": "int[]" }, { "name": "k", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 1, 2, 1], 2], "expected": 5, "explanation": "[1, 1, 2], [1, 2], [2, 1], [1, 2, 1] and [1, 1, 2, 1]." },
+    { "args": [[3, 3, 3], 1], "expected": 6, "explanation": "Every subarray has exactly one different value: 3 + 2 + 1 = 6 subarrays." }
+  ],
+  "edgeTests": [[[], 1], [[1], 1], [[1], 2], [[1, 2, 3], 3], [[1, 2, 3], 1], [[1, 2, 1, 3, 4], 3]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Counting 'exactly k' with a window is awkward because both ends can move in two ways. Counting 'at most k' is easy. How could you get 'exactly k' from two 'at most' counts?",
+    "pattern": "exactly(k) = atMost(k) - atMost(k - 1), where atMost is a sliding window that shrinks from the left when it has too many different values.",
+    "pseudocode": "atMost(limit): left = 0; total = 0; freq = empty map\n  for right in 0 .. n - 1:\n    add numbers[right] to freq\n    while freq has more than limit different values: remove numbers[left] from freq; left += 1\n    total += right - left + 1       (all subarrays ending at right with at most limit values)\nreturn atMost(k) - atMost(k - 1)",
+    "walkthrough": "Checking every subarray with a set is O(n^2) or worse. A window can count subarrays with AT MOST `limit` different values: for each right end, the left end is moved right only while the window has more than `limit` distinct values, and when the window is valid every start between left and right gives a valid subarray ending at right, so right - left + 1 subarrays are added. (The window property is monotone: shrinking a window never adds new values.) The subarrays with exactly k different values are those with at most k, minus those with at most k - 1. Two linear passes, each element enters and leaves the window once. The answer can reach about 2 * 10^8, which fits in a 32-bit integer, but use 64-bit counters for the two partial counts anyway."
+  }
+}

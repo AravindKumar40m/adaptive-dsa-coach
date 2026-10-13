@@ -1,0 +1,24 @@
+{
+  "slug": "tree-robbery-max",
+  "title": "Treasure on a Tree",
+  "concept": "dp",
+  "difficulty": "medium",
+  "statement": "Every node of a binary tree holds some **treasure** (a value). You may collect the treasure of any set of nodes, but you **cannot collect from two nodes that are directly connected** (a parent and one of its children), because the guard of one warns the other.\n\nReturn the **largest total treasure** you can collect. An empty tree gives `0`.",
+  "constraints": [
+    "0 <= number of nodes <= 1000",
+    "0 <= node value <= 10000"
+  ],
+  "signature": { "name": "max_tree_treasure", "params": [{ "name": "root", "type": "TreeNode" }], "returns": "int" },
+  "examples": [
+    { "args": [[5, 4, 6, 2, null, null, 7]], "expected": 14, "explanation": "Take the root 5 and the two leaves 2 and 7: 5 + 2 + 7 = 14. (Taking 4 and 6 gives only 10.)" },
+    { "args": [[2, 10]], "expected": 10, "explanation": "The root 2 and its child 10 are connected: take the child only." }
+  ],
+  "edgeTests": [[[]], [[0]], [[1, 2, 3]], [[3, 4, 5, 1, 3, null, 1]], [[1, null, 2, null, 3, null, 4]]],
+  "expected": { "time": "O(n)", "space": "O(h)" },
+  "hints": {
+    "nudge": "For each node there are only two situations: you collect from it, or you do not. What does each situation allow for its children?",
+    "pattern": "Tree dynamic programming: for every subtree compute two numbers, the best total if its root IS taken and the best total if its root is NOT taken, from the same two numbers of its children.",
+    "pseudocode": "go(node) returns (take, skip):\n  if node is missing: return (0, 0)\n  (leftTake, leftSkip) = go(left); (rightTake, rightSkip) = go(right)\n  take = node.value + leftSkip + rightSkip\n  skip = max(leftTake, leftSkip) + max(rightTake, rightSkip)\n  return (take, skip)\nreturn max of go(root)",
+    "walkthrough": "A direct recursion asks, for each node, 'take it (then skip the children but ask about the grandchildren) or skip it (then ask about the children)': the same subtrees are computed over and over, which is exponential on deep trees. Fix it by returning both answers for a subtree at once. If the node is taken, its children cannot be, so the total is the node value plus the 'skip' totals of both children. If the node is skipped, each child is free: take the better of its two totals. A missing child gives (0, 0). The answer for the whole tree is the larger of the two numbers at the root. Each node is handled once: O(n)."
+  }
+}

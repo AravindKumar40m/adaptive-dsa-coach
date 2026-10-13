@@ -1,0 +1,25 @@
+{
+  "slug": "close-neighbour-orders",
+  "title": "Orders With Close Neighbours",
+  "concept": "backtracking",
+  "difficulty": "medium",
+  "statement": "`numbers` holds **different** numbers. Count the ways to put them in a row (all of them, each once) so that **every two neighbouring numbers differ by at most `gap`**. Two orders are different if some position holds a different number.",
+  "constraints": [
+    "1 <= len(numbers) <= 9",
+    "-1000 <= numbers[i] <= 1000, all different",
+    "0 <= gap <= 2000"
+  ],
+  "signature": { "name": "count_smooth_orders", "params": [{ "name": "numbers", "type": "int[]" }, { "name": "gap", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 2, 3], 1], "expected": 2, "explanation": "Only 1, 2, 3 and 3, 2, 1 have neighbours that differ by at most 1." },
+    { "args": [[1, 2, 4], 2], "expected": 2, "explanation": "1, 2, 4 and 4, 2, 1 work. Any order that puts 1 and 4 side by side has a difference of 3." }
+  ],
+  "edgeTests": [[[7], 0], [[1, 5], 4], [[1, 2, 3], 2], [[1, 10, 20], 5], [[1, 2, 3, 4], 1], [[1, 2, 3, 4, 5, 6], 6]],
+  "expected": { "time": "O(n!)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Build the row from left to right. When you are about to place a number, what must you know about the row so far?",
+    "pattern": "Backtracking: choose the next unused number whose difference from the last placed number is at most the gap; undo the choice and try the next one. Stop a branch as soon as no number fits.",
+    "pseudocode": "go(placed, last):\n  if placed == n: return 1\n  total = 0\n  for each unused number x:\n    if placed == 0 or |x - last| <= gap:\n      mark x used; total += go(placed + 1, x); unmark x\n  return total",
+    "walkthrough": "Trying all n! orders and checking each one is the simple way (for 9 numbers, 362,880 orders). The search is better because it cuts off a partial order as soon as a neighbouring pair is too far apart: nothing that starts with that pair can ever be completed, so none of the (n - k)! completions is generated. Keep a list of which numbers are used and the last number placed. For the first position any number is fine. After the recursive call returns, mark the number unused again (the 'backtrack' step) and try the next candidate. Counting the successes gives the answer."
+  }
+}

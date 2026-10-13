@@ -1,0 +1,25 @@
+{
+  "slug": "job-sequencing-profit",
+  "title": "Jobs With Deadlines",
+  "concept": "greedy",
+  "difficulty": "medium",
+  "statement": "Every job takes exactly **one time unit** and you do one job at a time, starting at time 0. `jobs[i] = [deadline, profit]`: the job earns `profit` only if it is **finished by its deadline** (a job with deadline `d` must be done in one of the time units `1, 2, ..., d`, where time unit `t` is the period from time `t - 1` to time `t`). You may skip jobs.\n\nReturn the **largest total profit** you can earn.",
+  "constraints": [
+    "0 <= len(jobs) <= 100000",
+    "1 <= deadline <= 1000000000",
+    "0 <= profit <= 10000"
+  ],
+  "signature": { "name": "max_job_profit", "params": [{ "name": "jobs", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [[[1, 10], [2, 5], [2, 8], [3, 3]]], "expected": 21, "explanation": "Do the job worth 10 in slot 1, the job worth 8 in slot 2 and the job worth 3 in slot 3: 21. The job worth 5 would need slot 1 or 2, both taken by better jobs." },
+    { "args": [[[1, 4], [1, 9], [1, 6]]], "expected": 9, "explanation": "All three must be done in the first time unit: only the best one, 9." }
+  ],
+  "edgeTests": [[[]], [[[5, 7]]], [[[1, 3], [1, 3]]], [[[2, 1], [2, 1], [2, 1]]], [[[3, 5], [3, 6], [3, 7]]], [[[1000000000, 4], [1, 2]]]],
+  "expected": { "time": "O(n log n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "If more jobs share a deadline window than there are time units in it, some of them must be dropped. Which ones?",
+    "pattern": "Sort by deadline and keep a min-heap of the profits of the jobs you have chosen: add each job, and if you now have more jobs than the deadline allows, drop the cheapest chosen one.",
+    "pseudocode": "sort jobs by deadline\nheap = empty min-heap\nfor (deadline, profit) in jobs:\n  push profit\n  if size of heap > deadline: pop the smallest profit\nreturn the sum of the heap",
+    "walkthrough": "Try all subsets and check whether they can be scheduled (a set is schedulable if, sorted by deadline, the i-th job has a deadline of at least i): 2^n subsets, too slow. Go through the jobs in order of deadline and maintain the best set chosen so far. When the next job has deadline d, you can keep at most d jobs in total (all chosen jobs so far have deadlines at most d, so they all must fit into the first d time units). Add the new job; if the set now has more than d jobs, remove the one with the smallest profit (a min-heap gives it in O(log n)). The remaining set is always schedulable and has the largest possible total. At the end the answer is the sum of the profits in the heap. Deadlines can be huge: you never need to build a time table."
+  }
+}

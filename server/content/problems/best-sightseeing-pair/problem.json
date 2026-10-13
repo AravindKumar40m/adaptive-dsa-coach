@@ -1,0 +1,24 @@
+{
+  "slug": "best-sightseeing-pair",
+  "title": "Best Pair of Viewpoints",
+  "concept": "arrays",
+  "difficulty": "medium",
+  "statement": "Along a trail there are viewpoints at positions `0, 1, 2, ...`; viewpoint `i` has a beauty of `values[i]`. If you visit viewpoint `i` and later viewpoint `j` (`i < j`), the pair scores `values[i] + values[j] + i - j`: the two beauties, minus the distance you have to walk between them.\n\nReturn the largest score of any pair.",
+  "constraints": [
+    "2 <= len(values) <= 50000",
+    "1 <= values[i] <= 1000"
+  ],
+  "signature": { "name": "best_pair_score", "params": [{ "name": "values", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[3, 9, 4, 7]], "expected": 14, "explanation": "The pair (1, 3) scores 9 + 7 + 1 - 3 = 14." },
+    { "args": [[1, 1]], "expected": 1, "explanation": "The only pair scores 1 + 1 + 0 - 1 = 1." }
+  ],
+  "edgeTests": [[[5, 5]], [[1, 100, 1]], [[9, 1, 1, 1, 9]], [[1, 2, 3, 4, 5]], [[5, 4, 3, 2, 1]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Split the score into two parts: one that only depends on i, and one that only depends on j.",
+    "pattern": "score = (values[i] + i) + (values[j] - j): keep the best (values[i] + i) seen so far while you walk to the right.",
+    "pseudocode": "best_left = values[0] + 0; answer = -infinity\nfor j in 1..n-1:\n  answer = max(answer, best_left + values[j] - j)\n  best_left = max(best_left, values[j] + j)\nreturn answer",
+    "walkthrough": "Trying all pairs is O(n^2). Rewrite the score as (values[i] + i) + (values[j] - j). For a fixed j the second part is fixed, so you want the largest possible first part among all i before j. Sweep j from left to right and carry `best_left`, the largest values[i] + i seen so far (before j). At each j compute best_left + values[j] - j, keep the maximum, and only afterwards add j itself to the candidates for later positions (a pair needs i < j). One pass, O(n) time, O(1) memory."
+  }
+}

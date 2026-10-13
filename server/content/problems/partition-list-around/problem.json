@@ -1,0 +1,24 @@
+{
+  "slug": "partition-list-around",
+  "title": "Split a List Around a Value",
+  "concept": "linked_list",
+  "difficulty": "medium",
+  "statement": "Rearrange the linked list so that **all nodes with a value less than `pivot` come first**, followed by all nodes with a value **greater than or equal to `pivot`**. Inside each of the two groups the nodes must keep their **original relative order**. Return the head of the rearranged list.\n\nRe-link the existing nodes; do not create new ones.",
+  "constraints": [
+    "0 <= number of nodes <= 100000",
+    "-1000000000 <= node value, pivot <= 1000000000"
+  ],
+  "signature": { "name": "partition_list", "params": [{ "name": "head", "type": "ListNode" }, { "name": "pivot", "type": "int" }], "returns": "ListNode" },
+  "examples": [
+    { "args": [[1, 4, 3, 2, 5, 2], 3], "expected": [1, 2, 2, 4, 3, 5], "explanation": "Smaller than 3: 1, 2, 2 (in their original order). 3 or more: 4, 3, 5." },
+    { "args": [[2, 1], 2], "expected": [1, 2], "explanation": "1 is smaller than 2 so it moves to the front." }
+  ],
+  "edgeTests": [[[], 5], [[5], 5], [[3, 3, 3], 3], [[1, 2, 3], 10], [[4, 3, 2, 1], 0], [[5, 1, 5, 1], 3]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "You do not need to move nodes around inside the list. What if you simply deal the nodes into two separate lists as you walk along?",
+    "pattern": "Two chains built with dummy head nodes: one for nodes below the pivot, one for the others; at the end join the first chain to the second.",
+    "pseudocode": "lessHead, moreHead = dummy nodes; less = lessHead; more = moreHead\nfor each node in the list:\n  if node.val < pivot: less.next = node; less = node\n  else: more.next = node; more = node\nmore.next = null\nless.next = moreHead.next\nreturn lessHead.next",
+    "walkthrough": "Walk through the list once and append every node to the end of one of two chains, depending on its value: chain one for values below the pivot, chain two for the rest. Appending in the order you meet the nodes keeps their original relative order automatically. Dummy first nodes avoid special cases for an empty chain. After the walk you must do two things: end the second chain with an empty next pointer (the last node of the second chain may still point to some old node, which could create a loop), and attach the second chain to the end of the first. The result starts at the first chain's real first node. O(n) time, O(1) extra memory."
+  }
+}

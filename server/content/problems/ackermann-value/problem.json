@@ -1,0 +1,24 @@
+{
+  "slug": "ackermann-value",
+  "title": "The Ackermann Function",
+  "concept": "recursion",
+  "difficulty": "medium",
+  "statement": "The **Ackermann function** `A(m, n)` is defined by three rules:\n- `A(0, n) = n + 1`\n- `A(m, 0) = A(m - 1, 1)` when `m > 0`\n- `A(m, n) = A(m - 1, A(m, n - 1))` when `m > 0` and `n > 0`\n\nIt grows extremely fast, so here only small inputs are used. Return `A(m, n)`.",
+  "constraints": [
+    "0 <= m <= 3",
+    "0 <= n <= 5"
+  ],
+  "signature": { "name": "ackermann", "params": [{ "name": "m", "type": "int" }, { "name": "n", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [1, 2], "expected": 4, "explanation": "A(1, 2) = A(0, A(1, 1)) = A(0, 3) = 4." },
+    { "args": [3, 3], "expected": 61, "explanation": "A(3, 3) = 61." }
+  ],
+  "edgeTests": [[0, 0], [0, 5], [1, 0], [2, 0], [3, 0], [3, 5], [2, 5]],
+  "expected": { "time": "O(A(m, n))", "space": "O(A(m, n))" },
+  "hints": {
+    "nudge": "The definition IS a recursive program. Which of the three rules applies to the inputs you are given?",
+    "pattern": "Write the three rules as three cases of one recursive function. For speed, notice that each value of m has a simple closed form.",
+    "pseudocode": "A(m, n):\n  if m == 0: return n + 1\n  if n == 0: return A(m - 1, 1)\n  return A(m - 1, A(m, n - 1))\nclosed forms: A(0, n) = n + 1, A(1, n) = n + 2, A(2, n) = 2n + 3, A(3, n) = 2^(n+3) - 3",
+    "walkthrough": "Translate the rules directly: case m = 0 is the base case; case n = 0 reduces m by one with n = 1; the last case calls the function twice, once inside the other (the inner call computes the new n). It always terminates because each call either lowers m, or keeps m and lowers n. The number of calls explodes, which is why the inputs are tiny (the plain recursion for A(3, 5) makes tens of thousands of calls and goes a few hundred levels deep). Working out small cases shows the pattern: A(1, n) = n + 2, A(2, n) = 2n + 3 and A(3, n) = 2^(n + 3) - 3, so you can also answer in O(1)."
+  }
+}

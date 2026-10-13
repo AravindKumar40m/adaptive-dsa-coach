@@ -1,0 +1,25 @@
+{
+  "slug": "bouquet-days",
+  "title": "Earliest Day for the Bouquets",
+  "concept": "binary_search",
+  "difficulty": "medium",
+  "statement": "A garden has a row of flowers. `bloom[i]` is the day on which flower `i` opens (it stays open afterwards). You want to make `m` bouquets, and every bouquet needs `k` flowers that are **next to each other** in the row and **all open**. A flower can be used in one bouquet only.\n\nReturn the **smallest day** on which `m` bouquets can be made, or `-1` if it is impossible.",
+  "constraints": [
+    "0 <= len(bloom) <= 100000",
+    "1 <= bloom[i] <= 1000000000",
+    "1 <= m <= 100000, 1 <= k <= 100000"
+  ],
+  "signature": { "name": "bouquet_days", "params": [{ "name": "bloom", "type": "int[]" }, { "name": "m", "type": "int" }, { "name": "k", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 10, 3, 10, 2], 3, 1], "expected": 3, "explanation": "Every bouquet is one flower. On day 3 the flowers that open on days 1, 3 and 2 are open: three bouquets." },
+    { "args": [[7, 7, 7, 7, 12, 7, 7], 2, 3], "expected": 12, "explanation": "On day 7 the first four flowers are open: only one bouquet of three fits (and flower 4 is closed). On day 12 all seven are open: two bouquets." }
+  ],
+  "edgeTests": [[[], 1, 1], [[5], 1, 1], [[1, 10, 3, 10, 2], 3, 2], [[1, 2, 3, 4], 2, 2], [[5, 5, 5], 1, 3], [[1, 1, 1], 3, 1]],
+  "expected": { "time": "O(n log(max day))", "space": "O(1)" },
+  "hints": {
+    "nudge": "If you knew the day, could you tell quickly whether m bouquets are possible on it? And if they are possible on day d, what about day d + 1?",
+    "pattern": "Binary search on the answer (the day): a day is either enough or not, and once a day is enough every later day is too.",
+    "pseudocode": "if m * k > number of flowers: return -1\nenough(day): walk along the row counting a run of open flowers (bloom <= day); when the run reaches k, count a bouquet and restart the run; a closed flower resets the run. Return bouquets >= m.\nlo = smallest bloom day, hi = largest\nwhile lo < hi: mid = (lo + hi) / 2; if enough(mid) hi = mid else lo = mid + 1\nreturn lo",
+    "walkthrough": "First the impossible case: m bouquets need m * k flowers, so if that is more than the number of flowers the answer is -1 (use a 64-bit multiplication, m * k can be 10^10). Otherwise on the last bloom day everything is open and the job is possible. Checking one day is one pass: keep the length of the current run of open flowers; when it reaches k, make a bouquet and start a new run (the flowers are used up); a closed flower breaks the run. Checking every possible day from the first to the last is too slow (up to 10^9 days), but the check is monotone: more days never hurt. So binary search the day between the earliest and the latest bloom day for the first day where the check passes. About 30 checks of O(n) each."
+  }
+}

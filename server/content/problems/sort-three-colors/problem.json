@@ -1,0 +1,24 @@
+{
+  "slug": "sort-three-colors",
+  "title": "Sort the Three Colours",
+  "concept": "two_pointers",
+  "difficulty": "medium",
+  "statement": "`numbers` contains only the values `0`, `1` and `2` (think of red, white and blue). Return the list sorted in increasing order.\n\nYou could just call a sort function. The point of this problem is to do it in **one pass**, rearranging the list with three pointers and without counting.",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "numbers[i] is 0, 1 or 2"
+  ],
+  "signature": { "name": "sort_three_values", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[2, 0, 2, 1, 1, 0]], "expected": [0, 0, 1, 1, 2, 2], "explanation": "Two 0s, two 1s and two 2s in order." },
+    { "args": [[1]], "expected": [1], "explanation": "A single value is already sorted." }
+  ],
+  "edgeTests": [[[]], [[2, 2, 2]], [[0, 1, 2]], [[2, 1, 0]], [[1, 0, 1, 0, 1, 0]], [[0, 0, 0]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "There are only three kinds of values. If you keep a region for each kind, where do the 0s and the 2s go, and what is left in the middle?",
+    "pattern": "Dutch national flag: three pointers `low`, `mid`, `high`; everything before `low` is 0, everything after `high` is 2, and `mid` scans the unknown part.",
+    "pseudocode": "low = 0; mid = 0; high = n - 1\nwhile mid <= high:\n  if a[mid] == 0: swap a[low], a[mid]; low += 1; mid += 1\n  elif a[mid] == 1: mid += 1\n  else: swap a[mid], a[high]; high -= 1\nreturn a",
+    "walkthrough": "Keep the list split into four parts: [0 ... low) are all 0s, [low ... mid) are all 1s, [mid ... high] is not looked at yet, and (high ... end] are all 2s. Look at a[mid]. A 0 belongs to the front: swap it with a[low] (which is a 1, or itself), then both low and mid advance. A 1 is already in the right region: just advance mid. A 2 belongs to the back: swap it with a[high] and shrink high, but do NOT advance mid, because the number swapped in from the back has not been looked at yet. Every step either advances mid or shrinks high, so the loop ends after at most n steps: O(n) time, O(1) memory, one pass."
+  }
+}

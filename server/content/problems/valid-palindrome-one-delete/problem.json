@@ -1,0 +1,24 @@
+{
+  "slug": "valid-palindrome-one-delete",
+  "title": "Almost a Palindrome",
+  "concept": "two_pointers",
+  "difficulty": "medium",
+  "statement": "A **palindrome** reads the same forwards and backwards. Return `true` if `text` is a palindrome, or can become one by deleting **at most one** character (any one, the rest keep their order). Otherwise return `false`.",
+  "constraints": [
+    "1 <= len(text) <= 100000",
+    "text contains only lowercase English letters"
+  ],
+  "signature": { "name": "almost_palindrome", "params": [{ "name": "text", "type": "string" }], "returns": "bool" },
+  "examples": [
+    { "args": ["abca"], "expected": true, "explanation": "Delete the `c` (or the `b`) to get `aba` (or `aca`)." },
+    { "args": ["abc"], "expected": false, "explanation": "No single deletion makes `abc` a palindrome." }
+  ],
+  "edgeTests": [["a"], ["ab"], ["aba"], ["abcd"], ["deeee"], ["eccer"]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Compare letters from both ends moving inwards. What should you do at the first pair that does not match?",
+    "pattern": "Two pointers from the ends; at the first mismatch, try skipping the left letter OR the right letter and check the rest as an ordinary palindrome.",
+    "pseudocode": "isPal(l, r): while l < r: if text[l] != text[r]: return false; l++, r--; return true\nl = 0, r = n - 1\nwhile l < r:\n  if text[l] != text[r]: return isPal(l+1, r) or isPal(l, r-1)\n  l++, r--\nreturn true",
+    "walkthrough": "Trying every deletion and testing the result for a palindrome is O(n^2). Instead walk two pointers towards each other. As long as the letters match, nothing is wrong. At the first mismatch, one of the two letters at the pointers must be the deleted one (a deletion anywhere else would leave this mismatching pair in place). So check two cases with the ordinary palindrome test: skip the left letter (compare the stretch l+1..r) or skip the right letter (compare l..r-1). If either is a palindrome, the answer is true. You only need to do this once, because only one deletion is allowed. O(n) time, O(1) memory."
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "slug": "largest-square-of-ones",
+  "title": "The Biggest Square of Ones",
+  "concept": "dp",
+  "difficulty": "medium",
+  "statement": "`grid` is a table of `0` and `1`. Find the **largest square** (same number of rows and columns, all cells next to each other) that contains **only ones**, and return its **area** (the number of cells). If there is no `1` at all, the answer is `0`.",
+  "constraints": [
+    "1 <= rows, columns <= 300",
+    "grid[r][c] is 0 or 1"
+  ],
+  "signature": { "name": "largest_square_area", "params": [{ "name": "grid", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [[[1, 0, 1, 1], [1, 1, 1, 1], [0, 1, 1, 1], [0, 1, 1, 1]]], "expected": 9, "explanation": "The 3 by 3 square in the lower right (rows 1 to 3, columns 1 to 3) contains only ones: area 9." },
+    { "args": [[[0, 0], [0, 0]]], "expected": 0, "explanation": "There is no 1." }
+  ],
+  "edgeTests": [[[[0]]], [[[1]]], [[[1, 1], [1, 1]]], [[[1, 1, 1]]], [[[1], [1]]], [[[1, 1, 0], [1, 1, 1], [0, 1, 1]]]],
+  "expected": { "time": "O(rows * columns)", "space": "O(columns)" },
+  "hints": {
+    "nudge": "Suppose a cell is the BOTTOM-RIGHT corner of a square of ones. What must be true for the three neighbours above and to the left of it?",
+    "pattern": "Dynamic programming: side[r][c] = the side of the largest all-ones square whose bottom-right corner is this cell = 1 + min(side above, side to the left, side up-left) when the cell is 1, else 0.",
+    "pseudocode": "best = 0\nfor each cell (r, c): if grid[r][c] == 1:\n  side[r][c] = 1 + min(side[r - 1][c], side[r][c - 1], side[r - 1][c - 1])   (missing cells count as 0)\n  best = max(best, side[r][c])\nreturn best * best",
+    "walkthrough": "Testing every square size at every position is O(rows * columns * min(rows, columns)^2) or worse. Let side[r][c] be the side of the biggest square of ones whose bottom-right corner is (r, c). If the cell is 0, it is 0. If it is 1, a square of side s ending here needs a square of side s - 1 ending at the cell above, at the cell to the left, and at the cell diagonally up-left (together they cover the whole square), so s - 1 can be at most the smallest of the three, and that is also enough: side = 1 + min(three neighbours). Cells outside the grid count as 0. Fill the table row by row, remember the largest side, and return its square. Only the previous row is needed, so O(columns) memory is enough."
+  }
+}

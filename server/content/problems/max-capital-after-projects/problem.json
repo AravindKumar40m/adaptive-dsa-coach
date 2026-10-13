@@ -1,0 +1,26 @@
+{
+  "slug": "max-capital-after-projects",
+  "title": "Biggest Capital After K Projects",
+  "concept": "heaps",
+  "difficulty": "hard",
+  "statement": "You start with `w` coins and may do **at most `k` projects**, one after another, each at most once. Project `i` needs at least `capital[i]` coins in hand to start (the coins are **not spent**) and gives `profits[i]` coins when it is finished, which you can use for the next project.\n\nReturn the **largest number of coins** you can have at the end.",
+  "constraints": [
+    "0 <= len(profits) == len(capital) <= 100000",
+    "1 <= k <= 100000",
+    "0 <= w <= 1000000000",
+    "0 <= profits[i] <= 10000, 0 <= capital[i] <= 1000000000"
+  ],
+  "signature": { "name": "max_capital", "params": [{ "name": "k", "type": "int" }, { "name": "w", "type": "int" }, { "name": "profits", "type": "int[]" }, { "name": "capital", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [2, 0, [1, 2, 3], [0, 1, 1]], "expected": 4, "explanation": "With 0 coins only project 0 can start (+1, now 1 coin). Then the projects with requirement 1 are open: take the one worth 3. Total 4." },
+    { "args": [3, 0, [1, 2, 3], [0, 1, 2]], "expected": 6, "explanation": "Project 0 (+1), then project 1 (+2, now 3), then project 2 (+3): 6." }
+  ],
+  "edgeTests": [[1, 0, [], []], [1, 0, [5], [1]], [5, 10, [1, 2], [0, 0]], [1, 100, [3, 9, 4], [50, 200, 100]], [2, 0, [4, 7], [0, 5]], [3, 1, [2, 2, 2], [1, 1, 1]]],
+  "expected": { "time": "O(n log n + k log n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "At every step, among the projects you can afford right now, which one should you take? And does taking it ever block a better choice later?",
+    "pattern": "Greedy with a max-heap: sort the projects by the capital they need; before each pick, move every project you can now afford into a max-heap of profits, then take the top.",
+    "pseudocode": "sort the projects by capital\nheap = empty max-heap of profits; i = 0\nrepeat k times:\n  while i < n and projects[i].capital <= w: push projects[i].profit; i += 1\n  if heap is empty: stop\n  w += pop the largest profit\nreturn w",
+    "walkthrough": "Taking the most profitable AFFORDABLE project is always right: the coins only grow, so a project that is affordable now stays affordable, and a larger profit unlocks at least as much as a smaller one. Scanning all projects for the best affordable one at each of the k steps costs O(k * n). Better: sort the projects by the capital they require. Keep a pointer into this sorted list and a max-heap of profits of the projects that are affordable but not yet done. Before each pick, push every project that has become affordable (the pointer only moves forward, because your coins never go down). Then pop the biggest profit and add it to your coins. If the heap is empty you cannot start anything (the next project in the list is too expensive), so stop early. O(n log n + k log n). Use a 64-bit number for the total."
+  }
+}

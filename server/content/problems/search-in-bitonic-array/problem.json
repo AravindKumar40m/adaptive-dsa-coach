@@ -1,0 +1,24 @@
+{
+  "slug": "search-in-bitonic-array",
+  "title": "Search an Up-Then-Down List",
+  "concept": "binary_search",
+  "difficulty": "medium",
+  "statement": "`numbers` contains **different** values that first **increase** up to a largest value and then **decrease** (either part may be empty, so the list can be purely increasing or purely decreasing). For example `[1, 3, 8, 12, 9, 4, 2]`.\n\nReturn the **index** of `target`, or `-1` if it is not in the list. Do better than checking every element.",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "-1000000000 <= numbers[i], target <= 1000000000, all numbers different"
+  ],
+  "signature": { "name": "search_bitonic", "params": [{ "name": "numbers", "type": "int[]" }, { "name": "target", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 3, 8, 12, 9, 4, 2], 4], "expected": 5, "explanation": "4 is at index 5, on the falling side." },
+    { "args": [[1, 3, 8, 12, 9, 4, 2], 7], "expected": -1, "explanation": "7 is not in the list." }
+  ],
+  "edgeTests": [[[], 1], [[5], 5], [[1, 2, 3], 3], [[3, 2, 1], 1], [[1, 5, 2], 1], [[1, 5, 2], 2]],
+  "expected": { "time": "O(log n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "The list is two sorted pieces glued together at the largest value. If you knew where that value is, what would you do with each piece?",
+    "pattern": "Three binary searches: one to find the peak (compare a middle element with its right neighbour), then an ordinary binary search on the rising part and a reversed one on the falling part.",
+    "pseudocode": "if empty: return -1\nlo = 0; hi = n - 1\nwhile lo < hi: mid = (lo + hi) / 2; if numbers[mid] < numbers[mid + 1]: lo = mid + 1 else hi = mid\npeak = lo\nsearch [0, peak] as an increasing list; if found return its index\nsearch [peak + 1, n - 1] as a decreasing list; if found return its index\nreturn -1",
+    "walkthrough": "Scanning all elements is O(n). To find the peak: if numbers[mid] < numbers[mid + 1] you are still on the rising side, so the peak is to the right of mid; otherwise mid is the peak or the peak is to its left. Keep going until lo == hi: that is the peak. Everything up to and including the peak is increasing, everything after it is decreasing. Search the first piece with a normal binary search. Search the second with the same method but with the comparisons flipped (a larger middle value means the target is to the RIGHT). The values are all different, so at most one index matches. Three searches of O(log n) each. An empty list needs its own early return."
+  }
+}

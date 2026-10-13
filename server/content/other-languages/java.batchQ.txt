@@ -1,0 +1,140 @@
+//### sort-by-bit-count
+class Solution {
+    public int[] sortByBits(int[] numbers) {
+        Integer[] boxed = new Integer[numbers.length];
+        for (int i = 0; i < numbers.length; i++) boxed[i] = numbers[i];
+        Arrays.sort(boxed, (a, b) -> {
+            int ca = Integer.bitCount(a), cb = Integer.bitCount(b);
+            return ca != cb ? Integer.compare(ca, cb) : Integer.compare(a, b);
+        });
+        int[] out = new int[numbers.length];
+        for (int i = 0; i < out.length; i++) out[i] = boxed[i];
+        return out;
+    }
+}
+//### largest-triangle-perimeter
+class Solution {
+    public int largestTrianglePerimeter(int[] sticks) {
+        int[] a = sticks.clone();
+        Arrays.sort(a);
+        for (int i = a.length - 3; i >= 0; i--) {
+            if ((long) a[i] + a[i + 1] > a[i + 2]) return a[i] + a[i + 1] + a[i + 2];
+        }
+        return 0;
+    }
+}
+//### valid-palindrome-one-delete
+class Solution {
+    private boolean pal(String text, int l, int r) {
+        while (l < r) {
+            if (text.charAt(l) != text.charAt(r)) return false;
+            l++;
+            r--;
+        }
+        return true;
+    }
+
+    public boolean almostPalindrome(String text) {
+        int l = 0, r = text.length() - 1;
+        while (l < r) {
+            if (text.charAt(l) != text.charAt(r)) return pal(text, l + 1, r) || pal(text, l, r - 1);
+            l++;
+            r--;
+        }
+        return true;
+    }
+}
+//### count-pairs-with-difference
+class Solution {
+    public int countPairsWithGap(int[] numbers, int gap) {
+        int count = 0, j = 0;
+        for (int i = 0; i < numbers.length; i++) {
+            if (j <= i) j = i + 1;
+            while (j < numbers.length && (long) numbers[j] - numbers[i] < gap) j++;
+            if (j < numbers.length && (long) numbers[j] - numbers[i] == gap) count++;
+        }
+        return count;
+    }
+}
+//### boats-needed
+class Solution {
+    public int boatsNeeded(int[] weights, int limit) {
+        int[] a = weights.clone();
+        Arrays.sort(a);
+        int light = 0, heavy = a.length - 1, boats = 0;
+        while (light <= heavy) {
+            if (a[light] + a[heavy] <= limit) light++;
+            heavy--;
+            boats++;
+        }
+        return boats;
+    }
+}
+//### sort-three-colors
+class Solution {
+    public int[] sortThreeValues(int[] numbers) {
+        int[] a = numbers.clone();
+        int low = 0, mid = 0, high = a.length - 1;
+        while (mid <= high) {
+            if (a[mid] == 0) { int t = a[low]; a[low] = a[mid]; a[mid] = t; low++; mid++; }
+            else if (a[mid] == 1) mid++;
+            else { int t = a[mid]; a[mid] = a[high]; a[high] = t; high--; }
+        }
+        return a;
+    }
+}
+//### remove-value-length
+class Solution {
+    public int[] removeValue(int[] numbers, int value) {
+        int[] a = numbers.clone();
+        int write = 0;
+        for (int read = 0; read < a.length; read++) {
+            if (a[read] != value) { a[write] = a[read]; write++; }
+        }
+        return Arrays.copyOf(a, write);
+    }
+}
+//### triplets-sum-below
+class Solution {
+    public int countTriplesBelow(int[] numbers, int limit) {
+        int[] a = numbers.clone();
+        Arrays.sort(a);
+        long count = 0;
+        for (int i = 0; i + 2 < a.length; i++) {
+            int lo = i + 1, hi = a.length - 1;
+            while (lo < hi) {
+                if (a[i] + a[lo] + a[hi] < limit) { count += hi - lo; lo++; }
+                else hi--;
+            }
+        }
+        return (int) count;
+    }
+}
+//### isomorphic-texts
+class Solution {
+    public boolean areIsomorphic(String first, String second) {
+        int[] forward = new int[128], backward = new int[128];
+        for (int i = 0; i < first.length(); i++) {
+            char a = first.charAt(i), b = second.charAt(i);
+            if (forward[a] != 0 && forward[a] != b) return false;
+            if (backward[b] != 0 && backward[b] != a) return false;
+            forward[a] = b;
+            backward[b] = a;
+        }
+        return true;
+    }
+}
+//### subarrays-divisible-count
+class Solution {
+    public int countDivisibleRuns(int[] numbers, int k) {
+        int[] seen = new int[k];
+        seen[0] = 1;
+        long total = 0, answer = 0;
+        for (int x : numbers) {
+            total = (((total + x) % k) + k) % k;
+            answer += seen[(int) total];
+            seen[(int) total]++;
+        }
+        return (int) answer;
+    }
+}

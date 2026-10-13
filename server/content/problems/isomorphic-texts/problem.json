@@ -1,0 +1,24 @@
+{
+  "slug": "isomorphic-texts",
+  "title": "Same Pattern of Letters",
+  "concept": "hashing",
+  "difficulty": "easy",
+  "statement": "Two texts of the **same length** are **isomorphic** if the letters of `first` can be replaced by letters to give `second`, where every letter is always replaced by the same letter and **two different letters never get the same replacement**. A letter may be replaced by itself.\n\nReturn `true` if `first` and `second` are isomorphic, otherwise `false`.",
+  "constraints": [
+    "0 <= len(first) = len(second) <= 100000",
+    "both texts use only lowercase English letters"
+  ],
+  "signature": { "name": "are_isomorphic", "params": [{ "name": "first", "type": "string" }, { "name": "second", "type": "string" }], "returns": "bool" },
+  "examples": [
+    { "args": ["paper", "title"], "expected": true, "explanation": "p->t, a->i, e->l, r->e: every letter has one replacement and no two letters share one." },
+    { "args": ["ab", "aa"], "expected": false, "explanation": "a and b would both have to become a, so two different letters share a replacement." }
+  ],
+  "edgeTests": [["", ""], ["a", "b"], ["ab", "ba"], ["aab", "xxy"], ["abc", "xxy"], ["foo", "bar"]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "The rule has two directions: one letter must not need two different replacements, and two letters must not share one replacement. What do you need to remember to check both?",
+    "pattern": "Two hash maps (first -> second and second -> first), checked at every position.",
+    "pseudocode": "forward = {}; backward = {}\nfor i in 0..n-1:\n  a = first[i]; b = second[i]\n  if a in forward and forward[a] != b: return false\n  if b in backward and backward[b] != a: return false\n  forward[a] = b; backward[b] = a\nreturn true",
+    "walkthrough": "Walk through both texts together. The map `forward` remembers which letter each letter of `first` has been paired with; if a letter shows up again with a different partner, the first rule is broken. The map `backward` remembers which letter of `first` each letter of `second` was paired with; if a letter of `second` shows up again with a different partner, two different letters would share a replacement, which breaks the second rule. Checking only one direction is the classic mistake (it says `ab` and `aa` are isomorphic). Another trick: two texts are isomorphic exactly when the position of the FIRST occurrence of each letter gives the same list for both. O(n) time; the maps hold at most 26 letters."
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "stock-profit-k-trades",
+  "title": "Stock Trading With a Limited Number of Deals",
+  "concept": "dp",
+  "difficulty": "hard",
+  "statement": "`prices[i]` is the price of a stock on day `i`. You may complete **at most `k` transactions**, where one transaction is one buy followed later by one sell. You hold **at most one share** at a time (sell before buying again), and you may buy again on the day you sold.\n\nReturn the **largest total profit**.",
+  "constraints": [
+    "0 <= len(prices) <= 1000",
+    "1 <= prices[i] <= 10000",
+    "1 <= k <= 100"
+  ],
+  "signature": { "name": "stock_profit_k_trades", "params": [{ "name": "k", "type": "int" }, { "name": "prices", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [2, [4, 1, 7, 2, 8]], "expected": 12, "explanation": "Buy at 1 and sell at 7 (profit 6), then buy at 2 and sell at 8 (profit 6): 12." },
+    { "args": [1, [5, 4, 3]], "expected": 0, "explanation": "Prices only fall: no profitable transaction." }
+  ],
+  "edgeTests": [[1, []], [3, [1, 2, 3, 4, 5]], [2, [7]], [100, [1, 3, 2, 4]], [1, [2, 1, 2, 0, 1]], [2, [1, 2, 4, 2, 5, 7, 2, 4, 9, 0]]],
+  "expected": { "time": "O(n * k)", "space": "O(k)" },
+  "hints": {
+    "nudge": "How would you solve it for exactly one transaction? What do you need to remember about the number of transactions already used?",
+    "pattern": "Dynamic programming over (number of transactions, day): for each count t keep the best profit while holding a share (`buy[t]`) and the best profit after the t-th sale (`sell[t]`).",
+    "pseudocode": "buy[t] = -infinity, sell[t] = 0 for t in 0 .. k\nfor price in prices:\n  for t in 1 .. k:\n    buy[t] = max(buy[t], sell[t - 1] - price)    (the t-th purchase)\n    sell[t] = max(sell[t], buy[t] + price)       (the t-th sale)\nreturn sell[k]",
+    "walkthrough": "Trying every choice of buy and sell days is exponential. Let buy[t] be the best profit so far if you are holding the share of your t-th transaction, and sell[t] the best profit so far after finishing t transactions. On each new price you can keep things as they are, or buy for the t-th time (starting from the best profit after t - 1 completed transactions, paying the price) or sell for the t-th time (cashing in the share held for the t-th transaction). Process the transactions for each day in increasing t; because you may buy again on the day you sell, using the updated buy[t] when computing sell[t] is allowed (it just means buying and selling on the same day, profit 0). The answer is sell[k]. This is O(n * k). If k is at least half the number of days it never binds, and you could simply add up every upward step; the table gives the same result."
+  }
+}

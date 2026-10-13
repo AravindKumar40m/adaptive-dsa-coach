@@ -1,0 +1,24 @@
+{
+  "slug": "min-arrows-count",
+  "title": "Fewest Arrows",
+  "concept": "sorting",
+  "difficulty": "medium",
+  "statement": "Each entry `[start, end]` of `balloons` is a balloon that stretches along a horizontal line from position `start` to position `end` (both ends included). An arrow shot straight up at position `x` bursts **every** balloon with `start <= x <= end`.\n\nReturn the **fewest arrows** needed to burst all the balloons.",
+  "constraints": [
+    "0 <= len(balloons) <= 10000",
+    "0 <= start <= end <= 1000000000"
+  ],
+  "signature": { "name": "min_arrows", "params": [{ "name": "balloons", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [[[1, 5], [4, 9], [10, 12], [11, 14]]], "expected": 2, "explanation": "One arrow at 4 or 5 bursts the first two; one arrow at 11 or 12 bursts the last two." },
+    { "args": [[[1, 2], [3, 4], [5, 6]]], "expected": 3, "explanation": "No two balloons share a position: three arrows." }
+  ],
+  "edgeTests": [[[]], [[[1, 1]]], [[[1, 3], [3, 5]]], [[[2, 8], [2, 8], [2, 8]]], [[[1, 10], [2, 3], [4, 5], [6, 7]]]],
+  "expected": { "time": "O(n log n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Take the balloon that ENDS first. Where should the first arrow be shot so that it bursts as many balloons as possible?",
+    "pattern": "Sort by end position and shoot at the end of the first balloon; skip all balloons that this arrow bursts; repeat.",
+    "pseudocode": "sort balloons by end\narrows = 0; last = none\nfor each balloon in that order:\n  if last is none or balloon.start > last: arrows += 1; last = balloon.end\nreturn arrows",
+    "walkthrough": "The balloon that ends earliest must be burst by some arrow at a position no later than its end. Shooting exactly at its end is the best choice: any balloon that an earlier arrow could burst and that also overlaps this balloon's end is burst by an arrow at the end too (the arrow at the end bursts every balloon that already started by then and has not ended yet). So: sort by end, shoot at the first end, then ignore every balloon whose start is at or before that position (they are burst). The next balloon whose start is beyond it needs a new arrow at its own end. Count the arrows. O(n log n) for the sort, one pass after that."
+  }
+}

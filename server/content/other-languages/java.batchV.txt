@@ -1,0 +1,190 @@
+//### bouquet-days
+class Solution {
+    private boolean enough(int[] bloom, int m, int k, int day) {
+        int run = 0, bouquets = 0;
+        for (int b : bloom) {
+            if (b <= day) {
+                run++;
+                if (run == k) { bouquets++; run = 0; }
+            } else run = 0;
+        }
+        return bouquets >= m;
+    }
+
+    public int bouquetDays(int[] bloom, int m, int k) {
+        if ((long) m * k > bloom.length) return -1;
+        int lo = bloom[0], hi = bloom[0];
+        for (int b : bloom) { lo = Math.min(lo, b); hi = Math.max(hi, b); }
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (enough(bloom, m, k, mid)) hi = mid; else lo = mid + 1;
+        }
+        return lo;
+    }
+}
+//### min-rotated-with-duplicates
+class Solution {
+    public int minRotatedDuplicates(int[] numbers) {
+        int lo = 0, hi = numbers.length - 1;
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (numbers[mid] > numbers[hi]) lo = mid + 1;
+            else if (numbers[mid] < numbers[hi]) hi = mid;
+            else hi--;
+        }
+        return numbers[lo];
+    }
+}
+//### kth-smallest-pair-distance
+class Solution {
+    private long count(int[] a, int d) {
+        int j = 0;
+        long total = 0;
+        for (int i = 0; i < a.length; i++) {
+            while (a[i] - a[j] > d) j++;
+            total += i - j;
+        }
+        return total;
+    }
+
+    public int kthPairDistance(int[] numbers, int k) {
+        int[] a = numbers.clone();
+        Arrays.sort(a);
+        int lo = 0, hi = a[a.length - 1] - a[0];
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (count(a, mid) >= k) hi = mid; else lo = mid + 1;
+        }
+        return lo;
+    }
+}
+//### spread-out-stalls
+class Solution {
+    private boolean fits(int[] a, int animals, int d) {
+        int placed = 1, last = a[0];
+        for (int i = 1; i < a.length; i++) {
+            if (a[i] - last >= d) { placed++; last = a[i]; }
+        }
+        return placed >= animals;
+    }
+
+    public int spreadStalls(int[] positions, int animals) {
+        int[] a = positions.clone();
+        Arrays.sort(a);
+        int lo = 1, hi = a[a.length - 1] - a[0];
+        while (lo < hi) {
+            int mid = lo + (hi - lo + 1) / 2;
+            if (fits(a, animals, mid)) lo = mid; else hi = mid - 1;
+        }
+        return lo;
+    }
+}
+//### search-in-bitonic-array
+class Solution {
+    public int searchBitonic(int[] numbers, int target) {
+        int n = numbers.length;
+        if (n == 0) return -1;
+        int lo = 0, hi = n - 1;
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (numbers[mid] < numbers[mid + 1]) lo = mid + 1; else hi = mid;
+        }
+        int peak = lo;
+        lo = 0; hi = peak;
+        while (lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (numbers[mid] == target) return mid;
+            if (numbers[mid] < target) lo = mid + 1; else hi = mid - 1;
+        }
+        lo = peak + 1; hi = n - 1;
+        while (lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (numbers[mid] == target) return mid;
+            if (numbers[mid] > target) lo = mid + 1; else hi = mid - 1;
+        }
+        return -1;
+    }
+}
+//### k-smallest-pair-sums
+class Solution {
+    public int[] kSmallestPairSums(int[] first, int[] second, int k) {
+        List<Integer> out = new ArrayList<>();
+        if (first.length > 0 && second.length > 0) {
+            PriorityQueue<int[]> heap = new PriorityQueue<>((p, q) -> Integer.compare(p[0], q[0]));
+            for (int i = 0; i < Math.min(first.length, k); i++) heap.add(new int[]{first[i] + second[0], i, 0});
+            while (!heap.isEmpty() && out.size() < k) {
+                int[] top = heap.poll();
+                out.add(top[0]);
+                int i = top[1], j = top[2];
+                if (j + 1 < second.length) heap.add(new int[]{first[i] + second[j + 1], i, j + 1});
+            }
+        }
+        int[] result = new int[out.size()];
+        for (int i = 0; i < result.length; i++) result[i] = out.get(i);
+        return result;
+    }
+}
+//### k-closest-elements
+class Solution {
+    public int[] kClosestElements(int[] numbers, int k, int x) {
+        int lo = 0, hi = numbers.length - k;
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if ((long) x - numbers[mid] > (long) numbers[mid + k] - x) lo = mid + 1; else hi = mid;
+        }
+        return Arrays.copyOfRange(numbers, lo, lo + k);
+    }
+}
+//### task-cooldown-time
+class Solution {
+    public int taskCooldownTime(String tasks, int cooldown) {
+        if (tasks.isEmpty()) return 0;
+        int[] counts = new int[26];
+        for (char ch : tasks.toCharArray()) counts[ch - 'A']++;
+        int top = 0;
+        for (int c : counts) top = Math.max(top, c);
+        int numTop = 0;
+        for (int c : counts) if (c == top) numTop++;
+        return Math.max(tasks.length(), (top - 1) * (cooldown + 1) + numTop);
+    }
+}
+//### max-capital-after-projects
+class Solution {
+    public int maxCapital(int k, int w, int[] profits, int[] capital) {
+        int n = profits.length;
+        Integer[] order = new Integer[n];
+        for (int i = 0; i < n; i++) order[i] = i;
+        Arrays.sort(order, (p, q) -> Integer.compare(capital[p], capital[q]));
+        PriorityQueue<Integer> heap = new PriorityQueue<>(Collections.reverseOrder());
+        long coins = w;
+        int next = 0;
+        for (int step = 0; step < k; step++) {
+            while (next < n && capital[order[next]] <= coins) { heap.add(profits[order[next]]); next++; }
+            if (heap.isEmpty()) break;
+            coins += heap.poll();
+        }
+        return (int) coins;
+    }
+}
+//### smallest-covering-range
+class Solution {
+    public int[] smallestCoveringRange(int[][] lists) {
+        PriorityQueue<int[]> heap = new PriorityQueue<>((p, q) -> Integer.compare(p[0], q[0]));
+        int high = lists[0][0];
+        for (int r = 0; r < lists.length; r++) {
+            heap.add(new int[]{lists[r][0], r, 0});
+            high = Math.max(high, lists[r][0]);
+        }
+        int bestLow = heap.peek()[0], bestHigh = high;
+        while (true) {
+            int[] top = heap.poll();
+            int low = top[0], r = top[1], c = top[2];
+            if (high - low < bestHigh - bestLow) { bestLow = low; bestHigh = high; }
+            if (c + 1 == lists[r].length) break;
+            int next = lists[r][c + 1];
+            high = Math.max(high, next);
+            heap.add(new int[]{next, r, c + 1});
+        }
+        return new int[]{bestLow, bestHigh};
+    }
+}

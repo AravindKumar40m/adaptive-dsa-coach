@@ -1,0 +1,25 @@
+{
+  "slug": "max-distinct-window-sum",
+  "title": "Best Window With All Different Numbers",
+  "concept": "sliding_window",
+  "difficulty": "medium",
+  "statement": "Look at every block of **exactly `k` consecutive numbers** in `numbers`. A block is **good** if all `k` numbers in it are **different** from each other.\n\nReturn the **largest sum** of a good block, or `0` if there is no good block.",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "1 <= numbers[i] <= 10000",
+    "1 <= k <= 100000"
+  ],
+  "signature": { "name": "max_distinct_window_sum", "params": [{ "name": "numbers", "type": "int[]" }, { "name": "k", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[4, 2, 2, 5, 3], 3], "expected": 10, "explanation": "The blocks are [4, 2, 2] (repeats), [2, 2, 5] (repeats) and [2, 5, 3] (good, sum 10)." },
+    { "args": [[7, 7], 2], "expected": 0, "explanation": "The only block has a repeated number." }
+  ],
+  "edgeTests": [[[], 1], [[5], 1], [[1, 2, 3], 4], [[1, 2, 3], 3], [[1, 1, 1], 1], [[3, 1, 3, 1, 2], 2]],
+  "expected": { "time": "O(n)", "space": "O(k)" },
+  "hints": {
+    "nudge": "Moving from one block to the next removes one number and adds one. What do you need to keep so that you can tell, without looking at all k numbers, whether the block is good?",
+    "pattern": "A fixed-size sliding window with a count of every value in it and a running sum; the block is good exactly when the number of different values equals k.",
+    "pseudocode": "counts = empty map; total = 0; best = 0\nfor i in 0 .. n - 1:\n  add numbers[i]: counts[numbers[i]] += 1; total += numbers[i]\n  if i >= k: remove numbers[i - k]: counts -= 1 (delete the entry at 0); total -= numbers[i - k]\n  if i >= k - 1 and the number of entries in counts == k: best = max(best, total)\nreturn best",
+    "walkthrough": "Checking each block with a set and summing it again costs O(n * k). Because consecutive blocks overlap in k - 1 numbers, update instead of recomputing: add the number that enters, remove the one that leaves, and keep the sum with the same two steps. For the distinctness test keep a map from value to how many times it is in the block; delete the entry when its count reaches 0. A block of k numbers has all different numbers exactly when the map holds k entries. Only blocks that are complete (at least k numbers seen) count. If k is larger than the list there is no block and the answer stays 0. The sum is at most 10^5 * 10^4 = 10^9, which fits in a 32-bit integer."
+  }
+}

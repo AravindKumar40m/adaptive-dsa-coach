@@ -8,6 +8,7 @@
     "start": "node --env-file=../.env src/index.js",
     "content:build": "python content/build.py",
     "content:seed": "node --env-file=../.env scripts/content/seed.js",
+    "db:counts": "node --env-file=../.env scripts/tools/db-counts.js",
     "db:indexes": "node --env-file=../.env scripts/tools/sync-indexes.js",
     "db:backup": "node --env-file=../.env scripts/tools/backup-db.js",
     "db:backup:verify": "node --env-file=../.env scripts/tools/verify-backup.js",

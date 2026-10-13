@@ -1,0 +1,24 @@
+{
+  "slug": "max-circular-subarray",
+  "title": "Best Stretch on a Ring",
+  "concept": "arrays",
+  "difficulty": "medium",
+  "statement": "The numbers in `numbers` are arranged on a **ring**: after the last number comes the first one again. A **stretch** is a non-empty run of neighbouring numbers on the ring; it may go past the end and continue at the start, but it may not use any number twice.\n\nReturn the largest possible sum of a stretch.",
+  "constraints": [
+    "1 <= len(numbers) <= 30000",
+    "-30000 <= numbers[i] <= 30000"
+  ],
+  "signature": { "name": "max_circular_sum", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[5, -3, 5]], "expected": 10, "explanation": "Start at the last 5, wrap around to the first 5: 5 + 5 = 10 (the -3 is skipped)." },
+    { "args": [[-3, -2, -3]], "expected": -2, "explanation": "Every number is negative, and a stretch must contain at least one number, so the best is the single -2." }
+  ],
+  "edgeTests": [[[7]], [[3, -1, 2, -1]], [[1, -2, 3, -2]], [[-5, 4, -1]], [[2, -1, 2, -1, 2]], [[0, 0, 0]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "A stretch that wraps around is a stretch that leaves out one stretch in the middle. What is special about the part that is left out?",
+    "pattern": "Kadane's algorithm twice: the best ordinary stretch, and (total - the WORST ordinary stretch) for the wrapping case.",
+    "pseudocode": "best = largest sum of an ordinary stretch (Kadane)\nworst = smallest sum of an ordinary stretch (Kadane with min)\nif best < 0: return best   (all numbers negative)\nreturn max(best, total - worst)",
+    "walkthrough": "Checking every start and every length is O(n^2). There are only two kinds of stretches. One that does not wrap is an ordinary stretch: Kadane's algorithm finds the best one in O(n). One that wraps covers the numbers at both ends of the list and leaves out a middle stretch; its sum is total - (sum of the left-out middle stretch), so it is largest when the left-out stretch has the SMALLEST possible sum: run Kadane again with min instead of max. Take the larger of the two answers. One trap: if every number is negative, 'total - worst' would be 0, which would mean an empty stretch; that is not allowed, so in that case the answer is the ordinary best (the largest single number). O(n) time, O(1) memory."
+  }
+}

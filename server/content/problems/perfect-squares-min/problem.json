@@ -1,0 +1,23 @@
+{
+  "slug": "perfect-squares-min",
+  "title": "Fewest Squares That Add Up to N",
+  "concept": "dp",
+  "difficulty": "medium",
+  "statement": "A **perfect square** is a number like `1, 4, 9, 16, 25, ...` (the square of a whole number). Given a positive whole number `n`, return the **smallest number of perfect squares** (the same square may be used several times) that add up to exactly `n`.",
+  "constraints": [
+    "1 <= n <= 10000"
+  ],
+  "signature": { "name": "min_perfect_squares", "params": [{ "name": "n", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [18], "expected": 2, "explanation": "18 = 9 + 9." },
+    { "args": [7], "expected": 4, "explanation": "7 = 4 + 1 + 1 + 1. There is no way with fewer squares." }
+  ],
+  "edgeTests": [[1], [2], [3], [4], [8], [12], [28], [100], [9999], [10000]],
+  "expected": { "time": "O(n * sqrt(n)) with a table, O(sqrt(n)) with number theory", "space": "O(n)" },
+  "hints": {
+    "nudge": "Whatever the best answer for n is, its LAST square is some i * i. After removing it you are left with a smaller number. What does that remind you of?",
+    "pattern": "Dynamic programming over the total: best[m] = 1 + min(best[m - i * i]) over all squares i * i <= m. (There is also a very short answer from number theory: it is never more than 4.)",
+    "pseudocode": "best[0] = 0\nfor m in 1 .. n:\n  best[m] = infinity\n  for i in 1 .. while i * i <= m: best[m] = min(best[m], best[m - i * i] + 1)\nreturn best[n]",
+    "walkthrough": "A greedy 'take the biggest square first' fails (12 = 9 + 1 + 1 + 1 needs 4 squares, but 12 = 4 + 4 + 4 needs 3), and plain recursion repeats work. Build a table: best[m] is the fewest squares for the total m. For any total m, one of the squares in an optimal sum is some i * i, and the rest add up to m - i * i, which has its own best value, so best[m] = 1 + the smallest best[m - i * i] over all squares not larger than m. The table needs n entries with about sqrt(n) choices each: O(n sqrt(n)), fine for n = 10000. A faster way uses two theorems: every number is a sum of at most four squares; it needs exactly 4 only when, after dividing out all factors of 4, it leaves remainder 7 when divided by 8; otherwise check 1 (n is a square), then 2 (n - i * i is a square for some i), else 3."
+  }
+}

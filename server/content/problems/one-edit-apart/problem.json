@@ -1,0 +1,24 @@
+{
+  "slug": "one-edit-apart",
+  "title": "Exactly One Edit Apart",
+  "concept": "strings",
+  "difficulty": "medium",
+  "statement": "An **edit** is one of: inserting one letter, deleting one letter, or replacing one letter by a different one. Return `true` if `first` can be turned into `second` with **exactly one** edit, otherwise `false`. Two identical texts need zero edits, so for them the answer is `false`.",
+  "constraints": [
+    "0 <= len(first), len(second) <= 100000",
+    "both texts use only lowercase English letters"
+  ],
+  "signature": { "name": "one_edit_apart", "params": [{ "name": "first", "type": "string" }, { "name": "second", "type": "string" }], "returns": "bool" },
+  "examples": [
+    { "args": ["pale", "ple"], "expected": true, "explanation": "Delete the `a`." },
+    { "args": ["pale", "pale"], "expected": false, "explanation": "The texts are identical: zero edits are needed, not one." }
+  ],
+  "edgeTests": [["", "a"], ["", ""], ["a", "b"], ["ab", "ba"], ["abc", "abcd"], ["abc", "ab"], ["pale", "bake"]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "How different can the lengths be if only one edit happened? And what does the position of the first difference tell you?",
+    "pattern": "Compare from the front until the first mismatch, then compare the REST of the texts in the way the edit type requires.",
+    "pseudocode": "let a be the shorter text, b the longer; if len(b) - len(a) > 1: return false\ni = first position where a[i] != b[i] (or the end of a)\nif i == len(a): return len(b) - len(a) == 1\nif same lengths: return a[i+1:] == b[i+1:]   (replace)\nelse: return a[i:] == b[i+1:]                   (insert / delete)",
+    "walkthrough": "Computing the full edit distance with a table works but costs O(n * m). One edit means the texts are almost the same. First the lengths: if they differ by more than 1 the answer is false. Let a be the shorter one. Move along both texts while the letters are equal and stop at the first mismatch i. If you reached the end of a without a mismatch, the texts are equal (false) or b has exactly one extra letter at the end (true). Otherwise decide by the lengths: with equal lengths the mismatching letters must be a replacement, so everything after position i must be equal; with different lengths b has an extra letter at position i, so a[i:] must equal b[i+1:]. One pass: O(n)."
+  }
+}
