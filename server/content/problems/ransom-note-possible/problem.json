@@ -1,0 +1,24 @@
+{
+  "slug": "ransom-note-possible",
+  "title": "Can the Note Be Cut From the Magazine",
+  "concept": "hashing",
+  "difficulty": "easy",
+  "statement": "You want to write the text `note` by cutting single letters out of the text `magazine`. Every letter of the magazine can be used **at most once**.\n\nReturn `true` if the whole `note` can be written this way, otherwise `false`.",
+  "constraints": [
+    "0 <= len(note) <= 100000, 0 <= len(magazine) <= 100000",
+    "both contain lowercase letters"
+  ],
+  "signature": { "name": "can_build_note", "params": [{ "name": "note", "type": "string" }, { "name": "magazine", "type": "string" }], "returns": "bool" },
+  "examples": [
+    { "args": ["aab", "baa"], "expected": true, "explanation": "The magazine has two a and one b." },
+    { "args": ["aa", "ab"], "expected": false, "explanation": "The note needs two a but the magazine has only one." }
+  ],
+  "edgeTests": [["", ""], ["", "x"], ["x", ""], ["abc", "cbaa"], ["zz", "z"]],
+  "expected": { "time": "O(len(note) + len(magazine))", "space": "O(1)" },
+  "hints": {
+    "nudge": "It does not matter where a letter is in the magazine, only how many copies of it exist. What can you count?",
+    "pattern": "Count every letter of the magazine in a table (26 letters), then spend one count for each letter of the note; fail if a count is already 0.",
+    "pseudocode": "count[letter] = occurrences in the magazine\nfor letter in note: if count[letter] == 0: return false; count[letter] -= 1\nreturn true",
+    "walkthrough": "Removing a matching letter from the magazine one by one is O(len(note) * len(magazine)). Counting is enough: build a table of how many copies of each letter the magazine has, then walk through the note and use up one copy per letter. If a needed letter has no copies left, the note cannot be built. Because there are only 26 letters, the table is a fixed-size array and the memory is O(1)."
+  }
+}

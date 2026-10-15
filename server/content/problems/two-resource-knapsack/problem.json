@@ -1,0 +1,25 @@
+{
+  "slug": "two-resource-knapsack",
+  "title": "Pick the Most Items With Two Budgets",
+  "concept": "dp",
+  "difficulty": "medium",
+  "statement": "Each item in `items` costs some **zeros** and some **ones**: `items[i] = [zerosCost, onesCost]`. You have `zeros` units of the first resource and `ones` units of the second one. You may take each item **at most once**, and the total cost of the items you take may not exceed either budget.\n\nReturn the **largest number of items** you can take.",
+  "constraints": [
+    "0 <= len(items) <= 600",
+    "0 <= zerosCost, onesCost <= 100",
+    "0 <= zeros, ones <= 100"
+  ],
+  "signature": { "name": "max_items_two_budgets", "params": [{ "name": "items", "type": "int[][]" }, { "name": "zeros", "type": "int" }, { "name": "ones", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[[1, 1], [2, 0], [0, 2], [1, 2]], 3, 3], "expected": 3, "explanation": "Take the first three items: zeros 1 + 2 + 0 = 3, ones 1 + 0 + 2 = 3. A fourth item would exceed the budget." },
+    { "args": [[[5, 5]], 1, 1], "expected": 0, "explanation": "The only item is too expensive." }
+  ],
+  "edgeTests": [[[], 5, 5], [[[0, 0]], 0, 0], [[[1, 0], [1, 0]], 1, 5], [[[1, 1], [1, 1], [1, 1]], 2, 2], [[[2, 2], [1, 1]], 1, 1]],
+  "expected": { "time": "O(items * zeros * ones)", "space": "O(zeros * ones)" },
+  "hints": {
+    "nudge": "This is the classic 'take or leave each item' problem, but with TWO limits at the same time. What would the table need to remember?",
+    "pattern": "0/1 knapsack with a two-dimensional table: best[a][b] = the most items you can take with at most a zeros and b ones; process the items one by one and update the table from the largest budgets downwards.",
+    "pseudocode": "best = table (zeros + 1) x (ones + 1) of 0\nfor (zc, oc) in items:\n  for a from zeros down to zc: for b from ones down to oc: best[a][b] = max(best[a][b], best[a - zc][b - oc] + 1)\nreturn best[zeros][ones]",
+    "walkthrough": "Trying all subsets is 2^n (hopeless for 600 items). The decision for each item is independent of the order, and what matters about the items already chosen is only how much of each budget they used. So let best[a][b] be the largest count that fits into budgets a and b. For a new item with costs (zc, oc): either do not take it (best stays) or take it, which uses zc and oc and leaves best[a - zc][b - oc] for the others, plus one item. Update the table in place, going from the LARGEST budgets to the smallest, so that each item is used at most once (the cells you read have not yet been changed for this item). The answer is best[zeros][ones]. About 600 * 101 * 101 = 6 million steps."
+  }
+}

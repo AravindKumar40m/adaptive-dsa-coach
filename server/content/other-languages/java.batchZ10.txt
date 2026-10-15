@@ -1,0 +1,165 @@
+//### stock-profit-with-fee
+class Solution {
+    public int stockProfitWithFee(int[] prices, int fee) {
+        long cash = 0, hold = -1000000000L;
+        for (int price : prices) {
+            cash = Math.max(cash, hold + price - fee);
+            hold = Math.max(hold, cash - price);
+        }
+        return (int) cash;
+    }
+}
+//### maximal-rectangle-of-ones
+class Solution {
+    public int maxRectangleOfOnes(int[][] grid) {
+        int rows = grid.length, cols = grid[0].length;
+        int[] heights = new int[cols + 1];
+        int best = 0;
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) heights[c] = grid[r][c] == 1 ? heights[c] + 1 : 0;
+            heights[cols] = 0;
+            int[] stack = new int[cols + 2];
+            int size = 0;
+            for (int i = 0; i <= cols; i++) {
+                int h = heights[i];
+                while (size > 0 && heights[stack[size - 1]] >= h) {
+                    int top = stack[--size];
+                    int width = size == 0 ? i : i - stack[size - 1] - 1;
+                    best = Math.max(best, heights[top] * width);
+                }
+                stack[size++] = i;
+            }
+        }
+        return best;
+    }
+}
+//### dungeon-min-health
+class Solution {
+    public int minInitialHealth(int[][] dungeon) {
+        int rows = dungeon.length, cols = dungeon[0].length, INF = 1000000000;
+        int[] need = new int[cols + 1];
+        Arrays.fill(need, INF);
+        need[cols - 1] = 1;
+        for (int r = rows - 1; r >= 0; r--) {
+            for (int c = cols - 1; c >= 0; c--) {
+                int next = r < rows - 1 ? need[c] : INF;
+                if (c + 1 < cols) next = Math.min(next, need[c + 1]);
+                if (r == rows - 1 && c == cols - 1) next = 1;
+                need[c] = Math.max(1, next - dungeon[r][c]);
+            }
+        }
+        return need[0];
+    }
+}
+//### two-resource-knapsack
+class Solution {
+    public int maxItemsTwoBudgets(int[][] items, int zeros, int ones) {
+        int[][] best = new int[zeros + 1][ones + 1];
+        for (int[] item : items) {
+            int zc = item[0], oc = item[1];
+            for (int a = zeros; a >= zc; a--)
+                for (int b = ones; b >= oc; b--)
+                    best[a][b] = Math.max(best[a][b], best[a - zc][b - oc] + 1);
+        }
+        return best[zeros][ones];
+    }
+}
+//### interleaving-strings-check
+class Solution {
+    public boolean isInterleaving(String a, String b, String c) {
+        if (a.length() + b.length() != c.length()) return false;
+        int m = a.length(), n = b.length();
+        boolean[] row = new boolean[n + 1];
+        row[0] = true;
+        for (int j = 1; j <= n; j++) row[j] = row[j - 1] && b.charAt(j - 1) == c.charAt(j - 1);
+        for (int i = 1; i <= m; i++) {
+            row[0] = row[0] && a.charAt(i - 1) == c.charAt(i - 1);
+            for (int j = 1; j <= n; j++)
+                row[j] = (row[j] && a.charAt(i - 1) == c.charAt(i + j - 1)) || (row[j - 1] && b.charAt(j - 1) == c.charAt(i + j - 1));
+        }
+        return row[n];
+    }
+}
+//### distinct-subsequence-count
+class Solution {
+    public int countDistinctSubsequences(String s, String t) {
+        int m = t.length();
+        long[] ways = new long[m + 1];
+        ways[0] = 1;
+        for (int i = 0; i < s.length(); i++) {
+            for (int j = m; j >= 1; j--) if (s.charAt(i) == t.charAt(j - 1)) ways[j] += ways[j - 1];
+        }
+        return (int) ways[m];
+    }
+}
+//### min-falling-path-sum
+class Solution {
+    public int minFallingPathSum(int[][] matrix) {
+        int rows = matrix.length, cols = matrix[0].length;
+        int[] best = matrix[0].clone();
+        for (int r = 1; r < rows; r++) {
+            int[] next = new int[cols];
+            for (int c = 0; c < cols; c++) {
+                int low = best[c];
+                if (c > 0) low = Math.min(low, best[c - 1]);
+                if (c + 1 < cols) low = Math.min(low, best[c + 1]);
+                next[c] = matrix[r][c] + low;
+            }
+            best = next;
+        }
+        int answer = best[0];
+        for (int v : best) answer = Math.min(answer, v);
+        return answer;
+    }
+}
+//### domino-tromino-tilings
+class Solution {
+    public int countTilings(int n) {
+        final long MOD = 1000000007L;
+        if (n <= 2) return new int[]{1, 1, 2}[n];
+        long a = 1, b = 1, c = 2;
+        for (int i = 3; i <= n; i++) { long next = (2 * c + a) % MOD; a = b; b = c; c = next; }
+        return (int) c;
+    }
+}
+//### regex-star-match
+class Solution {
+    public boolean regexStarMatch(String text, String pattern) {
+        int n = text.length(), m = pattern.length();
+        boolean[][] table = new boolean[n + 1][m + 1];
+        table[0][0] = true;
+        for (int j = 1; j <= m; j++) if (pattern.charAt(j - 1) == '*') table[0][j] = table[0][j - 2];
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                if (pattern.charAt(j - 1) == '*') {
+                    char before = pattern.charAt(j - 2);
+                    table[i][j] = table[i][j - 2] || ((before == '.' || before == text.charAt(i - 1)) && table[i - 1][j]);
+                } else {
+                    char here = pattern.charAt(j - 1);
+                    table[i][j] = (here == '.' || here == text.charAt(i - 1)) && table[i - 1][j - 1];
+                }
+            }
+        }
+        return table[n][m];
+    }
+}
+//### ascii-delete-sum
+class Solution {
+    public int minAsciiDeleteSum(String s1, String s2) {
+        int n = s1.length(), m = s2.length();
+        int[] keep = new int[m + 1];
+        for (int i = 1; i <= n; i++) {
+            int previousDiagonal = 0;
+            for (int j = 1; j <= m; j++) {
+                int saved = keep[j];
+                if (s1.charAt(i - 1) == s2.charAt(j - 1)) keep[j] = previousDiagonal + s1.charAt(i - 1);
+                else keep[j] = Math.max(keep[j], keep[j - 1]);
+                previousDiagonal = saved;
+            }
+        }
+        int total = 0;
+        for (char ch : s1.toCharArray()) total += ch;
+        for (char ch : s2.toCharArray()) total += ch;
+        return total - 2 * keep[m];
+    }
+}

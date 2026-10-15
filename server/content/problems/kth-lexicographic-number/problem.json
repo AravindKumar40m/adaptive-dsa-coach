@@ -1,0 +1,23 @@
+{
+  "slug": "kth-lexicographic-number",
+  "title": "The K-th Number in Dictionary Order",
+  "concept": "recursion",
+  "difficulty": "hard",
+  "statement": "Write the numbers `1, 2, ..., n` as texts and sort them in **dictionary order** (compare character by character; a shorter text that is the start of a longer one comes first). For `n = 13` the order is `1, 10, 11, 12, 13, 2, 3, 4, 5, 6, 7, 8, 9`.\n\nReturn the `k`-th number in this order (counting from `1`).",
+  "constraints": [
+    "1 <= k <= n <= 1000000000"
+  ],
+  "signature": { "name": "kth_lexicographic", "params": [{ "name": "n", "type": "int" }, { "name": "k", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [25, 7], "expected": 15, "explanation": "The order starts 1, 10, 11, 12, 13, 14, 15, ...: the 7th is 15." },
+    { "args": [25, 12], "expected": 2, "explanation": "After 1 and its 11 descendants (10..19) comes 2." }
+  ],
+  "edgeTests": [[1, 1], [9, 9], [10, 10], [100, 1], [100, 3], [999999, 999999], [1000000000, 100]],
+  "expected": { "time": "O(log^2 n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Picture all the numbers as a tree: 1 has the children 10 to 19, 10 has the children 100 to 109, and so on, and the dictionary order is the order in which a depth-first walk visits them. How many numbers are in the subtree of a given number?",
+    "pattern": "Walk down the tree without visiting every number: for the current prefix count how many numbers (up to n) start with it; if the k-th is not inside, skip the whole subtree and go to the next prefix; otherwise go one level deeper.",
+    "pseudocode": "current = 1; k = k - 1\nwhile k > 0:\n  size = how many numbers <= n start with current   (count level by level: [c, c], [10c, 10c + 9], [100c, 100c + 99], ... cut at n)\n  if size <= k: k -= size; current += 1       (skip the whole subtree)\n  else: current *= 10; k -= 1                  (go to the first child)\nreturn current",
+    "walkthrough": "Sorting the texts of all numbers is O(n log n) and impossible for n = 10^9. Use the tree view: the children of a prefix p are 10p, 10p + 1, ..., 10p + 9, and the numbers in the subtree of p are found level by level as the ranges [p, p], [10p, 10p + 9], [100p, 100p + 99], ..., each cut at n. Their total is the subtree size. Start at 1 and use up k - 1 steps: if the whole subtree of the current prefix is not larger than the remaining steps, jump to the next sibling (prefix + 1) and subtract the subtree size; otherwise the answer is inside it: step to the first child (prefix * 10) and use one step. Each decision costs O(log n) and there are O(log n) levels, so O(log^2 n) overall. The ranges can reach 10^10, so use 64-bit numbers."
+  }
+}

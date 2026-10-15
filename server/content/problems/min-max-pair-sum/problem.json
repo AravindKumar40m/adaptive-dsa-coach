@@ -1,0 +1,24 @@
+{
+  "slug": "min-max-pair-sum",
+  "title": "Pair Them Up Fairly",
+  "concept": "sorting",
+  "difficulty": "medium",
+  "statement": "`numbers` has an **even** length. Split **all** the numbers into pairs (every number is in exactly one pair). The **cost** of a pairing is the **largest sum** of the two numbers in any pair.\n\nReturn the **smallest possible cost** over all ways to pair the numbers. An empty list has cost `0`.",
+  "constraints": [
+    "0 <= len(numbers) <= 100000, the length is even",
+    "1 <= numbers[i] <= 100000"
+  ],
+  "signature": { "name": "min_max_pair_sum", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 8, 4, 6, 2, 5]], "expected": 9, "explanation": "Sorted: 1, 2, 4, 5, 6, 8. Pair 1 with 8 (9), 2 with 6 (8), 4 with 5 (9): the largest pair sum is 9." },
+    { "args": [[4, 4]], "expected": 8, "explanation": "One pair: 4 + 4." }
+  ],
+  "edgeTests": [[[]], [[1, 1]], [[1, 2, 3, 4]], [[10, 1]], [[5, 5, 5, 5]], [[1, 100, 1, 100]]],
+  "expected": { "time": "O(n log n)", "space": "O(1) besides sorting" },
+  "hints": {
+    "nudge": "The biggest number will be in some pair. Who is the best partner for it?",
+    "pattern": "Sort, then pair the smallest with the largest, the second smallest with the second largest, and so on; the answer is the largest of these sums.",
+    "pseudocode": "sort numbers\nbest = 0\nfor i in 0 .. n / 2 - 1: best = max(best, numbers[i] + numbers[n - 1 - i])\nreturn best",
+    "walkthrough": "Trying every pairing is far too many (for 2k numbers there are (2k - 1)!! of them). Think about the largest number L: whoever is paired with it gives a sum of at least L + (that partner), so the best partner is the smallest number; pairing L with anything larger than the smallest only makes that pair's sum bigger. The same argument applies to the remaining numbers: pair the largest remaining with the smallest remaining. After sorting these pairs are (first, last), (second, second last), ... and the answer is the biggest of their sums. Sorting costs O(n log n)."
+  }
+}

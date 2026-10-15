@@ -1,0 +1,24 @@
+{
+  "slug": "lucky-numbers-in-matrix",
+  "title": "Lucky Cells of a Table",
+  "concept": "arrays",
+  "difficulty": "easy",
+  "statement": "A cell of `matrix` is **lucky** if its number is the **smallest in its row** and also the **largest in its column** (equal numbers count as ties: a cell that equals the smallest of its row still has the smallest value).\n\nReturn the numbers of all lucky cells (one entry per lucky cell), in **increasing order**. If there is none, return an empty list.",
+  "constraints": [
+    "1 <= rows, columns <= 300",
+    "-1000000 <= matrix[r][c] <= 1000000"
+  ],
+  "signature": { "name": "lucky_values", "params": [{ "name": "matrix", "type": "int[][]" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[[5, 2, 9], [8, 3, 7], [4, 1, 6]]], "expected": [3], "explanation": "The 3 is the smallest of its row [8, 3, 7] and the largest of its column [2, 3, 1]." },
+    { "args": [[[3, 1], [2, 4]]], "expected": [], "explanation": "The row minimums are 1 and 2; neither is the largest of its column." }
+  ],
+  "edgeTests": [[[[7]]], [[[2, 2], [2, 2]]], [[[1, 2, 3]]], [[[1], [2], [3]]], [[[4, 4, 1], [3, 5, 2]]]],
+  "expected": { "time": "O(rows * columns)", "space": "O(rows + columns)" },
+  "hints": {
+    "nudge": "To decide about a cell you need the smallest number of its row and the largest number of its column. Do you need to search for them again for every cell?",
+    "pattern": "Compute the minimum of every row and the maximum of every column once, then check every cell against both.",
+    "pseudocode": "rowMin[r] = smallest in row r; colMax[c] = largest in column c\nresult = []\nfor each cell (r, c): if matrix[r][c] == rowMin[r] and matrix[r][c] == colMax[c]: result.append(matrix[r][c])\nsort result; return it",
+    "walkthrough": "Scanning the row and the column of every cell again costs O(rows * columns * (rows + columns)). One pass over the matrix is enough to fill two helper lists: the smallest value of each row and the largest of each column. Then a second pass keeps a cell when its value equals both its row's minimum and its column's maximum. When values can repeat, several cells can be lucky (a table of all equal numbers makes every cell lucky), so collect one entry per lucky cell and sort at the end."
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "slug": "flatten-to-right-chain",
+  "title": "Flatten a Tree Into a Chain",
+  "concept": "trees",
+  "difficulty": "medium",
+  "statement": "Re-link the nodes of a binary tree so that it becomes a **chain**: every node has **no left child** and its **right child is the next node in preorder** (root, then the whole left subtree, then the whole right subtree). Re-use the existing nodes. Return the root of the chain (the same node as before; an empty tree stays empty).",
+  "constraints": [
+    "0 <= number of nodes <= 100000",
+    "-1000 <= node value <= 1000"
+  ],
+  "signature": { "name": "flatten_to_chain", "params": [{ "name": "root", "type": "TreeNode" }], "returns": "TreeNode" },
+  "examples": [
+    { "args": [[4, 2, 7, 1, 3]], "expected": [4, null, 2, null, 1, null, 3, null, 7], "explanation": "The preorder is 4, 2, 1, 3, 7; each node's right child is the next one." },
+    { "args": [[]], "expected": [], "explanation": "Nothing to flatten." }
+  ],
+  "edgeTests": [[[1]], [[1, 2]], [[1, null, 2]], [[1, 2, 3]], [[3, 1, null, null, 2]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "In the chain, what comes right after a node that has a left subtree? And where does the old right subtree end up?",
+    "pattern": "For each node with a left child: find the rightmost node of the left subtree, hang the old right subtree below it, then move the left subtree to the right and clear the left link; move to the right child and repeat.",
+    "pseudocode": "cur = root\nwhile cur:\n  if cur.left:\n    last = cur.left; while last.right: last = last.right\n    last.right = cur.right\n    cur.right = cur.left; cur.left = none\n  cur = cur.right\nreturn root",
+    "walkthrough": "Preorder visits a node, then the entire left subtree, then the entire right subtree. So in the chain, the node that follows the LAST node of the left subtree is the old right child. The last node of the left subtree in preorder is its rightmost node (follow right links as far as possible). Therefore: take the current node's left subtree, attach the old right subtree to its rightmost node, move the whole thing to the right side and set left to empty. Then step to the right child and repeat. Every link is rewired a constant number of times and the 'find the rightmost node' walks are over disjoint paths overall, so the time is O(n) with O(1) extra memory (no recursion, no stack)."
+  }
+}

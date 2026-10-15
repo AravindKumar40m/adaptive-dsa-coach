@@ -1,0 +1,24 @@
+{
+  "slug": "valid-number-format",
+  "title": "Is This Text a Valid Decimal Number",
+  "concept": "strings",
+  "difficulty": "hard",
+  "statement": "Decide whether `text` is a valid **decimal number** according to these rules (there are no spaces):\n1. An optional sign: `+` or `-`.\n2. Then the number itself, in one of these forms: **digits** (`12`), **digits followed by a dot** (`12.`), **a dot followed by digits** (`.5`), or **digits, a dot, digits** (`12.5`). At least one digit must appear in this part.\n3. Then an optional **exponent**: the letter `e` or `E`, an optional sign, and **at least one digit** (`e-7`).\n\nNothing else may appear. Return `true` if the whole text follows the rules.",
+  "constraints": [
+    "0 <= len(text) <= 20",
+    "text can contain any printable characters"
+  ],
+  "signature": { "name": "valid_number", "params": [{ "name": "text", "type": "string" }], "returns": "bool" },
+  "examples": [
+    { "args": ["-12.5e+3"], "expected": true, "explanation": "Sign, number 12.5, exponent e+3." },
+    { "args": ["1e"], "expected": false, "explanation": "An exponent needs at least one digit." }
+  ],
+  "edgeTests": [[""], ["+"], ["0"], ["."], ["e3"], ["1e5"], ["1e5.5"], ["--1"], ["1.2.3"], ["+.8"], ["4.e2"], ["95a54e53"]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Read the text from left to right and keep track of which part you are in: sign, whole digits, dot, fraction digits, exponent. What must be true before you may move to the next part?",
+    "pattern": "A small state machine (or a careful pointer walk): optional sign, count the digits before and after one optional dot (at least one digit in total), then an optional exponent with an optional sign and at least one digit, and nothing left over.",
+    "pseudocode": "i = 0; if text[i] is + or -: i += 1\nbefore = digits at i (advance i); if text[i] == '.': i += 1; after = digits at i (advance i)\nif before + after == 0: return false\nif text[i] is e or E: i += 1; if text[i] is + or -: i += 1; exp = digits at i (advance i); if exp == 0: return false\nreturn i == len(text)",
+    "walkthrough": "A regular expression such as [+-]?([0-9]+\\.?[0-9]*|\\.[0-9]+)([eE][+-]?[0-9]+)? describes the rules in one line, but writing the walk by hand makes every rule explicit. Skip one optional sign. Count the digits before the optional dot and the digits after it: if both are zero, there is no number at all (so `.`, `+` and `e3` fail). Then, if an `e` or `E` follows, an exponent must follow: an optional sign and at least one digit. Finally the whole text must be used up: if characters are left over (`1.2.3`, `95a54e53`, `1e5.5`) the answer is false. Each character is looked at once: O(n)."
+  }
+}

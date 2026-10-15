@@ -1,0 +1,137 @@
+//### set-mismatch-pair
+vector<int> find_duplicate_missing(vector<int>& numbers) {
+    int n = (int) numbers.size();
+    vector<char> seen(n + 1, 0);
+    int repeated = 0;
+    long long total = 0;
+    for (int x : numbers) {
+        if (seen[x]) repeated = x; else seen[x] = 1;
+        total += x;
+    }
+    long long missing = (long long) n * (n + 1) / 2 - (total - repeated);
+    return vector<int>{repeated, (int) missing};
+}
+//### running-balance-min-start
+int min_start_value(vector<int>& changes) {
+    long long prefix = 0, lowest = 0;
+    for (int c : changes) {
+        prefix += c;
+        lowest = min(lowest, prefix);
+    }
+    return (int) (1 - lowest);
+}
+//### diagonal-traverse
+vector<int> diagonal_order(vector<vector<int>>& matrix) {
+    int rows = (int) matrix.size(), cols = (int) matrix[0].size();
+    vector<int> out;
+    for (int d = 0; d < rows + cols - 1; d++) {
+        int lo = max(0, d - cols + 1), hi = min(rows - 1, d);
+        if (d % 2 == 0) {
+            for (int r = hi; r >= lo; r--) out.push_back(matrix[r][d - r]);
+        } else {
+            for (int r = lo; r <= hi; r++) out.push_back(matrix[r][d - r]);
+        }
+    }
+    return out;
+}
+//### pivot-index-balance
+int pivot_index(vector<int>& numbers) {
+    long long total = 0;
+    for (int x : numbers) total += x;
+    long long left = 0;
+    for (int i = 0; i < (int) numbers.size(); i++) {
+        if (left == total - left - numbers[i]) return i;
+        left += numbers[i];
+    }
+    return -1;
+}
+//### lucky-numbers-in-matrix
+vector<int> lucky_values(vector<vector<int>>& matrix) {
+    int rows = (int) matrix.size(), cols = (int) matrix[0].size();
+    vector<int> row_min(rows, INT_MAX), col_max(cols, INT_MIN);
+    for (int r = 0; r < rows; r++) {
+        for (int c = 0; c < cols; c++) {
+            row_min[r] = min(row_min[r], matrix[r][c]);
+            col_max[c] = max(col_max[c], matrix[r][c]);
+        }
+    }
+    vector<int> out;
+    for (int r = 0; r < rows; r++) {
+        for (int c = 0; c < cols; c++) {
+            if (matrix[r][c] == row_min[r] && matrix[r][c] == col_max[c]) out.push_back(matrix[r][c]);
+        }
+    }
+    sort(out.begin(), out.end());
+    return out;
+}
+//### shortest-unsorted-stretch
+int unsorted_stretch_length(vector<int>& numbers) {
+    int n = (int) numbers.size(), end = -1, start = 0;
+    long long biggest = LLONG_MIN, smallest = LLONG_MAX;
+    for (int i = 0; i < n; i++) {
+        if (numbers[i] < biggest) end = i; else biggest = numbers[i];
+    }
+    for (int i = n - 1; i >= 0; i--) {
+        if (numbers[i] > smallest) start = i; else smallest = numbers[i];
+    }
+    return end - start + 1;
+}
+//### increasing-triplet-exists
+bool has_increasing_triplet(vector<int>& numbers) {
+    long long first = LLONG_MAX, second = LLONG_MAX;
+    for (int x : numbers) {
+        if (x <= first) first = x;
+        else if (x <= second) second = x;
+        else return true;
+    }
+    return false;
+}
+//### relative-sort-order
+vector<int> relative_sort(vector<int>& values, vector<int>& order) {
+    unordered_map<int, int> position;
+    for (int i = 0; i < (int) order.size(); i++) position[order[i]] = i;
+    int none = (int) order.size();
+    vector<int> out = values;
+    auto rank = [&](int v) { auto it = position.find(v); return it == position.end() ? none : it->second; };
+    sort(out.begin(), out.end(), [&](int a, int b) {
+        int ra = rank(a), rb = rank(b);
+        if (ra != rb) return ra < rb;
+        return a < b;
+    });
+    return out;
+}
+//### digit-sum-sort
+int digit_sum_of(int x) {
+    int total = 0;
+    while (x > 0) { total += x % 10; x /= 10; }
+    return total;
+}
+
+vector<int> sort_by_digit_sum(vector<int>& numbers) {
+    vector<int> out = numbers;
+    sort(out.begin(), out.end(), [](int a, int b) {
+        int da = digit_sum_of(a), db = digit_sum_of(b);
+        if (da != db) return da < db;
+        return a < b;
+    });
+    return out;
+}
+//### minimum-swaps-to-sort
+int min_swaps_to_sort(vector<int>& numbers) {
+    int n = (int) numbers.size();
+    vector<int> order(n);
+    for (int i = 0; i < n; i++) order[i] = i;
+    sort(order.begin(), order.end(), [&](int a, int b) { return numbers[a] < numbers[b]; });
+    vector<int> target(n);
+    for (int rank = 0; rank < n; rank++) target[order[rank]] = rank;
+    vector<char> visited(n, 0);
+    int cycles = 0;
+    for (int i = 0; i < n; i++) {
+        if (!visited[i]) {
+            cycles++;
+            int j = i;
+            while (!visited[j]) { visited[j] = 1; j = target[j]; }
+        }
+    }
+    return n - cycles;
+}

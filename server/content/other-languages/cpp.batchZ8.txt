@@ -1,0 +1,147 @@
+//### bag-of-tokens-score
+int bag_of_tokens_score(vector<int>& tokens, int power) {
+    vector<int> a = tokens;
+    sort(a.begin(), a.end());
+    int lo = 0, hi = (int) a.size() - 1, score = 0, best = 0;
+    while (lo <= hi) {
+        if (power >= a[lo]) { power -= a[lo]; lo++; score++; best = max(best, score); }
+        else if (score > 0) { power += a[hi]; hi--; score--; }
+        else break;
+    }
+    return best;
+}
+//### maximum-swap-digits
+int maximum_swap_digits(int num) {
+    string digits = to_string(num);
+    int last[10];
+    for (int d = 0; d < 10; d++) last[d] = -1;
+    for (int i = 0; i < (int) digits.size(); i++) last[digits[i] - '0'] = i;
+    for (int i = 0; i < (int) digits.size(); i++) {
+        for (int d = 9; d > digits[i] - '0'; d--) {
+            if (last[d] > i) {
+                swap(digits[i], digits[last[d]]);
+                return stoi(digits);
+            }
+        }
+    }
+    return num;
+}
+//### consecutive-runs-split
+bool can_split_consecutive_runs(vector<int>& numbers) {
+    unordered_map<long long, int> count, need;
+    for (int x : numbers) count[x]++;
+    for (int xi : numbers) {
+        long long x = xi;
+        if (count[x] == 0) continue;
+        count[x]--;
+        if (need[x] > 0) {
+            need[x]--;
+            need[x + 1]++;
+        } else if (count[x + 1] > 0 && count[x + 2] > 0) {
+            count[x + 1]--;
+            count[x + 2]--;
+            need[x + 3]++;
+        } else return false;
+    }
+    return true;
+}
+//### star-brackets-valid
+bool star_brackets_valid(string text) {
+    int low = 0, high = 0;
+    for (char c : text) {
+        if (c == '(') { low++; high++; }
+        else if (c == ')') { low--; high--; }
+        else { low--; high++; }
+        if (high < 0) return false;
+        low = max(low, 0);
+    }
+    return low == 0;
+}
+//### one-change-non-decreasing
+bool one_change_non_decreasing(vector<int>& numbers) {
+    vector<int> a = numbers;
+    int changes = 0;
+    for (int i = 0; i + 1 < (int) a.size(); i++) {
+        if (a[i] > a[i + 1]) {
+            changes++;
+            if (changes > 1) return false;
+            if (i == 0 || a[i - 1] <= a[i + 1]) a[i] = a[i + 1];
+            else a[i + 1] = a[i];
+        }
+    }
+    return true;
+}
+//### domino-rotations-min
+int domino_check(vector<int>& tops, vector<int>& bottoms, int x) {
+    int rotate_top = 0, rotate_bottom = 0;
+    for (int i = 0; i < (int) tops.size(); i++) {
+        if (tops[i] != x && bottoms[i] != x) return INT_MAX;
+        if (tops[i] != x) rotate_top++;
+        else if (bottoms[i] != x) rotate_bottom++;
+    }
+    return min(rotate_top, rotate_bottom);
+}
+
+int min_domino_rotations(vector<int>& tops, vector<int>& bottoms) {
+    if (tops.empty()) return 0;
+    int best = min(domino_check(tops, bottoms, tops[0]), domino_check(tops, bottoms, bottoms[0]));
+    return best == INT_MAX ? -1 : best;
+}
+//### longest-limited-spread-run
+int longest_limited_spread_run(vector<int>& numbers, int limit) {
+    deque<int> big, small;
+    int left = 0, best = 0;
+    for (int right = 0; right < (int) numbers.size(); right++) {
+        int x = numbers[right];
+        while (!big.empty() && numbers[big.back()] <= x) big.pop_back();
+        big.push_back(right);
+        while (!small.empty() && numbers[small.back()] >= x) small.pop_back();
+        small.push_back(right);
+        while ((long long) numbers[big.front()] - numbers[small.front()] > limit) {
+            left++;
+            if (big.front() < left) big.pop_front();
+            if (small.front() < left) small.pop_front();
+        }
+        best = max(best, right - left + 1);
+    }
+    return best;
+}
+//### count-nice-subarrays
+int count_nice_subarrays(vector<int>& numbers, int k) {
+    vector<int> seen(numbers.size() + 2, 0);
+    seen[0] = 1;
+    int odd = 0;
+    long long total = 0;
+    for (int x : numbers) {
+        odd += x % 2;
+        if (odd - k >= 0) total += seen[odd - k];
+        seen[odd]++;
+    }
+    return (int) total;
+}
+//### longest-turbulent-run
+int longest_turbulent_run(vector<int>& numbers) {
+    if (numbers.empty()) return 0;
+    int up = 1, down = 1, best = 1;
+    for (int i = 1; i < (int) numbers.size(); i++) {
+        if (numbers[i] > numbers[i - 1]) { int u = down + 1; down = 1; up = u; }
+        else if (numbers[i] < numbers[i - 1]) { int d = up + 1; up = 1; down = d; }
+        else { up = 1; down = 1; }
+        best = max(best, max(up, down));
+    }
+    return best;
+}
+//### max-erasure-value
+int max_erasure_value(vector<int>& numbers) {
+    unordered_set<int> window;
+    int left = 0;
+    long long total = 0, best = 0;
+    for (int right = 0; right < (int) numbers.size(); right++) {
+        int x = numbers[right];
+        while (window.count(x)) { window.erase(numbers[left]); total -= numbers[left]; left++; }
+        window.insert(x);
+        total += x;
+        best = max(best, total);
+    }
+    return (int) best;
+}

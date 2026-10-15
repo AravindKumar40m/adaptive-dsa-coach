@@ -1,0 +1,24 @@
+{
+  "slug": "reverse-words-in-text",
+  "title": "Reverse the Order of the Words",
+  "concept": "strings",
+  "difficulty": "easy",
+  "statement": "`text` contains words separated by spaces; there may be **extra spaces** at the start, at the end and between words. Return the words in **reverse order**, joined by **exactly one space**, with no space at the start or the end. The letters inside each word keep their order.",
+  "constraints": [
+    "0 <= len(text) <= 100000",
+    "text contains lowercase letters and spaces"
+  ],
+  "signature": { "name": "reverse_words", "params": [{ "name": "text", "type": "string" }], "returns": "string" },
+  "examples": [
+    { "args": ["  hello   brave new world "], "expected": "world new brave hello", "explanation": "The extra spaces disappear and the four words come out in reverse order." },
+    { "args": ["single"], "expected": "single", "explanation": "One word stays as it is." }
+  ],
+  "edgeTests": [[""], [" "], ["a b"], ["  a  "], ["one two three"]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "First split the text into words, ignoring empty pieces. Then you only need to reverse a list.",
+    "pattern": "Split on whitespace (dropping empty pieces), reverse the list of words and join with one space. Or scan from the end of the text and copy the words.",
+    "pseudocode": "words = pieces of text between spaces, skipping empty pieces\nreverse words\nreturn words joined by one space",
+    "walkthrough": "Many languages have a split that treats runs of spaces as one separator; if yours does not, split on single spaces and throw away the empty pieces that extra spaces produce. Reverse the list and join it with one space; an empty list joins to the empty text. Without library helpers you can scan the text from the right: skip spaces, find the end of a word, copy it, add one space between words. O(n) time, O(n) memory."
+  }
+}

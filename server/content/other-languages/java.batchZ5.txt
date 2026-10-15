@@ -1,0 +1,175 @@
+//### remove-all-duplicate-values
+class Solution {
+    public ListNode removeAllDuplicates(ListNode head) {
+        ListNode dummy = new ListNode(0, head);
+        ListNode prev = dummy, cur = head;
+        while (cur != null) {
+            if (cur.next != null && cur.next.val == cur.val) {
+                int v = cur.val;
+                while (cur != null && cur.val == v) cur = cur.next;
+                prev.next = cur;
+            } else {
+                prev = cur;
+                cur = cur.next;
+            }
+        }
+        return dummy.next;
+    }
+}
+//### double-digit-list
+class Solution {
+    public ListNode doubleDigitList(ListNode head) {
+        List<Integer> digits = new ArrayList<>();
+        for (ListNode node = head; node != null; node = node.next) digits.add(node.val);
+        int carry = 0;
+        for (int i = digits.size() - 1; i >= 0; i--) {
+            int v = digits.get(i) * 2 + carry;
+            digits.set(i, v % 10);
+            carry = v / 10;
+        }
+        if (carry > 0) digits.add(0, carry);
+        ListNode dummy = new ListNode(0);
+        ListNode tail = dummy;
+        for (int d : digits) { tail.next = new ListNode(d); tail = tail.next; }
+        return dummy.next;
+    }
+}
+//### min-depth
+class Solution {
+    public int treeMinDepth(TreeNode root) {
+        if (root == null) return 0;
+        ArrayDeque<TreeNode> nodes = new ArrayDeque<>();
+        ArrayDeque<Integer> levels = new ArrayDeque<>();
+        nodes.add(root);
+        levels.add(1);
+        while (!nodes.isEmpty()) {
+            TreeNode node = nodes.poll();
+            int level = levels.poll();
+            if (node.left == null && node.right == null) return level;
+            if (node.left != null) { nodes.add(node.left); levels.add(level + 1); }
+            if (node.right != null) { nodes.add(node.right); levels.add(level + 1); }
+        }
+        return 0;
+    }
+}
+//### sum-left-leaves
+class Solution {
+    private int walk(TreeNode node) {
+        if (node == null) return 0;
+        int total = 0;
+        if (node.left != null && node.left.left == null && node.left.right == null) total += node.left.val;
+        else total += walk(node.left);
+        return total + walk(node.right);
+    }
+
+    public int sumLeftLeaves(TreeNode root) {
+        return walk(root);
+    }
+}
+//### is-subtree
+class Solution {
+    private void text(TreeNode node, StringBuilder out) {
+        if (node == null) { out.append("#,"); return; }
+        out.append("^").append(node.val).append(",");
+        text(node.left, out);
+        text(node.right, out);
+    }
+
+    public boolean isSubtree(TreeNode root, TreeNode sub) {
+        StringBuilder a = new StringBuilder(","), b = new StringBuilder(",");
+        text(root, a);
+        text(sub, b);
+        return a.indexOf(b.toString()) >= 0;
+    }
+}
+//### longest-univalue-path
+class Solution {
+    private int best;
+
+    private int down(TreeNode node) {
+        if (node == null) return 0;
+        int left = down(node.left), right = down(node.right);
+        int leftArm = node.left != null && node.left.val == node.val ? left + 1 : 0;
+        int rightArm = node.right != null && node.right.val == node.val ? right + 1 : 0;
+        best = Math.max(best, leftArm + rightArm);
+        return Math.max(leftArm, rightArm);
+    }
+
+    public int longestUnivaluePath(TreeNode root) {
+        best = 0;
+        down(root);
+        return best;
+    }
+}
+//### flatten-to-right-chain
+class Solution {
+    public TreeNode flattenToChain(TreeNode root) {
+        TreeNode cur = root;
+        while (cur != null) {
+            if (cur.left != null) {
+                TreeNode last = cur.left;
+                while (last.right != null) last = last.right;
+                last.right = cur.right;
+                cur.right = cur.left;
+                cur.left = null;
+            }
+            cur = cur.right;
+        }
+        return root;
+    }
+}
+//### nodes-at-distance-k
+class Solution {
+    private int found;
+    private int target, k;
+
+    private int collect(TreeNode node, int depth) {
+        if (node == null) return 0;
+        if (depth == 0) return 1;
+        return collect(node.left, depth - 1) + collect(node.right, depth - 1);
+    }
+
+    private int go(TreeNode node) {
+        if (node == null) return -1;
+        if (node.val == target) { found += collect(node, k); return 0; }
+        int left = go(node.left);
+        if (left != -1) {
+            int dist = left + 1;
+            if (dist == k) found += 1;
+            else if (dist < k) found += collect(node.right, k - dist - 1);
+            return dist;
+        }
+        int right = go(node.right);
+        if (right != -1) {
+            int dist = right + 1;
+            if (dist == k) found += 1;
+            else if (dist < k) found += collect(node.left, k - dist - 1);
+            return dist;
+        }
+        return -1;
+    }
+
+    public int countNodesAtDistance(TreeNode root, int target, int k) {
+        this.found = 0;
+        this.target = target;
+        this.k = k;
+        go(root);
+        return found;
+    }
+}
+//### hanoi-move-count
+class Solution {
+    public int hanoiMoveCount(int n) {
+        return (1 << n) - 1;
+    }
+}
+//### strobogrammatic-count
+class Solution {
+    public int strobogrammaticCount(int n) {
+        if (n == 1) return 3;
+        int pairs = n / 2;
+        long result = n % 2 == 1 ? 3 : 1;
+        for (int i = 0; i < pairs; i++) result *= i == 0 ? 4 : 5;
+        return (int) result;
+    }
+}

@@ -1,0 +1,24 @@
+{
+  "slug": "consecutive-descending-split",
+  "title": "Split Into a Countdown",
+  "concept": "backtracking",
+  "difficulty": "medium",
+  "statement": "`digits` is a text of digits. Can you cut it into **at least two** non-empty pieces (together they give back the text, in order) so that the numbers the pieces represent form a **countdown**: each piece is exactly **1 less** than the piece before it? Leading zeros inside a piece are allowed and ignored (`004` is the number 4).\n\nReturn `true` if such a cutting exists, otherwise `false`.",
+  "constraints": [
+    "1 <= len(digits) <= 18",
+    "digits contains only the characters 0 to 9"
+  ],
+  "signature": { "name": "is_consecutive_descending", "params": [{ "name": "digits", "type": "string" }], "returns": "bool" },
+  "examples": [
+    { "args": ["4321"], "expected": true, "explanation": "4 | 3 | 2 | 1." },
+    { "args": ["1234"], "expected": false, "explanation": "The numbers would have to go up, not down." }
+  ],
+  "edgeTests": [["1"], ["0"], ["21"], ["10"], ["100099"], ["9998"], ["99100"], ["0009"], ["7654321"], ["100099098097"], ["123456789012345678"]],
+  "expected": { "time": "O(n^2)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Once you choose the first piece, the value of the next piece is fixed: it must be exactly one less. So what is left to decide?",
+    "pattern": "Backtracking: try every possible first piece (not the whole text); then repeatedly look for a piece that equals the previous value minus one, trying the lengths that match; succeed when the whole text is used.",
+    "pseudocode": "go(start, previous): if start == len: return true\n  for end in start + 1 .. len: v = value of digits[start..end); if v == previous - 1 and go(end, v): return true; if v > previous - 1: break\n  return false\nfor each first piece digits[0..end) with end < len: if go(end, its value): return true\nreturn false",
+    "walkthrough": "Trying all 2^(n-1) ways of cutting is too slow in general. After the first piece is fixed, the next piece's value is known (previous - 1), so you only have to find a prefix of the rest whose value equals it: as the piece grows its value never decreases (leading zeros do not change it), so you can stop as soon as the value is larger than the one you need. That keeps the search tiny: for every first piece the rest is a single chain of forced choices (with at most a few ways to spell a value using leading zeros). Values reach 10^18, so use 64-bit integers (or BigInt in JavaScript). A text with a single piece does not count: at least two pieces are required."
+  }
+}

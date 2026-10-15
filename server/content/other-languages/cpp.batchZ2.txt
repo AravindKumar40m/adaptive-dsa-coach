@@ -1,0 +1,103 @@
+//### smaller-to-the-right-counts
+vector<int> count_smaller_to_right(vector<int>& numbers) {
+    int n = (int) numbers.size();
+    vector<int> unique_values = numbers;
+    sort(unique_values.begin(), unique_values.end());
+    unique_values.erase(unique(unique_values.begin(), unique_values.end()), unique_values.end());
+    int m = (int) unique_values.size();
+    vector<int> tree(m + 2, 0), out(n, 0);
+    for (int i = n - 1; i >= 0; i--) {
+        int r = (int) (lower_bound(unique_values.begin(), unique_values.end(), numbers[i]) - unique_values.begin()) + 1;
+        int total = 0;
+        for (int k = r - 1; k > 0; k -= k & -k) total += tree[k];
+        out[i] = total;
+        for (int k = r; k <= m; k += k & -k) tree[k]++;
+    }
+    return out;
+}
+//### min-max-pair-sum
+int min_max_pair_sum(vector<int>& numbers) {
+    vector<int> a = numbers;
+    sort(a.begin(), a.end());
+    int n = (int) a.size(), result = 0;
+    for (int i = 0; i < n / 2; i++) result = max(result, a[i] + a[n - 1 - i]);
+    return result;
+}
+//### maximum-gap-sorted
+int max_sorted_gap(vector<int>& numbers) {
+    vector<int> a = numbers;
+    sort(a.begin(), a.end());
+    int best = 0;
+    for (int i = 0; i + 1 < (int) a.size(); i++) best = max(best, a[i + 1] - a[i]);
+    return best;
+}
+//### container-most-water
+int max_water_area(vector<int>& heights) {
+    int left = 0, right = (int) heights.size() - 1;
+    long long best = 0;
+    while (left < right) {
+        best = max(best, (long long) min(heights[left], heights[right]) * (right - left));
+        if (heights[left] < heights[right]) left++; else right--;
+    }
+    return (int) best;
+}
+//### is-subsequence
+bool is_subsequence(string s, string t) {
+    size_t i = 0;
+    for (char c : t) {
+        if (i < s.size() && s[i] == c) i++;
+    }
+    return i == s.size();
+}
+//### reverse-vowels
+string reverse_vowels(string text) {
+    auto is_vowel = [](char c) { return string("aeiouAEIOU").find(c) != string::npos; };
+    int left = 0, right = (int) text.size() - 1;
+    while (left < right) {
+        if (!is_vowel(text[left])) left++;
+        else if (!is_vowel(text[right])) right--;
+        else { swap(text[left], text[right]); left++; right--; }
+    }
+    return text;
+}
+//### valid-triangle-count
+int count_valid_triangles(vector<int>& sides) {
+    vector<int> a = sides;
+    sort(a.begin(), a.end());
+    long long count = 0;
+    for (int k = (int) a.size() - 1; k >= 2; k--) {
+        int i = 0, j = k - 1;
+        while (i < j) {
+            if (a[i] + a[j] > a[k]) { count += j - i; j--; } else i++;
+        }
+    }
+    return (int) count;
+}
+//### remove-duplicates-keep-two
+vector<int> keep_at_most_two(vector<int>& numbers) {
+    vector<int> out;
+    for (int x : numbers) {
+        if (out.size() < 2 || x != out[out.size() - 2]) out.push_back(x);
+    }
+    return out;
+}
+//### square-sum-exists
+bool is_sum_of_two_squares(int c) {
+    long long a = 0, b = (long long) sqrt((double) c);
+    while (a <= b) {
+        long long s = a * a + b * b;
+        if (s == c) return true;
+        if (s < c) a++; else b--;
+    }
+    return false;
+}
+//### ransom-note-possible
+bool can_build_note(string note, string magazine) {
+    vector<int> count(26, 0);
+    for (char ch : magazine) count[ch - 'a']++;
+    for (char ch : note) {
+        if (count[ch - 'a'] == 0) return false;
+        count[ch - 'a']--;
+    }
+    return true;
+}

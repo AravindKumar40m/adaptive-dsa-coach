@@ -1,0 +1,25 @@
+{
+  "slug": "regex-star-match",
+  "title": "Match Text Against a Small Pattern Language",
+  "concept": "dp",
+  "difficulty": "hard",
+  "statement": "Decide whether the **whole** text `text` matches the pattern `pattern`. The pattern can contain:\n- a **lowercase letter**, which matches exactly that letter;\n- `.`, which matches **any single letter**;\n- `*`, which comes right after another element and means **zero or more copies of that element** (`a*` matches the empty text, `a`, `aa`, ...; `.*` matches any text).\n\nThe pattern is always valid (a `*` never comes first and never follows another `*`). Return `true` if the **entire** text is matched.",
+  "constraints": [
+    "0 <= len(text) <= 100",
+    "0 <= len(pattern) <= 100",
+    "text contains lowercase letters; pattern contains lowercase letters, . and *"
+  ],
+  "signature": { "name": "regex_star_match", "params": [{ "name": "text", "type": "string" }, { "name": "pattern", "type": "string" }], "returns": "bool" },
+  "examples": [
+    { "args": ["abbbc", "ab*c"], "expected": true, "explanation": "a, then b* matches bbb, then c." },
+    { "args": ["abc", "a.*d"], "expected": false, "explanation": "a.* can match `abc`, but then the pattern still needs a `d`." }
+  ],
+  "edgeTests": [["", ""], ["", "a*"], ["a", ""], ["a", "."], ["ab", ".*"], ["aa", "a"], ["aaa", "a*a"], ["ab", ".*c"], ["aaa", "ab*a*c*a"]],
+  "expected": { "time": "O(len(text) * len(pattern))", "space": "O(len(text) * len(pattern))" },
+  "hints": {
+    "nudge": "Look at the first element of the pattern. If it is followed by a `*` there are two choices: use it zero times, or use it once and keep the same pattern element for the rest. What does that remind you of?",
+    "pattern": "Dynamic programming over prefixes: match[i][j] is true if the first i letters of the text match the first j elements of the pattern; handle `*` by either dropping the 'element*' pair, or consuming one letter and staying on the same element.",
+    "pseudocode": "match[0][0] = true; for j: if pattern[j - 1] == '*': match[0][j] = match[0][j - 2]\nfor i, j: if pattern[j - 1] == '*': match[i][j] = match[i][j - 2] or (letterFits(text[i - 1], pattern[j - 2]) and match[i - 1][j])\n          else: match[i][j] = letterFits(text[i - 1], pattern[j - 1]) and match[i - 1][j - 1]\nreturn match[len(text)][len(pattern)]\n(letterFits(a, p) is true when p == '.' or p == a)",
+    "walkthrough": "A plain recursion branches at every `*` and repeats the same (position in the text, position in the pattern) pairs, which is exponential. There are only (len(text) + 1) * (len(pattern) + 1) such pairs, so tabulate them. A pair (i, j) is about the first i letters and the first j pattern characters. If the last pattern character is a letter or a dot, the last text letter must fit it and the earlier parts must match. If it is a star, the element before it (pattern[j - 2]) can be used zero times (the star pair disappears: match[i][j - 2]) or at least once (the last text letter fits that element and the text without it still matches the SAME pattern: match[i - 1][j]). The empty text can match a pattern only if it is made of `x*` pairs. O(len(text) * len(pattern))."
+  }
+}

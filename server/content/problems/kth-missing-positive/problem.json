@@ -1,0 +1,25 @@
+{
+  "slug": "kth-missing-positive",
+  "title": "The K-th Missing Number",
+  "concept": "binary_search",
+  "difficulty": "medium",
+  "statement": "`numbers` is a list of **different positive whole numbers in increasing order**. The positive integers that do **not** appear in it are the **missing** numbers (in increasing order). For `[1, 4, 6, 9]` they are `2, 3, 5, 7, 8, 10, 11, ...`.\n\nReturn the `k`-th missing positive integer (counting from `1`).",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "1 <= numbers[i] <= 1000000000, strictly increasing",
+    "1 <= k <= 1000000000"
+  ],
+  "signature": { "name": "kth_missing_positive", "params": [{ "name": "numbers", "type": "int[]" }, { "name": "k", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 4, 6, 9], 4], "expected": 7, "explanation": "The missing numbers are 2, 3, 5, 7, ...: the 4th is 7." },
+    { "args": [[], 3], "expected": 3, "explanation": "Nothing is present, so 1, 2, 3, ... are all missing." }
+  ],
+  "edgeTests": [[[1, 2, 3], 1], [[5], 1], [[5], 5], [[2], 1], [[1, 2, 3, 4], 2], [[10, 20, 30], 15], [[1000000000], 1000000000]],
+  "expected": { "time": "O(log n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "At position i of the list (counting from 0) the value is numbers[i], so exactly numbers[i] - (i + 1) positive numbers below it are missing. How does that count behave as i grows?",
+    "pattern": "Binary search for the first position where the number of missing values so far reaches k; the answer is then k plus the number of list elements before that position.",
+    "pseudocode": "lo = 0; hi = n\nwhile lo < hi:\n  mid = (lo + hi) / 2\n  if numbers[mid] - (mid + 1) >= k: hi = mid else: lo = mid + 1\nreturn lo + k",
+    "walkthrough": "Counting up from 1 and skipping the numbers that are in the list is O(answer), and the answer can be 2 * 10^9. A linear scan over the list is already O(n): walk through the list and for each x <= the current candidate shift the candidate by one. In logarithmic time: missing(i) = numbers[i] - (i + 1) is the number of missing integers smaller than numbers[i], and it never decreases with i, so you can binary search for the first position where missing(i) >= k. The k-th missing number then lies before numbers[lo], and exactly lo list elements are smaller than it, so it equals k + lo. The answer can reach 2 * 10^9, which still fits in a 32-bit signed integer."
+  }
+}

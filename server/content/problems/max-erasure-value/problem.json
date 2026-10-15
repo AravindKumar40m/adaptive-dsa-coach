@@ -1,0 +1,24 @@
+{
+  "slug": "max-erasure-value",
+  "title": "The Best Stretch Without Repeats",
+  "concept": "sliding_window",
+  "difficulty": "medium",
+  "statement": "`numbers` contains positive whole numbers. Choose a **contiguous stretch** in which **all numbers are different**, and score the **sum** of its numbers. Return the **largest score**. An empty list scores `0`.",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "1 <= numbers[i] <= 10000"
+  ],
+  "signature": { "name": "max_erasure_value", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[5, 3, 5, 2, 3, 7]], "expected": 17, "explanation": "The stretch 5, 2, 3, 7 (positions 2 to 5) has all different numbers and sums to 17." },
+    { "args": [[1, 1, 1]], "expected": 1, "explanation": "Any stretch of two or more repeats a number: the best is a single 1." }
+  ],
+  "edgeTests": [[[]], [[9]], [[1, 2, 3]], [[2, 2, 2, 2]], [[1, 2, 1, 2, 3]]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "When you add a number that is already inside the stretch you have to cut the stretch. From which side, and how far?",
+    "pattern": "Sliding window with a set (or a map from value to last position) and a running sum: move the right end forward; while the new number is already in the window, drop numbers from the left end.",
+    "pseudocode": "left = 0; window = empty set; sum = 0; best = 0\nfor right in 0 .. n - 1:\n  while numbers[right] in window: window.remove(numbers[left]); sum -= numbers[left]; left += 1\n  window.add(numbers[right]); sum += numbers[right]; best = max(best, sum)\nreturn best",
+    "walkthrough": "Checking every stretch for repeats is O(n^2) or worse. A good stretch stays good when you shorten it, so a two-pointer window works: extend on the right; if the new number is already inside, the window is no longer valid, so remove numbers from the LEFT until the old copy has been removed, keeping the sum up to date. The set tells you in O(1) whether a number is inside. Each number enters and leaves the window once: O(n). Because all numbers are positive the sum of a window only grows when it grows, so the best score is the maximum over all valid windows seen (every right end gives the best window ending there). The sum is at most 10^4 * 10^4 / 2 = 5 * 10^7 (at most 10,000 different values), so it fits in a 32-bit integer."
+  }
+}

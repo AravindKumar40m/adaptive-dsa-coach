@@ -1,0 +1,24 @@
+{
+  "slug": "container-most-water",
+  "title": "The Biggest Water Tank",
+  "concept": "two_pointers",
+  "difficulty": "medium",
+  "statement": "`heights[i]` is the height of a wall standing at position `i` (the walls are one unit apart). Choose **two walls** and imagine a tank between them: its width is the distance between the two positions and its height is the **smaller** of the two walls (water would spill over the lower one). The tank's area is width times height.\n\nReturn the **largest area** you can get. With fewer than two walls the answer is `0`.",
+  "constraints": [
+    "0 <= len(heights) <= 100000",
+    "0 <= heights[i] <= 10000"
+  ],
+  "signature": { "name": "max_water_area", "params": [{ "name": "heights", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[3, 9, 2, 7, 6]], "expected": 18, "explanation": "The walls of height 9 (position 1) and 6 (position 4) are 3 apart, and the lower one is 6: 3 * 6 = 18." },
+    { "args": [[5]], "expected": 0, "explanation": "You need two walls." }
+  ],
+  "edgeTests": [[[]], [[1, 1]], [[2, 0, 2]], [[1, 2, 3, 4, 5, 6]], [[6, 5, 4, 3, 2, 1]], [[0, 0]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Start with the widest tank (the first and the last wall). To get a bigger area with a narrower tank, what MUST improve?",
+    "pattern": "Two pointers from both ends; always move the pointer at the LOWER wall inward, because moving the taller one can never help.",
+    "pseudocode": "left = 0; right = n - 1; best = 0\nwhile left < right:\n  best = max(best, min(h[left], h[right]) * (right - left))\n  if h[left] < h[right]: left += 1 else: right -= 1\nreturn best",
+    "walkthrough": "Checking every pair of walls is O(n^2). Start with the two outer walls: the widest possible tank. Its height is limited by the lower wall. If you move the TALLER wall inward, the width shrinks and the height can still be at most the lower wall: the area cannot grow. So the only move that might help is to move the lower wall inward, hoping for a taller one. Do that repeatedly, always computing the area before moving, and remember the best. Each step discards one wall, so the loop runs n - 1 times: O(n). The area is at most 10^4 * 10^5 = 10^9, which fits in a 32-bit integer."
+  }
+}

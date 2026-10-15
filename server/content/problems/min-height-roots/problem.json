@@ -1,0 +1,24 @@
+{
+  "slug": "min-height-roots",
+  "title": "The Best Places to Hang a Tree",
+  "concept": "graphs",
+  "difficulty": "hard",
+  "statement": "A **tree** with `n` nodes (numbered `0` to `n - 1`) is given by its `n - 1` undirected `edges` (it is connected and has no cycle). You can pick any node as the **root** and hang the tree from it; the **height** of the result is the number of edges on the longest path from the root down to a leaf.\n\nReturn the **roots that give the smallest possible height**, in **increasing order**. (There are always one or two of them.)",
+  "constraints": [
+    "1 <= n <= 20000",
+    "edges has exactly n - 1 pairs [a, b] and forms a tree"
+  ],
+  "signature": { "name": "min_height_roots", "params": [{ "name": "n", "type": "int" }, { "name": "edges", "type": "int[][]" }], "returns": "int[]" },
+  "examples": [
+    { "args": [6, [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5]]], "expected": [2, 3], "explanation": "A path of six nodes: hanging it from the middle (node 2 or node 3) gives height 3; any other root gives more." },
+    { "args": [5, [[0, 1], [0, 2], [0, 3], [3, 4]]], "expected": [0, 3], "explanation": "Roots 0 and 3 both give height 2; root 1 would give height 3." }
+  ],
+  "edgeTests": [[1, []], [2, [[0, 1]]], [3, [[0, 1], [1, 2]]], [7, [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6]]], [4, [[1, 0], [1, 2], [1, 3]]]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "The best root should be in the 'middle' of the tree. What do the leaves have to do with the middle? What happens if you repeatedly cut away all the leaves?",
+    "pattern": "Peel the tree layer by layer: remove all current leaves, then the new leaves, and so on, until 1 or 2 nodes are left; those are the centres, i.e. the best roots.",
+    "pseudocode": "if n <= 2: return all nodes\ndegree[v] = number of neighbours; leaves = all nodes with degree 1; remaining = n\nwhile remaining > 2:\n  remaining -= len(leaves); newLeaves = []\n  for leaf in leaves: for its neighbour v: degree[v] -= 1; if degree[v] == 1: newLeaves.append(v)\n  leaves = newLeaves\nreturn leaves, sorted",
+    "walkthrough": "Computing the height for every possible root (a search from each node) is O(n^2), too slow for 20,000 nodes. The best root is a centre of the tree: a node (or two adjacent nodes) in the middle of a longest path. The centres can be found by removing the leaves over and over: each round takes away the outermost layer, and the tree shrinks towards its middle. Stop as soon as at most two nodes remain; they are the roots with the minimum height. Implement it with the degree of each node: nodes with degree 1 are leaves; removing a leaf lowers its neighbour's degree, and a neighbour that reaches degree 1 becomes a leaf of the next round. Every node is removed at most once: O(n)."
+  }
+}

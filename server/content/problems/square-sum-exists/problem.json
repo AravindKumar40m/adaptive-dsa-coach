@@ -1,0 +1,23 @@
+{
+  "slug": "square-sum-exists",
+  "title": "Is It a Sum of Two Squares",
+  "concept": "two_pointers",
+  "difficulty": "medium",
+  "statement": "Given a non-negative whole number `c`, return `true` if there are two **non-negative whole numbers** `a` and `b` (they may be equal, and either may be `0`) with `a * a + b * b = c`, otherwise `false`.",
+  "constraints": [
+    "0 <= c <= 2147483647"
+  ],
+  "signature": { "name": "is_sum_of_two_squares", "params": [{ "name": "c", "type": "int" }], "returns": "bool" },
+  "examples": [
+    { "args": [13], "expected": true, "explanation": "4 + 9 = 2 * 2 + 3 * 3." },
+    { "args": [3], "expected": false, "explanation": "The squares up to 3 are 0 and 1; no two of them add up to 3." }
+  ],
+  "edgeTests": [[0], [1], [2], [4], [6], [25], [2147483647]],
+  "expected": { "time": "O(sqrt(c))", "space": "O(1)" },
+  "hints": {
+    "nudge": "Neither a nor b can be larger than the square root of c. That bounds the search. How can you search a sorted range of candidates with two pointers?",
+    "pattern": "Two pointers on the numbers 0..sqrt(c): start with a = 0 and b = floor(sqrt(c)); if a^2 + b^2 is too small raise a, if too big lower b.",
+    "pseudocode": "a = 0; b = floor(sqrt(c))\nwhile a <= b:\n  s = a * a + b * b\n  if s == c: return true\n  if s < c: a += 1 else: b -= 1\nreturn false",
+    "walkthrough": "Trying every pair (a, b) up to sqrt(c) is O(c). For a fixed a you could compute b = sqrt(c - a^2) and test whether it is a whole number (O(sqrt(c)) total). The two-pointer version does the same in the same time without a square root in the loop: the sum a^2 + b^2 grows when a grows and shrinks when b shrinks. If it is below c, then with this b no smaller a can reach c (a only makes the sum bigger when it grows), so move a up; if it is above c, this b is too large for every a that is at least the current one, so move b down. The loop stops when the pointers cross. Use 64-bit numbers for the squares: 46340 * 46340 is close to the 32-bit limit and the sum of two squares can overflow."
+  }
+}

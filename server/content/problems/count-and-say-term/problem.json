@@ -1,0 +1,23 @@
+{
+  "slug": "count-and-say-term",
+  "title": "Describe the Previous Line",
+  "concept": "strings",
+  "difficulty": "medium",
+  "statement": "The **look-and-say** sequence of texts starts with `\"1\"`. Every next text **describes the previous one** by reading its runs of equal digits from left to right and writing, for each run, the **length of the run** followed by the **digit**. So `\"1\"` is described as \"one 1\" = `\"11\"`; `\"11\"` as \"two 1s\" = `\"21\"`; `\"21\"` as \"one 2, one 1\" = `\"1211\"`; and so on.\n\nReturn the `n`-th text of the sequence (the first one is `\"1\"`).",
+  "constraints": [
+    "1 <= n <= 30"
+  ],
+  "signature": { "name": "count_and_say", "params": [{ "name": "n", "type": "int" }], "returns": "string" },
+  "examples": [
+    { "args": [4], "expected": "1211", "explanation": "1 -> 11 -> 21 -> 1211." },
+    { "args": [1], "expected": "1", "explanation": "The first text is 1." }
+  ],
+  "edgeTests": [[2], [3], [5], [6], [7], [8], [9], [10], [11], [13], [15], [18], [20], [25], [30]],
+  "expected": { "time": "O(total length of all texts)", "space": "O(length of the n-th text)" },
+  "hints": {
+    "nudge": "To produce each text you only need the previous one. How do you read it run by run?",
+    "pattern": "Start with the text 1 and repeat n - 1 times: scan the current text, count the length of each run of equal digits and build the next text from (count, digit) pairs.",
+    "pseudocode": "text = \"1\"\nrepeat n - 1 times:\n  next = empty; i = 0\n  while i < len(text): j = i; while j < len(text) and text[j] == text[i]: j += 1\n    append (j - i) then text[i] to next; i = j\n  text = next\nreturn text",
+    "walkthrough": "The definition is itself a recursion (the n-th text is the description of the (n - 1)-th), but an iterative loop avoids deep calls. To describe a text, walk through it with an index i. For the digit at i, move a second index j to the end of the run of equal digits; the run length is j - i. Append that length and then the digit, and continue from j. The texts grow by about 30% each time (the 30th has 4,462 digits), so building them by appending to a string builder is fast enough. Digits in the text are only 1, 2 and 3 (a run never has more than three equal digits), so the run length is always a single digit."
+  }
+}

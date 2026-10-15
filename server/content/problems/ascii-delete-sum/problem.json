@@ -1,0 +1,24 @@
+{
+  "slug": "ascii-delete-sum",
+  "title": "The Cheapest Way to Make Two Texts Equal",
+  "concept": "dp",
+  "difficulty": "medium",
+  "statement": "You may **delete letters** from the texts `s1` and `s2` (from either one, any letters). Deleting a letter costs its **ASCII code** (`a` costs 97, `b` costs 98, ..., `z` costs 122). Find the **smallest total cost** of deletions that makes the two texts **equal**. Deleting everything from both texts always works (the two empty texts are equal).",
+  "constraints": [
+    "0 <= len(s1), len(s2) <= 1000",
+    "s1 and s2 contain lowercase letters"
+  ],
+  "signature": { "name": "min_ascii_delete_sum", "params": [{ "name": "s1", "type": "string" }, { "name": "s2", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["abc", "bcd"], "expected": 197, "explanation": "Delete the `a` (97) from the first text and the `d` (100) from the second: both become `bc`. Cost 197." },
+    { "args": ["same", "same"], "expected": 0, "explanation": "The texts are already equal." }
+  ],
+  "edgeTests": [["", ""], ["a", ""], ["", "b"], ["abc", "xyz"], ["aaa", "aa"], ["ab", "ba"]],
+  "expected": { "time": "O(len(s1) * len(s2))", "space": "O(len(s2))" },
+  "hints": {
+    "nudge": "What remains after the deletions is a text that is a subsequence of BOTH. Which common subsequence makes the deleted part cheapest?",
+    "pattern": "The cost is (the total ASCII sum of both texts) minus 2 times (the ASCII sum of the kept common subsequence); so find the common subsequence with the LARGEST ASCII sum with the longest-common-subsequence table, adding the letter's code instead of 1.",
+    "pseudocode": "keep[i][j] = largest ASCII sum of a common subsequence of the first i letters of s1 and the first j letters of s2\nkeep[i][j] = keep[i - 1][j - 1] + code(s1[i - 1]) if s1[i - 1] == s2[j - 1] else max(keep[i - 1][j], keep[i][j - 1])\nanswer = sum of codes of s1 + sum of codes of s2 - 2 * keep[len(s1)][len(s2)]",
+    "walkthrough": "Whatever is left in the end is one text that is a subsequence of both, and everything else of both texts was deleted. If the kept text has ASCII sum K, the deleted letters cost (sum of s1) + (sum of s2) - 2K, so you want K as large as possible. That is the longest common subsequence problem, except that each matched letter is worth its code instead of 1. Fill the table: when the last letters are equal, take the match (keep[i - 1][j - 1] + code); otherwise drop the last letter of one text or of the other and take the better. Only the previous row is needed. O(len(s1) * len(s2)) time."
+  }
+}

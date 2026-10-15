@@ -1,0 +1,24 @@
+{
+  "slug": "star-brackets-valid",
+  "title": "Brackets With Wildcards",
+  "concept": "greedy",
+  "difficulty": "medium",
+  "statement": "`text` contains only the characters `(`, `)` and `*`. Each `*` is a **wildcard** that you may turn into `(`, into `)` or into **nothing** (remove it). The text is **valid** if after replacing every `*` the brackets are balanced: every `(` has a matching `)` after it, every `)` has a matching `(` before it, and they nest properly. An empty text is valid.\n\nReturn `true` if some choice for the wildcards makes the text valid.",
+  "constraints": [
+    "0 <= len(text) <= 100000",
+    "text contains only ( ) and *"
+  ],
+  "signature": { "name": "star_brackets_valid", "params": [{ "name": "text", "type": "string" }], "returns": "bool" },
+  "examples": [
+    { "args": ["((*)"], "expected": true, "explanation": "Turn the `*` into `)`: the text becomes `(())`, which is balanced." },
+    { "args": [")*("], "expected": false, "explanation": "A `)` at the very start can never be matched." }
+  ],
+  "edgeTests": [[""], ["*"], ["("], [")"], ["(*"], ["*)"], ["(()"], [")("], ["(*)*)"]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Trying all 3^k replacements is far too slow. Instead of one count of 'open brackets', keep a RANGE: the smallest and the largest number of open brackets that the text so far could have.",
+    "pattern": "Track low and high: `(` raises both, `)` lowers both, `*` lowers low (as `)`) and raises high (as `(`). If high ever becomes negative the text is invalid; keep low at least 0. At the end the text is valid if low is 0.",
+    "pseudocode": "low = 0; high = 0\nfor c in text:\n  if c == '(': low += 1; high += 1\n  elif c == ')': low -= 1; high -= 1\n  else: low -= 1; high += 1\n  if high < 0: return false\n  low = max(low, 0)\nreturn low == 0",
+    "walkthrough": "Every choice of wildcards gives one possible number of open brackets after each prefix, and all the possible values form a range of whole numbers (changing one star by one step changes the count by 1 or 2 in a connected way, and you can always avoid going below 0 by turning a star into nothing). So you only need the smallest and the largest possible count. `(` adds one to both; `)` subtracts one from both; a `*` can be `)` (subtract), nothing (same) or `(` (add), so low goes down by one and high goes up by one. If high drops below 0, even the best choice has too many `)`: invalid. A count below 0 is not possible, so clamp low at 0 (you would have used the star as nothing instead). At the end, a count of exactly 0 must be reachable: low == 0."
+  }
+}

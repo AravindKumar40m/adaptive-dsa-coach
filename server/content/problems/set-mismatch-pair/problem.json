@@ -1,0 +1,24 @@
+{
+  "slug": "set-mismatch-pair",
+  "title": "The Repeated and the Missing Number",
+  "concept": "arrays",
+  "difficulty": "easy",
+  "statement": "`numbers` should hold every whole number from `1` to `n` exactly once, where `n` is the length of the list. By mistake **one number appears twice** and, because of that, **one number is missing**.\n\nReturn a list of two numbers: first the number that appears twice, then the number that is missing.",
+  "constraints": [
+    "2 <= len(numbers) <= 100000",
+    "every value is between 1 and len(numbers); exactly one value appears twice and exactly one value is missing"
+  ],
+  "signature": { "name": "find_duplicate_missing", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[1, 2, 2, 4]], "expected": [2, 3], "explanation": "2 appears twice and 3 never appears." },
+    { "args": [[3, 1, 3]], "expected": [3, 2], "explanation": "3 appears twice and 2 is missing." }
+  ],
+  "edgeTests": [[[1, 1]], [[2, 2]], [[1, 2, 3, 3]], [[4, 2, 1, 1]], [[2, 3, 2]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "If you add up the numbers 1 to n you know the total the list SHOULD have. How does the real total differ from it, and what else do you need to find the two numbers?",
+    "pattern": "Find the repeated number while scanning (a seen-marker for each value); then the missing number follows from the sums: expected total minus (real total minus the repeated number).",
+    "pseudocode": "seen = [false] * (n + 1); repeated = 0\nfor x in numbers: if seen[x]: repeated = x else seen[x] = true\nmissing = n * (n + 1) / 2 - (sum of numbers - repeated)\nreturn [repeated, missing]",
+    "walkthrough": "Counting how often every value from 1 to n occurs works but needs a pass per value if done naively (O(n^2) with a count call for each value). One scan with a seen-array finds the repeated number: it is the one you meet a second time. For the missing number use the sum: the numbers 1 to n add up to n * (n + 1) / 2. The list's total equals that, plus the repeated number (counted twice), minus the missing number. So missing = n * (n + 1) / 2 - (list total - repeated). The sums are at most about 5 * 10^9, so use a 64-bit number for n * (n + 1) / 2 in Java and C++."
+  }
+}

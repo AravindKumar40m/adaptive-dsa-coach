@@ -1,0 +1,24 @@
+{
+  "slug": "remove-list-elements",
+  "title": "Remove Every Node With a Given Value",
+  "concept": "linked_list",
+  "difficulty": "easy",
+  "statement": "`head` is the head of a linked list. Remove **every node whose value equals `val`** and return the head of the resulting list (which can be empty). Re-link the existing nodes; do not build a new list.",
+  "constraints": [
+    "0 <= number of nodes <= 100000",
+    "-1000000000 <= node value, val <= 1000000000"
+  ],
+  "signature": { "name": "remove_list_values", "params": [{ "name": "head", "type": "ListNode" }, { "name": "val", "type": "int" }], "returns": "ListNode" },
+  "examples": [
+    { "args": [[7, 3, 7, 7, 2, 7], 7], "expected": [3, 2], "explanation": "All four 7s are removed." },
+    { "args": [[5, 5], 5], "expected": [], "explanation": "Every node is removed: the list becomes empty." }
+  ],
+  "edgeTests": [[[], 1], [[1], 2], [[2, 2, 2], 2], [[1, 2, 3], 3], [[3, 1, 2], 3]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Removing the first node is different from removing a node in the middle, because there is no node before the first one. Can you avoid the special case?",
+    "pattern": "A dummy node in front of the head; walk with a pointer to the node BEFORE the one you inspect, and skip the next node when it has the value.",
+    "pseudocode": "dummy.next = head; prev = dummy\nwhile prev.next:\n  if prev.next.val == val: prev.next = prev.next.next\n  else: prev = prev.next\nreturn dummy.next",
+    "walkthrough": "To delete a node you must change the `next` of the node before it. The head has no such node, which is why you add a dummy node in front: now every real node has a predecessor, and the answer is dummy.next at the end (it also works when the whole list is removed). Keep `prev` on the last node that stays. Look at prev.next: if it has the value, unlink it (prev.next = prev.next.next) and look at the new prev.next without moving prev (several equal nodes in a row must all go); otherwise move prev forward. One pass, O(n) time, O(1) memory."
+  }
+}

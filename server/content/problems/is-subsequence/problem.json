@@ -1,0 +1,24 @@
+{
+  "slug": "is-subsequence",
+  "title": "Is It Hidden Inside",
+  "concept": "two_pointers",
+  "difficulty": "easy",
+  "statement": "A text `s` is a **subsequence** of a text `t` if you can get `s` by deleting zero or more letters of `t` without changing the order of the remaining letters (`ace` is a subsequence of `abcde`, `aec` is not).\n\nReturn `true` if `s` is a subsequence of `t`, otherwise `false`. The empty text is a subsequence of every text.",
+  "constraints": [
+    "0 <= len(s) <= 100000, 0 <= len(t) <= 100000",
+    "s and t contain lowercase letters"
+  ],
+  "signature": { "name": "is_subsequence", "params": [{ "name": "s", "type": "string" }, { "name": "t", "type": "string" }], "returns": "bool" },
+  "examples": [
+    { "args": ["ace", "abcde"], "expected": true, "explanation": "Keep a, c and e of abcde." },
+    { "args": ["aec", "abcde"], "expected": false, "explanation": "After the e there is no c left." }
+  ],
+  "edgeTests": [["", ""], ["", "abc"], ["a", ""], ["abc", "abc"], ["aaa", "aa"], ["b", "abc"]],
+  "expected": { "time": "O(len(s) + len(t))", "space": "O(1)" },
+  "hints": {
+    "nudge": "Walk through t once. What do you need to remember about s while you do?",
+    "pattern": "Two pointers: one in s (the next letter still to be found) and one running through t; advance the pointer in s whenever the letters match.",
+    "pseudocode": "i = 0\nfor each letter c of t: if i < len(s) and s[i] == c: i += 1\nreturn i == len(s)",
+    "walkthrough": "Match the letters of s greedily from the left: take the earliest occurrence in t of s[0], then the earliest occurrence of s[1] after it, and so on. Taking the earliest possible match never hurts, because it leaves the most letters of t for the rest. So a single pointer `i` into s is enough: scan t, and each time the current letter of t equals s[i], move i forward. At the end s is a subsequence exactly when i reached the end of s. O(len(s) + len(t))."
+  }
+}

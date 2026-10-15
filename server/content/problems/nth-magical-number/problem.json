@@ -1,0 +1,24 @@
+{
+  "slug": "nth-magical-number",
+  "title": "The N-th Number Divisible by A or B",
+  "concept": "binary_search",
+  "difficulty": "hard",
+  "statement": "A positive whole number is **magical** if it is divisible by `a` or by `b` (or both). Return the `n`-th smallest magical number, **modulo 1,000,000,007** (the number itself can be very large).",
+  "constraints": [
+    "1 <= n <= 1000000000",
+    "1 <= a, b <= 40000"
+  ],
+  "signature": { "name": "nth_magical_number", "params": [{ "name": "n", "type": "int" }, { "name": "a", "type": "int" }, { "name": "b", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [5, 4, 6], "expected": 16, "explanation": "The multiples of 4 or 6 are 4, 6, 8, 12, 16, 18, ...: the 5th is 16." },
+    { "args": [3, 2, 2], "expected": 6, "explanation": "a and b are equal: the magical numbers are the multiples of 2: 2, 4, 6." }
+  ],
+  "edgeTests": [[1, 1, 1], [10, 3, 5], [1000000000, 40000, 40000], [1000000000, 39999, 40000], [1000000000, 1, 40000], [999999999, 7, 11]],
+  "expected": { "time": "O(log(n * min(a, b)))", "space": "O(1)" },
+  "hints": {
+    "nudge": "Suppose you pick a number x. Can you count how many magical numbers are at most x without listing them? Careful about numbers divisible by both.",
+    "pattern": "Binary search on the value x: count(x) = x / a + x / b - x / lcm(a, b) (inclusion-exclusion); find the smallest x with count(x) >= n.",
+    "pseudocode": "l = lcm(a, b); lo = min(a, b); hi = n * min(a, b)\nwhile lo < hi:\n  mid = (lo + hi) / 2\n  if mid / a + mid / b - mid / l >= n: hi = mid else: lo = mid + 1\nreturn lo mod 1,000,000,007",
+    "walkthrough": "Generating the magical numbers one by one is O(n), far too slow for n = 10^9. Count instead. Up to x there are x / a multiples of a and x / b multiples of b (whole-number division), but the multiples of both (multiples of the lcm) are counted twice, so count(x) = x / a + x / b - x / lcm(a, b). This count grows with x, so binary search for the smallest x with count(x) >= n: it is magical (the count just reached n at x, so x must be a multiple of a or b). The answer is at most n * min(a, b), up to 4 * 10^13, so search with 64-bit numbers and reduce modulo 1,000,000,007 only at the end. (Another way: the pattern repeats every lcm(a, b) numbers, with a + b - gcd(a, b) magical numbers in each period.)"
+  }
+}

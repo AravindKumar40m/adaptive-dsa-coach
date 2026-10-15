@@ -1,0 +1,23 @@
+{
+  "slug": "maximum-swap-digits",
+  "title": "One Swap for the Biggest Number",
+  "concept": "greedy",
+  "difficulty": "medium",
+  "statement": "You may swap **two digits** of the number `num` **at most once** (you may also choose not to swap). Return the **largest number** you can get.",
+  "constraints": [
+    "0 <= num <= 100000000"
+  ],
+  "signature": { "name": "maximum_swap_digits", "params": [{ "name": "num", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [98368], "expected": 98863, "explanation": "The first digit that has a bigger digit somewhere after it is the 3; the biggest later digit is 8 (take the LAST 8): swapping gives 98863." },
+    { "args": [9973], "expected": 9973, "explanation": "The digits are already in decreasing order: no swap can help." }
+  ],
+  "edgeTests": [[0], [10], [12], [115], [1993], [99901], [1000]],
+  "expected": { "time": "O(number of digits)", "space": "O(1)" },
+  "hints": {
+    "nudge": "To make a number bigger with one swap you want a large digit to move as far to the LEFT as possible. Which position should receive a bigger digit, and which digit should it be?",
+    "pattern": "Scan the digits from left to right; at the first position where a bigger digit exists somewhere later, swap with the largest such digit, taking its LAST occurrence.",
+    "pseudocode": "last[d] = last position of digit d\nfor i in 0 .. n - 1:\n  for d from 9 down to digit[i] + 1:\n    if last[d] > i: swap digit[i] and digit[last[d]]; return the number\nreturn num",
+    "walkthrough": "Trying all pairs of positions is O(d^2) with d digits and works for 9 digits. The greedy idea: the leftmost digit that can be improved matters most. Walk from the left; the first position i for which some later digit is bigger is the one to fix, and you want the biggest digit available after it. If that digit occurs several times, use the LAST one: it moves the small digit as far to the right as possible, and that makes the number larger than using an earlier copy. Record the last position of every digit first, then for each position test the digits from 9 down. If no position can be improved the digits are non-increasing and the number is already the best."
+  }
+}

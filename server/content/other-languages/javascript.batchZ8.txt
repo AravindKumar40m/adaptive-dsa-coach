@@ -1,0 +1,141 @@
+//### bag-of-tokens-score
+function bagOfTokensScore(tokens, power) {
+  const a = tokens.slice().sort((p, q) => p - q);
+  let lo = 0, hi = a.length - 1, score = 0, best = 0;
+  while (lo <= hi) {
+    if (power >= a[lo]) { power -= a[lo]; lo++; score++; best = Math.max(best, score); }
+    else if (score > 0) { power += a[hi]; hi--; score--; }
+    else break;
+  }
+  return best;
+}
+//### maximum-swap-digits
+function maximumSwapDigits(num) {
+  const digits = String(num).split("").map(Number);
+  const last = new Array(10).fill(-1);
+  digits.forEach((d, i) => { last[d] = i; });
+  for (let i = 0; i < digits.length; i++) {
+    for (let d = 9; d > digits[i]; d--) {
+      if (last[d] > i) {
+        const t = digits[i]; digits[i] = digits[last[d]]; digits[last[d]] = t;
+        return Number(digits.join(""));
+      }
+    }
+  }
+  return num;
+}
+//### consecutive-runs-split
+function canSplitConsecutiveRuns(numbers) {
+  const count = new Map(), need = new Map();
+  for (const x of numbers) count.set(x, (count.get(x) || 0) + 1);
+  for (const x of numbers) {
+    if (count.get(x) === 0) continue;
+    count.set(x, count.get(x) - 1);
+    if ((need.get(x) || 0) > 0) {
+      need.set(x, need.get(x) - 1);
+      need.set(x + 1, (need.get(x + 1) || 0) + 1);
+    } else if ((count.get(x + 1) || 0) > 0 && (count.get(x + 2) || 0) > 0) {
+      count.set(x + 1, count.get(x + 1) - 1);
+      count.set(x + 2, count.get(x + 2) - 1);
+      need.set(x + 3, (need.get(x + 3) || 0) + 1);
+    } else return false;
+  }
+  return true;
+}
+//### star-brackets-valid
+function starBracketsValid(text) {
+  let low = 0, high = 0;
+  for (const c of text) {
+    if (c === "(") { low++; high++; }
+    else if (c === ")") { low--; high--; }
+    else { low--; high++; }
+    if (high < 0) return false;
+    low = Math.max(low, 0);
+  }
+  return low === 0;
+}
+//### one-change-non-decreasing
+function oneChangeNonDecreasing(numbers) {
+  const a = numbers.slice();
+  let changes = 0;
+  for (let i = 0; i + 1 < a.length; i++) {
+    if (a[i] > a[i + 1]) {
+      changes++;
+      if (changes > 1) return false;
+      if (i === 0 || a[i - 1] <= a[i + 1]) a[i] = a[i + 1];
+      else a[i + 1] = a[i];
+    }
+  }
+  return true;
+}
+//### domino-rotations-min
+function minDominoRotations(tops, bottoms) {
+  if (tops.length === 0) return 0;
+  function check(x) {
+    let rotateTop = 0, rotateBottom = 0;
+    for (let i = 0; i < tops.length; i++) {
+      if (tops[i] !== x && bottoms[i] !== x) return Infinity;
+      if (tops[i] !== x) rotateTop++;
+      else if (bottoms[i] !== x) rotateBottom++;
+    }
+    return Math.min(rotateTop, rotateBottom);
+  }
+  const best = Math.min(check(tops[0]), check(bottoms[0]));
+  return best === Infinity ? -1 : best;
+}
+//### longest-limited-spread-run
+function longestLimitedSpreadRun(numbers, limit) {
+  const big = [], small = [];
+  let bigHead = 0, smallHead = 0, left = 0, best = 0;
+  for (let right = 0; right < numbers.length; right++) {
+    const x = numbers[right];
+    while (big.length > bigHead && numbers[big[big.length - 1]] <= x) big.pop();
+    big.push(right);
+    while (small.length > smallHead && numbers[small[small.length - 1]] >= x) small.pop();
+    small.push(right);
+    while (numbers[big[bigHead]] - numbers[small[smallHead]] > limit) {
+      left++;
+      if (big[bigHead] < left) bigHead++;
+      if (small[smallHead] < left) smallHead++;
+    }
+    best = Math.max(best, right - left + 1);
+  }
+  return best;
+}
+//### count-nice-subarrays
+function countNiceSubarrays(numbers, k) {
+  const seen = new Array(numbers.length + 2).fill(0);
+  seen[0] = 1;
+  let odd = 0, total = 0;
+  for (const x of numbers) {
+    odd += x % 2;
+    if (odd - k >= 0) total += seen[odd - k];
+    seen[odd]++;
+  }
+  return total;
+}
+//### longest-turbulent-run
+function longestTurbulentRun(numbers) {
+  if (numbers.length === 0) return 0;
+  let up = 1, down = 1, best = 1;
+  for (let i = 1; i < numbers.length; i++) {
+    if (numbers[i] > numbers[i - 1]) { const u = down + 1; down = 1; up = u; }
+    else if (numbers[i] < numbers[i - 1]) { const d = up + 1; up = 1; down = d; }
+    else { up = 1; down = 1; }
+    best = Math.max(best, up, down);
+  }
+  return best;
+}
+//### max-erasure-value
+function maxErasureValue(numbers) {
+  const window = new Set();
+  let left = 0, total = 0, best = 0;
+  for (let right = 0; right < numbers.length; right++) {
+    const x = numbers[right];
+    while (window.has(x)) { window.delete(numbers[left]); total -= numbers[left]; left++; }
+    window.add(x);
+    total += x;
+    best = Math.max(best, total);
+  }
+  return best;
+}

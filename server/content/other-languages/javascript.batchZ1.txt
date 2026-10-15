@@ -1,0 +1,117 @@
+//### set-mismatch-pair
+function findDuplicateMissing(numbers) {
+  const n = numbers.length, seen = new Array(n + 1).fill(false);
+  let repeated = 0, total = 0;
+  for (const x of numbers) {
+    if (seen[x]) repeated = x; else seen[x] = true;
+    total += x;
+  }
+  return [repeated, n * (n + 1) / 2 - (total - repeated)];
+}
+//### running-balance-min-start
+function minStartValue(changes) {
+  let prefix = 0, lowest = 0;
+  for (const c of changes) {
+    prefix += c;
+    if (prefix < lowest) lowest = prefix;
+  }
+  return 1 - lowest;
+}
+//### diagonal-traverse
+function diagonalOrder(matrix) {
+  const rows = matrix.length, cols = matrix[0].length, out = [];
+  for (let d = 0; d < rows + cols - 1; d++) {
+    const cells = [];
+    for (let r = 0; r < rows; r++) {
+      const c = d - r;
+      if (c >= 0 && c < cols) cells.push(matrix[r][c]);
+    }
+    if (d % 2 === 0) cells.reverse();
+    for (const v of cells) out.push(v);
+  }
+  return out;
+}
+//### pivot-index-balance
+function pivotIndex(numbers) {
+  let total = 0;
+  for (const x of numbers) total += x;
+  let left = 0;
+  for (let i = 0; i < numbers.length; i++) {
+    if (left === total - left - numbers[i]) return i;
+    left += numbers[i];
+  }
+  return -1;
+}
+//### lucky-numbers-in-matrix
+function luckyValues(matrix) {
+  const rows = matrix.length, cols = matrix[0].length;
+  const rowMin = new Array(rows).fill(Infinity), colMax = new Array(cols).fill(-Infinity);
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      rowMin[r] = Math.min(rowMin[r], matrix[r][c]);
+      colMax[c] = Math.max(colMax[c], matrix[r][c]);
+    }
+  }
+  const out = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (matrix[r][c] === rowMin[r] && matrix[r][c] === colMax[c]) out.push(matrix[r][c]);
+    }
+  }
+  out.sort((a, b) => a - b);
+  return out;
+}
+//### shortest-unsorted-stretch
+function unsortedStretchLength(numbers) {
+  const n = numbers.length;
+  let end = -1, biggest = -Infinity;
+  for (let i = 0; i < n; i++) {
+    if (numbers[i] < biggest) end = i; else biggest = numbers[i];
+  }
+  let start = 0, smallest = Infinity;
+  for (let i = n - 1; i >= 0; i--) {
+    if (numbers[i] > smallest) start = i; else smallest = numbers[i];
+  }
+  return end - start + 1;
+}
+//### increasing-triplet-exists
+function hasIncreasingTriplet(numbers) {
+  let first = Infinity, second = Infinity;
+  for (const x of numbers) {
+    if (x <= first) first = x;
+    else if (x <= second) second = x;
+    else return true;
+  }
+  return false;
+}
+//### relative-sort-order
+function relativeSort(values, order) {
+  const position = new Map();
+  order.forEach((v, i) => position.set(v, i));
+  const rank = (v) => (position.has(v) ? position.get(v) : order.length);
+  return values.slice().sort((a, b) => (rank(a) - rank(b)) || (a - b));
+}
+//### digit-sum-sort
+function sortByDigitSum(numbers) {
+  const digitSum = (x) => { let total = 0; while (x > 0) { total += x % 10; x = Math.floor(x / 10); } return total; };
+  return numbers.slice().sort((a, b) => (digitSum(a) - digitSum(b)) || (a - b));
+}
+//### minimum-swaps-to-sort
+function minSwapsToSort(numbers) {
+  const n = numbers.length;
+  const order = [];
+  for (let i = 0; i < n; i++) order.push(i);
+  order.sort((a, b) => numbers[a] - numbers[b]);
+  const target = new Array(n).fill(0);
+  for (let rank = 0; rank < n; rank++) target[order[rank]] = rank;
+  const visited = new Array(n).fill(false);
+  let cycles = 0;
+  for (let i = 0; i < n; i++) {
+    if (!visited[i]) {
+      cycles++;
+      let j = i;
+      while (!visited[j]) { visited[j] = true; j = target[j]; }
+    }
+  }
+  return n - cycles;
+}

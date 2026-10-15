@@ -1,0 +1,102 @@
+{
+  "slug": "pattern-132-exists",
+  "title": "Is There a Low-High-Middle Pattern",
+  "concept": "stack_queue",
+  "difficulty": "medium",
+  "statement": "Return `true` if there are three positions `i < j < k` with `numbers[i] < numbers[k] < numbers[j]` (the values form a \"1-3-2\" shape: a small one, then a big one, then a middle one), otherwise `false`.",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "-1000000000 <= numbers[i] <= 1000000000"
+  ],
+  "signature": {
+    "name": "has_132_pattern",
+    "params": [
+      {
+        "name": "numbers",
+        "type": "int[]"
+      }
+    ],
+    "returns": "bool"
+  },
+  "examples": [
+    {
+      "args": [
+        [
+          3,
+          1,
+          4,
+          2
+        ]
+      ],
+      "expected": true,
+      "explanation": "1, 4, 2 at positions 1, 2, 3: 1 < 2 < 4."
+    },
+    {
+      "args": [
+        [
+          1,
+          2,
+          3,
+          4
+        ]
+      ],
+      "expected": false,
+      "explanation": "The numbers only go up: there is never a smaller number after a bigger one."
+    }
+  ],
+  "edgeTests": [
+    [
+      []
+    ],
+    [
+      [
+        1,
+        2
+      ]
+    ],
+    [
+      [
+        2,
+        4,
+        3,
+        1
+      ]
+    ],
+    [
+      [
+        1,
+        0,
+        1,
+        -4,
+        -3
+      ]
+    ],
+    [
+      [
+        -1,
+        3,
+        2,
+        0
+      ]
+    ],
+    [
+      [
+        3,
+        5,
+        0,
+        3,
+        4
+      ]
+    ]
+  ],
+  "expected": {
+    "time": "O(n)",
+    "space": "O(n)"
+  },
+  "hints": {
+    "nudge": "Fix the 'middle' value (the 2) and the 'big' value (the 3) in front of it. Then you only need ONE smaller value even earlier. Scan from the right: what should you remember?",
+    "pattern": "Scan from right to left with a stack; keep `third`, the largest value that has a bigger value before it (to its left) among those seen; if the current number is smaller than `third`, you found the pattern.",
+    "pseudocode": "third = -infinity; stack = []\nfor x in numbers from right to left:\n  if x < third: return true\n  while stack not empty and stack.top < x: third = stack.pop()\n  push x\nreturn false",
+    "walkthrough": "Checking all triples is O(n^3). Going from the right, the stack holds numbers that could play the 'big' part (the 3). When a new number x is bigger than some stack entries, each of those entries has a bigger number (x) to its LEFT and is therefore a valid 'middle' (the 2) for that bigger number; the largest popped entry is the best `third`, because the larger the middle value is, the easier it is to find a smaller number further left. `third` always has a bigger number to its left AND stays to the right of everything still to be read. So when a number x further left is smaller than `third`, the three numbers x, the bigger number and `third` form the pattern in the right order of positions. Each number is pushed and popped at most once: O(n)."
+  }
+}

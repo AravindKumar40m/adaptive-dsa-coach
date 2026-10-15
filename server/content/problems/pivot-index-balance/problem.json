@@ -1,0 +1,24 @@
+{
+  "slug": "pivot-index-balance",
+  "title": "The Balancing Position",
+  "concept": "arrays",
+  "difficulty": "easy",
+  "statement": "A position `i` of `numbers` is a **balance point** if the sum of all numbers **before** it equals the sum of all numbers **after** it (the number at `i` itself is in neither sum; an empty side has sum `0`).\n\nReturn the **leftmost** balance point, or `-1` if there is none.",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "-1000 <= numbers[i] <= 1000"
+  ],
+  "signature": { "name": "pivot_index", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 2, 5, 3]], "expected": 2, "explanation": "Before position 2: 1 + 2 = 3. After it: 3. Equal." },
+    { "args": [[1, 2, 3]], "expected": -1, "explanation": "No position splits the list into two equal sums." }
+  ],
+  "edgeTests": [[[]], [[0]], [[5]], [[0, 0]], [[1, -1, 0]], [[-1, -1, 0, 1, 1]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "If you know the total of the whole list and the sum before position i, can you tell the sum after it without adding again?",
+    "pattern": "Prefix sum: sum after position i = total - left - numbers[i]; compare it with the running left sum.",
+    "pseudocode": "total = sum of numbers; left = 0\nfor i in 0 .. n - 1:\n  if left == total - left - numbers[i]: return i\n  left += numbers[i]\nreturn -1",
+    "walkthrough": "Adding up the left and the right part again for every position is O(n^2). Compute the total once. While moving from left to right keep `left`, the sum of the numbers before the current position. The sum after the position is total - left - numbers[i], so position i is a balance point when left equals that. Return the first position where this is true (the leftmost one), otherwise -1. An empty list has no positions: -1."
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "slug": "sum-left-leaves",
+  "title": "Sum of the Left Leaves",
+  "concept": "trees",
+  "difficulty": "easy",
+  "statement": "A **leaf** is a node with no children. A **left leaf** is a leaf that is the **left child** of its parent. Return the **sum of the values of all left leaves** of the tree. The root is never a left leaf (it has no parent). An empty tree gives `0`.",
+  "constraints": [
+    "0 <= number of nodes <= 100000",
+    "-1000 <= node value <= 1000"
+  ],
+  "signature": { "name": "sum_left_leaves", "params": [{ "name": "root", "type": "TreeNode" }], "returns": "int" },
+  "examples": [
+    { "args": [[10, 4, 6, 7, null, 3]], "expected": 10, "explanation": "The leaves 7 (left child of 4) and 3 (left child of 6) are left leaves: 7 + 3 = 10." },
+    { "args": [[1]], "expected": 0, "explanation": "The root is a leaf but not a left child." }
+  ],
+  "edgeTests": [[[]], [[1, 2]], [[1, null, 2]], [[1, 2, 3]], [[1, 2, 3, 4, 5, 6, 7]]],
+  "expected": { "time": "O(n)", "space": "O(h)" },
+  "hints": {
+    "nudge": "A node can not tell by itself whether it is a left child. Who does know it?",
+    "pattern": "Recursion where the PARENT looks at its left child: if that child is a leaf, add its value; otherwise recurse into both children.",
+    "pseudocode": "sum(node):\n  if node is missing: return 0\n  total = 0\n  if node.left is a leaf: total += node.left.val else: total += sum(node.left)\n  total += sum(node.right)\n  return total",
+    "walkthrough": "The condition 'is a left child AND has no children' is easiest to check from the parent: when you are at a node, look at its left child. If that child exists and has no children of its own, add its value. In every other case simply continue the search into the left subtree, and always into the right subtree (a leaf there is a right child and does not count, but its siblings' subtrees may hold left leaves). The whole tree is visited once: O(n); the recursion depth is the height. Alternatively pass a flag `isLeft` down the recursion."
+  }
+}

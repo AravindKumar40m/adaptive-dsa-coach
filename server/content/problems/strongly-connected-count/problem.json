@@ -1,0 +1,24 @@
+{
+  "slug": "strongly-connected-count",
+  "title": "Groups That Can Reach Each Other",
+  "concept": "graphs",
+  "difficulty": "hard",
+  "statement": "A directed graph has `n` nodes (`0` to `n - 1`) and one-way edges `[a, b]` meaning `a -> b`. Two nodes belong to the same **strongly connected component** if each can reach the other by following the edges in their direction (a node always belongs to its own component).\n\nReturn the **number of strongly connected components**.",
+  "constraints": [
+    "1 <= n <= 1000",
+    "0 <= len(edges) <= 5000, 0 <= a, b < n (a self-loop `a -> a` is allowed)"
+  ],
+  "signature": { "name": "strongly_connected_count", "params": [{ "name": "n", "type": "int" }, { "name": "edges", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [6, [[0, 1], [1, 0], [2, 3], [3, 2], [4, 5]]], "expected": 4, "explanation": "{0, 1}, {2, 3}, {4} and {5}: 4 components." },
+    { "args": [1, []], "expected": 1, "explanation": "A single node is its own component." }
+  ],
+  "edgeTests": [[1, [[0, 0]]], [2, [[0, 1], [1, 0]]], [3, [[0, 1], [1, 2]]], [4, [[0, 1], [1, 2], [2, 3], [3, 0]]], [5, [[0, 1], [1, 2], [2, 0], [3, 4]]]],
+  "expected": { "time": "O(n + m)", "space": "O(n + m)" },
+  "hints": {
+    "nudge": "Following the edges forward from a node gives everything it can reach. What would you get if you followed them backwards?",
+    "pattern": "Kosaraju's algorithm: a depth-first search over the graph that records the order in which nodes FINISH; then a second search over the REVERSED graph, starting from nodes in decreasing finish order; each search tree of the second pass is one component.",
+    "pseudocode": "pass 1: for each unvisited node: DFS; push the node on a list after all of its out-neighbours are done\npass 2: reverse every edge; for the nodes in reverse order of that list: if unvisited: DFS on the reversed graph; count += 1 (this search visits exactly one component)\nreturn count",
+    "walkthrough": "Checking, for every pair of nodes, whether each reaches the other is O(n * (n + m)) with a search from every node, which is fine for 1000 nodes but not for big graphs. Kosaraju's algorithm does it in two linear passes. The first pass orders the nodes by when their depth-first search finishes: the node that finishes last lies in a 'source' component, one that no other component can reach. In the reversed graph, that component can no longer escape to the others, so a search from it visits exactly its own nodes. Take the nodes in decreasing finish order; each time you meet an unvisited node, a new component starts: search the reversed graph from it, mark everything reached, and count one component. (Tarjan's algorithm finds the components in a single pass with low-link numbers.)"
+  }
+}

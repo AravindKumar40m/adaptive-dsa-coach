@@ -1,0 +1,130 @@
+//### smaller-to-the-right-counts
+class Solution {
+    public int[] countSmallerToRight(int[] numbers) {
+        int n = numbers.length;
+        int[] sorted = numbers.clone();
+        Arrays.sort(sorted);
+        int[] unique = new int[n];
+        int m = 0;
+        for (int x : sorted) if (m == 0 || unique[m - 1] != x) unique[m++] = x;
+        int[] tree = new int[m + 2];
+        int[] out = new int[n];
+        for (int i = n - 1; i >= 0; i--) {
+            int r = Arrays.binarySearch(unique, 0, m, numbers[i]) + 1;
+            int total = 0;
+            for (int k = r - 1; k > 0; k -= k & -k) total += tree[k];
+            out[i] = total;
+            for (int k = r; k <= m; k += k & -k) tree[k]++;
+        }
+        return out;
+    }
+}
+//### min-max-pair-sum
+class Solution {
+    public int minMaxPairSum(int[] numbers) {
+        int[] a = numbers.clone();
+        Arrays.sort(a);
+        int n = a.length, result = 0;
+        for (int i = 0; i < n / 2; i++) result = Math.max(result, a[i] + a[n - 1 - i]);
+        return result;
+    }
+}
+//### maximum-gap-sorted
+class Solution {
+    public int maxSortedGap(int[] numbers) {
+        int[] a = numbers.clone();
+        Arrays.sort(a);
+        int best = 0;
+        for (int i = 0; i + 1 < a.length; i++) best = Math.max(best, a[i + 1] - a[i]);
+        return best;
+    }
+}
+//### container-most-water
+class Solution {
+    public int maxWaterArea(int[] heights) {
+        int left = 0, right = heights.length - 1;
+        long best = 0;
+        while (left < right) {
+            best = Math.max(best, (long) Math.min(heights[left], heights[right]) * (right - left));
+            if (heights[left] < heights[right]) left++; else right--;
+        }
+        return (int) best;
+    }
+}
+//### is-subsequence
+class Solution {
+    public boolean isSubsequence(String s, String t) {
+        int i = 0;
+        for (int j = 0; j < t.length(); j++) {
+            if (i < s.length() && s.charAt(i) == t.charAt(j)) i++;
+        }
+        return i == s.length();
+    }
+}
+//### reverse-vowels
+class Solution {
+    private boolean isVowel(char c) {
+        return "aeiouAEIOU".indexOf(c) >= 0;
+    }
+
+    public String reverseVowels(String text) {
+        char[] chars = text.toCharArray();
+        int left = 0, right = chars.length - 1;
+        while (left < right) {
+            if (!isVowel(chars[left])) left++;
+            else if (!isVowel(chars[right])) right--;
+            else { char t = chars[left]; chars[left] = chars[right]; chars[right] = t; left++; right--; }
+        }
+        return new String(chars);
+    }
+}
+//### valid-triangle-count
+class Solution {
+    public int countValidTriangles(int[] sides) {
+        int[] a = sides.clone();
+        Arrays.sort(a);
+        long count = 0;
+        for (int k = a.length - 1; k >= 2; k--) {
+            int i = 0, j = k - 1;
+            while (i < j) {
+                if (a[i] + a[j] > a[k]) { count += j - i; j--; } else i++;
+            }
+        }
+        return (int) count;
+    }
+}
+//### remove-duplicates-keep-two
+class Solution {
+    public int[] keepAtMostTwo(int[] numbers) {
+        int[] out = new int[numbers.length];
+        int size = 0;
+        for (int x : numbers) {
+            if (size < 2 || x != out[size - 2]) out[size++] = x;
+        }
+        return Arrays.copyOf(out, size);
+    }
+}
+//### square-sum-exists
+class Solution {
+    public boolean isSumOfTwoSquares(int c) {
+        long a = 0, b = (long) Math.sqrt((double) c);
+        while (a <= b) {
+            long s = a * a + b * b;
+            if (s == c) return true;
+            if (s < c) a++; else b--;
+        }
+        return false;
+    }
+}
+//### ransom-note-possible
+class Solution {
+    public boolean canBuildNote(String note, String magazine) {
+        int[] count = new int[26];
+        for (char ch : magazine.toCharArray()) count[ch - 'a']++;
+        for (char ch : note.toCharArray()) {
+            if (count[ch - 'a'] == 0) return false;
+            count[ch - 'a']--;
+        }
+        return true;
+    }
+}

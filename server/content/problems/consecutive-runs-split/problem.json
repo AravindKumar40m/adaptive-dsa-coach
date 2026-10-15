@@ -1,0 +1,24 @@
+{
+  "slug": "consecutive-runs-split",
+  "title": "Split Into Runs of Three or More",
+  "concept": "greedy",
+  "difficulty": "hard",
+  "statement": "`numbers` is sorted in **non-decreasing** order. Can you split **all** its numbers into one or more groups so that **every group is a run of consecutive whole numbers** (each number is exactly 1 more than the one before: `4, 5, 6`) and **every group has at least 3 numbers**? Each number must be in exactly one group (equal numbers can go into different groups).\n\nReturn `true` if it is possible, otherwise `false`.",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "-1000000000 <= numbers[i] <= 1000000000, in non-decreasing order"
+  ],
+  "signature": { "name": "can_split_consecutive_runs", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "bool" },
+  "examples": [
+    { "args": [[1, 2, 3, 4, 5, 5, 6, 7]], "expected": true, "explanation": "1, 2, 3, 4, 5 and 5, 6, 7." },
+    { "args": [[1, 2, 2, 3, 3, 4, 5, 5]], "expected": false, "explanation": "For example 1, 2, 3, 4, 5 leaves 2, 3, 5, which cannot form a run of three; every other way fails too." }
+  ],
+  "edgeTests": [[[]], [[1, 2, 3]], [[1, 2]], [[1, 1, 1]], [[1, 2, 3, 4]], [[1, 2, 3, 5, 6, 7]], [[1, 2, 4]]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Take the numbers one by one. A number can either extend a run that is already open (one that ended at the number before it) or start a new run. Which choice is better when both are possible?",
+    "pattern": "Greedy with two counters per value: how many of each value are still unused, and how many runs are waiting for this value as their next number. Prefer to extend an existing run; start a new run only if the next two values exist.",
+    "pseudocode": "count[v] = how many times v appears; need[v] = runs waiting for v as their next element\nfor x in numbers: if count[x] == 0: continue; count[x] -= 1\n  if need[x] > 0: need[x] -= 1; need[x + 1] += 1\n  elif count[x + 1] > 0 and count[x + 2] > 0: count[x + 1] -= 1; count[x + 2] -= 1; need[x + 3] += 1\n  else: return false\nreturn true",
+    "walkthrough": "Extending an open run is always at least as good as starting a new one: the shorter runs are the risky ones (they still need more numbers), and putting x on the end of a run that has only 1 or 2 numbers so far helps it reach 3. Starting a new run requires x + 1 and x + 2 to exist (and uses them at once, so the run has length 3 immediately). Keep a table of how many copies of each value are unused, and a table of how many runs are waiting for each value. Process the numbers in order; if a number can neither extend a run nor start a new valid one, the answer is false. The first rule means the total work is O(n)."
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "slug": "bag-of-tokens-score",
+  "title": "Play the Tokens for the Best Score",
+  "concept": "greedy",
+  "difficulty": "medium",
+  "statement": "You start with `power` points of power and a score of `0`. `tokens[i]` is the value of token `i`, and **each token can be played at most once**, in any order, in one of two ways:\n- **face up**: needs `power >= tokens[i]`; you **lose** `tokens[i]` power and **gain 1** score;\n- **face down**: needs `score >= 1`; you **gain** `tokens[i]` power and **lose 1** score.\n\nReturn the **largest score** you can have at any moment while playing.",
+  "constraints": [
+    "0 <= len(tokens) <= 1000",
+    "0 <= tokens[i], power <= 10000"
+  ],
+  "signature": { "name": "bag_of_tokens_score", "params": [{ "name": "tokens", "type": "int[]" }, { "name": "power", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[10, 20, 300, 40, 50], 60], "expected": 3, "explanation": "Play 10 and 20 face up (power 30, score 2). Play 300 face down (power 330, score 1). Play 40 and 50 face up (power 240, score 3)." },
+    { "args": [[100], 50], "expected": 0, "explanation": "The only token is too expensive to play face up, and you have no score to play it face down." }
+  ],
+  "edgeTests": [[[], 5], [[5], 5], [[5, 5], 5], [[1, 2, 3], 0], [[200, 100], 150], [[1, 1, 1, 1], 2]],
+  "expected": { "time": "O(n log n)", "space": "O(1) besides sorting" },
+  "hints": {
+    "nudge": "When you spend power, which token should you spend it on? And when you need power, which token should you give up your score for?",
+    "pattern": "Sort the tokens. Play the CHEAPEST remaining token face up whenever you can afford it; when you cannot, play the MOST EXPENSIVE remaining token face down (if you have a score to give); stop when neither works.",
+    "pseudocode": "sort tokens; lo = 0; hi = n - 1; score = 0; best = 0\nwhile lo <= hi:\n  if power >= tokens[lo]: power -= tokens[lo]; lo += 1; score += 1; best = max(best, score)\n  elif score > 0: power += tokens[hi]; hi -= 1; score -= 1\n  else: break\nreturn best",
+    "walkthrough": "Every face-up play costs power and gives exactly one point, so it is best to pay with the cheapest tokens: they give the same point for less power. Every face-down play gives back power but costs a point, so it is best to cash in the most expensive token: it returns the most power for the same lost point. Hence two pointers on the sorted list: the left one takes cheap tokens face up, the right one sells expensive tokens face down, and you only sell when you cannot afford the next cheap token. The best score is a maximum over time: the score can go down when you sell a token, so remember the highest value seen. O(n log n) for the sorting."
+  }
+}

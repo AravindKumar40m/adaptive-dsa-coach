@@ -1,0 +1,24 @@
+{
+  "slug": "longest-univalue-path",
+  "title": "Longest Path of Equal Values",
+  "concept": "trees",
+  "difficulty": "medium",
+  "statement": "Find the **longest path** in a binary tree in which **every node has the same value**. The path may start and end at any two nodes and does **not** have to pass through the root. Return its length **measured in edges** (the number of connections between neighbouring nodes on the path). A single node, or a tree where no two neighbouring nodes are equal, has length `0`.",
+  "constraints": [
+    "0 <= number of nodes <= 100000",
+    "-1000 <= node value <= 1000"
+  ],
+  "signature": { "name": "longest_univalue_path", "params": [{ "name": "root", "type": "TreeNode" }], "returns": "int" },
+  "examples": [
+    { "args": [[2, 2, 2, 2, null, 2, 3]], "expected": 4, "explanation": "The path goes from the left-left 2 up to the left 2, to the root 2, down to the right 2, and to its left child 2: 5 nodes, 4 edges." },
+    { "args": [[1, 2, 3]], "expected": 0, "explanation": "No two neighbouring nodes are equal." }
+  ],
+  "edgeTests": [[[]], [[1]], [[1, 1]], [[1, 1, 1]], [[1, 2, 1, 1]], [[1, 1, 2, 1, 1, null, 2]]],
+  "expected": { "time": "O(n)", "space": "O(h)" },
+  "hints": {
+    "nudge": "Look at the highest node of a path: the path goes down into its left subtree and/or its right subtree. What do you need from each subtree?",
+    "pattern": "Post-order recursion that returns the length of the longest equal-valued chain going DOWN from a node; combine the left and right chains at each node to update the best path through it.",
+    "pseudocode": "down(node):\n  if node is missing: return 0\n  l = down(left); r = down(right)\n  leftArm = l + 1 if left exists and left.val == node.val else 0\n  rightArm = r + 1 if right exists and right.val == node.val else 0\n  best = max(best, leftArm + rightArm)\n  return max(leftArm, rightArm)",
+    "walkthrough": "A path has a highest node. Through that node it uses a downward chain on the left side and a downward chain on the right side, and both chains must have the node's value. So compute, for every node, the length (in edges) of its longest downward chain of equal values: it is 1 + (the child's chain) if the child has the same value, else 0. Taking the left and right chains together gives the longest path whose highest node is this one: leftArm + rightArm. Keep the maximum over all nodes. The function itself returns only the longer arm, because a path that continues upwards can use only one side. One pass: O(n). For very deep trees an explicit stack is safer than recursion."
+  }
+}

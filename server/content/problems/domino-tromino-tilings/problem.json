@@ -1,0 +1,23 @@
+{
+  "slug": "domino-tromino-tilings",
+  "title": "Tiling a Two-Row Floor",
+  "concept": "dp",
+  "difficulty": "medium",
+  "statement": "A floor has **2 rows and `n` columns** of square cells. You tile it completely, with no gaps and no overlaps, using two kinds of tiles: a **domino** (2 cells in a line, placed horizontally or vertically) and a **tromino** (an L-shape of 3 cells: three of the four cells of a 2 by 2 block, in any of its 4 rotations).\n\nReturn the **number of different tilings**, modulo 1,000,000,007. Two tilings are different if some pair of neighbouring cells is covered by one tile in one tiling and by two different tiles in the other.",
+  "constraints": [
+    "1 <= n <= 1000"
+  ],
+  "signature": { "name": "count_tilings", "params": [{ "name": "n", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [4], "expected": 11, "explanation": "There are 11 tilings of a 2 by 4 floor (the counts for n = 1, 2, 3, 4, 5 are 1, 2, 5, 11, 24)." },
+    { "args": [1], "expected": 1, "explanation": "One vertical domino." }
+  ],
+  "edgeTests": [[2], [3], [5], [6], [7], [8], [9], [10], [11], [12], [13], [14], [15], [16], [20], [25], [30], [50], [100], [200], [500], [999], [1000]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Look at the right end of a tiling. How can the last column(s) be covered? Some endings use only the last one or two columns; others stretch back further. Can you find a pattern in the first few counts: 1, 2, 5, 11, 24?",
+    "pattern": "Recurrence: f(n) = 2 * f(n - 1) + f(n - 3), with f(0) = 1, f(1) = 1, f(2) = 2, taken modulo 1,000,000,007.",
+    "pseudocode": "f[0] = 1; f[1] = 1; f[2] = 2\nfor i in 3 .. n: f[i] = (2 * f[i - 1] + f[i - 3]) mod 1,000,000,007\nreturn f[n]",
+    "walkthrough": "Count by what happens at the left end of the floor. A vertical domino covers one column: f(n - 1) ways for the rest. Two horizontal dominoes cover two columns: f(n - 2). A tromino leaves a cell 'sticking out' into the next column, which has to be filled by another tromino or by a domino, and these 'chains' can be of any length: summing all of them gives the extra terms that simplify (by subtracting the recurrence for n - 1) to f(n) = 2 f(n - 1) + f(n - 3). Check it on the small values: f(3) = 2 * 2 + 1 = 5, f(4) = 2 * 5 + 1 = 11, f(5) = 2 * 11 + 2 = 24. A direct way to be sure is to compute the counts with a profile table (which cells of the current column are already covered) and compare. Keep only the last three values and reduce modulo 1,000,000,007 after every step; use 64-bit arithmetic."
+  }
+}

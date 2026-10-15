@@ -1,0 +1,24 @@
+{
+  "slug": "digit-sum-sort",
+  "title": "Sort by Digit Sum",
+  "concept": "sorting",
+  "difficulty": "easy",
+  "statement": "The **digit sum** of a non-negative whole number is the sum of its decimal digits (`305` has digit sum `8`). Sort `numbers` by **digit sum, smallest first**; numbers with the same digit sum are ordered by **value, smallest first**. Return the sorted list.",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "0 <= numbers[i] <= 1000000000"
+  ],
+  "signature": { "name": "sort_by_digit_sum", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[19, 5, 23, 100, 14]], "expected": [100, 5, 14, 23, 19], "explanation": "Digit sums: 100 -> 1; 5, 14, 23 -> 5 (ordered by value: 5, 14, 23); 19 -> 10." },
+    { "args": [[]], "expected": [], "explanation": "Nothing to sort." }
+  ],
+  "edgeTests": [[[0]], [[10, 1]], [[99, 18, 9]], [[111, 3, 12, 21]], [[1000000000, 999999999, 1]]],
+  "expected": { "time": "O(n log n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Sorting needs a way to compare two numbers. Here you compare the digit sum first and the value second. Is there a built-in way to give a sort a combined key?",
+    "pattern": "Sort with the key (digit sum, value).",
+    "pseudocode": "digitSum(x): total = 0; while x > 0: total += x mod 10; x = x div 10; return total\nsort numbers by key (digitSum(x), x)",
+    "walkthrough": "Write a small helper that adds the digits of a number (repeatedly take the last digit with `x mod 10` and drop it with `x div 10`). Then sort with a two-part key: the digit sum decides first, and when two numbers have the same digit sum the numbers themselves are compared. Computing the digit sum takes at most 10 steps per number, so the whole job is O(n log n). In languages where the comparison is a function, compare the digit sums and return the comparison of the values when the sums are equal."
+  }
+}

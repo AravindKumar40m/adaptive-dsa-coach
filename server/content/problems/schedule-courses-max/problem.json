@@ -1,0 +1,24 @@
+{
+  "slug": "schedule-courses-max",
+  "title": "Take As Many Courses As Possible",
+  "concept": "heaps",
+  "difficulty": "hard",
+  "statement": "`courses[i] = [duration, lastDay]`: course `i` takes `duration` days in a row and must be **finished by day `lastDay`** (finishing exactly on that day is fine). You take **one course at a time**, starting on day 1, with no gaps and no overlaps, and you may skip courses.\n\nReturn the **largest number of courses** you can take.",
+  "constraints": [
+    "0 <= len(courses) <= 10000",
+    "1 <= duration, lastDay <= 10000"
+  ],
+  "signature": { "name": "max_courses", "params": [{ "name": "courses", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [[[3, 5], [2, 6], [4, 7], [1, 3]]], "expected": 3, "explanation": "Take the courses (1, 3), (3, 5) and (2, 6): they finish on days 1, 4 and 6. All four would need 10 days, but the latest deadline is 7." },
+    { "args": [[[3, 2]]], "expected": 0, "explanation": "The course needs 3 days but must finish by day 2." }
+  ],
+  "edgeTests": [[[]], [[[1, 1]]], [[[2, 1]]], [[[1, 1], [1, 1]]], [[[5, 5], [4, 6], [2, 6]]]],
+  "expected": { "time": "O(n log n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "If you decide which courses to take, in which order should you take them? And if the plan becomes too long for the latest deadline, which course should you drop?",
+    "pattern": "Sort by deadline; go through the courses adding each to the plan (and its duration to the total time); if the total exceeds the current deadline, drop the LONGEST course taken so far (a max-heap of durations).",
+    "pseudocode": "sort courses by lastDay\ntotal = 0; heap = empty max-heap of durations\nfor (duration, lastDay) in courses:\n  total += duration; push duration\n  if total > lastDay: total -= pop the largest duration\nreturn size of heap",
+    "walkthrough": "A set of courses is feasible exactly when, taken in order of deadline, each one finishes before its own deadline. So process the courses sorted by deadline and keep the plan so far. Add the new course. If the plan now ends after the current deadline, something must go; dropping the longest course in the plan frees the most time and loses only one course, so it is never worse than dropping any other (and it may be the new course itself). A max-heap of the durations gives the longest in O(log n). The number of courses left in the heap at the end is the maximum. O(n log n) overall."
+  }
+}

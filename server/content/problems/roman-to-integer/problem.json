@@ -1,0 +1,24 @@
+{
+  "slug": "roman-to-integer",
+  "title": "Read a Roman Numeral",
+  "concept": "strings",
+  "difficulty": "easy",
+  "statement": "Roman numerals use the symbols `I`=1, `V`=5, `X`=10, `L`=50, `C`=100, `D`=500, `M`=1000. A symbol is normally **added**; but when a symbol is placed **before a larger one**, it is **subtracted** instead (`IV` = 4, `IX` = 9, `XL` = 40, `XC` = 90, `CD` = 400, `CM` = 900).\n\n`numeral` is a valid Roman numeral. Return its value.",
+  "constraints": [
+    "1 <= len(numeral) <= 20",
+    "numeral is a valid Roman numeral for a number from 1 to 3999"
+  ],
+  "signature": { "name": "roman_to_int", "params": [{ "name": "numeral", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["XLII"], "expected": 42, "explanation": "XL = 40 and II = 2." },
+    { "args": ["MMXXIV"], "expected": 2024, "explanation": "1000 + 1000 + 10 + 10 + 4 (IV)." }
+  ],
+  "edgeTests": [["I"], ["IV"], ["IX"], ["LVIII"], ["MCMXCIV"], ["MMMCMXCIX"]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Look at a symbol and the symbol after it. When is the first one added and when is it subtracted?",
+    "pattern": "Scan left to right: if the current symbol is smaller than the next one, subtract its value, otherwise add it.",
+    "pseudocode": "value = {I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000}\ntotal = 0\nfor i in 0 .. n - 1:\n  if i + 1 < n and value[s[i]] < value[s[i + 1]]: total -= value[s[i]] else: total += value[s[i]]\nreturn total",
+    "walkthrough": "A subtractive pair such as IV has a smaller symbol in front of a larger one. If you simply add all symbols you get 1 + 5 = 6 for IV; the correct value is 5 - 1. So whenever a symbol is smaller than the one that follows, its contribution is negative. Everything else is added. The last symbol is always added because nothing follows it. One pass, O(n). (Another way: rewrite the six subtractive pairs as repeated symbols, IV to IIII, IX to VIIII and so on, then add everything.)"
+  }
+}

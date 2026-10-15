@@ -1,0 +1,24 @@
+{
+  "slug": "min-index-sum-common",
+  "title": "Closest to the Front in Both Lists",
+  "concept": "hashing",
+  "difficulty": "easy",
+  "statement": "`first` and `second` are two lists; inside each list all numbers are **different**. A number that occurs in **both** lists is a **common** number, and its **index sum** is its position in `first` plus its position in `second` (positions start at 0).\n\nReturn the **smallest index sum** over all common numbers, or `-1` if the lists have no number in common.",
+  "constraints": [
+    "0 <= len(first), len(second) <= 100000",
+    "-1000000000 <= value <= 1000000000, different inside each list"
+  ],
+  "signature": { "name": "min_index_sum_common", "params": [{ "name": "first", "type": "int[]" }, { "name": "second", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[4, 9, 2, 7], [7, 2, 5, 4]], "expected": 3, "explanation": "4 has index sum 0 + 3, 2 has 2 + 1, 7 has 3 + 0: all 3." },
+    { "args": [[1, 2], [3, 4]], "expected": -1, "explanation": "Nothing in common." }
+  ],
+  "edgeTests": [[[], []], [[1], [1]], [[1, 2, 3], [3, 2, 1]], [[5, 6], [6, 5]], [[1, 2, 3], [4, 5, 1]]],
+  "expected": { "time": "O(n + m)", "space": "O(n)" },
+  "hints": {
+    "nudge": "To know where a number sits in the first list without searching, what could you store?",
+    "pattern": "Put the positions of the first list in a hash map (value to index), then walk through the second list and look each value up.",
+    "pseudocode": "position = map value -> index for the first list\nbest = -1\nfor j, x in second: if x in position: s = position[x] + j; if best == -1 or s < best: best = s\nreturn best",
+    "walkthrough": "Comparing every pair of numbers is O(n * m). A map from value to index for the first list answers 'is x there, and where?' in O(1). Walk through the second list; for each value found in the map, compute the index sum, and keep the smallest. Because the values inside a list are all different, each value has exactly one position per list and the sum is well defined. Report -1 if you never found a common value."
+  }
+}

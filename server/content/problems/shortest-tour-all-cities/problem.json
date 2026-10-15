@@ -1,0 +1,24 @@
+{
+  "slug": "shortest-tour-all-cities",
+  "title": "The Shortest Trip Through Every City",
+  "concept": "backtracking",
+  "difficulty": "hard",
+  "statement": "There are `n` cities numbered `0` to `n - 1`. `dist[i][j]` is the cost of travelling **directly** from city `i` to city `j` (the costs need not be the same in both directions, and `dist[i][i]` is `0`). You start in city `0` and must visit **every city exactly once**; you do **not** have to return to the start.\n\nReturn the **smallest total cost** of such a trip. With a single city the answer is `0`.",
+  "constraints": [
+    "1 <= n <= 12",
+    "0 <= dist[i][j] <= 1000"
+  ],
+  "signature": { "name": "shortest_tour", "params": [{ "name": "dist", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [[[0, 4, 9, 3], [4, 0, 2, 8], [9, 2, 0, 5], [3, 8, 5, 0]]], "expected": 10, "explanation": "The trip 0 -> 3 -> 2 -> 1 costs 3 + 5 + 2 = 10; every other order is more expensive." },
+    { "args": [[[0]]], "expected": 0, "explanation": "One city: nothing to travel." }
+  ],
+  "edgeTests": [[[[0, 5], [5, 0]]], [[[0, 1, 100], [100, 0, 1], [1, 100, 0]]], [[[0, 7, 7], [7, 0, 7], [7, 7, 0]]], [[[0, 2, 9, 10, 3], [1, 0, 6, 4, 8], [15, 7, 0, 8, 2], [6, 3, 12, 0, 5], [4, 9, 1, 11, 0]]]],
+  "expected": { "time": "O(2^n * n^2)", "space": "O(2^n * n)" },
+  "hints": {
+    "nudge": "Trying all orders of the other cities is (n - 1)! trips. But two different orders that visited the SAME set of cities and ended in the same city have the same future. What does that suggest remembering?",
+    "pattern": "Bitmask dynamic programming (the Held-Karp idea): dp[set of visited cities][last city] = the cheapest way to start at 0, visit exactly that set, and end at that city.",
+    "pseudocode": "dp[{0}][0] = 0, everything else infinity\nfor each set S containing 0 (in increasing order of the mask), for each last city j in S with dp[S][j] finite:\n  for each city k not in S: dp[S + {k}][k] = min(dp[S + {k}][k], dp[S][j] + dist[j][k])\nanswer = min over j of dp[all cities][j]",
+    "walkthrough": "With n = 12 there are 11! = 39.9 million orders: too many to try one by one in a slow language. The cost of finishing a trip depends only on which cities are already visited and where you are now, not on the order in which you visited them. So store, for every set of visited cities (a bitmask) and every possible current city, the cheapest cost so far. Extend each state by one new city. There are 2^n * n states and each is extended in up to n ways: O(2^n * n^2), about 600,000 steps for n = 12. A plain backtracking search with a 'best so far' cut-off also works for small n and is the natural first idea."
+  }
+}

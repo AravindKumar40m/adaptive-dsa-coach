@@ -1,0 +1,24 @@
+{
+  "slug": "equal-cost-substring",
+  "title": "How Far Can the Budget Stretch",
+  "concept": "sliding_window",
+  "difficulty": "medium",
+  "statement": "`s` and `t` are texts of lowercase letters with the **same length**. Changing the letter `s[i]` into `t[i]` costs the **distance between the two letters in the alphabet** (`a` to `d` costs 3, and the cost is the same in both directions; equal letters cost 0). You have a **budget** `max_cost`.\n\nFind the **longest substring of `s`** (a contiguous part, positions `i` to `j`) that you can turn into the matching substring of `t` (positions `i` to `j`) with a total cost of **at most** `max_cost`. Return its length (`0` if even a single letter is too expensive).",
+  "constraints": [
+    "0 <= len(s) == len(t) <= 100000",
+    "0 <= max_cost <= 1000000"
+  ],
+  "signature": { "name": "equal_cost_substring", "params": [{ "name": "s", "type": "string" }, { "name": "t", "type": "string" }, { "name": "max_cost", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": ["azbyc", "bxdzf", 5], "expected": 3, "explanation": "The costs of the positions are 1, 2, 2, 1, 3. The first three cost 1 + 2 + 2 = 5, within the budget; four in a row would cost 6." },
+    { "args": ["abc", "abc", 0], "expected": 3, "explanation": "The texts are equal: every change costs 0." }
+  ],
+  "edgeTests": [["", "", 5], ["a", "z", 24], ["a", "z", 25], ["aaaa", "bbbb", 0], ["abcd", "bcde", 2], ["zzzz", "aaaa", 100]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "First turn the two texts into one list of costs, one per position. The question becomes: the longest stretch of costs whose sum is at most the budget.",
+    "pattern": "Sliding window over the costs: extend the right end; while the sum exceeds the budget, move the left end forward.",
+    "pseudocode": "left = 0; sum = 0; best = 0\nfor right in 0 .. n - 1:\n  sum += |s[right] - t[right]|\n  while sum > max_cost: sum -= |s[left] - t[left]|; left += 1\n  best = max(best, right - left + 1)\nreturn best",
+    "walkthrough": "Checking every stretch and adding its costs is O(n^2). All costs are non-negative, so a stretch that is within the budget stays within the budget if you shorten it, which is exactly what makes a two-pointer window work. Keep the sum of the costs inside the window. After adding the new right position, if the sum is too large, remove positions from the left until it fits (the window can become empty when a single cost is too large, and then its length is 0). The answer is the longest window seen. Each position enters and leaves the window once: O(n)."
+  }
+}

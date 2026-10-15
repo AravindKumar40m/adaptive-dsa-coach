@@ -1,0 +1,142 @@
+//### stock-profit-with-fee
+int stock_profit_with_fee(vector<int>& prices, int fee) {
+    long long cash = 0, hold = -1000000000LL;
+    for (int price : prices) {
+        cash = max(cash, hold + price - fee);
+        hold = max(hold, cash - price);
+    }
+    return (int) cash;
+}
+//### maximal-rectangle-of-ones
+int max_rectangle_of_ones(vector<vector<int>>& grid) {
+    int rows = (int) grid.size(), cols = (int) grid[0].size();
+    vector<int> heights(cols + 1, 0);
+    int best = 0;
+    for (int r = 0; r < rows; r++) {
+        for (int c = 0; c < cols; c++) heights[c] = grid[r][c] == 1 ? heights[c] + 1 : 0;
+        heights[cols] = 0;
+        vector<int> stack;
+        for (int i = 0; i <= cols; i++) {
+            int h = heights[i];
+            while (!stack.empty() && heights[stack.back()] >= h) {
+                int top = stack.back();
+                stack.pop_back();
+                int width = stack.empty() ? i : i - stack.back() - 1;
+                best = max(best, heights[top] * width);
+            }
+            stack.push_back(i);
+        }
+    }
+    return best;
+}
+//### dungeon-min-health
+int min_initial_health(vector<vector<int>>& dungeon) {
+    int rows = (int) dungeon.size(), cols = (int) dungeon[0].size(), INF = 1000000000;
+    vector<int> need(cols + 1, INF);
+    need[cols - 1] = 1;
+    for (int r = rows - 1; r >= 0; r--) {
+        for (int c = cols - 1; c >= 0; c--) {
+            int next = r < rows - 1 ? need[c] : INF;
+            if (c + 1 < cols) next = min(next, need[c + 1]);
+            if (r == rows - 1 && c == cols - 1) next = 1;
+            need[c] = max(1, next - dungeon[r][c]);
+        }
+    }
+    return need[0];
+}
+//### two-resource-knapsack
+int max_items_two_budgets(vector<vector<int>>& items, int zeros, int ones) {
+    vector<vector<int>> best(zeros + 1, vector<int>(ones + 1, 0));
+    for (auto& item : items) {
+        int zc = item[0], oc = item[1];
+        for (int a = zeros; a >= zc; a--)
+            for (int b = ones; b >= oc; b--)
+                best[a][b] = max(best[a][b], best[a - zc][b - oc] + 1);
+    }
+    return best[zeros][ones];
+}
+//### interleaving-strings-check
+bool is_interleaving(string a, string b, string c) {
+    if (a.size() + b.size() != c.size()) return false;
+    int m = (int) a.size(), n = (int) b.size();
+    vector<char> row(n + 1, 0);
+    row[0] = 1;
+    for (int j = 1; j <= n; j++) row[j] = row[j - 1] && b[j - 1] == c[j - 1];
+    for (int i = 1; i <= m; i++) {
+        row[0] = row[0] && a[i - 1] == c[i - 1];
+        for (int j = 1; j <= n; j++)
+            row[j] = (row[j] && a[i - 1] == c[i + j - 1]) || (row[j - 1] && b[j - 1] == c[i + j - 1]);
+    }
+    return row[n] != 0;
+}
+//### distinct-subsequence-count
+int count_distinct_subsequences(string s, string t) {
+    int m = (int) t.size();
+    vector<long long> ways(m + 1, 0);
+    ways[0] = 1;
+    for (char ch : s) {
+        for (int j = m; j >= 1; j--) if (ch == t[j - 1]) ways[j] += ways[j - 1];
+    }
+    return (int) ways[m];
+}
+//### min-falling-path-sum
+int min_falling_path_sum(vector<vector<int>>& matrix) {
+    int rows = (int) matrix.size(), cols = (int) matrix[0].size();
+    vector<int> best = matrix[0];
+    for (int r = 1; r < rows; r++) {
+        vector<int> next(cols);
+        for (int c = 0; c < cols; c++) {
+            int low = best[c];
+            if (c > 0) low = min(low, best[c - 1]);
+            if (c + 1 < cols) low = min(low, best[c + 1]);
+            next[c] = matrix[r][c] + low;
+        }
+        best = next;
+    }
+    return *min_element(best.begin(), best.end());
+}
+//### domino-tromino-tilings
+int count_tilings(int n) {
+    const long long MOD = 1000000007LL;
+    if (n <= 2) return n == 2 ? 2 : 1;
+    long long a = 1, b = 1, c = 2;
+    for (int i = 3; i <= n; i++) { long long next = (2 * c + a) % MOD; a = b; b = c; c = next; }
+    return (int) c;
+}
+//### regex-star-match
+bool regex_star_match(string text, string pattern) {
+    int n = (int) text.size(), m = (int) pattern.size();
+    vector<vector<char>> table(n + 1, vector<char>(m + 1, 0));
+    table[0][0] = 1;
+    for (int j = 1; j <= m; j++) if (pattern[j - 1] == '*') table[0][j] = table[0][j - 2];
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+            if (pattern[j - 1] == '*') {
+                char before = pattern[j - 2];
+                table[i][j] = table[i][j - 2] || ((before == '.' || before == text[i - 1]) && table[i - 1][j]);
+            } else {
+                char here = pattern[j - 1];
+                table[i][j] = (here == '.' || here == text[i - 1]) && table[i - 1][j - 1];
+            }
+        }
+    }
+    return table[n][m] != 0;
+}
+//### ascii-delete-sum
+int min_ascii_delete_sum(string s1, string s2) {
+    int n = (int) s1.size(), m = (int) s2.size();
+    vector<int> keep(m + 1, 0);
+    for (int i = 1; i <= n; i++) {
+        int previous_diagonal = 0;
+        for (int j = 1; j <= m; j++) {
+            int saved = keep[j];
+            if (s1[i - 1] == s2[j - 1]) keep[j] = previous_diagonal + s1[i - 1];
+            else keep[j] = max(keep[j], keep[j - 1]);
+            previous_diagonal = saved;
+        }
+    }
+    int total = 0;
+    for (char ch : s1) total += ch;
+    for (char ch : s2) total += ch;
+    return total - 2 * keep[m];
+}

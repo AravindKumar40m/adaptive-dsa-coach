@@ -107,8 +107,8 @@ Extra-language solutions live in `server/content/other-languages/<lang>.txt` and
 - The page opens on the recommended problem, explains why, and has a "Next problem" / "Skip to another problem" button.
 - Tests (from `server/`): `npm run test:picker` (16 unit tests, no services), `npm run test:picker-flow` (API must be running: a simulated learner solves all 30 problems in the order the picker offers; dev database only).
 
-## Content: 280 problems (120 on Day 3, 180 on Day 6, 280 on Day 7)
-66 easy, 171 medium, 43 hard; the 16 concepts have 15 to 25 problems each (dp 25, graphs 23, trees 20, the rest 15 to 17). 6,129 tests; 1,432 reference solutions (Python brute/better/optimal + JavaScript, Java and C++), all verified through the real harness and Judge0. The statements, hints and skill tags were written and checked by Claude only: a human read is still needed.
+## Content: 380 problems (120 on Day 3, 180 on Day 6, 280 and 380 on Day 7)
+90 easy, 225 medium, 65 hard; the 16 concepts have 20 to 35 problems each (dp 35, graphs 31, trees 26, arrays and strings 24, the rest 20 to 23). 8,271 tests; 1,948 reference solutions (Python brute/better/optimal + JavaScript, Java and C++), all verified through the real harness and Judge0. The statements, hints and skill tags were written and checked by Claude only: a human read is still needed.
 - Types: parameters `int`, `int[]`, `int[][]`, `string`, `ListNode`, `CycleList`, `TreeNode`; returns `int`, `bool`, `int[]`, `string`, `ListNode`, `TreeNode`. Linked lists and trees are shown as plain lists in the statements (trees level by level with `null`); the harness builds the real nodes in each language.
 - Add a problem: create `server/content/problems/<slug>/{problem.json,solutions.py}` and add the optimal solution to `server/content/other-languages/<lang>.<batch>.txt` (one section per slug, `//### <slug>`).
 - Check content (from `server/`): `npm run content:build` (agreement checks), `python content/check_quality.py` (test variety), `npm run content:seed`, `npm run content:validate` (all) or `node --env-file=../.env scripts/content/validate-references.js slug1,slug2` (some).

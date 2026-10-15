@@ -1,0 +1,24 @@
+{
+  "slug": "sum-subarray-minimums",
+  "title": "Sum of the Smallest Number of Every Stretch",
+  "concept": "stack_queue",
+  "difficulty": "hard",
+  "statement": "Look at every **non-empty contiguous stretch** of `numbers`. For each stretch take its **smallest number**. Return the **sum** of these smallest numbers over all stretches, **modulo 1,000,000,007** (the sum can be very large).",
+  "constraints": [
+    "0 <= len(numbers) <= 30000",
+    "1 <= numbers[i] <= 30000"
+  ],
+  "signature": { "name": "sum_subarray_mins", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[2, 5, 1]], "expected": 12, "explanation": "Stretches and minimums: [2] 2, [5] 5, [1] 1, [2, 5] 2, [5, 1] 1, [2, 5, 1] 1. Total 12." },
+    { "args": [[7]], "expected": 7, "explanation": "One stretch." }
+  ],
+  "edgeTests": [[[]], [[1, 1, 1]], [[5, 4, 3, 2, 1]], [[1, 2, 3, 4, 5]], [[10000, 1, 10000]], [[2, 2, 1, 2, 2]]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Instead of looking at each stretch, ask for each NUMBER: in how many stretches is it the smallest?",
+    "pattern": "Monotonic stack: for each position find how far the stretch may extend to the left and to the right while the number stays the minimum; the number contributes value * leftChoices * rightChoices.",
+    "pseudocode": "left[i] = i - (position of the previous number that is <= numbers[i], or -1)\nright[i] = (position of the next number that is < numbers[i], or n) - i\nanswer = sum of numbers[i] * left[i] * right[i], modulo 1,000,000,007",
+    "walkthrough": "There are n(n + 1)/2 stretches, so computing each minimum separately is O(n^2) at best. Count per number instead. A stretch has numbers[i] as its minimum if it contains i and does not contain a smaller number. Going left from i you can extend until the previous smaller (or equal) number; going right until the next strictly smaller number: left[i] and right[i] choices for the two ends, so numbers[i] is the minimum of left[i] * right[i] stretches. To avoid counting a stretch with two equal minimums twice, one side stops at equal numbers and the other does not (above: left stops at <=, right at <). Both boundary arrays come from one monotonic-stack pass each. The products need 64-bit numbers (30000 * 30000 * 30000 is about 2.7 * 10^13), reduced modulo 1,000,000,007."
+  }
+}

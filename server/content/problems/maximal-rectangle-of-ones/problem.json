@@ -1,0 +1,24 @@
+{
+  "slug": "maximal-rectangle-of-ones",
+  "title": "The Biggest Rectangle of Ones",
+  "concept": "dp",
+  "difficulty": "hard",
+  "statement": "`grid` is a table of `0` and `1`. Find the **largest rectangle** (any number of rows and columns, all cells next to each other) that contains **only ones**, and return its **area** (the number of cells). If there is no `1`, the answer is `0`.",
+  "constraints": [
+    "1 <= rows, columns <= 200",
+    "grid[r][c] is 0 or 1"
+  ],
+  "signature": { "name": "max_rectangle_of_ones", "params": [{ "name": "grid", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [[[0, 1, 1], [1, 1, 1], [1, 1, 0]]], "expected": 4, "explanation": "The 2 by 2 block of ones in the top right (or in the bottom left) has area 4; a 1 by 3 row has only 3." },
+    { "args": [[[1, 1, 1]]], "expected": 3, "explanation": "One row of three ones." }
+  ],
+  "edgeTests": [[[[0]]], [[[1]]], [[[1, 1], [1, 1]]], [[[1, 0], [0, 1]]], [[[1], [1], [1]]], [[[0, 0], [0, 0]]]],
+  "expected": { "time": "O(rows * columns)", "space": "O(columns)" },
+  "hints": {
+    "nudge": "Look at the table one row at a time. If you only look at the rows up to row r, every column is a bar: how many ones in a row, ending at row r, are stacked in that column? What shape do you get?",
+    "pattern": "For each row build a histogram (the height of the stack of ones above each cell, reset to 0 at a zero) and find the largest rectangle in the histogram with a monotonic stack; the answer is the best over all rows.",
+    "pseudocode": "heights = zeros for every column; best = 0\nfor each row: for each column c: heights[c] = heights[c] + 1 if grid[row][c] == 1 else 0\n  best = max(best, largestRectangleInHistogram(heights))\nreturn best\nhistogram: scan with a stack of increasing heights; when a bar is lower than the top, pop and compute (height * width)",
+    "walkthrough": "Checking every rectangle with prefix sums is O(rows^2 * columns^2). Reduce it to a known problem: the bottom edge of the best rectangle lies in some row r, and then the rectangle is limited by the heights of the stacks of ones above row r, i.e. it is a rectangle inside the histogram of those heights. Maintain the heights from row to row in O(columns). The largest rectangle in a histogram comes from a stack of bars with increasing heights: when the next bar is lower than the top of the stack, the top bar can no longer extend to the right, so pop it and compute the area with the width from the previous stack entry to the current position. Add a final bar of height 0 to flush the stack. Each row costs O(columns): O(rows * columns) in total."
+  }
+}

@@ -1,0 +1,152 @@
+//### tribonacci-number
+function tribonacciNumber(n) {
+  if (n === 0) return 0;
+  let a = 0, b = 1, c = 1;
+  for (let i = 3; i <= n; i++) { const next = a + b + c; a = b; b = c; c = next; }
+  return c;
+}
+//### unique-digit-numbers-count
+function uniqueDigitCount(n) {
+  let total = 1;
+  for (let length = 1; length <= n; length++) {
+    let ways = 9, available = 9;
+    for (let i = 1; i < length; i++) { ways *= available; available--; }
+    total += ways;
+  }
+  return total;
+}
+//### kth-lexicographic-number
+function kthLexicographic(n, k) {
+  function subtree(prefix) {
+    let first = prefix, last = prefix, total = 0;
+    while (first <= n) {
+      total += Math.min(n + 1, last + 1) - first;
+      first *= 10;
+      last = last * 10 + 9;
+    }
+    return total;
+  }
+  let current = 1;
+  k -= 1;
+  while (k > 0) {
+    const size = subtree(current);
+    if (size <= k) { k -= size; current += 1; }
+    else { current *= 10; k -= 1; }
+  }
+  return current;
+}
+//### grid-path-spell
+function gridHasPath(grid, word) {
+  const rows = grid.length, cols = grid[0].length, m = word.length;
+  if (m === 0) return true;
+  const used = [];
+  for (let r = 0; r < rows; r++) used.push(new Array(cols).fill(false));
+  const dr = [1, -1, 0, 0], dc = [0, 0, 1, -1];
+  function go(r, c, i) {
+    if (i === m - 1) return true;
+    used[r][c] = true;
+    for (let d = 0; d < 4; d++) {
+      const nr = r + dr[d], nc = c + dc[d];
+      if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && !used[nr][nc] && grid[nr][nc] === word[i + 1]) {
+        if (go(nr, nc, i + 1)) { used[r][c] = false; return true; }
+      }
+    }
+    used[r][c] = false;
+    return false;
+  }
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) if (grid[r][c] === word[0] && go(r, c, 0)) return true;
+  return false;
+}
+//### combination-sum-three
+function countCombinationThree(k, n) {
+  function go(start, left, remaining) {
+    if (left === 0) return remaining === 0 ? 1 : 0;
+    let total = 0;
+    for (let d = start; d <= 9; d++) {
+      if (d > remaining) break;
+      total += go(d + 1, left - 1, remaining - d);
+    }
+    return total;
+  }
+  return go(1, k, n);
+}
+//### beautiful-arrangements-count
+function beautifulArrangements(n) {
+  const dp = new Array(1 << n).fill(0);
+  dp[0] = 1;
+  for (let mask = 0; mask < (1 << n); mask++) {
+    if (dp[mask] === 0) continue;
+    let pos = 1;
+    for (let m = mask; m > 0; m &= m - 1) pos++;
+    for (let num = 1; num <= n; num++) {
+      const bit = 1 << (num - 1);
+      if (!(mask & bit) && (num % pos === 0 || pos % num === 0)) dp[mask | bit] += dp[mask];
+    }
+  }
+  return dp[(1 << n) - 1];
+}
+//### consecutive-descending-split
+function isConsecutiveDescending(digits) {
+  const n = digits.length;
+  function go(start, previous) {
+    if (start === n) return true;
+    const need = previous - 1n;
+    for (let end = start + 1; end <= n; end++) {
+      const v = BigInt(digits.slice(start, end));
+      if (v === need && go(end, v)) return true;
+      if (v > need) break;
+    }
+    return false;
+  }
+  for (let end = 1; end < n; end++) {
+    if (go(end, BigInt(digits.slice(0, end)))) return true;
+  }
+  return false;
+}
+//### max-unique-split
+function maxUniqueSplit(text) {
+  const n = text.length, used = new Set();
+  let best = 0;
+  function go(start, count) {
+    if (count + (n - start) <= best) return;
+    if (start === n) { best = Math.max(best, count); return; }
+    for (let end = start + 1; end <= n; end++) {
+      const piece = text.slice(start, end);
+      if (!used.has(piece)) {
+        used.add(piece);
+        go(end, count + 1);
+        used.delete(piece);
+      }
+    }
+  }
+  go(0, 0);
+  return best;
+}
+//### shortest-tour-all-cities
+function shortestTour(dist) {
+  const n = dist.length, INF = 1000000000;
+  const dp = [];
+  for (let mask = 0; mask < (1 << n); mask++) dp.push(new Array(n).fill(INF));
+  dp[1][0] = 0;
+  for (let mask = 1; mask < (1 << n); mask++) {
+    if (!(mask & 1)) continue;
+    for (let last = 0; last < n; last++) {
+      if (dp[mask][last] >= INF) continue;
+      for (let nxt = 0; nxt < n; nxt++) {
+        if (mask & (1 << nxt)) continue;
+        const cost = dp[mask][last] + dist[last][nxt];
+        if (cost < dp[mask | (1 << nxt)][nxt]) dp[mask | (1 << nxt)][nxt] = cost;
+      }
+    }
+  }
+  return Math.min(...dp[(1 << n) - 1]);
+}
+//### first-true-position
+function firstTrueIndex(flags) {
+  let lo = 0, hi = flags.length;
+  while (lo < hi) {
+    const mid = lo + Math.floor((hi - lo) / 2);
+    if (flags[mid] === 1) hi = mid; else lo = mid + 1;
+  }
+  return lo < flags.length ? lo : -1;
+}

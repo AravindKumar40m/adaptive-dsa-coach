@@ -1,0 +1,25 @@
+{
+  "slug": "car-fleet-count",
+  "title": "How Many Fleets Reach the Finish",
+  "concept": "stack_queue",
+  "difficulty": "medium",
+  "statement": "Cars drive on a single-lane road towards a finish line at position `target`. Car `i` starts at `position[i]` (all different, all less than `target`) and drives at a constant speed `speed[i]`. A car **cannot pass** the car in front of it: when it catches up it slows down to that car's speed and drives right behind it. A group of cars that end up driving together (a car that catches another exactly at the finish line also joins it) is a **fleet**; a single car is a fleet too.\n\nReturn the **number of fleets** that arrive at the finish line.",
+  "constraints": [
+    "0 <= number of cars <= 100000",
+    "0 <= position[i] < target <= 1000000, positions are different",
+    "1 <= speed[i] <= 1000000"
+  ],
+  "signature": { "name": "count_car_fleets", "params": [{ "name": "target", "type": "int" }, { "name": "position", "type": "int[]" }, { "name": "speed", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [30, [0, 4, 9, 15], [5, 1, 3, 2]], "expected": 2, "explanation": "The car at 15 needs 7.5 time units, the one at 9 needs 7 so it catches up and joins it. The car at 4 needs 26 and is slower: its own fleet. The car at 0 needs 6, so it catches the car at 4 and joins its fleet. Two fleets." },
+    { "args": [100, [0, 50], [1, 10]], "expected": 2, "explanation": "The car at 50 arrives after 5 time units; the car at 0 needs 100, so it never catches up." }
+  ],
+  "edgeTests": [[10, [], []], [10, [3], [3]], [10, [0, 5], [2, 1]], [100, [0, 50], [10, 1]], [20, [2, 6, 10], [4, 2, 1]]],
+  "expected": { "time": "O(n log n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "How long would each car take to reach the finish if the road were empty? The car in front can only slow down the cars behind it.",
+    "pattern": "Sort the cars by position, closest to the finish first; go through them keeping the arrival time of the current fleet leader: a car with a LONGER free-road time than the fleet ahead starts a new fleet, otherwise it catches up and joins.",
+    "pseudocode": "sort cars by position, nearest to the target first\nfleets = 0; leaderTime = 0\nfor each car: time = (target - position) / speed\n  if time > leaderTime: fleets += 1; leaderTime = time\nreturn fleets",
+    "walkthrough": "A car whose empty-road arrival time is not larger than the arrival time of the (slowed) car in front of it will catch up to it before or at the finish line and then travel with it. If its time is larger, it never catches up. Going from the car closest to the finish backwards, keep the arrival time of the most recent fleet. A car with a strictly larger time starts a new fleet and its time becomes the new reference; a car with a smaller or equal time joins the fleet (its time stays the fleet's time, because it is slowed down). Counting the new fleets gives the answer. To avoid fractions compare times by cross-multiplying: (d1 / s1 > d2 / s2) exactly when d1 * s2 > d2 * s1; these products reach 10^12, so use 64-bit numbers. Sorting costs O(n log n)."
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "slug": "strobogrammatic-count",
+  "title": "Numbers That Look the Same Upside Down",
+  "concept": "recursion",
+  "difficulty": "medium",
+  "statement": "A number is **rotation-symmetric** if it looks the same after being rotated by 180 degrees (turned upside down). The digits `0`, `1` and `8` look the same when rotated, `6` becomes `9` and `9` becomes `6`, and no other digit works. For example `69`, `88`, `818` and `609` are rotation-symmetric, `962` is not.\n\nCount the rotation-symmetric numbers with **exactly `n` digits**. A number must not start with `0`, except that the one-digit number `0` counts.",
+  "constraints": [
+    "1 <= n <= 18"
+  ],
+  "signature": { "name": "strobogrammatic_count", "params": [{ "name": "n", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [2], "expected": 4, "explanation": "11, 69, 88 and 96 (00 is not allowed)." },
+    { "args": [3], "expected": 12, "explanation": "Outer digits: 11, 69, 88, 96 (4 choices); the middle digit: 0, 1 or 8 (3 choices): 4 * 3 = 12." }
+  ],
+  "edgeTests": [[1], [4], [5], [6], [7], [8], [9], [10], [11], [12], [13], [14], [15], [16], [17], [18]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Such a number is built from the outside in: the first and last digit are a matching pair. What do you have left after choosing one pair?",
+    "pattern": "Recursion on the length: count(n) = (choices for the outer pair) * count(n - 2), where the OUTER pair has 4 choices (no leading zero) and any inner pair has 5 choices (00 is allowed inside); the base cases are length 0 (one way) and length 1 (three digits: 0, 1, 8).",
+    "pseudocode": "count(n, top): if n == 0: return 1; if n == 1: return 3\n  return (4 if top else 5) * count(n - 2, false)\nanswer = count(n, true)",
+    "walkthrough": "A pair of digits (a, b) at the two ends must satisfy b = rotate(a): the pairs are (0, 0), (1, 1), (8, 8), (6, 9), (9, 6): five pairs, but the outermost pair cannot start with 0, which leaves four. After removing the outer pair, the inside is the same kind of number two digits shorter, but now (0, 0) is allowed. If the length is odd, the process ends with a single middle digit that must look the same rotated: 0, 1 or 8 (three choices). If it is even, it ends with the empty number (one way). So: the answer is 4 * 5^(pairs - 1) * (3 if n is odd else 1) for n >= 2, and 3 for n = 1. For n = 18 this is 1,562,500; generating the numbers themselves would be needlessly slow."
+  }
+}

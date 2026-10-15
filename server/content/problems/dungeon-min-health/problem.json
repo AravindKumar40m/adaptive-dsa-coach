@@ -1,0 +1,24 @@
+{
+  "slug": "dungeon-min-health",
+  "title": "The Weakest Start That Survives the Dungeon",
+  "concept": "dp",
+  "difficulty": "hard",
+  "statement": "A dungeon is a grid of rooms. `dungeon[r][c]` is what happens when you **enter** the room: a **negative** number is damage (you lose that much health), a **positive** number is healing, `0` is nothing. You start in the **top-left** room and want to reach the **bottom-right** room, moving only **right** or **down**. The start room and the end room also count.\n\nYour health must be **at least 1 after every room**. Return the **smallest starting health** with which you can reach the end by some path.",
+  "constraints": [
+    "1 <= rows, columns <= 100",
+    "-1000 <= dungeon[r][c] <= 1000"
+  ],
+  "signature": { "name": "min_initial_health", "params": [{ "name": "dungeon", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [[[-3, 5], [-4, -6]]], "expected": 5, "explanation": "Going right then down: -3, +5, -6 needs 5 at the start (5 - 3 = 2, 7, 1). Going down first needs 14." },
+    { "args": [[[5]]], "expected": 1, "explanation": "Healing never lowers the minimum below 1: you only need 1." }
+  ],
+  "edgeTests": [[[[0]]], [[[-7]]], [[[1, -3, 3], [0, -2, 0], [-3, -3, -3]]], [[[-1, -1, -1]]], [[[-2], [-2], [10]]]],
+  "expected": { "time": "O(rows * columns)", "space": "O(columns)" },
+  "hints": {
+    "nudge": "If you work from the start you do not know how much health you will need later. Work from the END instead: how much health do you need when you stand at the last room, just before entering it?",
+    "pattern": "Dynamic programming from the bottom-right corner back to the top-left: need[r][c] = the least health you must have when ENTERING room (r, c); it is max(1, min(need of the room to the right, need of the room below) - dungeon[r][c]).",
+    "pseudocode": "need[last][last] = max(1, 1 - dungeon[last][last])\nfor r from the bottom up, for c from the right to the left: next = min(need[r + 1][c], need[r][c + 1]) (only the existing neighbours)\n  need[r][c] = max(1, next - dungeon[r][c])\nreturn need[0][0]",
+    "walkthrough": "A forward table 'best health so far' does not work: a path with a higher sum can be worse because it dips lower in the middle, and two partial paths cannot be compared by one number. Going backwards fixes this: define need[r][c] as the smallest health you must have when you ENTER room (r, c) so that you can finish. After the room you will have health h + dungeon[r][c], and that must be at least the smaller of the needs of the two rooms you can go to next. So h = (that smaller need) - dungeon[r][c], but you also need at least 1 to survive the room itself, so need[r][c] = max(1, next - dungeon[r][c]). The last room has no next room: it needs max(1, 1 - dungeon). Fill the table from the end to the start; the answer is need[0][0]. O(rows * columns)."
+  }
+}

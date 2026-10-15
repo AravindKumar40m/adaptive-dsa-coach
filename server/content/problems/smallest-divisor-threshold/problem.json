@@ -1,0 +1,25 @@
+{
+  "slug": "smallest-divisor-threshold",
+  "title": "The Smallest Divisor Under the Limit",
+  "concept": "binary_search",
+  "difficulty": "medium",
+  "statement": "Choose a positive whole number `d` (the **divisor**). Divide every number of `numbers` by `d` and **round each result up** to a whole number (`ceil`); add the rounded results. Find the **smallest** `d` for which this sum is **at most `threshold`**.\n\nIt is guaranteed that `threshold >= len(numbers)`, so a large enough divisor always works.",
+  "constraints": [
+    "1 <= len(numbers) <= 50000",
+    "1 <= numbers[i] <= 1000000",
+    "len(numbers) <= threshold <= 1000000000"
+  ],
+  "signature": { "name": "smallest_divisor", "params": [{ "name": "numbers", "type": "int[]" }, { "name": "threshold", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[2, 3, 5, 9], 6], "expected": 5, "explanation": "d = 4 gives 1 + 1 + 2 + 3 = 7 (too big); d = 5 gives 1 + 1 + 1 + 2 = 5, which is at most 6." },
+    { "args": [[7], 7], "expected": 1, "explanation": "d = 1 gives 7, which is allowed." }
+  ],
+  "edgeTests": [[[1], 1], [[1, 1, 1], 3], [[100], 1], [[5, 5], 2], [[1000000], 1]],
+  "expected": { "time": "O(n log(max))", "space": "O(1)" },
+  "hints": {
+    "nudge": "As the divisor grows, what happens to the sum of the rounded-up quotients? Can a bigger divisor ever make the sum bigger?",
+    "pattern": "Binary search on the divisor: the sum never increases when d increases, so the divisors that work are all large ones; find the smallest of them.",
+    "pseudocode": "lo = 1; hi = max(numbers)\nwhile lo < hi:\n  mid = (lo + hi) / 2; total = sum over x of ceil(x / mid)  (= (x + mid - 1) / mid)\n  if total <= threshold: hi = mid else: lo = mid + 1\nreturn lo",
+    "walkthrough": "Trying d = 1, 2, 3, ... is O(max * n), too slow. Increasing d can only make every quotient smaller or equal, so the sum is non-increasing: there is a boundary, with failing divisors below it and working divisors from it on. Binary search the boundary: the search range is 1 to max(numbers) (that divisor already gives a sum equal to len(numbers), which is within the threshold by the guarantee). For a candidate mid compute the sum of ceil(x / mid) in one pass; if it is within the threshold the answer is mid or smaller, otherwise larger. About 20 rounds of one pass each. The integer form of ceil(x / d) is (x + d - 1) / d."
+  }
+}

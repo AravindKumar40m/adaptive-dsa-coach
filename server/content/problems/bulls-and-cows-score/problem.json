@@ -1,0 +1,24 @@
+{
+  "slug": "bulls-and-cows-score",
+  "title": "Score a Number Guessing Game",
+  "concept": "hashing",
+  "difficulty": "medium",
+  "statement": "In a guessing game, `secret` and `guess` are texts of digits with the **same length**. Score the guess:\n- a **bull** is a position where `guess` has exactly the same digit as `secret`;\n- a **cow** is a digit of `guess` that also occurs in `secret` but at a different position, where **each digit of the secret can be used for only one bull or cow** (digits that are already bulls cannot also be cows).\n\nReturn the score as the text `<bulls>A<cows>B`, for example `1A3B`.",
+  "constraints": [
+    "0 <= len(secret) == len(guess) <= 1000",
+    "secret and guess contain only the digits 0 to 9"
+  ],
+  "signature": { "name": "score_guess", "params": [{ "name": "secret", "type": "string" }, { "name": "guess", "type": "string" }], "returns": "string" },
+  "examples": [
+    { "args": ["1234", "1243"], "expected": "2A2B", "explanation": "Bulls: the 1 and the 2 are in the right places. The remaining secret digits 3, 4 and guess digits 4, 3 match as cows." },
+    { "args": ["5522", "2255"], "expected": "0A4B", "explanation": "No digit is in the right place, but the guess uses two 2s and two 5s, which the secret has." }
+  ],
+  "edgeTests": [["", ""], ["1", "1"], ["1", "2"], ["11", "11"], ["1122", "2211"], ["0000", "0000"]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Count the bulls first. After that, the positions that are bulls must be ignored. What do you need to know about the remaining digits to count the cows?",
+    "pattern": "Count bulls in one pass; for the other positions count how often each digit occurs in the secret and in the guess; the cows are the sum over digits of the smaller of the two counts.",
+    "pseudocode": "bulls = 0; secretCount[10] = 0; guessCount[10] = 0\nfor i: if secret[i] == guess[i]: bulls += 1 else: secretCount[secret[i]] += 1; guessCount[guess[i]] += 1\ncows = sum over digit d of min(secretCount[d], guessCount[d])\nreturn bulls + \"A\" + cows + \"B\"",
+    "walkthrough": "Removing matched digits one at a time from a list works but is slow. Instead: a position where both texts have the same digit is a bull and is used up. For all other positions, record how many times each digit appears in the secret and in the guess. A digit d can form as many cows as the smaller of the two counts (each cow pairs one secret digit with one guess digit). Add the minimums over the ten digits. This is O(n) time and a fixed amount of memory."
+  }
+}

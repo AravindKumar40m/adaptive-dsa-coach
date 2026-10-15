@@ -1,0 +1,24 @@
+{
+  "slug": "min-falling-path-sum",
+  "title": "The Cheapest Fall",
+  "concept": "dp",
+  "difficulty": "medium",
+  "statement": "`matrix` is a table of numbers (they may be negative). A **falling path** starts at any cell of the **top row** and moves down one row at a time; from a cell it may go to the cell **directly below** or to the cell **diagonally below-left or below-right** (staying inside the table). The **cost** of a path is the sum of the numbers it passes.\n\nReturn the **smallest cost** of a falling path from the top row to the bottom row.",
+  "constraints": [
+    "1 <= rows, columns <= 100",
+    "-100 <= matrix[r][c] <= 100"
+  ],
+  "signature": { "name": "min_falling_path_sum", "params": [{ "name": "matrix", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [[[5, 3, 8], [4, 9, 1], [2, 7, 6]]], "expected": 9, "explanation": "The path 3 (top middle), 4 (down-left), 2 (down) costs 9." },
+    { "args": [[[7]]], "expected": 7, "explanation": "One cell: the path is just that cell." }
+  ],
+  "edgeTests": [[[[-1]]], [[[1, 2], [3, 4]]], [[[-5, 2], [3, -10]]], [[[1, 1, 1], [1, 1, 1], [1, 1, 1]]], [[[3], [1], [2]]]],
+  "expected": { "time": "O(rows * columns)", "space": "O(columns)" },
+  "hints": {
+    "nudge": "The cheapest path that ends in a cell of row r came from one of at most three cells in row r - 1. Which one should it have been?",
+    "pattern": "Dynamic programming row by row: best[r][c] = matrix[r][c] + the smallest of best[r - 1][c - 1], best[r - 1][c], best[r - 1][c + 1] (those that exist); the answer is the smallest value in the last row.",
+    "pseudocode": "best = the first row\nfor r from 1 to rows - 1: new[c] = matrix[r][c] + min(best[c - 1], best[c], best[c + 1]) over the existing neighbours; best = new\nreturn min(best)",
+    "walkthrough": "Trying every path means up to 3^(rows - 1) paths per start. But two different paths that arrive at the same cell can be compared at once: only the cheaper one can be part of a best path (what happens below that cell does not depend on how you got there). So keep, for each cell of the current row, the cost of the cheapest path from the top that ends there, and compute the next row from it by looking at the three cells above (the ones that exist). After the last row, the cheapest of the costs is the answer. Only the previous row is needed. O(rows * columns)."
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "slug": "beautiful-arrangements-count",
+  "title": "Count the Beautiful Arrangements",
+  "concept": "backtracking",
+  "difficulty": "medium",
+  "statement": "An arrangement of the numbers `1` to `n` (each used once, positions numbered from `1`) is **beautiful** if for **every position** `i` the number `p` placed there satisfies at least one of: `p` is divisible by `i`, or `i` is divisible by `p`.\n\nReturn the number of beautiful arrangements.",
+  "constraints": [
+    "1 <= n <= 12"
+  ],
+  "signature": { "name": "beautiful_arrangements", "params": [{ "name": "n", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [3], "expected": 3, "explanation": "[1, 2, 3], [2, 1, 3] and [3, 2, 1]." },
+    { "args": [4], "expected": 8, "explanation": "Eight of the 24 arrangements of 1..4 fit the rule." }
+  ],
+  "edgeTests": [[1], [2], [5], [6], [7], [8], [9], [10], [11], [12]],
+  "expected": { "time": "O(2^n * n)", "space": "O(2^n)" },
+  "hints": {
+    "nudge": "Fill the positions from 1 upwards (or from n downwards). For a position, only a few numbers fit. Why is it a waste to build a whole arrangement before checking it?",
+    "pattern": "Backtracking: place a number in position i only if it satisfies the rule and has not been used; undo and try the next one. The count of ways depends only on WHICH numbers are used (a bitmask), so the search can also be written as a dynamic programme over bitmasks.",
+    "pseudocode": "go(pos, usedMask): if pos > n: return 1\n  total = 0; for num in 1 .. n: if num not used and (num mod pos == 0 or pos mod num == 0): total += go(pos + 1, usedMask with num)\n  return total",
+    "walkthrough": "All n! arrangements checked one by one is too slow for n = 12 (479 million). Placing numbers position by position and testing the rule at once cuts most of them before they are complete (position 1 accepts every number, but position 7 only accepts 1, 7 and a few others). That is plain backtracking and handles n = 12 quickly. The number of ways to complete the arrangement depends only on the position reached and on which numbers are used, so you can also number the used-sets as bitmasks: dp[mask] = number of ways to fill positions 1..popcount(mask) with the numbers of the mask. Both approaches are fast for n up to 12."
+  }
+}

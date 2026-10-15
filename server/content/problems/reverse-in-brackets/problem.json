@@ -1,0 +1,24 @@
+{
+  "slug": "reverse-in-brackets",
+  "title": "Reverse the Text Inside Each Pair of Brackets",
+  "concept": "stack_queue",
+  "difficulty": "medium",
+  "statement": "`text` contains lowercase letters and **balanced round brackets** (every `(` has its own `)`). Reverse the letters inside every pair of brackets, working **from the innermost pair outwards**, and **remove the brackets** from the result.\n\nFor example `a(bc(de)f)g` becomes `afdecbg`: first `(de)` gives `ed`, so the outer pair holds `bcedf`, which reversed is `fdecb`.",
+  "constraints": [
+    "0 <= len(text) <= 2000",
+    "text contains lowercase letters, ( and ); the brackets are balanced"
+  ],
+  "signature": { "name": "reverse_in_brackets", "params": [{ "name": "text", "type": "string" }], "returns": "string" },
+  "examples": [
+    { "args": ["a(bc(de)f)g"], "expected": "afdecbg", "explanation": "Inner pair: de -> ed. Outer pair: bcedf -> fdecb." },
+    { "args": ["xy"], "expected": "xy", "explanation": "No brackets." }
+  ],
+  "edgeTests": [[""], ["()"], ["(a)"], ["((a))"], ["(ab)(cd)"], ["a(b)c"], ["(a(b(c)))"]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "A bracket pair that is inside another pair is reversed twice in total. Does that suggest a way to read the text without actually building and reversing pieces?",
+    "pattern": "Simple: a stack of partial texts; on ) reverse the top piece and append it to the one below. Faster: match every bracket with its partner, then walk through the text and 'jump' to the partner of a bracket while flipping the walking direction.",
+    "pseudocode": "stack = [empty text]\nfor c in text:\n  if c == '(': push an empty text\n  elif c == ')': piece = pop; stack.top += reverse(piece)\n  else: stack.top += c\nreturn stack.top",
+    "walkthrough": "A stack of pieces is easy: every `(` starts a new piece; a letter is appended to the current (top) piece; a `)` finishes the top piece, reverses it, and appends it to the piece below, which is exactly what the problem describes (the innermost piece is finished first). Reversing copies letters, so the total work can be O(n^2) for deeply nested text. In linear time: first pair up the brackets with a stack of positions. Then walk through the text from the left; when you meet a bracket, jump to its partner and turn around (reverse the walking direction) and keep walking (skip the bracket itself); letters are written down as you pass them. Each letter is passed once."
+  }
+}

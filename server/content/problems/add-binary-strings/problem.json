@@ -1,0 +1,24 @@
+{
+  "slug": "add-binary-strings",
+  "title": "Add Two Binary Numbers",
+  "concept": "strings",
+  "difficulty": "easy",
+  "statement": "`a` and `b` are texts made of the characters `0` and `1`; each is a number written in **binary** (they may have leading zeros). Return their **sum** as a binary text **without leading zeros** (the sum `0` is written `0`).\n\nThe texts can be much longer than any built-in integer, so add them digit by digit.",
+  "constraints": [
+    "1 <= len(a), len(b) <= 10000",
+    "a and b contain only 0 and 1"
+  ],
+  "signature": { "name": "add_binary", "params": [{ "name": "a", "type": "string" }, { "name": "b", "type": "string" }], "returns": "string" },
+  "examples": [
+    { "args": ["1010", "1011"], "expected": "10101", "explanation": "10 + 11 = 21, which is 10101 in binary." },
+    { "args": ["0", "0"], "expected": "0", "explanation": "0 + 0 = 0." }
+  ],
+  "edgeTests": [["1", "1"], ["111", "1"], ["0", "101"], ["1111", "1111"], ["1", "0"], ["0011", "0001"]],
+  "expected": { "time": "O(max(len(a), len(b)))", "space": "O(max(len(a), len(b)))" },
+  "hints": {
+    "nudge": "Add the way you learned in school: from the rightmost digit, with a carry. What are the possible digit sums here?",
+    "pattern": "Walk from the last digit of both texts to the first, keeping a carry; each step adds the two digits and the carry, writes (sum mod 2) and carries (sum div 2).",
+    "pseudocode": "i = len(a) - 1; j = len(b) - 1; carry = 0; digits = []\nwhile i >= 0 or j >= 0 or carry > 0:\n  sum = carry; if i >= 0: sum += a[i]; i -= 1; if j >= 0: sum += b[j]; j -= 1\n  digits.append(sum mod 2); carry = sum div 2\nreverse digits; remove leading zeros (keep one 0 if nothing is left)",
+    "walkthrough": "Converting both texts to integers fails for very long texts in most languages. The school method works for any length: process the two texts from their last characters; at each step add the two digits (a missing digit counts as 0) and the carry from the step before. The sum is 0 to 3: write sum mod 2 and carry sum div 2 to the next step. Continue while a digit or a carry is left. The digits come out in reverse order, so reverse them at the end. Inputs with leading zeros can give a result with leading zeros; strip them, but leave a single 0 for a zero sum. O(max length)."
+  }
+}

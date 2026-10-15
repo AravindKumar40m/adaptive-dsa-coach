@@ -1,0 +1,24 @@
+{
+  "slug": "is-subtree",
+  "title": "Is One Tree Part of Another",
+  "concept": "trees",
+  "difficulty": "medium",
+  "statement": "Given two binary trees `root` and `sub`, return `true` if `sub` appears **as a subtree** of `root`: there is a node in `root` such that the tree that starts at that node (the node and **all** of its descendants) has exactly the **same shape and the same values** as `sub`. The empty tree is a subtree of every tree (including the empty one); a non-empty `sub` is never a subtree of an empty `root`.",
+  "constraints": [
+    "0 <= number of nodes in each tree <= 2000",
+    "-10000 <= node value <= 10000"
+  ],
+  "signature": { "name": "is_subtree", "params": [{ "name": "root", "type": "TreeNode" }, { "name": "sub", "type": "TreeNode" }], "returns": "bool" },
+  "examples": [
+    { "args": [[1, 2, 3, 4, 5, 6, 7], [3, 6, 7]], "expected": true, "explanation": "The node 3 with its children 6 and 7 is exactly `sub`." },
+    { "args": [[1, 2, 3, 4, 5, 6, 7], [3, 6]], "expected": false, "explanation": "The node 3 has the extra child 7, so its subtree is not equal to [3, 6]." }
+  ],
+  "edgeTests": [[[], []], [[], [1]], [[1], []], [[1, 1], [1]], [[1, 2, 3], [1, 2]], [[2, 1, 3], [1]]],
+  "expected": { "time": "O(n * m) simple, O(n + m) with serialisation", "space": "O(n + m)" },
+  "hints": {
+    "nudge": "First solve a smaller problem: are two trees exactly equal? Then ask where in the big tree you should compare.",
+    "pattern": "Compare `sub` with the subtree at EVERY node of `root` using a same-tree check; or write both trees as texts (preorder with markers for missing children) and test whether one text contains the other.",
+    "pseudocode": "same(a, b): both missing -> true; one missing -> false; a.val == b.val and same(a.left, b.left) and same(a.right, b.right)\nisSubtree(root, sub): if sub is missing: true; if root is missing: false; same(root, sub) or isSubtree(root.left, sub) or isSubtree(root.right, sub)",
+    "walkthrough": "A subtree must match completely down to the leaves: a node and ALL its descendants. So at each node of `root` run an equality check against `sub` (compare values, then both children recursively, treating a missing child as different from a present one). That costs up to O(n * m). To make it linear, serialise each tree in preorder and write a marker for every missing child, for example `^3,^4,#,#,^5,#,#`: this text identifies the shape and the values uniquely. Put a comma and the `^` in front of each value so that 12 cannot match inside 112. `sub` is a subtree exactly when its text occurs inside the text of `root`, and a substring search is O(n + m) with a good algorithm."
+  }
+}

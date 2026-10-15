@@ -1,0 +1,23 @@
+{
+  "slug": "valid-perfect-square",
+  "title": "Is It a Perfect Square",
+  "concept": "binary_search",
+  "difficulty": "easy",
+  "statement": "Return `true` if the positive whole number `num` is a **perfect square** (it equals `k * k` for some whole number `k`), otherwise `false`. Do not use a built-in square root function.",
+  "constraints": [
+    "1 <= num <= 2147483647"
+  ],
+  "signature": { "name": "is_perfect_square", "params": [{ "name": "num", "type": "int" }], "returns": "bool" },
+  "examples": [
+    { "args": [16], "expected": true, "explanation": "4 * 4 = 16." },
+    { "args": [14], "expected": false, "explanation": "3 * 3 = 9 and 4 * 4 = 16: nothing gives 14." }
+  ],
+  "edgeTests": [[1], [2], [4], [808201], [2147395600], [2147483647]],
+  "expected": { "time": "O(log num)", "space": "O(1)" },
+  "hints": {
+    "nudge": "If you guess a number `mid`, you can compare mid * mid with num. What does the comparison tell you about where the real root is?",
+    "pattern": "Binary search on the root: search the range 1..num (or 1..46341, since 46341 squared is already above the limit) for a mid with mid * mid == num.",
+    "pseudocode": "lo = 1; hi = min(num, 46341)\nwhile lo <= hi:\n  mid = (lo + hi) / 2; square = mid * mid\n  if square == num: return true\n  if square < num: lo = mid + 1 else: hi = mid - 1\nreturn false",
+    "walkthrough": "Trying every k from 1 upwards needs about 46,000 steps for the largest input: fine, but the point is the faster idea. The squares k * k grow with k, so you can binary search for k: if mid * mid is too small the root (if there is one) is larger, if it is too big it is smaller. Each step halves the range: about 16 steps for the largest input. Beware of overflow: mid * mid can exceed a 32-bit integer if mid is up to num, so use a 64-bit type (or cap the search at 46341). The loop ends when the range is empty and no square matched."
+  }
+}

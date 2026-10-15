@@ -1,0 +1,24 @@
+{
+  "slug": "reorder-list-alternating",
+  "title": "Weave the List From Both Ends",
+  "concept": "linked_list",
+  "difficulty": "medium",
+  "statement": "Reorder the linked list `L0 -> L1 -> L2 -> ... -> Ln` into `L0 -> Ln -> L1 -> Ln-1 -> L2 -> Ln-2 -> ...`: take one node from the front, then one from the back, alternately. Change the **links**, not the values. Return the head of the reordered list.",
+  "constraints": [
+    "0 <= number of nodes <= 100000",
+    "-1000000000 <= node value <= 1000000000"
+  ],
+  "signature": { "name": "reorder_alternating", "params": [{ "name": "head", "type": "ListNode" }], "returns": "ListNode" },
+  "examples": [
+    { "args": [[10, 20, 30, 40, 50, 60]], "expected": [10, 60, 20, 50, 30, 40], "explanation": "Front, back, front, back, ... : 10, 60, 20, 50, 30, 40." },
+    { "args": [[7, 8, 9]], "expected": [7, 9, 8], "explanation": "7 from the front, 9 from the back, then 8." }
+  ],
+  "edgeTests": [[[]], [[1]], [[1, 2]], [[1, 2, 3, 4]], [[1, 2, 3, 4, 5, 6, 7]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Going to the back of a singly linked list is slow. What if the second half of the list were reversed? Then both 'ends' would be reachable from the front.",
+    "pattern": "Three steps: find the middle (slow and fast pointers), reverse the second half, then merge the two halves by taking one node alternately from each.",
+    "pseudocode": "if the list has fewer than 3 nodes: return head\nslow = fast = head; while fast.next and fast.next.next: slow = slow.next; fast = fast.next.next\nsecond = reverse(slow.next); slow.next = nothing; first = head\nwhile second: a = first.next; b = second.next; first.next = second; second.next = a; first = a; second = b\nreturn head",
+    "walkthrough": "Copying the values to an array and rebuilding works in O(n) memory. In place: 1) find the end of the first half with slow and fast pointers (for an odd length the extra middle node stays in the first half); 2) cut the list there and reverse the second half, so its first node is the old last node; 3) weave: attach the first node of the second half after the first node of the first half, then the next node of the first half after it, and so on. Remember the two next nodes BEFORE changing any link. When the second half runs out, the remaining node of the first half (odd length) is already in place. O(n) time, O(1) memory."
+  }
+}

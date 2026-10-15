@@ -15,7 +15,7 @@ from pathlib import Path
 HERE = Path(__file__).parent
 RATING = {"easy": 900, "medium": 1200, "hard": 1500}  # seed difficulty, see CLAUDE.md
 RANDOM_TESTS = 15
-TARGET_PROBLEMS = 280  # fixed on Day 6 (2026-10-13): 180 + 100 in ten batches of 10 (it was 120 on Day 3, then 180)
+TARGET_PROBLEMS = 380  # fixed on Day 7 (2026-10-14): 280 + 100 in ten batches of 10 (Z1 to Z10); it was 120, 180, then 280
 
 # 16 concepts from the synthetic draft (data/synthetic/simulate.py): key, name, prerequisites
 CONCEPTS = [

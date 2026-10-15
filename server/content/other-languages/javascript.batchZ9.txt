@@ -1,0 +1,254 @@
+//### equal-cost-substring
+function equalCostSubstring(s, t, maxCost) {
+  let left = 0, total = 0, best = 0;
+  for (let right = 0; right < s.length; right++) {
+    total += Math.abs(s.charCodeAt(right) - t.charCodeAt(right));
+    while (total > maxCost) {
+      total -= Math.abs(s.charCodeAt(left) - t.charCodeAt(left));
+      left++;
+    }
+    best = Math.max(best, right - left + 1);
+  }
+  return best;
+}
+//### min-window-subsequence
+function minWindowSubsequence(s, t) {
+  if (t.length === 0) return 0;
+  const n = s.length, m = t.length;
+  let best = 0, i = 0;
+  while (i < n) {
+    let j = 0, k = i;
+    while (k < n && j < m) { if (s[k] === t[j]) j++; k++; }
+    if (j < m) break;
+    const end = k - 1;
+    j = m - 1;
+    k = end;
+    while (j >= 0) { if (s[k] === t[j]) j--; k--; }
+    const start = k + 1, length = end - start + 1;
+    if (best === 0 || length < best) best = length;
+    i = start + 1;
+  }
+  return best;
+}
+//### island-max-area
+function islandMaxArea(grid) {
+  const rows = grid.length, cols = grid[0].length;
+  const visited = [];
+  for (let r = 0; r < rows; r++) visited.push(new Array(cols).fill(false));
+  const dr = [1, -1, 0, 0], dc = [0, 0, 1, -1];
+  let best = 0;
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (grid[r][c] !== 1 || visited[r][c]) continue;
+      visited[r][c] = true;
+      const stack = [[r, c]];
+      let size = 0;
+      while (stack.length > 0) {
+        const [x, y] = stack.pop();
+        size++;
+        for (let d = 0; d < 4; d++) {
+          const nx = x + dr[d], ny = y + dc[d];
+          if (nx >= 0 && nx < rows && ny >= 0 && ny < cols && grid[nx][ny] === 1 && !visited[nx][ny]) {
+            visited[nx][ny] = true;
+            stack.push([nx, ny]);
+          }
+        }
+      }
+      best = Math.max(best, size);
+    }
+  }
+  return best;
+}
+//### is-graph-a-tree
+function isGraphATree(n, edges) {
+  if (edges.length !== n - 1) return false;
+  const parent = [];
+  for (let i = 0; i < n; i++) parent.push(i);
+  function find(x) {
+    while (parent[x] !== x) { parent[x] = parent[parent[x]]; x = parent[x]; }
+    return x;
+  }
+  for (const [a, b] of edges) {
+    const ra = find(a), rb = find(b);
+    if (ra === rb) return false;
+    parent[ra] = rb;
+  }
+  return true;
+}
+//### all-paths-dag-count
+function countDagPaths(n, edges) {
+  const adjacent = [];
+  for (let i = 0; i < n; i++) adjacent.push([]);
+  for (const [a, b] of edges) adjacent[a].push(b);
+  const memo = new Array(n).fill(-1);
+  function ways(u) {
+    if (u === n - 1) return 1;
+    if (memo[u] >= 0) return memo[u];
+    let total = 0;
+    for (const v of adjacent[u]) total += ways(v);
+    memo[u] = total;
+    return total;
+  }
+  return ways(0);
+}
+//### pacific-atlantic-count
+function pacificAtlanticCount(heights) {
+  const rows = heights.length, cols = heights[0].length;
+  const dr = [1, -1, 0, 0], dc = [0, 0, 1, -1];
+  function reach(starts) {
+    const marked = [];
+    for (let r = 0; r < rows; r++) marked.push(new Array(cols).fill(false));
+    const stack = [];
+    for (const [r, c] of starts) if (!marked[r][c]) { marked[r][c] = true; stack.push([r, c]); }
+    while (stack.length > 0) {
+      const [x, y] = stack.pop();
+      for (let d = 0; d < 4; d++) {
+        const nx = x + dr[d], ny = y + dc[d];
+        if (nx >= 0 && nx < rows && ny >= 0 && ny < cols && !marked[nx][ny] && heights[nx][ny] >= heights[x][y]) {
+          marked[nx][ny] = true;
+          stack.push([nx, ny]);
+        }
+      }
+    }
+    return marked;
+  }
+  const pacificStarts = [], atlanticStarts = [];
+  for (let c = 0; c < cols; c++) { pacificStarts.push([0, c]); atlanticStarts.push([rows - 1, c]); }
+  for (let r = 0; r < rows; r++) { pacificStarts.push([r, 0]); atlanticStarts.push([r, cols - 1]); }
+  const pacific = reach(pacificStarts), atlantic = reach(atlanticStarts);
+  let count = 0;
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) if (pacific[r][c] && atlantic[r][c]) count++;
+  return count;
+}
+//### number-of-distinct-islands
+function distinctIslandShapes(grid) {
+  const rows = grid.length, cols = grid[0].length;
+  const visited = [];
+  for (let r = 0; r < rows; r++) visited.push(new Array(cols).fill(false));
+  const shapes = new Set();
+  function walk(x, y, direction, path) {
+    if (x < 0 || x >= rows || y < 0 || y >= cols || grid[x][y] !== 1 || visited[x][y]) return;
+    visited[x][y] = true;
+    path.push(direction);
+    walk(x + 1, y, "d", path);
+    walk(x - 1, y, "u", path);
+    walk(x, y + 1, "r", path);
+    walk(x, y - 1, "l", path);
+    path.push("b");
+  }
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (grid[r][c] === 1 && !visited[r][c]) {
+        const path = [];
+        walk(r, c, "o", path);
+        shapes.add(path.join(""));
+      }
+    }
+  }
+  return shapes.size;
+}
+//### swim-in-rising-water
+function swimTime(grid) {
+  const n = grid.length;
+  function heapPush(a, x) {
+    a.push(x);
+    let i = a.length - 1;
+    while (i > 0) {
+      const p = (i - 1) >> 1;
+      if (a[i][0] < a[p][0]) { const t = a[i]; a[i] = a[p]; a[p] = t; i = p; } else break;
+    }
+  }
+  function heapPop(a) {
+    const top = a[0], last = a.pop();
+    if (a.length > 0) {
+      a[0] = last;
+      let i = 0;
+      for (;;) {
+        const l = 2 * i + 1, r = l + 1;
+        let m = i;
+        if (l < a.length && a[l][0] < a[m][0]) m = l;
+        if (r < a.length && a[r][0] < a[m][0]) m = r;
+        if (m === i) break;
+        const t = a[i]; a[i] = a[m]; a[m] = t;
+        i = m;
+      }
+    }
+    return top;
+  }
+  const visited = [];
+  for (let r = 0; r < n; r++) visited.push(new Array(n).fill(false));
+  const heap = [[grid[0][0], 0, 0]];
+  visited[0][0] = true;
+  const dr = [1, -1, 0, 0], dc = [0, 0, 1, -1];
+  while (heap.length > 0) {
+    const [t, x, y] = heapPop(heap);
+    if (x === n - 1 && y === n - 1) return t;
+    for (let d = 0; d < 4; d++) {
+      const nx = x + dr[d], ny = y + dc[d];
+      if (nx >= 0 && nx < n && ny >= 0 && ny < n && !visited[nx][ny]) {
+        visited[nx][ny] = true;
+        heapPush(heap, [Math.max(t, grid[nx][ny]), nx, ny]);
+      }
+    }
+  }
+  return 0;
+}
+//### strongly-connected-count
+function stronglyConnectedCount(n, edges) {
+  const forward = [], backward = [];
+  for (let i = 0; i < n; i++) { forward.push([]); backward.push([]); }
+  for (const [a, b] of edges) { forward[a].push(b); backward[b].push(a); }
+  let visited = new Array(n).fill(false);
+  const order = [];
+  for (let start = 0; start < n; start++) {
+    if (visited[start]) continue;
+    visited[start] = true;
+    const stack = [[start, 0]];
+    while (stack.length > 0) {
+      const top = stack.pop();
+      const u = top[0], i = top[1];
+      if (i < forward[u].length) {
+        stack.push([u, i + 1]);
+        const v = forward[u][i];
+        if (!visited[v]) { visited[v] = true; stack.push([v, 0]); }
+      } else order.push(u);
+    }
+  }
+  visited = new Array(n).fill(false);
+  let count = 0;
+  for (let k = order.length - 1; k >= 0; k--) {
+    const start = order[k];
+    if (visited[start]) continue;
+    count++;
+    visited[start] = true;
+    const stack = [start];
+    while (stack.length > 0) {
+      const u = stack.pop();
+      for (const v of backward[u]) if (!visited[v]) { visited[v] = true; stack.push(v); }
+    }
+  }
+  return count;
+}
+//### min-height-roots
+function minHeightRoots(n, edges) {
+  if (n <= 2) { const all = []; for (let i = 0; i < n; i++) all.push(i); return all; }
+  const adjacent = [];
+  for (let i = 0; i < n; i++) adjacent.push([]);
+  for (const [a, b] of edges) { adjacent[a].push(b); adjacent[b].push(a); }
+  const degree = adjacent.map((list) => list.length);
+  let leaves = [];
+  for (let v = 0; v < n; v++) if (degree[v] === 1) leaves.push(v);
+  let remaining = n;
+  while (remaining > 2) {
+    remaining -= leaves.length;
+    const next = [];
+    for (const leaf of leaves) {
+      for (const v of adjacent[leaf]) {
+        degree[v]--;
+        if (degree[v] === 1) next.push(v);
+      }
+    }
+    leaves = next;
+  }
+  return leaves.sort((p, q) => p - q);
+}

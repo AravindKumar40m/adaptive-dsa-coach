@@ -1,0 +1,23 @@
+{
+  "slug": "hanoi-move-count",
+  "title": "Moves for the Tower of Hanoi",
+  "concept": "recursion",
+  "difficulty": "easy",
+  "statement": "In the Tower of Hanoi puzzle there are three pegs and `n` discs of different sizes, all stacked on the first peg with the smallest on top. In one move you take the top disc of one peg and put it on another peg, but you may **never put a disc on a smaller disc**. The goal is to move the whole stack to another peg.\n\nReturn the **smallest number of moves** needed. For `n = 0` the answer is `0`.",
+  "constraints": [
+    "0 <= n <= 30"
+  ],
+  "signature": { "name": "hanoi_move_count", "params": [{ "name": "n", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [3], "expected": 7, "explanation": "Move 2 discs away (3 moves), move the biggest disc (1 move), move the 2 discs back on top (3 moves)." },
+    { "args": [1], "expected": 1, "explanation": "A single disc moves in one step." }
+  ],
+  "edgeTests": [[0], [2], [4], [5], [6], [7], [8], [9], [10], [11], [12], [13], [14], [15], [16], [20], [25], [30]],
+  "expected": { "time": "O(1)", "space": "O(1)" },
+  "hints": {
+    "nudge": "To move the biggest disc, all the others must be out of the way, on the third peg. How many moves does that take, and what must happen afterwards?",
+    "pattern": "Recurrence: moves(n) = moves(n - 1) + 1 + moves(n - 1) = 2 * moves(n - 1) + 1, with moves(0) = 0. It solves to 2^n - 1.",
+    "pseudocode": "moves(0) = 0\nmoves(n) = 2 * moves(n - 1) + 1\nclosed form: (1 shifted left by n) - 1",
+    "walkthrough": "The only way to move the biggest disc is when it is alone on top of its peg and another peg is empty, so the other n - 1 discs sit on the third peg. Getting them there takes moves(n - 1) moves (the same puzzle with one disc less), then one move for the biggest disc, then moves(n - 1) more to put the n - 1 discs on top of it again. That is the recurrence 2 * moves(n - 1) + 1: 0, 1, 3, 7, 15, ... which is 2^n - 1. For n = 30 the answer is 1,073,741,823, which still fits in a 32-bit integer. Simulating every move recursively takes as many steps as the answer; the formula takes one."
+  }
+}

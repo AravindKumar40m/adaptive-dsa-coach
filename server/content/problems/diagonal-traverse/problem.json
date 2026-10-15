@@ -1,0 +1,24 @@
+{
+  "slug": "diagonal-traverse",
+  "title": "Zigzag Along the Diagonals",
+  "concept": "arrays",
+  "difficulty": "medium",
+  "statement": "`matrix` is a table of numbers. Read all of its cells **diagonal by diagonal**, starting at the top-left cell. Cells with the same value of `row + column` form one diagonal (the first one is just the top-left cell). Diagonals whose `row + column` is **odd** are read from the **top** (smaller row) **downwards**; diagonals whose `row + column` is **even** are read from the **bottom** (larger row) **upwards**.\n\nReturn all the numbers in this order as one list.",
+  "constraints": [
+    "1 <= rows, columns <= 300",
+    "-1000000 <= matrix[r][c] <= 1000000"
+  ],
+  "signature": { "name": "diagonal_order", "params": [{ "name": "matrix", "type": "int[][]" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[[1, 2], [3, 4], [5, 6]]], "expected": [1, 2, 3, 5, 4, 6], "explanation": "Diagonal 0: 1. Diagonal 1 (odd, top to bottom): 2, 3. Diagonal 2 (even, bottom to top): 5, 4. Diagonal 3 (odd): 6." },
+    { "args": [[[7]]], "expected": [7], "explanation": "A single cell." }
+  ],
+  "edgeTests": [[[[1, 2, 3]]], [[[1], [2], [3]]], [[[1, 2], [3, 4]]], [[[1, 2, 3], [4, 5, 6]]], [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]],
+  "expected": { "time": "O(rows * columns)", "space": "O(1) besides the answer" },
+  "hints": {
+    "nudge": "All cells on one diagonal share the same value of row + column. How many diagonals are there, and which cells belong to the diagonal number d?",
+    "pattern": "Go through the diagonals d = 0, 1, 2, ...; collect the cells (r, d - r) that exist; reverse the collected cells on the diagonals that must be read bottom to top.",
+    "pseudocode": "for d in 0 .. rows + columns - 2:\n  cells = [matrix[r][d - r] for r in 0 .. rows - 1 if 0 <= d - r < columns]   (rows in increasing order = top to bottom)\n  if d is even: reverse cells\n  append them to the answer",
+    "walkthrough": "A diagonal is the set of cells whose row and column add up to the same d, and d runs from 0 (top-left) to rows + columns - 2 (bottom-right). Listing the cells of one diagonal by increasing row gives the top-to-bottom order, which is what odd diagonals need; for even diagonals reverse that list. Together the diagonals contain every cell exactly once, so the work is O(rows * columns). (You can also walk the matrix cell by cell with a direction flag and turn at the borders, but then the four border cases are easy to get wrong.)"
+  }
+}

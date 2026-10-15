@@ -1,0 +1,24 @@
+{
+  "slug": "minimum-swaps-to-sort",
+  "title": "Fewest Swaps to Sort",
+  "concept": "sorting",
+  "difficulty": "medium",
+  "statement": "`numbers` contains **different** numbers. In one **swap** you exchange the numbers at any two positions. Return the **smallest number of swaps** after which the list is sorted in increasing order.",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "-1000000000 <= numbers[i] <= 1000000000, all different"
+  ],
+  "signature": { "name": "min_swaps_to_sort", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[4, 3, 2, 1]], "expected": 2, "explanation": "Swap the 4 with the 1 and the 3 with the 2." },
+    { "args": [[2, 3, 1]], "expected": 2, "explanation": "The numbers 2, 3, 1 sit in a ring of three wrong places: two swaps fix it (swap 2 and 1: [1, 3, 2]; swap 3 and 2: [1, 2, 3])." }
+  ],
+  "edgeTests": [[[]], [[1]], [[2, 1]], [[1, 2, 3]], [[3, 2, 1]], [[5, 1, 4, 2, 3]]],
+  "expected": { "time": "O(n log n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Every number has a place where it belongs in the sorted list. Follow a number to its place, then the number that is there to ITS place, and so on. What shape do these chains have?",
+    "pattern": "Cycles of the permutation: a cycle of length L needs L - 1 swaps, so the answer is n minus the number of cycles.",
+    "pseudocode": "target[i] = the position the number at i has in the sorted list\nvisited = all false; cycles = 0\nfor i in 0 .. n - 1: if not visited[i]: cycles += 1; walk j = i, then target[j], ... marking everything visited until you return to i\nreturn n - cycles",
+    "walkthrough": "Compute for every position where its number must end up (sort the numbers and remember each one's index). Following 'this number goes to position p; the number currently at p goes to position q; ...' always returns to the start, so the positions split into separate rings (cycles). A number that is already in place is a ring of length 1 and needs no swap. A ring of length L can be fixed with L - 1 swaps (each swap puts one number into its final place), and no fewer, because one swap can only merge two rings or split one ring into two. So the minimum number of swaps is n - (number of rings). Sorting to find the target positions costs O(n log n)."
+  }
+}

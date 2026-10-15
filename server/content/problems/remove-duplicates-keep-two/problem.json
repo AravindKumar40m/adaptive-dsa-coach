@@ -1,0 +1,24 @@
+{
+  "slug": "remove-duplicates-keep-two",
+  "title": "Keep At Most Two Copies",
+  "concept": "two_pointers",
+  "difficulty": "medium",
+  "statement": "`numbers` is sorted in **non-decreasing** order. Remove the extra copies so that **every value appears at most twice**, keeping the first two copies of each value, and keep the order. Return the resulting list.",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "-1000000000 <= numbers[i] <= 1000000000, in non-decreasing order"
+  ],
+  "signature": { "name": "keep_at_most_two", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[1, 1, 1, 2, 2, 3]], "expected": [1, 1, 2, 2, 3], "explanation": "The third 1 is removed." },
+    { "args": [[0, 0, 0]], "expected": [0, 0], "explanation": "Two copies of 0 stay." }
+  ],
+  "edgeTests": [[[]], [[1]], [[1, 1]], [[1, 1, 1, 1]], [[1, 2, 3]], [[1, 1, 2, 2, 2, 3, 3, 3]]],
+  "expected": { "time": "O(n)", "space": "O(1) besides the answer" },
+  "hints": {
+    "nudge": "A number may be written to the result if it is not the third copy. Which earlier element of the RESULT tells you that?",
+    "pattern": "Two pointers: a read pointer over the input and a write position in the result; write numbers[i] unless the result already ends with two copies of it, i.e. unless it equals result[write - 2].",
+    "pseudocode": "result = []\nfor x in numbers:\n  if len(result) < 2 or x != result[len(result) - 2]: result.append(x)\nreturn result",
+    "walkthrough": "Counting every value with a map also works but ignores the sorting. Because equal numbers are neighbours, you only need to compare the new number with the number two places back in what you have kept so far. If the result has fewer than two entries, keep the number. Otherwise, if the number equals the entry two places back, then the last two kept entries are both this value (the list is sorted), so a third copy would be too many: skip it. If it is different, keep it. The same loop with the offset k keeps at most k copies. O(n)."
+  }
+}

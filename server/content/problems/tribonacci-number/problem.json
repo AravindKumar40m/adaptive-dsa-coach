@@ -1,0 +1,23 @@
+{
+  "slug": "tribonacci-number",
+  "title": "Add the Last Three",
+  "concept": "recursion",
+  "difficulty": "easy",
+  "statement": "The **tribonacci** numbers are defined by `T(0) = 0`, `T(1) = 1`, `T(2) = 1` and, for `n >= 3`, `T(n) = T(n - 1) + T(n - 2) + T(n - 3)` (each number is the sum of the three before it: 0, 1, 1, 2, 4, 7, 13, ...).\n\nReturn `T(n)`.",
+  "constraints": [
+    "0 <= n <= 37 (the answer fits in a 32-bit signed integer)"
+  ],
+  "signature": { "name": "tribonacci_number", "params": [{ "name": "n", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [6], "expected": 13, "explanation": "T(3) = 2, T(4) = 4, T(5) = 7, T(6) = 4 + 7 + 2 = 13." },
+    { "args": [10], "expected": 149, "explanation": "The sequence continues 24, 44, 81, 149." }
+  ],
+  "edgeTests": [[0], [1], [2], [3], [20], [36], [37]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "The definition is a recursion. Is the plain recursive function fast enough for n = 37? Count how often it computes the same value.",
+    "pattern": "Compute the numbers in order from T(0) upwards and keep only the last three values (a loop instead of a recursion), or memoise the recursion.",
+    "pseudocode": "a = 0; b = 1; c = 1\nfor i in 3 .. n: next = a + b + c; a = b; b = c; c = next\nreturn the right value for n < 3 (0, 1, 1), otherwise c",
+    "walkthrough": "The direct recursion T(n) = T(n - 1) + T(n - 2) + T(n - 3) calls itself three times, so the number of calls grows exponentially (billions of calls for n = 37). Each value only depends on the three values before it, so compute them from the bottom: keep the three latest values in variables a, b, c, and in each step replace them by (b, c, a + b + c). The loop runs n - 3 times: O(n) time and O(1) memory. The largest case, T(37) = 2,082,876,103, fits in a 32-bit integer."
+  }
+}

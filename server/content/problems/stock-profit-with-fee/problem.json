@@ -1,0 +1,25 @@
+{
+  "slug": "stock-profit-with-fee",
+  "title": "Stock Trading With a Fee Per Sale",
+  "concept": "dp",
+  "difficulty": "medium",
+  "statement": "`prices[i]` is the price of a stock on day `i`. You may buy and sell as many times as you like, but you hold **at most one share** at a time (sell before you buy again), and **every sale costs a fixed `fee`** (paid once for each buy-and-sell pair, taken when you sell).\n\nReturn the **largest total profit** (the money you end with minus the money you started with). Doing nothing gives `0`.",
+  "constraints": [
+    "0 <= len(prices) <= 100000",
+    "1 <= prices[i] <= 50000",
+    "0 <= fee <= 50000"
+  ],
+  "signature": { "name": "stock_profit_with_fee", "params": [{ "name": "prices", "type": "int[]" }, { "name": "fee", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[5, 2, 7, 3, 9, 4], 3], "expected": 5, "explanation": "Buy at 2 and sell at 7 (5 - 3 fee = 2), then buy at 3 and sell at 9 (6 - 3 = 3): total 5. Buying at 2 and selling once at 9 would give only 7 - 3 = 4." },
+    { "args": [[3, 2, 1], 1], "expected": 0, "explanation": "Prices only fall: never trade." }
+  ],
+  "edgeTests": [[[], 2], [[5], 0], [[1, 2], 0], [[1, 2], 1], [[1, 5, 1, 5], 2], [[7, 6, 4, 3, 1], 0]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "At the end of each day you are in one of two states: holding a share, or holding nothing. What is the best profit in each state, and how can the next day change it?",
+    "pattern": "Dynamic programming with two numbers per day: `cash` (best profit with no share in hand) and `hold` (best profit while holding a share, counting the purchase price already paid).",
+    "pseudocode": "cash = 0; hold = -infinity (you own nothing yet; buying on day 0 sets hold = -prices[0])\nfor price in prices:\n  cash = max(cash, hold + price - fee)       (sell today)\n  hold = max(hold, cash - price)            (buy today with the money you have)\nreturn cash",
+    "walkthrough": "Without a fee you would take every rise. With a fee, a rise smaller than the fee is not worth a trade, and joining two rises into one trade can save a fee. Instead of guessing, let the table decide. Keep two values: `cash`, the best profit if you hold no share at the end of the day, and `hold`, the best profit if you hold one (the price you paid is already subtracted). Each day you can sell (cash = hold + price - fee), buy (hold = cash - price), or do nothing; take the better of 'stay' and 'change'. Update cash first with the old hold, then hold with the new cash (buying right after selling on the same day never helps, but it does no harm). The answer is cash at the end, since holding a share at the end is never better than selling it. O(n) time, O(1) memory."
+  }
+}

@@ -1,0 +1,165 @@
+//### power-of-two-pair-count
+class Solution {
+    public int powerOfTwoPairCount(int[] numbers) {
+        Map<Integer, Integer> seen = new HashMap<>();
+        long total = 0;
+        for (int x : numbers) {
+            for (int p = 1; p <= 2097152; p *= 2) {
+                int need = p - x;
+                if (need >= 0) total += seen.getOrDefault(need, 0);
+            }
+            seen.merge(x, 1, Integer::sum);
+        }
+        return (int) total;
+    }
+}
+//### bulls-and-cows-score
+class Solution {
+    public String scoreGuess(String secret, String guess) {
+        int bulls = 0;
+        int[] secretCount = new int[10], guessCount = new int[10];
+        for (int i = 0; i < secret.length(); i++) {
+            if (secret.charAt(i) == guess.charAt(i)) bulls++;
+            else { secretCount[secret.charAt(i) - '0']++; guessCount[guess.charAt(i) - '0']++; }
+        }
+        int cows = 0;
+        for (int d = 0; d < 10; d++) cows += Math.min(secretCount[d], guessCount[d]);
+        return bulls + "A" + cows + "B";
+    }
+}
+//### number-of-boomerangs
+class Solution {
+    public int countBoomerangs(int[][] points) {
+        long total = 0;
+        for (int i = 0; i < points.length; i++) {
+            Map<Long, Integer> counts = new HashMap<>();
+            for (int j = 0; j < points.length; j++) {
+                if (i == j) continue;
+                long dx = points[i][0] - points[j][0], dy = points[i][1] - points[j][1];
+                counts.merge(dx * dx + dy * dy, 1, Integer::sum);
+            }
+            for (int c : counts.values()) total += (long) c * (c - 1);
+        }
+        return (int) total;
+    }
+}
+//### longest-arithmetic-run
+class Solution {
+    public int longestArithmeticRun(int[] numbers) {
+        int n = numbers.length, best = Math.min(n, 2);
+        List<Map<Integer, Integer>> table = new ArrayList<>();
+        for (int j = 0; j < n; j++) {
+            Map<Integer, Integer> row = new HashMap<>();
+            for (int i = 0; i < j; i++) {
+                int d = numbers[j] - numbers[i];
+                int length = table.get(i).getOrDefault(d, 1) + 1;
+                row.put(d, length);
+                best = Math.max(best, length);
+            }
+            table.add(row);
+        }
+        return best;
+    }
+}
+//### min-index-sum-common
+class Solution {
+    public int minIndexSumCommon(int[] first, int[] second) {
+        Map<Integer, Integer> position = new HashMap<>();
+        for (int i = 0; i < first.length; i++) position.put(first[i], i);
+        int best = -1;
+        for (int j = 0; j < second.length; j++) {
+            Integer i = position.get(second[j]);
+            if (i != null) {
+                int s = i + j;
+                if (best == -1 || s < best) best = s;
+            }
+        }
+        return best;
+    }
+}
+//### reverse-words-in-text
+class Solution {
+    public String reverseWords(String text) {
+        List<String> words = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+        for (char ch : text.toCharArray()) {
+            if (ch == ' ') {
+                if (current.length() > 0) { words.add(current.toString()); current.setLength(0); }
+            } else current.append(ch);
+        }
+        if (current.length() > 0) words.add(current.toString());
+        Collections.reverse(words);
+        return String.join(" ", words);
+    }
+}
+//### roman-to-integer
+class Solution {
+    private int valueOf(char c) {
+        switch (c) {
+            case 'I': return 1;
+            case 'V': return 5;
+            case 'X': return 10;
+            case 'L': return 50;
+            case 'C': return 100;
+            case 'D': return 500;
+            default: return 1000;
+        }
+    }
+
+    public int romanToInt(String numeral) {
+        int total = 0;
+        for (int i = 0; i < numeral.length(); i++) {
+            if (i + 1 < numeral.length() && valueOf(numeral.charAt(i)) < valueOf(numeral.charAt(i + 1))) total -= valueOf(numeral.charAt(i));
+            else total += valueOf(numeral.charAt(i));
+        }
+        return total;
+    }
+}
+//### integer-to-roman
+class Solution {
+    public String intToRoman(int number) {
+        int[] values = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+        String[] symbols = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+        StringBuilder out = new StringBuilder();
+        for (int i = 0; i < values.length; i++) {
+            while (number >= values[i]) { out.append(symbols[i]); number -= values[i]; }
+        }
+        return out.toString();
+    }
+}
+//### add-binary-strings
+class Solution {
+    public String addBinary(String a, String b) {
+        int i = a.length() - 1, j = b.length() - 1, carry = 0;
+        StringBuilder digits = new StringBuilder();
+        while (i >= 0 || j >= 0 || carry > 0) {
+            int total = carry;
+            if (i >= 0) total += a.charAt(i--) - '0';
+            if (j >= 0) total += b.charAt(j--) - '0';
+            digits.append(total % 2);
+            carry = total / 2;
+        }
+        digits.reverse();
+        int start = 0;
+        while (start < digits.length() - 1 && digits.charAt(start) == '0') start++;
+        return digits.substring(start);
+    }
+}
+//### count-and-say-term
+class Solution {
+    public String countAndSay(int n) {
+        String text = "1";
+        for (int step = 1; step < n; step++) {
+            StringBuilder next = new StringBuilder();
+            int i = 0;
+            while (i < text.length()) {
+                int j = i;
+                while (j < text.length() && text.charAt(j) == text.charAt(i)) j++;
+                next.append(j - i).append(text.charAt(i));
+                i = j;
+            }
+            text = next.toString();
+        }
+        return text;
+    }
+}

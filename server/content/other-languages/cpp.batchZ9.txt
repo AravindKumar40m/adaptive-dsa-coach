@@ -1,0 +1,241 @@
+//### equal-cost-substring
+int equal_cost_substring(string s, string t, int max_cost) {
+    int left = 0, best = 0;
+    long long total = 0;
+    for (int right = 0; right < (int) s.size(); right++) {
+        total += abs(s[right] - t[right]);
+        while (total > max_cost) {
+            total -= abs(s[left] - t[left]);
+            left++;
+        }
+        best = max(best, right - left + 1);
+    }
+    return best;
+}
+//### min-window-subsequence
+int min_window_subsequence(string s, string t) {
+    if (t.empty()) return 0;
+    int n = (int) s.size(), m = (int) t.size(), best = 0, i = 0;
+    while (i < n) {
+        int j = 0, k = i;
+        while (k < n && j < m) { if (s[k] == t[j]) j++; k++; }
+        if (j < m) break;
+        int end = k - 1;
+        j = m - 1;
+        k = end;
+        while (j >= 0) { if (s[k] == t[j]) j--; k--; }
+        int start = k + 1, length = end - start + 1;
+        if (best == 0 || length < best) best = length;
+        i = start + 1;
+    }
+    return best;
+}
+//### island-max-area
+int island_max_area(vector<vector<int>>& grid) {
+    int rows = (int) grid.size(), cols = (int) grid[0].size();
+    vector<vector<char>> visited(rows, vector<char>(cols, 0));
+    int dr[4] = {1, -1, 0, 0}, dc[4] = {0, 0, 1, -1};
+    int best = 0;
+    for (int r = 0; r < rows; r++) {
+        for (int c = 0; c < cols; c++) {
+            if (grid[r][c] != 1 || visited[r][c]) continue;
+            visited[r][c] = 1;
+            vector<pair<int,int>> stack;
+            stack.push_back({r, c});
+            int size = 0;
+            while (!stack.empty()) {
+                pair<int,int> cur = stack.back();
+                stack.pop_back();
+                size++;
+                for (int d = 0; d < 4; d++) {
+                    int nx = cur.first + dr[d], ny = cur.second + dc[d];
+                    if (nx >= 0 && nx < rows && ny >= 0 && ny < cols && grid[nx][ny] == 1 && !visited[nx][ny]) {
+                        visited[nx][ny] = 1;
+                        stack.push_back({nx, ny});
+                    }
+                }
+            }
+            best = max(best, size);
+        }
+    }
+    return best;
+}
+//### is-graph-a-tree
+int tree_find(vector<int>& parent, int x) {
+    while (parent[x] != x) { parent[x] = parent[parent[x]]; x = parent[x]; }
+    return x;
+}
+
+bool is_graph_a_tree(int n, vector<vector<int>>& edges) {
+    if ((int) edges.size() != n - 1) return false;
+    vector<int> parent(n);
+    for (int i = 0; i < n; i++) parent[i] = i;
+    for (auto& e : edges) {
+        int ra = tree_find(parent, e[0]), rb = tree_find(parent, e[1]);
+        if (ra == rb) return false;
+        parent[ra] = rb;
+    }
+    return true;
+}
+//### all-paths-dag-count
+long long dag_ways(int u, int n, vector<vector<int>>& adjacent, vector<long long>& memo) {
+    if (u == n - 1) return 1;
+    if (memo[u] >= 0) return memo[u];
+    long long total = 0;
+    for (int v : adjacent[u]) total += dag_ways(v, n, adjacent, memo);
+    memo[u] = total;
+    return total;
+}
+
+int count_dag_paths(int n, vector<vector<int>>& edges) {
+    vector<vector<int>> adjacent(n);
+    for (auto& e : edges) adjacent[e[0]].push_back(e[1]);
+    vector<long long> memo(n, -1);
+    return (int) dag_ways(0, n, adjacent, memo);
+}
+//### pacific-atlantic-count
+vector<vector<char>> ocean_reach(vector<vector<int>>& heights, vector<pair<int,int>> starts) {
+    int rows = (int) heights.size(), cols = (int) heights[0].size();
+    vector<vector<char>> marked(rows, vector<char>(cols, 0));
+    vector<pair<int,int>> stack;
+    for (auto& s : starts) if (!marked[s.first][s.second]) { marked[s.first][s.second] = 1; stack.push_back(s); }
+    int dr[4] = {1, -1, 0, 0}, dc[4] = {0, 0, 1, -1};
+    while (!stack.empty()) {
+        pair<int,int> cur = stack.back();
+        stack.pop_back();
+        for (int d = 0; d < 4; d++) {
+            int nx = cur.first + dr[d], ny = cur.second + dc[d];
+            if (nx >= 0 && nx < rows && ny >= 0 && ny < cols && !marked[nx][ny] && heights[nx][ny] >= heights[cur.first][cur.second]) {
+                marked[nx][ny] = 1;
+                stack.push_back({nx, ny});
+            }
+        }
+    }
+    return marked;
+}
+
+int pacific_atlantic_count(vector<vector<int>>& heights) {
+    int rows = (int) heights.size(), cols = (int) heights[0].size();
+    vector<pair<int,int>> pacific_starts, atlantic_starts;
+    for (int c = 0; c < cols; c++) { pacific_starts.push_back({0, c}); atlantic_starts.push_back({rows - 1, c}); }
+    for (int r = 0; r < rows; r++) { pacific_starts.push_back({r, 0}); atlantic_starts.push_back({r, cols - 1}); }
+    vector<vector<char>> pacific = ocean_reach(heights, pacific_starts), atlantic = ocean_reach(heights, atlantic_starts);
+    int count = 0;
+    for (int r = 0; r < rows; r++) for (int c = 0; c < cols; c++) if (pacific[r][c] && atlantic[r][c]) count++;
+    return count;
+}
+//### number-of-distinct-islands
+void shape_walk(vector<vector<int>>& grid, vector<vector<char>>& visited, int x, int y, char direction, string& path) {
+    if (x < 0 || x >= (int) grid.size() || y < 0 || y >= (int) grid[0].size() || grid[x][y] != 1 || visited[x][y]) return;
+    visited[x][y] = 1;
+    path += direction;
+    shape_walk(grid, visited, x + 1, y, 'd', path);
+    shape_walk(grid, visited, x - 1, y, 'u', path);
+    shape_walk(grid, visited, x, y + 1, 'r', path);
+    shape_walk(grid, visited, x, y - 1, 'l', path);
+    path += 'b';
+}
+
+int distinct_island_shapes(vector<vector<int>>& grid) {
+    vector<vector<char>> visited(grid.size(), vector<char>(grid[0].size(), 0));
+    set<string> shapes;
+    for (int r = 0; r < (int) grid.size(); r++) {
+        for (int c = 0; c < (int) grid[0].size(); c++) {
+            if (grid[r][c] == 1 && !visited[r][c]) {
+                string path;
+                shape_walk(grid, visited, r, c, 'o', path);
+                shapes.insert(path);
+            }
+        }
+    }
+    return (int) shapes.size();
+}
+//### swim-in-rising-water
+int swim_time(vector<vector<int>>& grid) {
+    int n = (int) grid.size();
+    typedef tuple<int, int, int> Item;
+    priority_queue<Item, vector<Item>, greater<Item>> heap;
+    vector<vector<char>> visited(n, vector<char>(n, 0));
+    heap.push(Item(grid[0][0], 0, 0));
+    visited[0][0] = 1;
+    int dr[4] = {1, -1, 0, 0}, dc[4] = {0, 0, 1, -1};
+    while (!heap.empty()) {
+        Item top = heap.top();
+        heap.pop();
+        int t = get<0>(top), x = get<1>(top), y = get<2>(top);
+        if (x == n - 1 && y == n - 1) return t;
+        for (int d = 0; d < 4; d++) {
+            int nx = x + dr[d], ny = y + dc[d];
+            if (nx >= 0 && nx < n && ny >= 0 && ny < n && !visited[nx][ny]) {
+                visited[nx][ny] = 1;
+                heap.push(Item(max(t, grid[nx][ny]), nx, ny));
+            }
+        }
+    }
+    return 0;
+}
+//### strongly-connected-count
+int strongly_connected_count(int n, vector<vector<int>>& edges) {
+    vector<vector<int>> forward(n), backward(n);
+    for (auto& e : edges) { forward[e[0]].push_back(e[1]); backward[e[1]].push_back(e[0]); }
+    vector<char> visited(n, 0);
+    vector<int> order;
+    for (int start = 0; start < n; start++) {
+        if (visited[start]) continue;
+        visited[start] = 1;
+        vector<pair<int,int>> stack;
+        stack.push_back({start, 0});
+        while (!stack.empty()) {
+            pair<int,int> top = stack.back();
+            stack.pop_back();
+            int u = top.first, i = top.second;
+            if (i < (int) forward[u].size()) {
+                stack.push_back({u, i + 1});
+                int v = forward[u][i];
+                if (!visited[v]) { visited[v] = 1; stack.push_back({v, 0}); }
+            } else order.push_back(u);
+        }
+    }
+    fill(visited.begin(), visited.end(), 0);
+    int count = 0;
+    for (int k = (int) order.size() - 1; k >= 0; k--) {
+        int start = order[k];
+        if (visited[start]) continue;
+        count++;
+        visited[start] = 1;
+        vector<int> stack;
+        stack.push_back(start);
+        while (!stack.empty()) {
+            int u = stack.back();
+            stack.pop_back();
+            for (int v : backward[u]) if (!visited[v]) { visited[v] = 1; stack.push_back(v); }
+        }
+    }
+    return count;
+}
+//### min-height-roots
+vector<int> min_height_roots(int n, vector<vector<int>>& edges) {
+    if (n <= 2) {
+        vector<int> all;
+        for (int i = 0; i < n; i++) all.push_back(i);
+        return all;
+    }
+    vector<vector<int>> adjacent(n);
+    for (auto& e : edges) { adjacent[e[0]].push_back(e[1]); adjacent[e[1]].push_back(e[0]); }
+    vector<int> degree(n), leaves;
+    for (int v = 0; v < n; v++) { degree[v] = (int) adjacent[v].size(); if (degree[v] == 1) leaves.push_back(v); }
+    int remaining = n;
+    while (remaining > 2) {
+        remaining -= (int) leaves.size();
+        vector<int> next;
+        for (int leaf : leaves) {
+            for (int v : adjacent[leaf]) {
+                degree[v]--;
+                if (degree[v] == 1) next.push_back(v);
+            }
+        }
+        leaves = next;
+    }
+    sort(leaves.begin(), leaves.end());
+    return leaves;
+}

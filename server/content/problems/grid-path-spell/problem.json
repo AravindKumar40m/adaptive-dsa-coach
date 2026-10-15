@@ -1,0 +1,25 @@
+{
+  "slug": "grid-path-spell",
+  "title": "Find a Walk That Spells the Sequence",
+  "concept": "backtracking",
+  "difficulty": "medium",
+  "statement": "`grid` is a table of digits and `word` is a list of digits. Return `true` if you can walk through the table so that the digits of the cells you step on are exactly the digits of `word`, in order. You may start in any cell; each step goes to a cell directly **above, below, left or right** of the current one; **a cell can be used only once** in one walk.\n\nAn empty `word` can always be spelled (`true`).",
+  "constraints": [
+    "1 <= rows, columns <= 6",
+    "0 <= len(word) <= 12",
+    "0 <= grid[r][c], word[i] <= 9"
+  ],
+  "signature": { "name": "grid_has_path", "params": [{ "name": "grid", "type": "int[][]" }, { "name": "word", "type": "int[]" }], "returns": "bool" },
+  "examples": [
+    { "args": [[[3, 1, 2], [7, 4, 2], [1, 6, 5]], [3, 1, 2, 2]], "expected": true, "explanation": "Start at the 3 (top-left), go right to 1, right to 2, then down to the other 2." },
+    { "args": [[[3, 1, 2], [7, 4, 2], [1, 6, 5]], [3, 1, 2, 2, 2]], "expected": false, "explanation": "There are only two 2s next to each other: there is no third 2 to continue with." }
+  ],
+  "edgeTests": [[[[5]], []], [[[5]], [5]], [[[5]], [5, 5]], [[[1, 1], [1, 1]], [1, 1, 1, 1]], [[[1, 1], [1, 1]], [1, 1, 1, 1, 1]], [[[1, 2]], [2, 1]], [[[1, 2]], [3]]],
+  "expected": { "time": "O(cells * 3^(len(word)))", "space": "O(len(word))" },
+  "hints": {
+    "nudge": "A walk is built one step at a time. After you place the first digit, what must the next cell satisfy, and what must you remember so you do not reuse a cell?",
+    "pattern": "Backtracking (depth-first search with undo): from every cell that matches the first digit, try the four neighbours that match the next digit and have not been used; mark the cell used while exploring and unmark it when you come back.",
+    "pseudocode": "go(r, c, i):   (cell (r, c) already matches word[i])\n  if i == last index: return true\n  mark (r, c) used\n  for each neighbour (nr, nc) not used with grid value word[i + 1]: if go(nr, nc, i + 1): unmark (r, c); return true\n  unmark (r, c); return false\nfor every cell matching word[0]: if go(...): return true\nreturn false",
+    "walkthrough": "Listing every possible walk and comparing is exponential even for tiny tables. The key saving is to check each step against the word immediately: only extend a walk with a neighbour that has the next digit, so wrong walks die after one step. The 'used' marks prevent using a cell twice; they must be removed when the search backs out of a cell (the 'undo' of backtracking), otherwise a failed attempt would block later attempts. At most 3 neighbours are new at each step, so the search is bounded by cells * 4 * 3^(length - 1)."
+  }
+}

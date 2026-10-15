@@ -1,0 +1,25 @@
+{
+  "slug": "min-window-subsequence",
+  "title": "The Shortest Stretch That Hides a Word",
+  "concept": "sliding_window",
+  "difficulty": "hard",
+  "statement": "Find the **shortest contiguous substring** of `s` that contains `t` as a **subsequence** (the letters of `t` appear inside the substring in the same order, possibly with other letters between them). Return the **length** of that substring, or `0` if there is none. If `t` is empty the answer is `0`.",
+  "constraints": [
+    "0 <= len(s) <= 20000",
+    "0 <= len(t) <= 100",
+    "s and t contain lowercase letters"
+  ],
+  "signature": { "name": "min_window_subsequence", "params": [{ "name": "s", "type": "string" }, { "name": "t", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["xaybzcab", "abc"], "expected": 5, "explanation": "The stretch aybzc (positions 1 to 5) contains a, b, c in order. No shorter stretch does." },
+    { "args": ["abc", "d"], "expected": 0, "explanation": "The letter d does not occur." }
+  ],
+  "edgeTests": [["", "a"], ["a", ""], ["abc", "abc"], ["aab", "ab"], ["abab", "ab"], ["cbacbab", "ab"]],
+  "expected": { "time": "O(len(s) * len(t))", "space": "O(1)" },
+  "hints": {
+    "nudge": "If you know where a matching stretch ENDS (the last letter of t is matched there), how would you find the best START for that end?",
+    "pattern": "Scan forward to the first position where all of t has been matched in order (this gives an end); then scan BACKWARDS from that end matching t from its last letter to its first to find the latest possible start; record the length and continue the search from just after that start.",
+    "pseudocode": "i = 0\nwhile i < len(s):\n  j = 0; k = i; while k < len(s) and j < len(t): if s[k] == t[j]: j += 1; k += 1\n  if j < len(t): break               (no further match)\n  end = k - 1; j = len(t) - 1; k = end\n  while j >= 0: if s[k] == t[j]: j -= 1; k -= 1\n  start = k + 1; best = min(best, end - start + 1)\n  i = start + 1",
+    "walkthrough": "Trying every start and growing the end (checking the subsequence each time) is O(n^2 * m). Better: a greedy forward scan matches the letters of t one after another and stops at the earliest end that completes t. But the start of the window found this way is not necessarily the tightest: walk back from the end, matching t from its last letter to its first, and the position where you finish is the LATEST start for that end; the window between them is the shortest one ending there. Record its length. Then restart the forward scan from start + 1 (a window starting at the same start would only find the same or a longer one). Each round costs at most the length of the window, and the windows overlap only a little, so the total is O(n * m) in the worst case."
+  }
+}

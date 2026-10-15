@@ -1,0 +1,25 @@
+{
+  "slug": "remove-k-digits",
+  "title": "Remove Digits to Get the Smallest Number",
+  "concept": "stack_queue",
+  "difficulty": "medium",
+  "statement": "`num` is a text of digits (a whole number). Remove **exactly `k` digits** from it so that the number that remains is as **small** as possible; the remaining digits keep their order. Return the result as a text **without leading zeros**; if nothing is left, or only zeros, the answer is `0`.",
+  "constraints": [
+    "1 <= len(num) <= 100000",
+    "0 <= k <= len(num)",
+    "num contains only digits"
+  ],
+  "signature": { "name": "remove_k_digits", "params": [{ "name": "num", "type": "string" }, { "name": "k", "type": "int" }], "returns": "string" },
+  "examples": [
+    { "args": ["5262", 2], "expected": "22", "explanation": "Remove the 5 and the 6." },
+    { "args": ["9100", 1], "expected": "100", "explanation": "Remove the 9." }
+  ],
+  "edgeTests": [["10", 2], ["123", 0], ["123", 1], ["100", 1], ["112", 1], ["54321", 2]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Compare two numbers with the same number of digits: the first digit where they differ decides. So when is it good to delete a digit?",
+    "pattern": "Monotonic stack: when a new digit is smaller than the digit on top of the stack, delete the top (while you still have deletions left); finally delete from the end, then strip leading zeros.",
+    "pseudocode": "stack = []\nfor d in num:\n  while k > 0 and stack not empty and stack.top > d: pop; k -= 1\n  push d\nwhile k > 0: pop; k -= 1        (the stack is non-decreasing: remove from the end)\nresult = stack as text without leading zeros; return result or \"0\"",
+    "walkthrough": "Look at the digits left to right. If a digit is larger than the digit after it, removing it makes the number smaller (the smaller digit moves into its place, earlier). So whenever the next digit is smaller than the last digit you kept, remove the kept one, as long as you still have removals left; a stack does exactly that and checks the new top again. After the pass, if removals are left, the kept digits are in non-decreasing order, so the best digits to remove are the LAST ones. Finally drop leading zeros (they do not count in a number) and return `0` if nothing remains. Each digit is pushed and popped at most once: O(n)."
+  }
+}

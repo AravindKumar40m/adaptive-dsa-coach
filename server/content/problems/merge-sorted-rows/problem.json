@@ -1,0 +1,25 @@
+{
+  "slug": "merge-sorted-rows",
+  "title": "Merge Many Sorted Lists",
+  "concept": "heaps",
+  "difficulty": "medium",
+  "statement": "`rows` is a list of lists of numbers, and **each inner list is already sorted** in increasing order (inner lists may be empty and may have different lengths). Merge them all into **one sorted list** that contains every number (equal numbers are all kept) and return it.",
+  "constraints": [
+    "0 <= len(rows) <= 10000",
+    "0 <= total number of values <= 100000",
+    "-1000000000 <= value <= 1000000000"
+  ],
+  "signature": { "name": "merge_sorted_rows", "params": [{ "name": "rows", "type": "int[][]" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[[1, 4, 7], [2, 5], [3, 6, 8, 9]]], "expected": [1, 2, 3, 4, 5, 6, 7, 8, 9], "explanation": "The three sorted lists merge into 1 to 9." },
+    { "args": [[[], [5]]], "expected": [5], "explanation": "Empty lists contribute nothing." }
+  ],
+  "edgeTests": [[[]], [[[]]], [[[1]]], [[[3, 3], [3]]], [[[5, 6], [1, 2], [3, 4]]], [[[1], [1], [1]]]],
+  "expected": { "time": "O(N log k)", "space": "O(k)" },
+  "hints": {
+    "nudge": "At any moment the next number of the answer is one of the 'front' numbers of the lists. How can you find the smallest of up to k front numbers quickly?",
+    "pattern": "A min-heap holding the current front element of every non-empty list (with the list and position it came from); pop the smallest, output it, and push the next element of the same list.",
+    "pseudocode": "heap = (rows[r][0], r, 0) for every non-empty row r\nresult = []\nwhile heap not empty:\n  (value, r, c) = pop the smallest; result.append(value)\n  if c + 1 < len(rows[r]): push (rows[r][c + 1], r, c + 1)\nreturn result",
+    "walkthrough": "Putting everything in one list and sorting costs O(N log N) and ignores that the rows are sorted. A k-way merge uses it: the smallest remaining number overall is always the front of some row. Keep a min-heap with one entry per non-empty row (its current front value, the row, the position). Pop the smallest, add it to the answer, and if that row has more numbers push the next one. The heap never holds more than k entries, so each of the N numbers costs O(log k): O(N log k) in total."
+  }
+}

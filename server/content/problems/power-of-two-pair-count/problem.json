@@ -1,0 +1,24 @@
+{
+  "slug": "power-of-two-pair-count",
+  "title": "Pairs That Add Up to a Power of Two",
+  "concept": "hashing",
+  "difficulty": "medium",
+  "statement": "Count the pairs of positions `i < j` for which `numbers[i] + numbers[j]` is a **power of two** (1, 2, 4, 8, 16, ...; note that `1` counts as a power of two, `0` does not). Pairs at different positions count separately even if the values are equal.",
+  "constraints": [
+    "0 <= len(numbers) <= 40000",
+    "0 <= numbers[i] <= 1000000"
+  ],
+  "signature": { "name": "power_of_two_pair_count", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 3, 5, 7]], "expected": 3, "explanation": "1 + 3 = 4, 1 + 7 = 8 and 3 + 5 = 8." },
+    { "args": [[2, 2, 2]], "expected": 3, "explanation": "All three pairs add up to 4." }
+  ],
+  "edgeTests": [[[]], [[1]], [[0, 1]], [[0, 0]], [[1, 1]], [[4, 4, 4, 4]], [[1, 2, 3, 4, 5, 6, 7, 8]]],
+  "expected": { "time": "O(n * 22)", "space": "O(n)" },
+  "hints": {
+    "nudge": "There are only about 22 powers of two that two numbers up to a million can add up to. For one number x and one power p, which partner would complete the pair?",
+    "pattern": "Walk through the list with a map of how often each value occurred earlier; for every x and every power of two p, add the count of the partner p - x.",
+    "pseudocode": "seen = empty map; total = 0\nfor x in numbers:\n  for p in 1, 2, 4, ..., 2^21:\n    if p - x >= 0: total += seen[p - x] (0 if absent)\n  seen[x] += 1\nreturn total",
+    "walkthrough": "Checking all pairs is O(n^2) (about 8 * 10^8 pairs for the largest input). Flip the question: for each number x, which values y make x + y a power of two? For each of the 22 possible powers p (2^0 to 2^21, since the largest sum is 2,000,000) the partner is exactly p - x. A hash map with the counts of the numbers seen BEFORE x tells how many such partners exist. Adding those counts for all powers, then putting x into the map, counts every pair exactly once. The total can reach about 8 * 10^8, which still fits in a 32-bit integer, but a 64-bit counter is safer."
+  }
+}

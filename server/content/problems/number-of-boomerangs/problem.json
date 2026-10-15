@@ -1,0 +1,24 @@
+{
+  "slug": "number-of-boomerangs",
+  "title": "Equal Distances From One Point",
+  "concept": "hashing",
+  "difficulty": "medium",
+  "statement": "`points[i] = [x, y]` is a point on a plane (points may repeat). A **boomerang** is an **ordered** triple of different positions `(i, j, k)` such that the distance from point `i` to point `j` **equals** the distance from point `i` to point `k`. The order matters: `(i, j, k)` and `(i, k, j)` are two different boomerangs.\n\nReturn the number of boomerangs.",
+  "constraints": [
+    "0 <= len(points) <= 500",
+    "-10000 <= x, y <= 10000"
+  ],
+  "signature": { "name": "count_boomerangs", "params": [{ "name": "points", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [[[0, 0], [0, 2], [2, 0], [2, 2]]], "expected": 8, "explanation": "From each corner of the square the two neighbouring corners are at the same distance (2): that is 2 ordered pairs per corner, 4 * 2 = 8." },
+    { "args": [[[1, 1]]], "expected": 0, "explanation": "One point cannot make a triple." }
+  ],
+  "edgeTests": [[[]], [[[0, 0], [1, 1]]], [[[0, 0], [0, 1], [0, 2], [0, 3]]], [[[0, 0], [0, 0], [0, 0]]], [[[0, 0], [3, 4], [-3, 4], [0, 5]]]],
+  "expected": { "time": "O(n^2)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Fix the point i, the 'centre'. For the other points only their distance from i matters. When do two other points j and k make a boomerang with i?",
+    "pattern": "For each centre count how many points lie at each (squared) distance; a group of c points at the same distance gives c * (c - 1) ordered pairs.",
+    "pseudocode": "total = 0\nfor each centre i:\n  counts = empty map from squared distance to number of points\n  for each other point j: counts[(xi - xj)^2 + (yi - yj)^2] += 1\n  for each count c: total += c * (c - 1)\nreturn total",
+    "walkthrough": "Checking every triple costs O(n^3), about 10^8 steps for 500 points. Group instead by centre. For a fixed centre, two other points j and k form a boomerang exactly when they have the same distance from it. Use the SQUARED distance as the key (it is a whole number, so no rounding problems). If c points share one distance, you can choose the ordered pair (j, k) in c * (c - 1) ways. Summing this over the distances of one centre and then over all centres gives the answer in O(n^2). Points that repeat have distance 0 from each other, which is handled by the same rule."
+  }
+}

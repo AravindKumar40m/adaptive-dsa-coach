@@ -1,0 +1,99 @@
+//### smaller-to-the-right-counts
+function countSmallerToRight(numbers) {
+  const n = numbers.length;
+  const values = Array.from(new Set(numbers)).sort((a, b) => a - b);
+  const rank = new Map();
+  values.forEach((v, i) => rank.set(v, i + 1));
+  const size = values.length, tree = new Array(size + 1).fill(0), out = new Array(n).fill(0);
+  for (let i = n - 1; i >= 0; i--) {
+    const r = rank.get(numbers[i]);
+    let total = 0;
+    for (let k = r - 1; k > 0; k -= k & -k) total += tree[k];
+    out[i] = total;
+    for (let k = r; k <= size; k += k & -k) tree[k]++;
+  }
+  return out;
+}
+//### min-max-pair-sum
+function minMaxPairSum(numbers) {
+  const a = numbers.slice().sort((p, q) => p - q), n = a.length;
+  let result = 0;
+  for (let i = 0; i < Math.floor(n / 2); i++) result = Math.max(result, a[i] + a[n - 1 - i]);
+  return result;
+}
+//### maximum-gap-sorted
+function maxSortedGap(numbers) {
+  const a = numbers.slice().sort((p, q) => p - q);
+  let best = 0;
+  for (let i = 0; i + 1 < a.length; i++) best = Math.max(best, a[i + 1] - a[i]);
+  return best;
+}
+//### container-most-water
+function maxWaterArea(heights) {
+  let left = 0, right = heights.length - 1, best = 0;
+  while (left < right) {
+    best = Math.max(best, Math.min(heights[left], heights[right]) * (right - left));
+    if (heights[left] < heights[right]) left++; else right--;
+  }
+  return best;
+}
+//### is-subsequence
+function isSubsequence(s, t) {
+  let i = 0;
+  for (const c of t) {
+    if (i < s.length && s[i] === c) i++;
+  }
+  return i === s.length;
+}
+//### reverse-vowels
+function reverseVowels(text) {
+  const chars = text.split(""), isVowel = (c) => "aeiouAEIOU".includes(c);
+  let left = 0, right = chars.length - 1;
+  while (left < right) {
+    if (!isVowel(chars[left])) left++;
+    else if (!isVowel(chars[right])) right--;
+    else { const t = chars[left]; chars[left] = chars[right]; chars[right] = t; left++; right--; }
+  }
+  return chars.join("");
+}
+//### valid-triangle-count
+function countValidTriangles(sides) {
+  const a = sides.slice().sort((p, q) => p - q);
+  let count = 0;
+  for (let k = a.length - 1; k >= 2; k--) {
+    let i = 0, j = k - 1;
+    while (i < j) {
+      if (a[i] + a[j] > a[k]) { count += j - i; j--; } else i++;
+    }
+  }
+  return count;
+}
+//### remove-duplicates-keep-two
+function keepAtMostTwo(numbers) {
+  const out = [];
+  for (const x of numbers) {
+    if (out.length < 2 || x !== out[out.length - 2]) out.push(x);
+  }
+  return out;
+}
+//### square-sum-exists
+function isSumOfTwoSquares(c) {
+  let a = 0, b = Math.floor(Math.sqrt(c));
+  while (a <= b) {
+    const s = a * a + b * b;
+    if (s === c) return true;
+    if (s < c) a++; else b--;
+  }
+  return false;
+}
+//### ransom-note-possible
+function canBuildNote(note, magazine) {
+  const count = new Array(26).fill(0);
+  for (const ch of magazine) count[ch.charCodeAt(0) - 97]++;
+  for (const ch of note) {
+    const k = ch.charCodeAt(0) - 97;
+    if (count[k] === 0) return false;
+    count[k]--;
+  }
+  return true;
+}

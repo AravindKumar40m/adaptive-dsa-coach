@@ -1,0 +1,24 @@
+{
+  "slug": "maximum-gap-sorted",
+  "title": "The Widest Gap After Sorting",
+  "concept": "sorting",
+  "difficulty": "medium",
+  "statement": "If you sorted `numbers` in increasing order, the difference between two **neighbouring** numbers would be a **gap**. Return the **largest gap**. If the list has fewer than two numbers, return `0`.\n\nA simple sort is accepted; there is also a way to do it in linear time.",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "0 <= numbers[i] <= 1000000000"
+  ],
+  "signature": { "name": "max_sorted_gap", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[10, 4, 19, 1]], "expected": 9, "explanation": "Sorted: 1, 4, 10, 19. The gaps are 3, 6 and 9." },
+    { "args": [[7]], "expected": 0, "explanation": "A single number has no neighbour." }
+  ],
+  "edgeTests": [[[]], [[1, 1, 1]], [[1, 10000000]], [[5, 3]], [[1, 2, 3, 4, 5]], [[100, 0, 50, 51]]],
+  "expected": { "time": "O(n) with buckets, O(n log n) with sorting", "space": "O(n)" },
+  "hints": {
+    "nudge": "Sorting gives the answer directly. To avoid sorting, think about where the widest gap can be hiding if you cut the range from the smallest to the largest value into n - 1 equal pieces.",
+    "pattern": "Pigeonhole: with n numbers there are n - 1 gaps, so the widest gap is at least (max - min) / (n - 1). Put the numbers into buckets of that size; the widest gap lies BETWEEN two buckets, never inside one.",
+    "pseudocode": "if n < 2 or max == min: return 0\nsize = max(1, (max - min) / (n - 1))\nfor each number: bucket = (x - min) / size; keep the smallest and largest number of each bucket\nprevious = min; best = 0\nfor each non-empty bucket in order: best = max(best, bucketMin - previous); previous = bucketMax\nreturn best",
+    "walkthrough": "The easy answer: sort and compare neighbours, O(n log n). The linear idea: the n numbers span the range max - min, so the average gap is (max - min) / (n - 1) and the biggest gap is at least that. Split the range into buckets exactly that wide. Two numbers in the same bucket are closer than the average gap, so they can never form the widest gap; the widest gap is between the largest number of one non-empty bucket and the smallest number of the next non-empty bucket. So keep only the minimum and maximum per bucket and sweep through the buckets. Make sure the bucket width is at least 1."
+  }
+}

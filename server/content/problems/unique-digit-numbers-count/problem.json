@@ -1,0 +1,23 @@
+{
+  "slug": "unique-digit-numbers-count",
+  "title": "Numbers With No Repeated Digit",
+  "concept": "recursion",
+  "difficulty": "medium",
+  "statement": "Count the whole numbers `x` with `0 <= x < 10^n` whose decimal digits are **all different** (the number `0` counts, `11` does not, `1023` does). `10^n` means 1 followed by `n` zeros; for `n = 0` the only number is `0`.",
+  "constraints": [
+    "0 <= n <= 10"
+  ],
+  "signature": { "name": "unique_digit_count", "params": [{ "name": "n", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [1], "expected": 10, "explanation": "All of 0 to 9 have one digit." },
+    { "args": [3], "expected": 739, "explanation": "10 + 81 numbers with 1 and 2 digits (the 2-digit ones: 9 * 9 = 81) plus 9 * 9 * 8 = 648 three-digit ones: 739." }
+  ],
+  "edgeTests": [[0], [2], [4], [5], [6], [7], [8], [9], [10]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Count the numbers with exactly 1 digit, exactly 2 digits, ..., and add them up. How many choices do you have for each digit when the digits must all differ?",
+    "pattern": "Counting by length: a number with L digits has 9 choices for the first digit (not 0), then 9, 8, 7, ... choices for the following digits (any digit not used yet, and 0 is allowed there). The answer for n is the sum for L = 1..n, plus 1 for the number 0.",
+    "pseudocode": "total = 1   (the number 0)\nfor length in 1 .. n:\n  ways = 9; available = 9\n  for position in 2 .. length: ways = ways * available; available -= 1\n  total += ways\nreturn total",
+    "walkthrough": "Testing every number below 10^n works only for small n (10^10 numbers are far too many). Count instead. The first digit of an L-digit number can be 1-9 (9 choices). The second digit can be anything except the first: 9 choices (0 is now allowed). The third: 8 choices, then 7, and so on. So the count with exactly L digits is 9 * 9 * 8 * ... (L factors). Add the counts for L = 1 to n, and 1 for the number 0. There are never more than 10 different digits, so the counts stop growing after L = 10 and n is limited to 10. (The same idea written as a recursion on 'positions left, digits left' is a typical backtracking-counting exercise.)"
+  }
+}

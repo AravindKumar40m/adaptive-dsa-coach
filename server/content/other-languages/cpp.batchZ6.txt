@@ -1,0 +1,158 @@
+//### tribonacci-number
+int tribonacci_number(int n) {
+    if (n == 0) return 0;
+    long long a = 0, b = 1, c = 1;
+    for (int i = 3; i <= n; i++) { long long next = a + b + c; a = b; b = c; c = next; }
+    return (int) c;
+}
+//### unique-digit-numbers-count
+int unique_digit_count(int n) {
+    long long total = 1;
+    for (int length = 1; length <= n; length++) {
+        long long ways = 9;
+        int available = 9;
+        for (int i = 1; i < length; i++) { ways *= available; available--; }
+        total += ways;
+    }
+    return (int) total;
+}
+//### kth-lexicographic-number
+long long lex_subtree(long long prefix, long long n) {
+    long long first = prefix, last = prefix, total = 0;
+    while (first <= n) {
+        total += min(n + 1, last + 1) - first;
+        first *= 10;
+        last = last * 10 + 9;
+    }
+    return total;
+}
+
+int kth_lexicographic(int n, int k) {
+    long long current = 1, remaining = k - 1;
+    while (remaining > 0) {
+        long long size = lex_subtree(current, n);
+        if (size <= remaining) { remaining -= size; current += 1; }
+        else { current *= 10; remaining -= 1; }
+    }
+    return (int) current;
+}
+//### grid-path-spell
+bool spell_go(vector<vector<int>>& grid, vector<int>& word, vector<vector<char>>& used, int r, int c, int i) {
+    if (i == (int) word.size() - 1) return true;
+    used[r][c] = 1;
+    int dr[4] = {1, -1, 0, 0}, dc[4] = {0, 0, 1, -1};
+    for (int d = 0; d < 4; d++) {
+        int nr = r + dr[d], nc = c + dc[d];
+        if (nr >= 0 && nr < (int) grid.size() && nc >= 0 && nc < (int) grid[0].size() && !used[nr][nc] && grid[nr][nc] == word[i + 1]) {
+            if (spell_go(grid, word, used, nr, nc, i + 1)) { used[r][c] = 0; return true; }
+        }
+    }
+    used[r][c] = 0;
+    return false;
+}
+
+bool grid_has_path(vector<vector<int>>& grid, vector<int>& word) {
+    if (word.empty()) return true;
+    vector<vector<char>> used(grid.size(), vector<char>(grid[0].size(), 0));
+    for (int r = 0; r < (int) grid.size(); r++)
+        for (int c = 0; c < (int) grid[0].size(); c++)
+            if (grid[r][c] == word[0] && spell_go(grid, word, used, r, c, 0)) return true;
+    return false;
+}
+//### combination-sum-three
+int combo_go(int start, int left, int remaining) {
+    if (left == 0) return remaining == 0 ? 1 : 0;
+    int total = 0;
+    for (int d = start; d <= 9; d++) {
+        if (d > remaining) break;
+        total += combo_go(d + 1, left - 1, remaining - d);
+    }
+    return total;
+}
+
+int count_combination_three(int k, int n) {
+    return combo_go(1, k, n);
+}
+//### beautiful-arrangements-count
+int beautiful_arrangements(int n) {
+    vector<int> dp(1 << n, 0);
+    dp[0] = 1;
+    for (int mask = 0; mask < (1 << n); mask++) {
+        if (dp[mask] == 0) continue;
+        int pos = __builtin_popcount(mask) + 1;
+        for (int num = 1; num <= n; num++) {
+            int bit = 1 << (num - 1);
+            if (!(mask & bit) && (num % pos == 0 || pos % num == 0)) dp[mask | bit] += dp[mask];
+        }
+    }
+    return dp[(1 << n) - 1];
+}
+//### consecutive-descending-split
+bool countdown_go(const string& digits, int start, long long previous) {
+    int n = (int) digits.size();
+    if (start == n) return true;
+    long long need = previous - 1;
+    for (int end = start + 1; end <= n; end++) {
+        long long v = stoll(digits.substr(start, end - start));
+        if (v == need && countdown_go(digits, end, v)) return true;
+        if (v > need) break;
+    }
+    return false;
+}
+
+bool is_consecutive_descending(string digits) {
+    for (int end = 1; end < (int) digits.size(); end++) {
+        if (countdown_go(digits, end, stoll(digits.substr(0, end)))) return true;
+    }
+    return false;
+}
+//### max-unique-split
+void split_go(const string& text, set<string>& used, int& best, int start, int count) {
+    int n = (int) text.size();
+    if (count + (n - start) <= best) return;
+    if (start == n) { best = max(best, count); return; }
+    for (int end = start + 1; end <= n; end++) {
+        string piece = text.substr(start, end - start);
+        if (!used.count(piece)) {
+            used.insert(piece);
+            split_go(text, used, best, end, count + 1);
+            used.erase(piece);
+        }
+    }
+}
+
+int max_unique_split(string text) {
+    set<string> used;
+    int best = 0;
+    split_go(text, used, best, 0, 0);
+    return best;
+}
+//### shortest-tour-all-cities
+int shortest_tour(vector<vector<int>>& dist) {
+    int n = (int) dist.size(), INF = 1000000000;
+    vector<vector<int>> dp(1 << n, vector<int>(n, INF));
+    dp[1][0] = 0;
+    for (int mask = 1; mask < (1 << n); mask++) {
+        if (!(mask & 1)) continue;
+        for (int last = 0; last < n; last++) {
+            if (dp[mask][last] >= INF) continue;
+            for (int nxt = 0; nxt < n; nxt++) {
+                if (mask & (1 << nxt)) continue;
+                int cost = dp[mask][last] + dist[last][nxt];
+                if (cost < dp[mask | (1 << nxt)][nxt]) dp[mask | (1 << nxt)][nxt] = cost;
+            }
+        }
+    }
+    int best = INF;
+    for (int last = 0; last < n; last++) best = min(best, dp[(1 << n) - 1][last]);
+    return best;
+}
+//### first-true-position
+int first_true_index(vector<int>& flags) {
+    int lo = 0, hi = (int) flags.size();
+    while (lo < hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (flags[mid] == 1) hi = mid; else lo = mid + 1;
+    }
+    return lo < (int) flags.size() ? lo : -1;
+}

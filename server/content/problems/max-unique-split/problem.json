@@ -1,0 +1,24 @@
+{
+  "slug": "max-unique-split",
+  "title": "Cut Into the Most Different Pieces",
+  "concept": "backtracking",
+  "difficulty": "medium",
+  "statement": "Cut `text` into **non-empty pieces** (together they give back the whole text, in order) so that **no two pieces are equal**. Return the **largest number of pieces** you can get. An empty text has `0` pieces.",
+  "constraints": [
+    "0 <= len(text) <= 16",
+    "text contains lowercase letters"
+  ],
+  "signature": { "name": "max_unique_split", "params": [{ "name": "text", "type": "string" }], "returns": "int" },
+  "examples": [
+    { "args": ["aabbaa"], "expected": 4, "explanation": "a | ab | b | aa. Five different pieces would need four single letters or similar, but there are only two different letters." },
+    { "args": ["aaaa"], "expected": 2, "explanation": "a | aaa. (a | aa | a repeats `a`.)" }
+  ],
+  "edgeTests": [[""], ["a"], ["ab"], ["aa"], ["abcabc"], ["aaaaaaaa"]],
+  "expected": { "time": "O(2^n * n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Decide where the first piece ends, then solve the same problem for the rest, remembering which pieces are already used. When can a branch be abandoned early?",
+    "pattern": "Backtracking over the cut positions with a set of the pieces used so far; prune a branch when the pieces so far plus the number of letters left cannot beat the best result.",
+    "pseudocode": "go(start, count): if count + (n - start) <= best: return   (even single letters could not beat it)\n  if start == n: best = max(best, count); return\n  for end in start + 1 .. n: piece = text[start..end); if piece not in used: add it; go(end, count + 1); remove it",
+    "walkthrough": "There are 2^(n-1) ways to cut a text of n letters; for n = 16 that is 32,768 cuttings: small enough to try all of them with a set to detect repeated pieces. The search is a depth-first backtracking: choose the end of the next piece, skip it if the same piece was used before, recurse, and remove the piece again when you return. A simple pruning rule speeds it up: even if all remaining letters became single-letter pieces you could only add (n - start) more pieces, so if count + (n - start) is not larger than the best found so far the branch cannot improve the answer."
+  }
+}

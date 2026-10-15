@@ -1,0 +1,24 @@
+{
+  "slug": "number-of-distinct-islands",
+  "title": "How Many Different Island Shapes",
+  "concept": "graphs",
+  "difficulty": "medium",
+  "statement": "`grid` is a map of `1` (land) and `0` (water). An **island** is a group of land cells connected through their sides (up, down, left, right). Two islands have the **same shape** if one can be moved onto the other **by sliding it** (translation) without rotating or flipping it.\n\nReturn the number of **different island shapes**.",
+  "constraints": [
+    "1 <= rows, columns <= 50",
+    "grid[r][c] is 0 or 1"
+  ],
+  "signature": { "name": "distinct_island_shapes", "params": [{ "name": "grid", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [[[1, 1, 0], [1, 0, 0], [0, 0, 1], [0, 0, 1]]], "expected": 2, "explanation": "An L-shaped island of three cells and a vertical pair of cells: two different shapes." },
+    { "args": [[[1, 0, 1], [0, 0, 0], [1, 0, 1]]], "expected": 1, "explanation": "Four single-cell islands all have the same shape." }
+  ],
+  "edgeTests": [[[[0]]], [[[1]]], [[[1, 1, 0, 1, 1]]], [[[1, 0, 1], [1, 0, 1]]], [[[1, 1], [0, 1]]], [[[1, 1, 0], [0, 1, 1], [0, 0, 0]]]],
+  "expected": { "time": "O(rows * columns)", "space": "O(rows * columns)" },
+  "hints": {
+    "nudge": "Two islands that are translations of each other have the same cells relative to their top-left corner. How could you write an island down so that equal shapes give equal descriptions?",
+    "pattern": "Find every island with a flood fill; describe it by the positions of its cells relative to its first cell (or by the path of the search); put the descriptions into a set; the answer is the size of the set.",
+    "pseudocode": "shapes = empty set\nfor each unvisited land cell (r0, c0): collect the cells of its island with a flood fill\n  shape = sorted list of (r - r0, c - c0) for every cell, where (r0, c0) is the first cell found in row-major order\n  add shape to shapes\nreturn the size of shapes",
+    "walkthrough": "Sliding an island does not change the offsets of its cells from a fixed reference cell. Scanning the grid row by row, the first land cell of an island you meet is its top-most (and, in that row, left-most) cell, which is the same part of the shape wherever the island lies. So record each cell as (row - row0, column - column0) relative to that cell. Sort the offsets (or collect them in the same order), turn the list into something you can store in a set (a tuple or a text), and add it. Rotated or mirrored copies produce different offset lists, which is exactly what the problem wants. Another way is to record the sequence of moves of the depth-first search, including a mark when it backtracks. O(rows * columns)."
+  }
+}

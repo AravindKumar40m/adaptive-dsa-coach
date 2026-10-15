@@ -1,0 +1,124 @@
+//### power-of-two-pair-count
+function powerOfTwoPairCount(numbers) {
+  const seen = new Map();
+  let total = 0;
+  for (const x of numbers) {
+    for (let p = 1; p <= 2097152; p *= 2) {
+      const need = p - x;
+      if (need >= 0 && seen.has(need)) total += seen.get(need);
+    }
+    seen.set(x, (seen.get(x) || 0) + 1);
+  }
+  return total;
+}
+//### bulls-and-cows-score
+function scoreGuess(secret, guess) {
+  let bulls = 0;
+  const secretCount = new Array(10).fill(0), guessCount = new Array(10).fill(0);
+  for (let i = 0; i < secret.length; i++) {
+    if (secret[i] === guess[i]) bulls++;
+    else { secretCount[Number(secret[i])]++; guessCount[Number(guess[i])]++; }
+  }
+  let cows = 0;
+  for (let d = 0; d < 10; d++) cows += Math.min(secretCount[d], guessCount[d]);
+  return bulls + "A" + cows + "B";
+}
+//### number-of-boomerangs
+function countBoomerangs(points) {
+  let total = 0;
+  for (let i = 0; i < points.length; i++) {
+    const counts = new Map();
+    for (let j = 0; j < points.length; j++) {
+      if (i === j) continue;
+      const dx = points[i][0] - points[j][0], dy = points[i][1] - points[j][1];
+      const d = dx * dx + dy * dy;
+      counts.set(d, (counts.get(d) || 0) + 1);
+    }
+    for (const c of counts.values()) total += c * (c - 1);
+  }
+  return total;
+}
+//### longest-arithmetic-run
+function longestArithmeticRun(numbers) {
+  const n = numbers.length;
+  let best = Math.min(n, 2);
+  const table = [];
+  for (let j = 0; j < n; j++) {
+    table.push(new Map());
+    for (let i = 0; i < j; i++) {
+      const d = numbers[j] - numbers[i];
+      const length = (table[i].get(d) || 1) + 1;
+      table[j].set(d, length);
+      if (length > best) best = length;
+    }
+  }
+  return best;
+}
+//### min-index-sum-common
+function minIndexSumCommon(first, second) {
+  const position = new Map();
+  first.forEach((x, i) => position.set(x, i));
+  let best = -1;
+  for (let j = 0; j < second.length; j++) {
+    if (position.has(second[j])) {
+      const s = position.get(second[j]) + j;
+      if (best === -1 || s < best) best = s;
+    }
+  }
+  return best;
+}
+//### reverse-words-in-text
+function reverseWords(text) {
+  const words = text.split(" ").filter((w) => w.length > 0);
+  return words.reverse().join(" ");
+}
+//### roman-to-integer
+function romanToInt(numeral) {
+  const value = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };
+  let total = 0;
+  for (let i = 0; i < numeral.length; i++) {
+    if (i + 1 < numeral.length && value[numeral[i]] < value[numeral[i + 1]]) total -= value[numeral[i]];
+    else total += value[numeral[i]];
+  }
+  return total;
+}
+//### integer-to-roman
+function intToRoman(number) {
+  const values = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1];
+  const symbols = ["M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"];
+  let out = "";
+  for (let i = 0; i < values.length; i++) {
+    while (number >= values[i]) { out += symbols[i]; number -= values[i]; }
+  }
+  return out;
+}
+//### add-binary-strings
+function addBinary(a, b) {
+  let i = a.length - 1, j = b.length - 1, carry = 0;
+  const digits = [];
+  while (i >= 0 || j >= 0 || carry > 0) {
+    let total = carry;
+    if (i >= 0) total += a.charCodeAt(i--) - 48;
+    if (j >= 0) total += b.charCodeAt(j--) - 48;
+    digits.push(total % 2);
+    carry = Math.floor(total / 2);
+  }
+  let result = digits.reverse().join("").replace(/^0+/, "");
+  return result === "" ? "0" : result;
+}
+//### count-and-say-term
+function countAndSay(n) {
+  let text = "1";
+  for (let step = 1; step < n; step++) {
+    const parts = [];
+    let i = 0;
+    while (i < text.length) {
+      let j = i;
+      while (j < text.length && text[j] === text[i]) j++;
+      parts.push(String(j - i), text[i]);
+      i = j;
+    }
+    text = parts.join("");
+  }
+  return text;
+}

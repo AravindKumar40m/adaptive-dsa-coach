@@ -1,0 +1,272 @@
+//### equal-cost-substring
+class Solution {
+    public int equalCostSubstring(String s, String t, int maxCost) {
+        int left = 0, best = 0;
+        long total = 0;
+        for (int right = 0; right < s.length(); right++) {
+            total += Math.abs(s.charAt(right) - t.charAt(right));
+            while (total > maxCost) {
+                total -= Math.abs(s.charAt(left) - t.charAt(left));
+                left++;
+            }
+            best = Math.max(best, right - left + 1);
+        }
+        return best;
+    }
+}
+//### min-window-subsequence
+class Solution {
+    public int minWindowSubsequence(String s, String t) {
+        if (t.isEmpty()) return 0;
+        int n = s.length(), m = t.length(), best = 0, i = 0;
+        while (i < n) {
+            int j = 0, k = i;
+            while (k < n && j < m) { if (s.charAt(k) == t.charAt(j)) j++; k++; }
+            if (j < m) break;
+            int end = k - 1;
+            j = m - 1;
+            k = end;
+            while (j >= 0) { if (s.charAt(k) == t.charAt(j)) j--; k--; }
+            int start = k + 1, length = end - start + 1;
+            if (best == 0 || length < best) best = length;
+            i = start + 1;
+        }
+        return best;
+    }
+}
+//### island-max-area
+class Solution {
+    public int islandMaxArea(int[][] grid) {
+        int rows = grid.length, cols = grid[0].length;
+        boolean[][] visited = new boolean[rows][cols];
+        int[] dr = {1, -1, 0, 0}, dc = {0, 0, 1, -1};
+        int best = 0;
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                if (grid[r][c] != 1 || visited[r][c]) continue;
+                visited[r][c] = true;
+                ArrayDeque<int[]> stack = new ArrayDeque<>();
+                stack.push(new int[]{r, c});
+                int size = 0;
+                while (!stack.isEmpty()) {
+                    int[] cur = stack.pop();
+                    size++;
+                    for (int d = 0; d < 4; d++) {
+                        int nx = cur[0] + dr[d], ny = cur[1] + dc[d];
+                        if (nx >= 0 && nx < rows && ny >= 0 && ny < cols && grid[nx][ny] == 1 && !visited[nx][ny]) {
+                            visited[nx][ny] = true;
+                            stack.push(new int[]{nx, ny});
+                        }
+                    }
+                }
+                best = Math.max(best, size);
+            }
+        }
+        return best;
+    }
+}
+//### is-graph-a-tree
+class Solution {
+    private int find(int[] parent, int x) {
+        while (parent[x] != x) { parent[x] = parent[parent[x]]; x = parent[x]; }
+        return x;
+    }
+
+    public boolean isGraphATree(int n, int[][] edges) {
+        if (edges.length != n - 1) return false;
+        int[] parent = new int[n];
+        for (int i = 0; i < n; i++) parent[i] = i;
+        for (int[] e : edges) {
+            int ra = find(parent, e[0]), rb = find(parent, e[1]);
+            if (ra == rb) return false;
+            parent[ra] = rb;
+        }
+        return true;
+    }
+}
+//### all-paths-dag-count
+class Solution {
+    private List<List<Integer>> adjacent;
+    private long[] memo;
+    private int n;
+
+    private long ways(int u) {
+        if (u == n - 1) return 1;
+        if (memo[u] >= 0) return memo[u];
+        long total = 0;
+        for (int v : adjacent.get(u)) total += ways(v);
+        memo[u] = total;
+        return total;
+    }
+
+    public int countDagPaths(int n, int[][] edges) {
+        this.n = n;
+        adjacent = new ArrayList<>();
+        for (int i = 0; i < n; i++) adjacent.add(new ArrayList<>());
+        for (int[] e : edges) adjacent.get(e[0]).add(e[1]);
+        memo = new long[n];
+        Arrays.fill(memo, -1);
+        return (int) ways(0);
+    }
+}
+//### pacific-atlantic-count
+class Solution {
+    private boolean[][] reach(int[][] heights, List<int[]> starts) {
+        int rows = heights.length, cols = heights[0].length;
+        boolean[][] marked = new boolean[rows][cols];
+        ArrayDeque<int[]> stack = new ArrayDeque<>();
+        for (int[] s : starts) if (!marked[s[0]][s[1]]) { marked[s[0]][s[1]] = true; stack.push(s); }
+        int[] dr = {1, -1, 0, 0}, dc = {0, 0, 1, -1};
+        while (!stack.isEmpty()) {
+            int[] cur = stack.pop();
+            for (int d = 0; d < 4; d++) {
+                int nx = cur[0] + dr[d], ny = cur[1] + dc[d];
+                if (nx >= 0 && nx < rows && ny >= 0 && ny < cols && !marked[nx][ny] && heights[nx][ny] >= heights[cur[0]][cur[1]]) {
+                    marked[nx][ny] = true;
+                    stack.push(new int[]{nx, ny});
+                }
+            }
+        }
+        return marked;
+    }
+
+    public int pacificAtlanticCount(int[][] heights) {
+        int rows = heights.length, cols = heights[0].length;
+        List<int[]> pacificStarts = new ArrayList<>(), atlanticStarts = new ArrayList<>();
+        for (int c = 0; c < cols; c++) { pacificStarts.add(new int[]{0, c}); atlanticStarts.add(new int[]{rows - 1, c}); }
+        for (int r = 0; r < rows; r++) { pacificStarts.add(new int[]{r, 0}); atlanticStarts.add(new int[]{r, cols - 1}); }
+        boolean[][] pacific = reach(heights, pacificStarts), atlantic = reach(heights, atlanticStarts);
+        int count = 0;
+        for (int r = 0; r < rows; r++) for (int c = 0; c < cols; c++) if (pacific[r][c] && atlantic[r][c]) count++;
+        return count;
+    }
+}
+//### number-of-distinct-islands
+class Solution {
+    private int[][] grid;
+    private boolean[][] visited;
+
+    private void walk(int x, int y, char direction, StringBuilder path) {
+        if (x < 0 || x >= grid.length || y < 0 || y >= grid[0].length || grid[x][y] != 1 || visited[x][y]) return;
+        visited[x][y] = true;
+        path.append(direction);
+        walk(x + 1, y, 'd', path);
+        walk(x - 1, y, 'u', path);
+        walk(x, y + 1, 'r', path);
+        walk(x, y - 1, 'l', path);
+        path.append('b');
+    }
+
+    public int distinctIslandShapes(int[][] grid) {
+        this.grid = grid;
+        this.visited = new boolean[grid.length][grid[0].length];
+        Set<String> shapes = new HashSet<>();
+        for (int r = 0; r < grid.length; r++) {
+            for (int c = 0; c < grid[0].length; c++) {
+                if (grid[r][c] == 1 && !visited[r][c]) {
+                    StringBuilder path = new StringBuilder();
+                    walk(r, c, 'o', path);
+                    shapes.add(path.toString());
+                }
+            }
+        }
+        return shapes.size();
+    }
+}
+//### swim-in-rising-water
+class Solution {
+    public int swimTime(int[][] grid) {
+        int n = grid.length;
+        PriorityQueue<int[]> heap = new PriorityQueue<>((p, q) -> Integer.compare(p[0], q[0]));
+        boolean[][] visited = new boolean[n][n];
+        heap.add(new int[]{grid[0][0], 0, 0});
+        visited[0][0] = true;
+        int[] dr = {1, -1, 0, 0}, dc = {0, 0, 1, -1};
+        while (!heap.isEmpty()) {
+            int[] top = heap.poll();
+            int t = top[0], x = top[1], y = top[2];
+            if (x == n - 1 && y == n - 1) return t;
+            for (int d = 0; d < 4; d++) {
+                int nx = x + dr[d], ny = y + dc[d];
+                if (nx >= 0 && nx < n && ny >= 0 && ny < n && !visited[nx][ny]) {
+                    visited[nx][ny] = true;
+                    heap.add(new int[]{Math.max(t, grid[nx][ny]), nx, ny});
+                }
+            }
+        }
+        return 0;
+    }
+}
+//### strongly-connected-count
+class Solution {
+    public int stronglyConnectedCount(int n, int[][] edges) {
+        List<List<Integer>> forward = new ArrayList<>(), backward = new ArrayList<>();
+        for (int i = 0; i < n; i++) { forward.add(new ArrayList<>()); backward.add(new ArrayList<>()); }
+        for (int[] e : edges) { forward.get(e[0]).add(e[1]); backward.get(e[1]).add(e[0]); }
+        boolean[] visited = new boolean[n];
+        int[] order = new int[n];
+        int size = 0;
+        for (int start = 0; start < n; start++) {
+            if (visited[start]) continue;
+            visited[start] = true;
+            ArrayDeque<int[]> stack = new ArrayDeque<>();
+            stack.push(new int[]{start, 0});
+            while (!stack.isEmpty()) {
+                int[] top = stack.pop();
+                int u = top[0], i = top[1];
+                if (i < forward.get(u).size()) {
+                    stack.push(new int[]{u, i + 1});
+                    int v = forward.get(u).get(i);
+                    if (!visited[v]) { visited[v] = true; stack.push(new int[]{v, 0}); }
+                } else order[size++] = u;
+            }
+        }
+        visited = new boolean[n];
+        int count = 0;
+        for (int k = size - 1; k >= 0; k--) {
+            int start = order[k];
+            if (visited[start]) continue;
+            count++;
+            visited[start] = true;
+            ArrayDeque<Integer> stack = new ArrayDeque<>();
+            stack.push(start);
+            while (!stack.isEmpty()) {
+                int u = stack.pop();
+                for (int v : backward.get(u)) if (!visited[v]) { visited[v] = true; stack.push(v); }
+            }
+        }
+        return count;
+    }
+}
+//### min-height-roots
+class Solution {
+    public int[] minHeightRoots(int n, int[][] edges) {
+        if (n <= 2) {
+            int[] all = new int[n];
+            for (int i = 0; i < n; i++) all[i] = i;
+            return all;
+        }
+        List<List<Integer>> adjacent = new ArrayList<>();
+        for (int i = 0; i < n; i++) adjacent.add(new ArrayList<>());
+        for (int[] e : edges) { adjacent.get(e[0]).add(e[1]); adjacent.get(e[1]).add(e[0]); }
+        int[] degree = new int[n];
+        List<Integer> leaves = new ArrayList<>();
+        for (int v = 0; v < n; v++) { degree[v] = adjacent.get(v).size(); if (degree[v] == 1) leaves.add(v); }
+        int remaining = n;
+        while (remaining > 2) {
+            remaining -= leaves.size();
+            List<Integer> next = new ArrayList<>();
+            for (int leaf : leaves) {
+                for (int v : adjacent.get(leaf)) {
+                    degree[v]--;
+                    if (degree[v] == 1) next.add(v);
+                }
+            }
+            leaves = next;
+        }
+        Collections.sort(leaves);
+        int[] result = new int[leaves.size()];
+        for (int i = 0; i < result.length; i++) result[i] = leaves.get(i);
+        return result;
+    }
+}

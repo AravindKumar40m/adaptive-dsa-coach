@@ -1,0 +1,185 @@
+//### valid-number-format
+class Solution {
+    public boolean validNumber(String text) {
+        int n = text.length(), i = 0;
+        if (i < n && (text.charAt(i) == '+' || text.charAt(i) == '-')) i++;
+        int before = 0;
+        while (i < n && text.charAt(i) >= '0' && text.charAt(i) <= '9') { i++; before++; }
+        int after = 0;
+        if (i < n && text.charAt(i) == '.') {
+            i++;
+            while (i < n && text.charAt(i) >= '0' && text.charAt(i) <= '9') { i++; after++; }
+        }
+        if (before + after == 0) return false;
+        if (i < n && (text.charAt(i) == 'e' || text.charAt(i) == 'E')) {
+            i++;
+            if (i < n && (text.charAt(i) == '+' || text.charAt(i) == '-')) i++;
+            int exponent = 0;
+            while (i < n && text.charAt(i) >= '0' && text.charAt(i) <= '9') { i++; exponent++; }
+            if (exponent == 0) return false;
+        }
+        return i == n;
+    }
+}
+//### smallest-distinct-subsequence
+class Solution {
+    public String smallestDistinctSubsequence(String text) {
+        int[] last = new int[26];
+        for (int i = 0; i < text.length(); i++) last[text.charAt(i) - 'a'] = i;
+        StringBuilder stack = new StringBuilder();
+        boolean[] inStack = new boolean[26];
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (inStack[c - 'a']) continue;
+            while (stack.length() > 0 && stack.charAt(stack.length() - 1) > c && last[stack.charAt(stack.length() - 1) - 'a'] > i) {
+                inStack[stack.charAt(stack.length() - 1) - 'a'] = false;
+                stack.setLength(stack.length() - 1);
+            }
+            stack.append(c);
+            inStack[c - 'a'] = true;
+        }
+        return stack.toString();
+    }
+}
+//### remove-k-digits
+class Solution {
+    public String removeKDigits(String num, int k) {
+        StringBuilder stack = new StringBuilder();
+        for (char d : num.toCharArray()) {
+            while (k > 0 && stack.length() > 0 && stack.charAt(stack.length() - 1) > d) { stack.setLength(stack.length() - 1); k--; }
+            stack.append(d);
+        }
+        while (k > 0) { stack.setLength(stack.length() - 1); k--; }
+        int start = 0;
+        while (start < stack.length() && stack.charAt(start) == '0') start++;
+        String result = stack.substring(start);
+        return result.isEmpty() ? "0" : result;
+    }
+}
+//### pattern-132-exists
+class Solution {
+    public boolean has132Pattern(int[] numbers) {
+        long third = Long.MIN_VALUE;
+        int[] stack = new int[numbers.length];
+        int size = 0;
+        for (int i = numbers.length - 1; i >= 0; i--) {
+            int x = numbers[i];
+            if (x < third) return true;
+            while (size > 0 && stack[size - 1] < x) third = stack[--size];
+            stack[size++] = x;
+        }
+        return false;
+    }
+}
+//### sum-subarray-minimums
+class Solution {
+    public int sumSubarrayMins(int[] numbers) {
+        final long MOD = 1000000007L;
+        int n = numbers.length;
+        int[] left = new int[n], right = new int[n], stack = new int[n];
+        int size = 0;
+        for (int i = 0; i < n; i++) {
+            while (size > 0 && numbers[stack[size - 1]] > numbers[i]) size--;
+            left[i] = i - (size > 0 ? stack[size - 1] : -1);
+            stack[size++] = i;
+        }
+        size = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            while (size > 0 && numbers[stack[size - 1]] >= numbers[i]) size--;
+            right[i] = (size > 0 ? stack[size - 1] : n) - i;
+            stack[size++] = i;
+        }
+        long total = 0;
+        for (int i = 0; i < n; i++) total = (total + (long) numbers[i] * left[i] % MOD * right[i]) % MOD;
+        return (int) total;
+    }
+}
+//### reverse-in-brackets
+class Solution {
+    public String reverseInBrackets(String text) {
+        int n = text.length();
+        int[] partner = new int[n];
+        Deque<Integer> opens = new ArrayDeque<>();
+        for (int i = 0; i < n; i++) {
+            if (text.charAt(i) == '(') opens.push(i);
+            else if (text.charAt(i) == ')') { int j = opens.pop(); partner[i] = j; partner[j] = i; }
+        }
+        StringBuilder out = new StringBuilder();
+        int i = 0, step = 1;
+        while (i >= 0 && i < n) {
+            char c = text.charAt(i);
+            if (c == '(' || c == ')') { i = partner[i]; step = -step; }
+            else out.append(c);
+            i += step;
+        }
+        return out.toString();
+    }
+}
+//### car-fleet-count
+class Solution {
+    public int countCarFleets(int target, int[] position, int[] speed) {
+        int n = position.length;
+        Integer[] order = new Integer[n];
+        for (int i = 0; i < n; i++) order[i] = i;
+        Arrays.sort(order, (a, b) -> Integer.compare(position[b], position[a]));
+        int fleets = 0;
+        long leadDistance = 0, leadSpeed = 1;
+        for (int i : order) {
+            long distance = target - position[i];
+            if (fleets == 0 || distance * leadSpeed > leadDistance * speed[i]) {
+                fleets++;
+                leadDistance = distance;
+                leadSpeed = speed[i];
+            }
+        }
+        return fleets;
+    }
+}
+//### remove-list-elements
+class Solution {
+    public ListNode removeListValues(ListNode head, int val) {
+        ListNode dummy = new ListNode(0, head);
+        ListNode prev = dummy;
+        while (prev.next != null) {
+            if (prev.next.val == val) prev.next = prev.next.next;
+            else prev = prev.next;
+        }
+        return dummy.next;
+    }
+}
+//### delete-middle-node
+class Solution {
+    public ListNode deleteMiddle(ListNode head) {
+        if (head == null || head.next == null) return null;
+        ListNode prev = null, slow = head, fast = head;
+        while (fast != null && fast.next != null) {
+            prev = slow;
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        prev.next = slow.next;
+        return head;
+    }
+}
+//### reorder-list-alternating
+class Solution {
+    public ListNode reorderAlternating(ListNode head) {
+        if (head == null || head.next == null) return head;
+        ListNode slow = head, fast = head;
+        while (fast.next != null && fast.next.next != null) { slow = slow.next; fast = fast.next.next; }
+        ListNode second = slow.next;
+        slow.next = null;
+        ListNode prev = null;
+        while (second != null) { ListNode nxt = second.next; second.next = prev; prev = second; second = nxt; }
+        ListNode first = head;
+        second = prev;
+        while (second != null) {
+            ListNode a = first.next, b = second.next;
+            first.next = second;
+            second.next = a;
+            first = a;
+            second = b;
+        }
+        return head;
+    }
+}

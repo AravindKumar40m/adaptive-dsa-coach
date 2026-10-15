@@ -1,0 +1,160 @@
+//### valid-perfect-square
+class Solution {
+    public boolean isPerfectSquare(int num) {
+        long lo = 1, hi = Math.min(num, 46341);
+        while (lo <= hi) {
+            long mid = (lo + hi) / 2, square = mid * mid;
+            if (square == num) return true;
+            if (square < num) lo = mid + 1; else hi = mid - 1;
+        }
+        return false;
+    }
+}
+//### kth-missing-positive
+class Solution {
+    public int kthMissingPositive(int[] numbers, int k) {
+        int lo = 0, hi = numbers.length;
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (numbers[mid] - (mid + 1) >= k) hi = mid; else lo = mid + 1;
+        }
+        return (int) ((long) lo + k);
+    }
+}
+//### smallest-divisor-threshold
+class Solution {
+    public int smallestDivisor(int[] numbers, int threshold) {
+        int lo = 1, hi = 0;
+        for (int x : numbers) hi = Math.max(hi, x);
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            long total = 0;
+            for (int x : numbers) total += (x + mid - 1) / mid;
+            if (total <= threshold) hi = mid; else lo = mid + 1;
+        }
+        return lo;
+    }
+}
+//### nth-magical-number
+class Solution {
+    private long gcd(long x, long y) {
+        return y == 0 ? x : gcd(y, x % y);
+    }
+
+    public int nthMagicalNumber(int n, int a, int b) {
+        long lcm = (long) a / gcd(a, b) * b;
+        long lo = Math.min(a, b), hi = (long) n * Math.min(a, b);
+        while (lo < hi) {
+            long mid = (lo + hi) / 2;
+            long count = mid / a + mid / b - mid / lcm;
+            if (count >= n) hi = mid; else lo = mid + 1;
+        }
+        return (int) (lo % 1000000007L);
+    }
+}
+//### kth-in-multiplication-table
+class Solution {
+    public int kthInMultiplicationTable(int m, int n, int k) {
+        long lo = 1, hi = (long) m * n;
+        while (lo < hi) {
+            long mid = (lo + hi) / 2;
+            long count = 0;
+            for (int i = 1; i <= m; i++) count += Math.min((long) n, mid / i);
+            if (count >= k) hi = mid; else lo = mid + 1;
+        }
+        return (int) lo;
+    }
+}
+//### merge-sorted-rows
+class Solution {
+    public int[] mergeSortedRows(int[][] rows) {
+        int total = 0;
+        for (int[] row : rows) total += row.length;
+        PriorityQueue<int[]> heap = new PriorityQueue<>((p, q) -> Integer.compare(p[0], q[0]));
+        for (int r = 0; r < rows.length; r++) if (rows[r].length > 0) heap.add(new int[]{rows[r][0], r, 0});
+        int[] out = new int[total];
+        int size = 0;
+        while (!heap.isEmpty()) {
+            int[] top = heap.poll();
+            out[size++] = top[0];
+            int r = top[1], c = top[2];
+            if (c + 1 < rows[r].length) heap.add(new int[]{rows[r][c + 1], r, c + 1});
+        }
+        return out;
+    }
+}
+//### super-smooth-number
+class Solution {
+    public int superSmoothNumber(int n, int[] primes) {
+        long[] smooth = new long[n];
+        smooth[0] = 1;
+        int[] pointer = new int[primes.length];
+        for (int i = 1; i < n; i++) {
+            long next = Long.MAX_VALUE;
+            for (int j = 0; j < primes.length; j++) next = Math.min(next, primes[j] * smooth[pointer[j]]);
+            smooth[i] = next;
+            for (int j = 0; j < primes.length; j++) if (primes[j] * smooth[pointer[j]] == next) pointer[j]++;
+        }
+        return (int) smooth[n - 1];
+    }
+}
+//### take-gifts-sqrt
+class Solution {
+    public int remainingGifts(int[] gifts, int k) {
+        PriorityQueue<Long> heap = new PriorityQueue<>(Collections.reverseOrder());
+        for (int g : gifts) heap.add((long) g);
+        for (int i = 0; i < k && !heap.isEmpty(); i++) {
+            long x = heap.poll();
+            long root = (long) Math.sqrt((double) x);
+            while (root * root > x) root--;
+            while ((root + 1) * (root + 1) <= x) root++;
+            heap.add(root);
+        }
+        long total = 0;
+        for (long g : heap) total += g;
+        return (int) total;
+    }
+}
+//### schedule-courses-max
+class Solution {
+    public int maxCourses(int[][] courses) {
+        int[][] sorted = courses.clone();
+        Arrays.sort(sorted, (a, b) -> Integer.compare(a[1], b[1]));
+        PriorityQueue<Integer> heap = new PriorityQueue<>(Collections.reverseOrder());
+        long total = 0;
+        for (int[] course : sorted) {
+            total += course[0];
+            heap.add(course[0]);
+            if (total > course[1]) total -= heap.poll();
+        }
+        return heap.size();
+    }
+}
+//### trapped-water-2d
+class Solution {
+    public int trappedWater2d(int[][] heights) {
+        int rows = heights.length, cols = heights[0].length;
+        boolean[][] seen = new boolean[rows][cols];
+        PriorityQueue<int[]> heap = new PriorityQueue<>((p, q) -> Integer.compare(p[0], q[0]));
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                if (r == 0 || r == rows - 1 || c == 0 || c == cols - 1) { heap.add(new int[]{heights[r][c], r, c}); seen[r][c] = true; }
+            }
+        }
+        int[] dr = {1, -1, 0, 0}, dc = {0, 0, 1, -1};
+        long total = 0;
+        while (!heap.isEmpty()) {
+            int[] top = heap.poll();
+            int h = top[0], r = top[1], c = top[2];
+            for (int d = 0; d < 4; d++) {
+                int nr = r + dr[d], nc = c + dc[d];
+                if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && !seen[nr][nc]) {
+                    seen[nr][nc] = true;
+                    total += Math.max(0, h - heights[nr][nc]);
+                    heap.add(new int[]{Math.max(h, heights[nr][nc]), nr, nc});
+                }
+            }
+        }
+        return (int) total;
+    }
+}

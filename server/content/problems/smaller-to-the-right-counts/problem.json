@@ -1,0 +1,24 @@
+{
+  "slug": "smaller-to-the-right-counts",
+  "title": "How Many Smaller Numbers Come After",
+  "concept": "sorting",
+  "difficulty": "hard",
+  "statement": "For every position `i` of `numbers`, count how many numbers to the **right** of position `i` are **strictly smaller** than `numbers[i]`. Return the counts, one per position, in order.",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "-1000000000 <= numbers[i] <= 1000000000"
+  ],
+  "signature": { "name": "count_smaller_to_right", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int[]" },
+  "examples": [
+    { "args": [[3, 7, 2, 2, 9, 1]], "expected": [3, 3, 1, 1, 1, 0], "explanation": "For the first 3 the smaller numbers to its right are 2, 2 and 1. For the first 2 only the 1 is smaller (the other 2 is equal, not smaller)." },
+    { "args": [[1, 2, 3]], "expected": [0, 0, 0], "explanation": "Nothing smaller comes later." }
+  ],
+  "edgeTests": [[[]], [[5]], [[2, 1]], [[1, 1, 1]], [[3, 2, 1]], [[4, 1, 3, 2]]],
+  "expected": { "time": "O(n log n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Comparing every pair is O(n^2). If you process the list from the RIGHT, what do you need to be able to ask about the numbers already processed?",
+    "pattern": "Go from right to left and keep a structure over the numbers seen so far that can answer 'how many are smaller than x' quickly: a Fenwick tree (binary indexed tree) over the ranks of the values, or a merge sort that counts while merging.",
+    "pseudocode": "rank every distinct value 1..m (sort the distinct values)\ntree = Fenwick tree of size m, all zero\nfor i = n - 1 down to 0:\n  r = rank(numbers[i])\n  result[i] = tree.sum(1 .. r - 1)     (how many seen values have a smaller rank)\n  tree.add(r, 1)\nreturn result",
+    "walkthrough": "The numbers to the right of position i are exactly the numbers you have already processed when you walk from the right end to the left. So you need a data structure with two operations: 'insert a value' and 'count how many inserted values are smaller than x'. Values can be huge, so first replace each value by its rank among the sorted distinct values (1 for the smallest). A Fenwick tree stores counts per rank and answers a prefix sum, and adds one, in O(log m) each, so the whole job is O(n log n). Query the prefix up to rank - 1 (strictly smaller) BEFORE inserting the current value. A merge-sort solution works too: while merging the right half into the left, the number of right-half elements that jump ahead of a left element is the count of smaller numbers to its right."
+  }
+}

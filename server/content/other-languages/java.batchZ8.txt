@@ -1,0 +1,167 @@
+//### bag-of-tokens-score
+class Solution {
+    public int bagOfTokensScore(int[] tokens, int power) {
+        int[] a = tokens.clone();
+        Arrays.sort(a);
+        int lo = 0, hi = a.length - 1, score = 0, best = 0;
+        while (lo <= hi) {
+            if (power >= a[lo]) { power -= a[lo]; lo++; score++; best = Math.max(best, score); }
+            else if (score > 0) { power += a[hi]; hi--; score--; }
+            else break;
+        }
+        return best;
+    }
+}
+//### maximum-swap-digits
+class Solution {
+    public int maximumSwapDigits(int num) {
+        char[] digits = String.valueOf(num).toCharArray();
+        int[] last = new int[10];
+        Arrays.fill(last, -1);
+        for (int i = 0; i < digits.length; i++) last[digits[i] - '0'] = i;
+        for (int i = 0; i < digits.length; i++) {
+            for (int d = 9; d > digits[i] - '0'; d--) {
+                if (last[d] > i) {
+                    char t = digits[i]; digits[i] = digits[last[d]]; digits[last[d]] = t;
+                    return Integer.parseInt(new String(digits));
+                }
+            }
+        }
+        return num;
+    }
+}
+//### consecutive-runs-split
+class Solution {
+    public boolean canSplitConsecutiveRuns(int[] numbers) {
+        Map<Long, Integer> count = new HashMap<>(), need = new HashMap<>();
+        for (int x : numbers) count.merge((long) x, 1, Integer::sum);
+        for (int xi : numbers) {
+            long x = xi;
+            if (count.get(x) == 0) continue;
+            count.merge(x, -1, Integer::sum);
+            if (need.getOrDefault(x, 0) > 0) {
+                need.merge(x, -1, Integer::sum);
+                need.merge(x + 1, 1, Integer::sum);
+            } else if (count.getOrDefault(x + 1, 0) > 0 && count.getOrDefault(x + 2, 0) > 0) {
+                count.merge(x + 1, -1, Integer::sum);
+                count.merge(x + 2, -1, Integer::sum);
+                need.merge(x + 3, 1, Integer::sum);
+            } else return false;
+        }
+        return true;
+    }
+}
+//### star-brackets-valid
+class Solution {
+    public boolean starBracketsValid(String text) {
+        int low = 0, high = 0;
+        for (char c : text.toCharArray()) {
+            if (c == '(') { low++; high++; }
+            else if (c == ')') { low--; high--; }
+            else { low--; high++; }
+            if (high < 0) return false;
+            low = Math.max(low, 0);
+        }
+        return low == 0;
+    }
+}
+//### one-change-non-decreasing
+class Solution {
+    public boolean oneChangeNonDecreasing(int[] numbers) {
+        int[] a = numbers.clone();
+        int changes = 0;
+        for (int i = 0; i + 1 < a.length; i++) {
+            if (a[i] > a[i + 1]) {
+                changes++;
+                if (changes > 1) return false;
+                if (i == 0 || a[i - 1] <= a[i + 1]) a[i] = a[i + 1];
+                else a[i + 1] = a[i];
+            }
+        }
+        return true;
+    }
+}
+//### domino-rotations-min
+class Solution {
+    private int check(int[] tops, int[] bottoms, int x) {
+        int rotateTop = 0, rotateBottom = 0;
+        for (int i = 0; i < tops.length; i++) {
+            if (tops[i] != x && bottoms[i] != x) return Integer.MAX_VALUE;
+            if (tops[i] != x) rotateTop++;
+            else if (bottoms[i] != x) rotateBottom++;
+        }
+        return Math.min(rotateTop, rotateBottom);
+    }
+
+    public int minDominoRotations(int[] tops, int[] bottoms) {
+        if (tops.length == 0) return 0;
+        int best = Math.min(check(tops, bottoms, tops[0]), check(tops, bottoms, bottoms[0]));
+        return best == Integer.MAX_VALUE ? -1 : best;
+    }
+}
+//### longest-limited-spread-run
+class Solution {
+    public int longestLimitedSpreadRun(int[] numbers, int limit) {
+        ArrayDeque<Integer> big = new ArrayDeque<>(), small = new ArrayDeque<>();
+        int left = 0, best = 0;
+        for (int right = 0; right < numbers.length; right++) {
+            int x = numbers[right];
+            while (!big.isEmpty() && numbers[big.peekLast()] <= x) big.pollLast();
+            big.addLast(right);
+            while (!small.isEmpty() && numbers[small.peekLast()] >= x) small.pollLast();
+            small.addLast(right);
+            while ((long) numbers[big.peekFirst()] - numbers[small.peekFirst()] > limit) {
+                left++;
+                if (big.peekFirst() < left) big.pollFirst();
+                if (small.peekFirst() < left) small.pollFirst();
+            }
+            best = Math.max(best, right - left + 1);
+        }
+        return best;
+    }
+}
+//### count-nice-subarrays
+class Solution {
+    public int countNiceSubarrays(int[] numbers, int k) {
+        int[] seen = new int[numbers.length + 2];
+        seen[0] = 1;
+        int odd = 0;
+        long total = 0;
+        for (int x : numbers) {
+            odd += x % 2;
+            if (odd - k >= 0) total += seen[odd - k];
+            seen[odd]++;
+        }
+        return (int) total;
+    }
+}
+//### longest-turbulent-run
+class Solution {
+    public int longestTurbulentRun(int[] numbers) {
+        if (numbers.length == 0) return 0;
+        int up = 1, down = 1, best = 1;
+        for (int i = 1; i < numbers.length; i++) {
+            if (numbers[i] > numbers[i - 1]) { int u = down + 1; down = 1; up = u; }
+            else if (numbers[i] < numbers[i - 1]) { int d = up + 1; up = 1; down = d; }
+            else { up = 1; down = 1; }
+            best = Math.max(best, Math.max(up, down));
+        }
+        return best;
+    }
+}
+//### max-erasure-value
+class Solution {
+    public int maxErasureValue(int[] numbers) {
+        Set<Integer> window = new HashSet<>();
+        int left = 0;
+        long total = 0, best = 0;
+        for (int right = 0; right < numbers.length; right++) {
+            int x = numbers[right];
+            while (window.contains(x)) { window.remove(numbers[left]); total -= numbers[left]; left++; }
+            window.add(x);
+            total += x;
+            best = Math.max(best, total);
+        }
+        return (int) best;
+    }
+}

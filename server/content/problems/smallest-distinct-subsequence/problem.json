@@ -1,0 +1,24 @@
+{
+  "slug": "smallest-distinct-subsequence",
+  "title": "Smallest Text With Every Letter Once",
+  "concept": "strings",
+  "difficulty": "hard",
+  "statement": "Find the **lexicographically smallest** subsequence of `text` that contains **every distinct letter of `text` exactly once**. (A subsequence keeps some letters of `text` in their original order. \"Lexicographically smallest\" means the usual dictionary order: compare letter by letter, and the first difference decides.)\n\nReturn it. For an empty text the answer is the empty text.",
+  "constraints": [
+    "0 <= len(text) <= 100000",
+    "text contains lowercase letters"
+  ],
+  "signature": { "name": "smallest_distinct_subsequence", "params": [{ "name": "text", "type": "string" }], "returns": "string" },
+  "examples": [
+    { "args": ["dbcadbc"], "expected": "adbc", "explanation": "The distinct letters are a, b, c, d. The only a is at position 3, so the answer starts with a, and after it only d, b, c remain in that order." },
+    { "args": ["aaaa"], "expected": "a", "explanation": "One distinct letter." }
+  ],
+  "edgeTests": [[""], ["a"], ["ab"], ["ba"], ["abcabc"], ["cbacdcbc"]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Build the answer left to right. If the new letter is smaller than the last letter you kept, when is it allowed to throw that last letter away and use it again later?",
+    "pattern": "A monotonic stack with 'last occurrence' information: pop the top while it is bigger than the new letter AND appears again later in the text; skip letters that are already on the stack.",
+    "pseudocode": "last[c] = last position of letter c; stack = []; inStack = set()\nfor i, c in text:\n  if c in inStack: continue\n  while stack and stack.top > c and last[stack.top] > i: inStack.remove(stack.pop())\n  push c; add c to inStack\nreturn the stack as text",
+    "walkthrough": "Trying every subsequence is exponential. Think greedily about each position of the answer: you want it as small as possible, but you must still be able to include every other letter later. Walk through the text and keep the answer so far on a stack. When a letter you already kept comes again, ignore it (it is used). When a new letter c comes and the top of the stack is larger than c, the top can be replaced by c if the top letter appears again LATER in the text (so you can still include it afterwards): pop it and repeat. Then push c. To know whether a letter appears later, precompute the last position of each letter. Each letter is pushed and popped at most once: O(n)."
+  }
+}

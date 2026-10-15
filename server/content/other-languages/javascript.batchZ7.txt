@@ -1,0 +1,234 @@
+//### valid-perfect-square
+function isPerfectSquare(num) {
+  let lo = 1, hi = Math.min(num, 46341);
+  while (lo <= hi) {
+    const mid = Math.floor((lo + hi) / 2), square = mid * mid;
+    if (square === num) return true;
+    if (square < num) lo = mid + 1; else hi = mid - 1;
+  }
+  return false;
+}
+//### kth-missing-positive
+function kthMissingPositive(numbers, k) {
+  let lo = 0, hi = numbers.length;
+  while (lo < hi) {
+    const mid = lo + Math.floor((hi - lo) / 2);
+    if (numbers[mid] - (mid + 1) >= k) hi = mid; else lo = mid + 1;
+  }
+  return lo + k;
+}
+//### smallest-divisor-threshold
+function smallestDivisor(numbers, threshold) {
+  let lo = 1, hi = 0;
+  for (const x of numbers) if (x > hi) hi = x;
+  while (lo < hi) {
+    const mid = lo + Math.floor((hi - lo) / 2);
+    let total = 0;
+    for (const x of numbers) total += Math.floor((x + mid - 1) / mid);
+    if (total <= threshold) hi = mid; else lo = mid + 1;
+  }
+  return lo;
+}
+//### nth-magical-number
+function nthMagicalNumber(n, a, b) {
+  const gcd = (x, y) => (y === 0 ? x : gcd(y, x % y));
+  const lcm = (a / gcd(a, b)) * b;
+  let lo = Math.min(a, b), hi = n * Math.min(a, b);
+  while (lo < hi) {
+    const mid = Math.floor((lo + hi) / 2);
+    const count = Math.floor(mid / a) + Math.floor(mid / b) - Math.floor(mid / lcm);
+    if (count >= n) hi = mid; else lo = mid + 1;
+  }
+  return lo % 1000000007;
+}
+//### kth-in-multiplication-table
+function kthInMultiplicationTable(m, n, k) {
+  let lo = 1, hi = m * n;
+  while (lo < hi) {
+    const mid = Math.floor((lo + hi) / 2);
+    let count = 0;
+    for (let i = 1; i <= m; i++) count += Math.min(n, Math.floor(mid / i));
+    if (count >= k) hi = mid; else lo = mid + 1;
+  }
+  return lo;
+}
+//### merge-sorted-rows
+function heapPush(a, x, less) {
+  a.push(x);
+  let i = a.length - 1;
+  while (i > 0) {
+    const p = (i - 1) >> 1;
+    if (less(a[i], a[p])) { const t = a[i]; a[i] = a[p]; a[p] = t; i = p; } else break;
+  }
+}
+function heapPop(a, less) {
+  const top = a[0];
+  const last = a.pop();
+  if (a.length > 0) {
+    a[0] = last;
+    let i = 0;
+    for (;;) {
+      const l = 2 * i + 1, r = l + 1;
+      let m = i;
+      if (l < a.length && less(a[l], a[m])) m = l;
+      if (r < a.length && less(a[r], a[m])) m = r;
+      if (m === i) break;
+      const t = a[i]; a[i] = a[m]; a[m] = t;
+      i = m;
+    }
+  }
+  return top;
+}
+function mergeSortedRows(rows) {
+  const less = (p, q) => p[0] < q[0];
+  const heap = [], out = [];
+  for (let r = 0; r < rows.length; r++) if (rows[r].length > 0) heapPush(heap, [rows[r][0], r, 0], less);
+  while (heap.length > 0) {
+    const [value, r, c] = heapPop(heap, less);
+    out.push(value);
+    if (c + 1 < rows[r].length) heapPush(heap, [rows[r][c + 1], r, c + 1], less);
+  }
+  return out;
+}
+//### super-smooth-number
+function superSmoothNumber(n, primes) {
+  const smooth = [1], pointer = new Array(primes.length).fill(0);
+  for (let i = 1; i < n; i++) {
+    let next = Infinity;
+    for (let j = 0; j < primes.length; j++) next = Math.min(next, primes[j] * smooth[pointer[j]]);
+    smooth.push(next);
+    for (let j = 0; j < primes.length; j++) if (primes[j] * smooth[pointer[j]] === next) pointer[j]++;
+  }
+  return smooth[n - 1];
+}
+//### take-gifts-sqrt
+function heapPush(a, x, less) {
+  a.push(x);
+  let i = a.length - 1;
+  while (i > 0) {
+    const p = (i - 1) >> 1;
+    if (less(a[i], a[p])) { const t = a[i]; a[i] = a[p]; a[p] = t; i = p; } else break;
+  }
+}
+function heapPop(a, less) {
+  const top = a[0];
+  const last = a.pop();
+  if (a.length > 0) {
+    a[0] = last;
+    let i = 0;
+    for (;;) {
+      const l = 2 * i + 1, r = l + 1;
+      let m = i;
+      if (l < a.length && less(a[l], a[m])) m = l;
+      if (r < a.length && less(a[r], a[m])) m = r;
+      if (m === i) break;
+      const t = a[i]; a[i] = a[m]; a[m] = t;
+      i = m;
+    }
+  }
+  return top;
+}
+function remainingGifts(gifts, k) {
+  const bigger = (p, q) => p > q;
+  const heap = [];
+  for (const g of gifts) heapPush(heap, g, bigger);
+  for (let i = 0; i < k && heap.length > 0; i++) {
+    const x = heapPop(heap, bigger);
+    heapPush(heap, Math.floor(Math.sqrt(x)), bigger);
+  }
+  let total = 0;
+  for (const g of heap) total += g;
+  return total;
+}
+//### schedule-courses-max
+function heapPush(a, x, less) {
+  a.push(x);
+  let i = a.length - 1;
+  while (i > 0) {
+    const p = (i - 1) >> 1;
+    if (less(a[i], a[p])) { const t = a[i]; a[i] = a[p]; a[p] = t; i = p; } else break;
+  }
+}
+function heapPop(a, less) {
+  const top = a[0];
+  const last = a.pop();
+  if (a.length > 0) {
+    a[0] = last;
+    let i = 0;
+    for (;;) {
+      const l = 2 * i + 1, r = l + 1;
+      let m = i;
+      if (l < a.length && less(a[l], a[m])) m = l;
+      if (r < a.length && less(a[r], a[m])) m = r;
+      if (m === i) break;
+      const t = a[i]; a[i] = a[m]; a[m] = t;
+      i = m;
+    }
+  }
+  return top;
+}
+function maxCourses(courses) {
+  const sorted = courses.slice().sort((a, b) => a[1] - b[1]);
+  const bigger = (p, q) => p > q;
+  const heap = [];
+  let total = 0;
+  for (const [duration, last] of sorted) {
+    total += duration;
+    heapPush(heap, duration, bigger);
+    if (total > last) total -= heapPop(heap, bigger);
+  }
+  return heap.length;
+}
+//### trapped-water-2d
+function heapPush(a, x, less) {
+  a.push(x);
+  let i = a.length - 1;
+  while (i > 0) {
+    const p = (i - 1) >> 1;
+    if (less(a[i], a[p])) { const t = a[i]; a[i] = a[p]; a[p] = t; i = p; } else break;
+  }
+}
+function heapPop(a, less) {
+  const top = a[0];
+  const last = a.pop();
+  if (a.length > 0) {
+    a[0] = last;
+    let i = 0;
+    for (;;) {
+      const l = 2 * i + 1, r = l + 1;
+      let m = i;
+      if (l < a.length && less(a[l], a[m])) m = l;
+      if (r < a.length && less(a[r], a[m])) m = r;
+      if (m === i) break;
+      const t = a[i]; a[i] = a[m]; a[m] = t;
+      i = m;
+    }
+  }
+  return top;
+}
+function trappedWater2d(heights) {
+  const rows = heights.length, cols = heights[0].length;
+  const seen = [];
+  for (let r = 0; r < rows; r++) seen.push(new Array(cols).fill(false));
+  const less = (p, q) => p[0] < q[0];
+  const heap = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (r === 0 || r === rows - 1 || c === 0 || c === cols - 1) { heapPush(heap, [heights[r][c], r, c], less); seen[r][c] = true; }
+    }
+  }
+  const dr = [1, -1, 0, 0], dc = [0, 0, 1, -1];
+  let total = 0;
+  while (heap.length > 0) {
+    const [h, r, c] = heapPop(heap, less);
+    for (let d = 0; d < 4; d++) {
+      const nr = r + dr[d], nc = c + dc[d];
+      if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && !seen[nr][nc]) {
+        seen[nr][nc] = true;
+        total += Math.max(0, h - heights[nr][nc]);
+        heapPush(heap, [Math.max(h, heights[nr][nc]), nr, nc], less);
+      }
+    }
+  }
+  return total;
+}

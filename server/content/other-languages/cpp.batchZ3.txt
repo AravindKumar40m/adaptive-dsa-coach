@@ -1,0 +1,153 @@
+//### power-of-two-pair-count
+int power_of_two_pair_count(vector<int>& numbers) {
+    unordered_map<int, int> seen;
+    long long total = 0;
+    for (int x : numbers) {
+        for (int p = 1; p <= 2097152; p *= 2) {
+            int need = p - x;
+            if (need >= 0) {
+                auto it = seen.find(need);
+                if (it != seen.end()) total += it->second;
+            }
+        }
+        seen[x]++;
+    }
+    return (int) total;
+}
+//### bulls-and-cows-score
+string score_guess(string secret, string guess) {
+    int bulls = 0;
+    int secret_count[10] = {0}, guess_count[10] = {0};
+    for (size_t i = 0; i < secret.size(); i++) {
+        if (secret[i] == guess[i]) bulls++;
+        else { secret_count[secret[i] - '0']++; guess_count[guess[i] - '0']++; }
+    }
+    int cows = 0;
+    for (int d = 0; d < 10; d++) cows += min(secret_count[d], guess_count[d]);
+    return to_string(bulls) + "A" + to_string(cows) + "B";
+}
+//### number-of-boomerangs
+int count_boomerangs(vector<vector<int>>& points) {
+    long long total = 0;
+    int n = (int) points.size();
+    for (int i = 0; i < n; i++) {
+        unordered_map<long long, int> counts;
+        for (int j = 0; j < n; j++) {
+            if (i == j) continue;
+            long long dx = points[i][0] - points[j][0], dy = points[i][1] - points[j][1];
+            counts[dx * dx + dy * dy]++;
+        }
+        for (auto& entry : counts) total += (long long) entry.second * (entry.second - 1);
+    }
+    return (int) total;
+}
+//### longest-arithmetic-run
+int longest_arithmetic_run(vector<int>& numbers) {
+    int n = (int) numbers.size(), best = min(n, 2);
+    vector<unordered_map<int, int>> table(n);
+    for (int j = 0; j < n; j++) {
+        for (int i = 0; i < j; i++) {
+            int d = numbers[j] - numbers[i];
+            auto it = table[i].find(d);
+            int length = (it == table[i].end() ? 1 : it->second) + 1;
+            table[j][d] = length;
+            best = max(best, length);
+        }
+    }
+    return best;
+}
+//### min-index-sum-common
+int min_index_sum_common(vector<int>& first, vector<int>& second) {
+    unordered_map<int, int> position;
+    for (int i = 0; i < (int) first.size(); i++) position[first[i]] = i;
+    int best = -1;
+    for (int j = 0; j < (int) second.size(); j++) {
+        auto it = position.find(second[j]);
+        if (it != position.end()) {
+            int s = it->second + j;
+            if (best == -1 || s < best) best = s;
+        }
+    }
+    return best;
+}
+//### reverse-words-in-text
+string reverse_words(string text) {
+    vector<string> words;
+    string current;
+    for (char ch : text) {
+        if (ch == ' ') {
+            if (!current.empty()) { words.push_back(current); current.clear(); }
+        } else current += ch;
+    }
+    if (!current.empty()) words.push_back(current);
+    string out;
+    for (int i = (int) words.size() - 1; i >= 0; i--) {
+        if (!out.empty()) out += ' ';
+        out += words[i];
+    }
+    return out;
+}
+//### roman-to-integer
+int roman_value_of(char c) {
+    switch (c) {
+        case 'I': return 1;
+        case 'V': return 5;
+        case 'X': return 10;
+        case 'L': return 50;
+        case 'C': return 100;
+        case 'D': return 500;
+        default: return 1000;
+    }
+}
+
+int roman_to_int(string numeral) {
+    int total = 0;
+    for (size_t i = 0; i < numeral.size(); i++) {
+        if (i + 1 < numeral.size() && roman_value_of(numeral[i]) < roman_value_of(numeral[i + 1])) total -= roman_value_of(numeral[i]);
+        else total += roman_value_of(numeral[i]);
+    }
+    return total;
+}
+//### integer-to-roman
+string int_to_roman(int number) {
+    int values[13] = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+    const char* symbols[13] = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+    string out;
+    for (int i = 0; i < 13; i++) {
+        while (number >= values[i]) { out += symbols[i]; number -= values[i]; }
+    }
+    return out;
+}
+//### add-binary-strings
+string add_binary(string a, string b) {
+    int i = (int) a.size() - 1, j = (int) b.size() - 1, carry = 0;
+    string digits;
+    while (i >= 0 || j >= 0 || carry > 0) {
+        int total = carry;
+        if (i >= 0) total += a[i--] - '0';
+        if (j >= 0) total += b[j--] - '0';
+        digits += (char) ('0' + total % 2);
+        carry = total / 2;
+    }
+    reverse(digits.begin(), digits.end());
+    size_t start = 0;
+    while (start + 1 < digits.size() && digits[start] == '0') start++;
+    return digits.substr(start);
+}
+//### count-and-say-term
+string count_and_say(int n) {
+    string text = "1";
+    for (int step = 1; step < n; step++) {
+        string next;
+        size_t i = 0;
+        while (i < text.size()) {
+            size_t j = i;
+            while (j < text.size() && text[j] == text[i]) j++;
+            next += to_string(j - i);
+            next += text[i];
+            i = j;
+        }
+        text = next;
+    }
+    return text;
+}

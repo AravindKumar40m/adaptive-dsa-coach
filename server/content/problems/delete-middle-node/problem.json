@@ -1,0 +1,24 @@
+{
+  "slug": "delete-middle-node",
+  "title": "Delete the Middle of a List",
+  "concept": "linked_list",
+  "difficulty": "easy",
+  "statement": "`head` is the head of a linked list with `n` nodes. Delete the **middle node**, which is the node at position `floor(n / 2)` counting from `0` (for 6 nodes it is the 4th node; for 5 nodes it is the 3rd). Return the head of the list. A list with one node becomes empty; an empty list stays empty.",
+  "constraints": [
+    "0 <= number of nodes <= 100000",
+    "-1000000000 <= node value <= 1000000000"
+  ],
+  "signature": { "name": "delete_middle", "params": [{ "name": "head", "type": "ListNode" }], "returns": "ListNode" },
+  "examples": [
+    { "args": [[4, 8, 15, 16, 23, 42]], "expected": [4, 8, 15, 23, 42], "explanation": "n = 6, so position 3 (the value 16) is removed." },
+    { "args": [[9]], "expected": [], "explanation": "The only node is the middle one." }
+  ],
+  "edgeTests": [[[]], [[1, 2]], [[1, 2, 3]], [[1, 2, 3, 4]], [[1, 2, 3, 4, 5]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "You do not know n in advance. If one pointer moves twice as fast as another, where is the slow one when the fast one reaches the end?",
+    "pattern": "Slow and fast pointers, keeping a pointer to the node BEFORE the slow one so that you can unlink it.",
+    "pseudocode": "if head is empty or has one node: return empty\nprev = none; slow = head; fast = head\nwhile fast and fast.next: prev = slow; slow = slow.next; fast = fast.next.next\nprev.next = slow.next\nreturn head",
+    "walkthrough": "Counting the nodes first and then walking to the middle takes two passes. With two pointers one pass is enough: `fast` moves two steps for each step of `slow`, so when fast reaches the end, slow is at position floor(n / 2), the middle in the problem's sense. To delete it you need the node before it, so remember it (`prev`) as slow moves. Then prev.next = slow.next. A list with one node is a special case (there is no node before the middle): the result is empty. O(n) time, O(1) memory."
+  }
+}

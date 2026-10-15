@@ -1,0 +1,24 @@
+{
+  "slug": "reverse-vowels",
+  "title": "Reverse Only the Vowels",
+  "concept": "two_pointers",
+  "difficulty": "easy",
+  "statement": "In `text`, reverse the **order of the vowels** and leave every other character where it is. The vowels are `a`, `e`, `i`, `o`, `u` in lower case and in upper case. Return the new text.",
+  "constraints": [
+    "0 <= len(text) <= 100000",
+    "text contains letters and spaces"
+  ],
+  "signature": { "name": "reverse_vowels", "params": [{ "name": "text", "type": "string" }], "returns": "string" },
+  "examples": [
+    { "args": ["education"], "expected": "odicatuen", "explanation": "The vowels, in order, are e, u, a, i, o. Reversed: o, i, a, u, e. They are put back into the vowel positions, the consonants stay." },
+    { "args": ["rhythm"], "expected": "rhythm", "explanation": "There is no vowel." }
+  ],
+  "edgeTests": [[""], ["a"], ["aei"], ["AaEe"], ["queue"], ["b c d"]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Swapping the first vowel with the last, the second with the second last, and so on reverses their order. How do you find the vowels to swap?",
+    "pattern": "Two pointers from both ends: move the left one right until it is on a vowel, move the right one left until it is on a vowel, swap, and continue.",
+    "pseudocode": "chars = the letters of text; left = 0; right = n - 1\nwhile left < right:\n  if chars[left] is not a vowel: left += 1\n  elif chars[right] is not a vowel: right -= 1\n  else: swap chars[left] and chars[right]; left += 1; right -= 1\nreturn the chars joined",
+    "walkthrough": "Collecting the vowels in a list, reversing the list and writing them back also works (two passes). With two pointers you do it in one pass and no extra list: the left pointer stops at the next vowel from the left, the right pointer at the next vowel from the right; swapping those two puts the first vowel where the last one was and the other way round. Then both pointers move on. A vowel in the middle that has no partner stays. Remember that capital letters count as vowels too (A, E, I, O, U), and the capital stays a capital because the characters themselves are swapped."
+  }
+}

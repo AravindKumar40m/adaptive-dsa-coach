@@ -1,0 +1,25 @@
+{
+  "slug": "take-gifts-sqrt",
+  "title": "Always Take From the Biggest Pile",
+  "concept": "heaps",
+  "difficulty": "easy",
+  "statement": "`gifts[i]` is the number of gifts in pile `i`. Every second you pick the pile with the **most** gifts (any one of them if there is a tie) and take away all but `floor(sqrt(pile))` gifts: the pile then holds `floor(sqrt(pile))` gifts (the square root rounded down).\n\nAfter `k` seconds, return the **total number of gifts** left in all piles.",
+  "constraints": [
+    "0 <= len(gifts) <= 1000",
+    "1 <= gifts[i] <= 1000000000",
+    "0 <= k <= 1000"
+  ],
+  "signature": { "name": "remaining_gifts", "params": [{ "name": "gifts", "type": "int[]" }, { "name": "k", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[36, 100, 16], 3], "expected": 20, "explanation": "100 becomes 10, then 36 becomes 6, then 16 becomes 4: piles 6, 10, 4 are left: 20." },
+    { "args": [[1, 1], 5], "expected": 2, "explanation": "A pile of 1 stays 1, so nothing changes." }
+  ],
+  "edgeTests": [[[], 3], [[4], 0], [[10], 1], [[2, 3, 5], 10], [[1000000000, 1000000000], 2]],
+  "expected": { "time": "O(n + k log n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "After you shrink the biggest pile it may no longer be the biggest. How do you find the biggest pile again, quickly?",
+    "pattern": "A max-heap of the piles: pop the largest, push its square root (rounded down), repeat k times; the answer is the sum of what is left in the heap.",
+    "pseudocode": "heap = max-heap of gifts\nrepeat k times: x = pop the largest; push floor(sqrt(x))\nreturn the sum of the heap",
+    "walkthrough": "Searching all piles for the biggest in each of the k seconds costs O(n * k), which is fine for these limits, but a max-heap shows the standard tool: it gives the largest element in O(log n) and lets you put the shrunken pile back in O(log n). Do that k times and add up the remaining piles. A pile of 1 stays at 1 forever, so when the largest pile is 1 you could stop early. Take the integer square root carefully: floor(sqrt(10)) is 3."
+  }
+}

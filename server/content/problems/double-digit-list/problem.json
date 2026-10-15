@@ -1,0 +1,24 @@
+{
+  "slug": "double-digit-list",
+  "title": "Double a Number Stored in a List",
+  "concept": "linked_list",
+  "difficulty": "medium",
+  "statement": "A non-negative whole number is stored in a linked list, **one digit per node, most significant digit first** (`[1, 8, 9]` is the number 189). The number has no leading zeros, except that zero itself is stored as `[0]`.\n\nReturn a list in the same format that holds **twice** the number.",
+  "constraints": [
+    "1 <= number of nodes <= 100000",
+    "every node is a digit 0 to 9; no leading zero unless the list is [0]"
+  ],
+  "signature": { "name": "double_digit_list", "params": [{ "name": "head", "type": "ListNode" }], "returns": "ListNode" },
+  "examples": [
+    { "args": [[1, 8, 9]], "expected": [3, 7, 8], "explanation": "189 * 2 = 378." },
+    { "args": [[9, 9]], "expected": [1, 9, 8], "explanation": "99 * 2 = 198: the result has one more digit." }
+  ],
+  "edgeTests": [[[0]], [[5]], [[4, 9, 9]], [[1, 0, 0]], [[5, 0, 0, 0]]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Doubling is easiest from the least significant digit, because the carry moves to the left. But the list starts at the most significant digit. How can you work from the end of a one-way list?",
+    "pattern": "Collect the digits, double them from the last digit to the first with a carry, put a leading 1 when a carry is left, and build the result list. (Or reverse the list, double with carry, reverse again.)",
+    "pseudocode": "digits = values of the list in order\ncarry = 0; for i from the last to the first: v = digits[i] * 2 + carry; digits[i] = v mod 10; carry = v div 10\nif carry > 0: put carry in front\nbuild a list from digits",
+    "walkthrough": "Turning the list into a built-in integer fails for 100,000 digits in most languages. Instead do school multiplication by 2. A carry can only be 0 or 1 (digit * 2 + carry is at most 19). Because the carry travels from right to left, first copy the digits into an array, or reverse the list in place; then go from the last digit to the first, writing v mod 10 and carrying v div 10. If a carry remains after the first digit, the result has one more digit: a leading 1. Finally build (or relink) the list in the right order. Another way is recursion (the call for the next node returns the carry), which is short but uses the call stack for long lists."
+  }
+}

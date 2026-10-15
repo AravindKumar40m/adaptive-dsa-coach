@@ -1,0 +1,24 @@
+{
+  "slug": "increasing-triplet-exists",
+  "title": "Is There a Rising Triple",
+  "concept": "arrays",
+  "difficulty": "medium",
+  "statement": "Return `true` if there are three positions `i < j < k` (not necessarily next to each other) with `numbers[i] < numbers[j] < numbers[k]`, otherwise `false`. The inequalities must be strict.",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "-1000000000 <= numbers[i] <= 1000000000"
+  ],
+  "signature": { "name": "has_increasing_triplet", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "bool" },
+  "examples": [
+    { "args": [[4, 1, 5, 2, 6]], "expected": true, "explanation": "1 < 2 < 6 (positions 1, 3, 4)." },
+    { "args": [[5, 4, 3, 2, 1]], "expected": false, "explanation": "The list only goes down." }
+  ],
+  "edgeTests": [[[]], [[1, 2]], [[1, 2, 3]], [[2, 1, 5, 0, 4, 6]], [[1, 1, 1]], [[3, 2, 1, 2, 1, 2]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "You only need to remember two things while scanning: the smallest number so far, and the smallest 'second number' of a rising pair so far. Why is that enough?",
+    "pattern": "Keep `first` (smallest value seen) and `second` (smallest value that has a smaller value before it); the first number bigger than `second` completes a triple.",
+    "pseudocode": "first = second = infinity\nfor x in numbers:\n  if x <= first: first = x\n  elif x <= second: second = x\n  else: return true\nreturn false",
+    "walkthrough": "Checking all triples is O(n^3), and checking each middle element against the best left and right neighbours is O(n) extra memory. A single pass works with two variables. `first` is the smallest number so far. `second` is the smallest number so far that has something smaller before it, i.e. the best end of a rising pair. A new number x that is not larger than `first` becomes the new `first` (it starts a better pair later). Otherwise, if x is not larger than `second`, it gives a rising pair with a smaller end: it becomes the new `second`. Otherwise x is larger than a number that is larger than something earlier: a rising triple exists. Note that `first` may be updated after `second` was set; this is fine because `second` still proves that a pair exists before it."
+  }
+}

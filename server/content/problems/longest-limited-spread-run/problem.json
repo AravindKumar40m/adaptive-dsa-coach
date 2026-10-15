@@ -1,0 +1,25 @@
+{
+  "slug": "longest-limited-spread-run",
+  "title": "Longest Stretch With a Small Spread",
+  "concept": "sliding_window",
+  "difficulty": "hard",
+  "statement": "The **spread** of a stretch of numbers is its largest number minus its smallest number. Find the **longest contiguous stretch** of `numbers` whose spread is **at most `limit`**, and return its **length** (`0` for an empty list).",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "1 <= numbers[i] <= 1000000000",
+    "0 <= limit <= 1000000000"
+  ],
+  "signature": { "name": "longest_limited_spread_run", "params": [{ "name": "numbers", "type": "int[]" }, { "name": "limit", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[10, 1, 2, 4, 7, 2], 5], "expected": 4, "explanation": "The stretch 2, 4, 7, 2 has largest 7 and smallest 2: spread 5. Adding the 1 before it would give spread 6." },
+    { "args": [[5, 5, 5], 0], "expected": 3, "explanation": "All numbers are equal: spread 0." }
+  ],
+  "edgeTests": [[[], 3], [[7], 0], [[1, 5, 1], 0], [[1, 2, 3, 4, 5], 1], [[1, 2, 3, 4, 5], 10], [[4, 2, 2, 2, 4, 4, 2, 2], 0]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "A window is good while max - min <= limit. To know the max and the min of the window after every step you could scan it, but that is slow. What structure gives the current max and min quickly while the window slides?",
+    "pattern": "Sliding window with two monotonic deques: one keeps the window's candidates for the maximum (decreasing values), the other for the minimum (increasing values); shrink the window from the left while the spread is too large.",
+    "pseudocode": "for right in 0 .. n - 1:\n  while maxDeque not empty and numbers[maxDeque.back] <= numbers[right]: pop back; push right on maxDeque\n  while minDeque not empty and numbers[minDeque.back] >= numbers[right]: pop back; push right on minDeque\n  while numbers[maxDeque.front] - numbers[minDeque.front] > limit:\n    left += 1; drop the front of a deque if its index is now < left\n  best = max(best, right - left + 1)",
+    "walkthrough": "Checking every stretch with a running max and min costs O(n^2). The window property is monotone (a part of a good window is good), so a two-pointer window works if the max and min can be maintained cheaply. A monotonic deque holds indices whose values are in decreasing order (for the max) or increasing order (for the min): when a new number arrives, numbers that can never again be the max (they are smaller and older) are removed from the back; the front of the deque is the current maximum. When the left end moves past an index at the front of a deque, that index is removed. Every index enters and leaves each deque once: O(n)."
+  }
+}

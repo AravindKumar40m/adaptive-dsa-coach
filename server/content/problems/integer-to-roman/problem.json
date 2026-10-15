@@ -1,0 +1,23 @@
+{
+  "slug": "integer-to-roman",
+  "title": "Write a Number as a Roman Numeral",
+  "concept": "strings",
+  "difficulty": "medium",
+  "statement": "Roman numerals use `I`=1, `V`=5, `X`=10, `L`=50, `C`=100, `D`=500, `M`=1000, written from the largest to the smallest symbol, with these **subtractive forms** used instead of four equal symbols in a row: `IV` = 4, `IX` = 9, `XL` = 40, `XC` = 90, `CD` = 400, `CM` = 900.\n\nGiven a whole number from 1 to 3999, return its Roman numeral.",
+  "constraints": [
+    "1 <= number <= 3999"
+  ],
+  "signature": { "name": "int_to_roman", "params": [{ "name": "number", "type": "int" }], "returns": "string" },
+  "examples": [
+    { "args": [2024], "expected": "MMXXIV", "explanation": "2000 is MM, 20 is XX and 4 is IV." },
+    { "args": [444], "expected": "CDXLIV", "explanation": "400 = CD, 40 = XL, 4 = IV." }
+  ],
+  "edgeTests": [[1], [4], [9], [40], [90], [400], [900], [3999], [3888]],
+  "expected": { "time": "O(1)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Write the number the way a person would: the thousands, then the hundreds, then the tens, then the ones. What do the tens digit 4 or 9 look like?",
+    "pattern": "Greedy with a table of the 13 values 1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1 and their symbols: repeatedly take the largest value that still fits.",
+    "pseudocode": "table = [(1000, M), (900, CM), (500, D), (400, CD), (100, C), (90, XC), (50, L), (40, XL), (10, X), (9, IX), (5, V), (4, IV), (1, I)]\nresult = empty\nfor (value, symbol) in table:\n  while number >= value: append symbol; number -= value\nreturn result",
+    "walkthrough": "Put the subtractive forms into the table next to the plain symbols, in decreasing order of value. Then the greedy rule 'take the biggest value that still fits' produces the correct numeral: for 444 it takes 400 (CD), then 40 (XL), then 4 (IV). Without the special rows you would write 4 as IIII, which is not allowed. The loop runs a bounded number of times (at most about 15 symbols for any number up to 3999), so it is O(1)."
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "count-nice-subarrays",
+  "title": "Stretches With Exactly K Odd Numbers",
+  "concept": "sliding_window",
+  "difficulty": "medium",
+  "statement": "Count the **contiguous stretches** of `numbers` that contain **exactly `k` odd numbers**. Stretches at different positions are counted separately.",
+  "constraints": [
+    "0 <= len(numbers) <= 50000",
+    "1 <= numbers[i] <= 1000000",
+    "1 <= k <= 50000"
+  ],
+  "signature": { "name": "count_nice_subarrays", "params": [{ "name": "numbers", "type": "int[]" }, { "name": "k", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[2, 1, 4, 3, 6, 1], 2], "expected": 6, "explanation": "The odd numbers are at positions 1, 3 and 5. Stretches with exactly two odds use the odds (1, 3): 2 * 2 = 4 ways to pick the ends, or (3, 5): 2 * 1 = 2 ways: 6 in total." },
+    { "args": [[2, 4, 6], 1], "expected": 0, "explanation": "There is no odd number." }
+  ],
+  "edgeTests": [[[], 1], [[1], 1], [[1, 1, 1], 2], [[2, 2, 2, 2], 1], [[1, 2, 1, 2, 1], 2], [[1, 1, 1, 1], 4]],
+  "expected": { "time": "O(n)", "space": "O(n)" },
+  "hints": {
+    "nudge": "Only the odd numbers matter: replace every number by 1 (odd) or 0 (even). Now you want the number of stretches whose sum is exactly k. What do prefix sums say about that?",
+    "pattern": "Prefix counts of odd numbers: a stretch from i to j has exactly k odds when prefix[j] - prefix[i - 1] == k; keep a table of how many times each prefix count occurred and add the count of (current - k) for every position.",
+    "pseudocode": "seen[0] = 1; odd = 0; total = 0\nfor x in numbers:\n  odd += x mod 2\n  total += seen[odd - k] (0 if odd - k < 0)\n  seen[odd] += 1\nreturn total",
+    "walkthrough": "Checking every stretch and counting its odd numbers is O(n^2). Define prefix[i] as the number of odd numbers among the first i numbers. A stretch (a, b] holds exactly k odd numbers when prefix[b] - prefix[a] == k, so for every end b you count the earlier positions a whose prefix equals prefix[b] - k. A table indexed by the prefix value (0 to n) stores how many positions had each value so far (start with seen[0] = 1 for the empty prefix). This is the same idea as 'subarrays with a given sum' and takes one pass. The answer can reach about 1.25 * 10^9, which fits in a 32-bit integer."
+  }
+}

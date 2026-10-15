@@ -1,0 +1,25 @@
+{
+  "slug": "nodes-at-distance-k",
+  "title": "How Many Nodes Are K Steps Away",
+  "concept": "trees",
+  "difficulty": "hard",
+  "statement": "All node values of a binary tree are **different**. `target` is the value of one node in the tree. The **distance** between two nodes is the number of edges on the path between them; the path may go **up** to a parent as well as down to children.\n\nReturn the number of nodes whose distance from the target node is **exactly `k`**.",
+  "constraints": [
+    "1 <= number of nodes <= 500",
+    "values are different integers between 0 and 100000; `target` is the value of a node in the tree",
+    "0 <= k <= 1000"
+  ],
+  "signature": { "name": "count_nodes_at_distance", "params": [{ "name": "root", "type": "TreeNode" }, { "name": "target", "type": "int" }, { "name": "k", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 2, 3, 4, 5, 6, 7], 4, 4], "expected": 2, "explanation": "From 4 the path 4, 2, 1, 3, 6 (or 7) has 4 edges: the nodes 6 and 7." },
+    { "args": [[1, 2, 3, 4, 5, 6, 7], 1, 1], "expected": 2, "explanation": "The children of the root: 2 and 3." }
+  ],
+  "edgeTests": [[[1], 1, 0], [[1], 1, 1], [[1, 2], 2, 1], [[1, 2, 3], 2, 2], [[5, 3, 8, 1, 4, 7, 9], 3, 3]],
+  "expected": { "time": "O(n)", "space": "O(h)" },
+  "hints": {
+    "nudge": "From the target you can walk DOWN easily, but a tree has no link to the parent. Which nodes above the target would you need to remember, and what is the distance to them?",
+    "pattern": "Either build parent links (or an undirected graph) and run a breadth-first search for k steps from the target; or a single recursion that returns the distance to the target and counts nodes in the 'other side' subtrees at the remaining distance.",
+    "pseudocode": "BFS version: parent[node] = its parent; queue = [target node]; repeat k times: replace the queue by all unvisited neighbours (left, right, parent); return the size of the queue\nRecursive version: go(node) returns the distance from node to the target if the target is in its subtree, else -1; on the way up count nodes of the opposite subtree at depth k - distance - 1",
+    "walkthrough": "Treat the tree as an undirected graph: every node is connected to its two children and its parent. Record the parent of each node in one traversal, locate the target node, then do a breadth-first search from the target for exactly k rounds, never visiting a node twice; the nodes in the queue after k rounds are exactly the nodes at distance k. In the recursive alternative, every node that has the target in its subtree at distance d from it (d < k) can reach nodes in its OTHER child's subtree at depth k - d - 1 below that child; the node itself is at distance k when d = k; and nodes below the target at depth k are counted when the target is found. Both versions visit each node a constant number of times: O(n)."
+  }
+}

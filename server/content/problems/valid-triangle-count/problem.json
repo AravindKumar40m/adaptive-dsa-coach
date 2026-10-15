@@ -1,0 +1,24 @@
+{
+  "slug": "valid-triangle-count",
+  "title": "How Many Triangles Can You Build",
+  "concept": "two_pointers",
+  "difficulty": "medium",
+  "statement": "`sides` lists the lengths of sticks. Count the **triples of different sticks** (different positions in the list) that can be the three sides of a triangle with a **positive area**: the sum of any two lengths must be **strictly greater** than the third.\n\nTwo triples are different if they use different positions, even when the lengths are equal.",
+  "constraints": [
+    "0 <= len(sides) <= 1000",
+    "0 <= sides[i] <= 1000"
+  ],
+  "signature": { "name": "count_valid_triangles", "params": [{ "name": "sides", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[4, 6, 3, 7]], "expected": 3, "explanation": "Valid: (3, 4, 6), (3, 6, 7) and (4, 6, 7). (3, 4, 7) fails because 3 + 4 = 7 is not greater than 7." },
+    { "args": [[1, 2, 10]], "expected": 0, "explanation": "1 + 2 is less than 10." }
+  ],
+  "edgeTests": [[[]], [[1]], [[1, 1, 1]], [[0, 0, 0]], [[2, 2, 3, 4]], [[5, 5, 5, 5, 5]], [[1, 2, 3, 4, 5, 6]]],
+  "expected": { "time": "O(n^2)", "space": "O(1) besides sorting" },
+  "hints": {
+    "nudge": "For three lengths a <= b <= c only ONE of the three conditions can fail. Which one? That reduces the check to a single comparison.",
+    "pattern": "Sort the lengths. Fix the longest side c (by position, scanning from the end) and use two pointers on the part before it: if a + b > c, every stick between a's position and b's position works with b.",
+    "pseudocode": "sort sides\ncount = 0\nfor k = n - 1 down to 2:\n  i = 0; j = k - 1\n  while i < j:\n    if sides[i] + sides[j] > sides[k]: count += j - i; j -= 1\n    else: i += 1\nreturn count",
+    "walkthrough": "Testing all triples is O(n^3). After sorting, for a triple a <= b <= c the conditions a + c > b and b + c > a hold automatically (c is at least as long as b and a), so only a + b > c has to be checked. Fix the longest stick c at position k and look for pairs (i, j) with i < j < k and sides[i] + sides[j] > sides[k]. Put one pointer at the start (i) and one just before k (j). If sides[i] + sides[j] > c then every position from i to j - 1 also works together with j (they are at least as long as sides[i]), which gives j - i triangles; then move j left. Otherwise i is too short for j: move i right. Each k costs O(k), the total is O(n^2). Zero-length sticks never help because a + b > c needs c < a + b."
+  }
+}

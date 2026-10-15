@@ -1,0 +1,24 @@
+{
+  "slug": "island-max-area",
+  "title": "The Biggest Island",
+  "concept": "graphs",
+  "difficulty": "easy",
+  "statement": "`grid` is a map of `1` (land) and `0` (water). An **island** is a group of land cells connected through their **sides** (up, down, left, right). The **area** of an island is the number of cells in it.\n\nReturn the **largest area** of any island, or `0` if there is no land.",
+  "constraints": [
+    "1 <= rows, columns <= 300",
+    "grid[r][c] is 0 or 1"
+  ],
+  "signature": { "name": "island_max_area", "params": [{ "name": "grid", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [[[1, 1, 0], [0, 1, 0], [1, 0, 1]]], "expected": 3, "explanation": "The three connected cells at the top left form the biggest island; the two cells in the bottom row are separate single-cell islands." },
+    { "args": [[[0, 0]]], "expected": 0, "explanation": "No land." }
+  ],
+  "edgeTests": [[[[0]]], [[[1]]], [[[1, 1], [1, 1]]], [[[1, 0, 1], [0, 1, 0], [1, 0, 1]]], [[[1, 1, 1, 1]]], [[[1], [1], [0], [1]]]],
+  "expected": { "time": "O(rows * columns)", "space": "O(rows * columns)" },
+  "hints": {
+    "nudge": "Start at one land cell and spread to all land cells you can reach. How do you make sure you do not count a cell twice?",
+    "pattern": "Flood fill: visit every land cell once; when you meet an unvisited land cell, spread (depth-first with a stack, or breadth-first) and count the cells of that island; keep the largest count.",
+    "pseudocode": "best = 0\nfor each cell: if it is land and not visited:\n  size = 0; stack = [cell]; mark it visited\n  while stack: pop a cell; size += 1; push its unvisited land neighbours (marking them)\n  best = max(best, size)\nreturn best",
+    "walkthrough": "Mark cells as visited as soon as you add them to the stack, so that no cell is counted twice. Starting a new search from every unvisited land cell counts each island exactly once, and the size of the search is the area. The work is O(rows * columns) because every cell is added at most once. Use an explicit stack or queue instead of recursion if the grid can be big (an island can have 90,000 cells, deeper than many recursion limits). You can also mark visited land by changing the 1 to a 0 in a copy of the grid."
+  }
+}

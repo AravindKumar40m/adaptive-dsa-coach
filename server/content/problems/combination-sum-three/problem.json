@@ -1,0 +1,24 @@
+{
+  "slug": "combination-sum-three",
+  "title": "Choose Digits That Add Up",
+  "concept": "backtracking",
+  "difficulty": "medium",
+  "statement": "Count the ways to choose **exactly `k` different digits from 1 to 9** whose sum is exactly `n`. Choosing the same digits in a different order is the same choice (`{1, 2, 6}` and `{6, 2, 1}` count once), and a digit can be used at most once.",
+  "constraints": [
+    "1 <= k <= 9",
+    "1 <= n <= 60"
+  ],
+  "signature": { "name": "count_combination_three", "params": [{ "name": "k", "type": "int" }, { "name": "n", "type": "int" }], "returns": "int" },
+  "examples": [
+    { "args": [3, 9], "expected": 3, "explanation": "{1, 2, 6}, {1, 3, 5} and {2, 3, 4}." },
+    { "args": [2, 18], "expected": 0, "explanation": "The two largest digits add up to 9 + 8 = 17." }
+  ],
+  "edgeTests": [[1, 5], [1, 10], [9, 45], [4, 10], [5, 15], [3, 24], [2, 3]],
+  "expected": { "time": "O(C(9, k))", "space": "O(k)" },
+  "hints": {
+    "nudge": "Choose the digits in increasing order, one after another. After choosing a digit, which digits are still allowed, and how much of the sum is left?",
+    "pattern": "Backtracking: pick the next digit larger than the previous one, subtract it from the remaining sum, and stop a branch as soon as the remaining sum is too small for the digits that are left to place.",
+    "pseudocode": "go(start, picksLeft, remaining):\n  if picksLeft == 0: return 1 if remaining == 0 else 0\n  total = 0\n  for d in start .. 9: if d > remaining: break; total += go(d + 1, picksLeft - 1, remaining - d)\n  return total",
+    "walkthrough": "Choosing digits in increasing order guarantees that every set is generated once (no permutations). The state is just three numbers: the smallest digit still allowed, how many digits must still be chosen, and how much of the sum is still missing. When no digits are to be chosen any more, the branch counts only if the missing sum is exactly 0. Because the digits are tried in increasing order, once a digit is larger than the missing sum all following digits are too, so the loop can stop early (pruning). There are only 2^9 = 512 subsets of the digits 1-9 at all, so the search is tiny."
+  }
+}

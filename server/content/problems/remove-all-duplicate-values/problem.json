@@ -1,0 +1,24 @@
+{
+  "slug": "remove-all-duplicate-values",
+  "title": "Keep Only the Values That Appear Once",
+  "concept": "linked_list",
+  "difficulty": "medium",
+  "statement": "`head` is the head of a linked list whose values are **sorted** from smallest to largest. Remove **every node whose value appears more than once** in the list (not just the extra copies: all the copies go). Return the head of the resulting list, which keeps only the values that occur exactly once.\n\nRe-link the existing nodes; do not build a new list.",
+  "constraints": [
+    "0 <= number of nodes <= 100000",
+    "-1000000000 <= node value <= 1000000000, in non-decreasing order"
+  ],
+  "signature": { "name": "remove_all_duplicates", "params": [{ "name": "head", "type": "ListNode" }], "returns": "ListNode" },
+  "examples": [
+    { "args": [[1, 2, 2, 3, 4, 4, 5]], "expected": [1, 3, 5], "explanation": "2 and 4 each appear twice, so every copy of them is removed." },
+    { "args": [[2, 2, 2]], "expected": [], "explanation": "The only value repeats, so nothing is left." }
+  ],
+  "edgeTests": [[[]], [[1]], [[1, 1]], [[1, 2, 3]], [[1, 1, 2, 3, 3]], [[1, 2, 2, 2, 3]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "The first node may have to go too, so you need a node in front of the head. And when you find a run of equal values, you must remove the whole run, not all but one.",
+    "pattern": "A dummy node, a pointer `prev` to the last node that stays; at each step check whether the next node starts a run of equal values and, if so, skip the whole run.",
+    "pseudocode": "dummy.next = head; prev = dummy; cur = head\nwhile cur:\n  if cur.next and cur.next.val == cur.val:\n    v = cur.val; while cur and cur.val == v: cur = cur.next\n    prev.next = cur\n  else: prev = cur; cur = cur.next\nreturn dummy.next",
+    "walkthrough": "Counting the values in a map and filtering needs extra memory and ignores that the list is sorted. Because it is sorted, equal values sit in a block. Walk with `cur`. If `cur` and the node after it have the same value, you are at the start of a run of duplicates: remember the value and move `cur` forward until the value changes, then link `prev` straight to the first node after the run. Otherwise `cur` is a value that appears once: it stays, so `prev` moves to it. The dummy node covers the case where the head itself is part of a run. O(n) time, O(1) extra memory."
+  }
+}

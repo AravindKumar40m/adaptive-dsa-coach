@@ -1,0 +1,24 @@
+{
+  "slug": "min-depth",
+  "title": "Distance to the Nearest Leaf",
+  "concept": "trees",
+  "difficulty": "easy",
+  "statement": "A **leaf** is a node with no children. The **minimum depth** of a binary tree is the number of nodes on the shortest path from the root **down to a leaf**. Return it. An empty tree has minimum depth `0`.\n\nCareful: a node with only one child is **not** a leaf.",
+  "constraints": [
+    "0 <= number of nodes <= 100000",
+    "-1000 <= node value <= 1000"
+  ],
+  "signature": { "name": "tree_min_depth", "params": [{ "name": "root", "type": "TreeNode" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 2, 3, 4, 5]], "expected": 2, "explanation": "Node 3 is a leaf at depth 2 (the path 1, 3)." },
+    { "args": [[1, 2, null, 3]], "expected": 3, "explanation": "The root has only a left child, so it is not a leaf: the only leaf is 3 and the path 1, 2, 3 has 3 nodes." }
+  ],
+  "edgeTests": [[[]], [[7]], [[1, 2]], [[1, null, 2, null, 3]], [[1, 2, 3, 4, null, null, 5]]],
+  "expected": { "time": "O(n)", "space": "O(width)" },
+  "hints": {
+    "nudge": "You are looking for the CLOSEST leaf. If you explore the tree level by level from the root, which leaf do you meet first?",
+    "pattern": "Breadth-first search by levels: the first node without children is the nearest leaf and its level is the answer. (A recursive version must treat a missing child specially: use the other side.)",
+    "pseudocode": "if tree is empty: return 0\nqueue = [(root, 1)]\nwhile queue: (node, depth) = pop front; if node has no children: return depth; push its children with depth + 1",
+    "walkthrough": "The recursive formula 1 + min(depth(left), depth(right)) is wrong when one child is missing: the missing side gives 0, and you would count the node itself as a leaf. Either handle that case (if one child is missing, use the depth of the other) or avoid it with a level-order search: visit the nodes level by level; the first node that has no left and no right child is the leaf with the smallest depth. The search stops early, but in the worst case it still visits every node: O(n)."
+  }
+}

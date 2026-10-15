@@ -1,0 +1,24 @@
+{
+  "slug": "longest-turbulent-run",
+  "title": "The Longest Zigzag Stretch",
+  "concept": "sliding_window",
+  "difficulty": "medium",
+  "statement": "A stretch of `numbers` is **turbulent** if the comparisons between neighbouring numbers **alternate strictly**: up, down, up, down, ... or down, up, down, up, ... (equal neighbours break a turbulent stretch). A single number is turbulent. Return the **length of the longest contiguous turbulent stretch**; for an empty list the answer is `0`.",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "0 <= numbers[i] <= 1000000000"
+  ],
+  "signature": { "name": "longest_turbulent_run", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[3, 1, 4, 1, 5, 9, 2, 6]], "expected": 5, "explanation": "3 > 1 < 4 > 1 < 5 is turbulent (length 5); then 5 < 9 breaks the pattern." },
+    { "args": [[7, 7, 7]], "expected": 1, "explanation": "Equal neighbours are never turbulent: the best is a single number." }
+  ],
+  "edgeTests": [[[]], [[1]], [[1, 2]], [[2, 2]], [[1, 2, 1, 2, 1]], [[1, 2, 3]], [[3, 2, 1]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Look at the signs of the differences between neighbours. A turbulent stretch is a stretch whose signs strictly alternate and are never zero.",
+    "pattern": "One pass keeping two numbers: the length of the longest turbulent stretch ending here whose last step went UP, and the one whose last step went DOWN.",
+    "pseudocode": "if empty: return 0\nup = down = 1; best = 1\nfor i in 1 .. n - 1:\n  if numbers[i] > numbers[i - 1]: up = down + 1; down = 1\n  elif numbers[i] < numbers[i - 1]: down = up + 1; up = 1\n  else: up = down = 1\n  best = max(best, up, down)\nreturn best",
+    "walkthrough": "Checking all stretches is O(n^2). Instead extend stretches as you go. If the new number is bigger than the previous one, the stretch ending here that went UP can be the one that ended at the previous position going DOWN, plus this step: up = down_before + 1, and a stretch that ends going down is not possible here (down = 1). The mirror case handles a smaller number. If the two are equal, no turbulent stretch longer than 1 ends here. The answer is the largest value ever seen. This is a sliding window where the window restarts whenever the pattern breaks. O(n) time, O(1) memory."
+  }
+}

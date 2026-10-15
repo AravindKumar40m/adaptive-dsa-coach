@@ -1,0 +1,25 @@
+{
+  "slug": "interleaving-strings-check",
+  "title": "Is the Third Text a Weave of the Other Two",
+  "concept": "dp",
+  "difficulty": "medium",
+  "statement": "Return `true` if the text `c` can be made by **weaving** the texts `a` and `b` together: take letters alternately from `a` and `b` in any pattern (several in a row from the same text is fine), but **keep the order of the letters inside each text**, and use every letter of both texts exactly once. For example `abxcy` is a weave of `abc` and `xy`.",
+  "constraints": [
+    "0 <= len(a), len(b) <= 100",
+    "0 <= len(c) <= 200",
+    "a, b and c contain lowercase letters"
+  ],
+  "signature": { "name": "is_interleaving", "params": [{ "name": "a", "type": "string" }, { "name": "b", "type": "string" }, { "name": "c", "type": "string" }], "returns": "bool" },
+  "examples": [
+    { "args": ["abc", "xy", "abxcy"], "expected": true, "explanation": "a, b from the first text, x from the second, c from the first, y from the second." },
+    { "args": ["ab", "cd", "adbc"], "expected": false, "explanation": "In `adbc` the d comes before the c, but in `cd` the c must come first." }
+  ],
+  "edgeTests": [["", "", ""], ["", "a", "a"], ["a", "", "b"], ["a", "b", "ab"], ["a", "b", "ba"], ["aa", "ab", "aaba"], ["a", "b", "abc"]],
+  "expected": { "time": "O(len(a) * len(b))", "space": "O(len(b))" },
+  "hints": {
+    "nudge": "Look at the first i letters of a and the first j letters of b. They must together make the first i + j letters of c. What can the last letter of that prefix of c be?",
+    "pattern": "Dynamic programming over (i, j): ok[i][j] is true if the first i letters of a and the first j letters of b weave into the first i + j letters of c. It is true if the last letter of that prefix of c matches a[i - 1] and ok[i - 1][j], or matches b[j - 1] and ok[i][j - 1].",
+    "pseudocode": "if len(a) + len(b) != len(c): return false\nok[0][0] = true\nok[i][j] = (i > 0 and ok[i - 1][j] and a[i - 1] == c[i + j - 1]) or (j > 0 and ok[i][j - 1] and b[j - 1] == c[i + j - 1])\nreturn ok[len(a)][len(b)]",
+    "walkthrough": "Try all ways of assigning each letter of c to a or b and you get exponentially many cases, but the situation after reading i + j letters of c depends only on HOW MANY letters were taken from a (i) and from b (j). So tabulate ok[i][j]. The last letter c[i + j - 1] was taken either from a (then it must equal a[i - 1] and the prefixes (i - 1, j) must have worked) or from b (equal to b[j - 1] and (i, j - 1) worked). If the lengths do not add up the answer is false at once. Fill the table row by row; one row at a time is enough for the memory. O(len(a) * len(b)) time."
+  }
+}

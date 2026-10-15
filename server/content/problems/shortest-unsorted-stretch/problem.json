@@ -1,0 +1,24 @@
+{
+  "slug": "shortest-unsorted-stretch",
+  "title": "The Shortest Stretch to Sort",
+  "concept": "arrays",
+  "difficulty": "medium",
+  "statement": "Find the **shortest contiguous stretch** of `numbers` that you would have to sort (increasing order) so that the **whole list** becomes sorted in increasing order. Return the **length** of that stretch, or `0` if the list is already sorted. Equal neighbours are allowed in a sorted list.",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "-1000000000 <= numbers[i] <= 1000000000"
+  ],
+  "signature": { "name": "unsorted_stretch_length", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[1, 3, 5, 4, 2, 6, 7]], "expected": 4, "explanation": "Sorting the stretch 3, 5, 4, 2 (positions 1 to 4) gives 1, 2, 3, 4, 5, 6, 7." },
+    { "args": [[1, 2, 3]], "expected": 0, "explanation": "Already sorted." }
+  ],
+  "edgeTests": [[[]], [[1]], [[2, 1]], [[1, 2, 3, 3]], [[3, 2, 1]], [[1, 3, 2, 2, 2]], [[2, 2, 1]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "Which positions are 'wrong'? A position is wrong if something larger stands to its left, or something smaller stands to its right.",
+    "pattern": "Two scans: left to right with the running maximum finds the LAST position that is smaller than something before it; right to left with the running minimum finds the FIRST position that is larger than something after it.",
+    "pseudocode": "end = -1; maxSoFar = -infinity\nfor i = 0 .. n - 1: if numbers[i] < maxSoFar: end = i else maxSoFar = numbers[i]\nstart = 0; minSoFar = +infinity\nfor i = n - 1 down to 0: if numbers[i] > minSoFar: start = i else minSoFar = numbers[i]\nreturn end - start + 1      (this is 0 when end = -1 and start = 0)",
+    "walkthrough": "Sorting a copy and comparing finds the stretch in O(n log n): the first and last positions where the two lists differ are its ends. In O(n): scan from the left and remember the largest number seen. A number smaller than that maximum is out of place; the last such position is the right end of the stretch. Scan from the right and remember the smallest number seen. A number larger than that minimum is out of place; the first such position (the leftmost found while going left) is the left end. Use strict comparisons so that equal numbers do not count as out of order. If nothing was out of place, end stays -1 and start stays 0, giving length 0."
+  }
+}

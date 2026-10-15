@@ -1,0 +1,141 @@
+//### valid-perfect-square
+bool is_perfect_square(int num) {
+    long long lo = 1, hi = min(num, 46341);
+    while (lo <= hi) {
+        long long mid = (lo + hi) / 2, square = mid * mid;
+        if (square == num) return true;
+        if (square < num) lo = mid + 1; else hi = mid - 1;
+    }
+    return false;
+}
+//### kth-missing-positive
+int kth_missing_positive(vector<int>& numbers, int k) {
+    int lo = 0, hi = (int) numbers.size();
+    while (lo < hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (numbers[mid] - (mid + 1) >= k) hi = mid; else lo = mid + 1;
+    }
+    return (int) ((long long) lo + k);
+}
+//### smallest-divisor-threshold
+int smallest_divisor(vector<int>& numbers, int threshold) {
+    int lo = 1, hi = *max_element(numbers.begin(), numbers.end());
+    while (lo < hi) {
+        int mid = lo + (hi - lo) / 2;
+        long long total = 0;
+        for (int x : numbers) total += (x + mid - 1) / mid;
+        if (total <= threshold) hi = mid; else lo = mid + 1;
+    }
+    return lo;
+}
+//### nth-magical-number
+long long magic_gcd(long long x, long long y) {
+    return y == 0 ? x : magic_gcd(y, x % y);
+}
+
+int nth_magical_number(int n, int a, int b) {
+    long long lcm = (long long) a / magic_gcd(a, b) * b;
+    long long lo = min(a, b), hi = (long long) n * min(a, b);
+    while (lo < hi) {
+        long long mid = (lo + hi) / 2;
+        long long count = mid / a + mid / b - mid / lcm;
+        if (count >= n) hi = mid; else lo = mid + 1;
+    }
+    return (int) (lo % 1000000007LL);
+}
+//### kth-in-multiplication-table
+int kth_in_multiplication_table(int m, int n, int k) {
+    long long lo = 1, hi = (long long) m * n;
+    while (lo < hi) {
+        long long mid = (lo + hi) / 2;
+        long long count = 0;
+        for (int i = 1; i <= m; i++) count += min((long long) n, mid / i);
+        if (count >= k) hi = mid; else lo = mid + 1;
+    }
+    return (int) lo;
+}
+//### merge-sorted-rows
+vector<int> merge_sorted_rows(vector<vector<int>>& rows) {
+    typedef tuple<int, int, int> Item;
+    priority_queue<Item, vector<Item>, greater<Item>> heap;
+    for (int r = 0; r < (int) rows.size(); r++) if (!rows[r].empty()) heap.push(Item(rows[r][0], r, 0));
+    vector<int> out;
+    while (!heap.empty()) {
+        Item top = heap.top();
+        heap.pop();
+        out.push_back(get<0>(top));
+        int r = get<1>(top), c = get<2>(top);
+        if (c + 1 < (int) rows[r].size()) heap.push(Item(rows[r][c + 1], r, c + 1));
+    }
+    return out;
+}
+//### super-smooth-number
+int super_smooth_number(int n, vector<int>& primes) {
+    vector<long long> smooth(n);
+    smooth[0] = 1;
+    vector<int> pointer(primes.size(), 0);
+    for (int i = 1; i < n; i++) {
+        long long next = LLONG_MAX;
+        for (size_t j = 0; j < primes.size(); j++) next = min(next, primes[j] * smooth[pointer[j]]);
+        smooth[i] = next;
+        for (size_t j = 0; j < primes.size(); j++) if (primes[j] * smooth[pointer[j]] == next) pointer[j]++;
+    }
+    return (int) smooth[n - 1];
+}
+//### take-gifts-sqrt
+int remaining_gifts(vector<int>& gifts, int k) {
+    priority_queue<long long> heap;
+    for (int g : gifts) heap.push(g);
+    for (int i = 0; i < k && !heap.empty(); i++) {
+        long long x = heap.top();
+        heap.pop();
+        long long root = (long long) sqrt((double) x);
+        while (root * root > x) root--;
+        while ((root + 1) * (root + 1) <= x) root++;
+        heap.push(root);
+    }
+    long long total = 0;
+    while (!heap.empty()) { total += heap.top(); heap.pop(); }
+    return (int) total;
+}
+//### schedule-courses-max
+int max_courses(vector<vector<int>>& courses) {
+    vector<vector<int>> sorted_courses = courses;
+    sort(sorted_courses.begin(), sorted_courses.end(), [](const vector<int>& a, const vector<int>& b) { return a[1] < b[1]; });
+    priority_queue<int> heap;
+    long long total = 0;
+    for (auto& course : sorted_courses) {
+        total += course[0];
+        heap.push(course[0]);
+        if (total > course[1]) { total -= heap.top(); heap.pop(); }
+    }
+    return (int) heap.size();
+}
+//### trapped-water-2d
+int trapped_water_2d(vector<vector<int>>& heights) {
+    int rows = (int) heights.size(), cols = (int) heights[0].size();
+    vector<vector<char>> seen(rows, vector<char>(cols, 0));
+    typedef tuple<int, int, int> Item;
+    priority_queue<Item, vector<Item>, greater<Item>> heap;
+    for (int r = 0; r < rows; r++) {
+        for (int c = 0; c < cols; c++) {
+            if (r == 0 || r == rows - 1 || c == 0 || c == cols - 1) { heap.push(Item(heights[r][c], r, c)); seen[r][c] = 1; }
+        }
+    }
+    int dr[4] = {1, -1, 0, 0}, dc[4] = {0, 0, 1, -1};
+    long long total = 0;
+    while (!heap.empty()) {
+        Item top = heap.top();
+        heap.pop();
+        int h = get<0>(top), r = get<1>(top), c = get<2>(top);
+        for (int d = 0; d < 4; d++) {
+            int nr = r + dr[d], nc = c + dc[d];
+            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && !seen[nr][nc]) {
+                seen[nr][nc] = 1;
+                total += max(0, h - heights[nr][nc]);
+                heap.push(Item(max(h, heights[nr][nc]), nr, nc));
+            }
+        }
+    }
+    return (int) total;
+}

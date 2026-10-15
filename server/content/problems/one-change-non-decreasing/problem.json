@@ -1,0 +1,24 @@
+{
+  "slug": "one-change-non-decreasing",
+  "title": "Can One Change Fix the Order",
+  "concept": "greedy",
+  "difficulty": "medium",
+  "statement": "Return `true` if you can make `numbers` **non-decreasing** (each number at least as big as the one before it) by **changing at most one number** to any value you like, otherwise `false`. A list that is already non-decreasing needs no change.",
+  "constraints": [
+    "0 <= len(numbers) <= 100000",
+    "-1000000000 <= numbers[i] <= 1000000000"
+  ],
+  "signature": { "name": "one_change_non_decreasing", "params": [{ "name": "numbers", "type": "int[]" }], "returns": "bool" },
+  "examples": [
+    { "args": [[3, 5, 2, 6]], "expected": true, "explanation": "Change the 2 into 5: the list becomes 3, 5, 5, 6, which is non-decreasing." },
+    { "args": [[5, 6, 1, 2, 3]], "expected": false, "explanation": "The 1 is too small after 6, and fixing it breaks the next pair; no single change helps." }
+  ],
+  "edgeTests": [[[]], [[1]], [[2, 1]], [[1, 2, 3]], [[3, 2, 1]], [[1, 3, 2, 4]], [[2, 3, 3, 2, 4]], [[1, 1, 1]]],
+  "expected": { "time": "O(n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "A problem can only appear where a number is bigger than the one after it. If this happens twice, can one change fix both?",
+    "pattern": "Scan for a 'descent' (numbers[i] > numbers[i + 1]); count descents, and at a descent decide which of the two numbers to change: lower the left one if it is safe for the number before it, otherwise raise the right one.",
+    "pseudocode": "changes = 0\nfor i in 0 .. n - 2: if numbers[i] > numbers[i + 1]:\n  changes += 1; if changes > 1: return false\n  if i == 0 or numbers[i - 1] <= numbers[i + 1]: numbers[i] = numbers[i + 1]   (lower the left one)\n  else: numbers[i + 1] = numbers[i]                                         (raise the right one)\nreturn true",
+    "walkthrough": "Trying every position and every value is slow. A descent is a pair (i, i + 1) with numbers[i] > numbers[i + 1]; the list is sorted exactly when there is none. With two or more separate descents one change cannot help (usually), so count them. At the first descent you must change one of the two numbers. Lowering numbers[i] to numbers[i + 1] is the safer choice because it keeps the left part as small as it can be, but it is only allowed if the number before it is not larger than numbers[i + 1] (or there is no number before it). If it is not allowed, raise numbers[i + 1] to numbers[i] instead, and continue scanning with the changed list: the change may create a new descent right after it, which is then counted as a second change. Work on a copy."
+  }
+}

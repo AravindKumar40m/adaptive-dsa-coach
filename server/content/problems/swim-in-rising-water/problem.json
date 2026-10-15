@@ -1,0 +1,24 @@
+{
+  "slug": "swim-in-rising-water",
+  "title": "Swim Across the Rising Pool",
+  "concept": "graphs",
+  "difficulty": "hard",
+  "statement": "`grid[r][c]` is the elevation of a square cell in an `n` by `n` pool area. At time `t` the water level is `t` everywhere, and you can stand in (swim through) any cell whose elevation is **at most `t`**. You start at the top-left cell and want to reach the bottom-right cell; at any moment you can swim between **side-neighbouring** cells that are both at most `t`, instantly. You may also just wait.\n\nReturn the **earliest time `t`** at which you can reach the bottom-right cell. (Both the start and the end cell must be at most `t`.)",
+  "constraints": [
+    "1 <= n <= 50",
+    "0 <= grid[r][c] <= 10000"
+  ],
+  "signature": { "name": "swim_time", "params": [{ "name": "grid", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [[[0, 1, 2], [7, 8, 3], [6, 5, 4]]], "expected": 4, "explanation": "Go right along the top and then down the right side: the cells 0, 1, 2, 3, 4 are all at most 4 at time 4." },
+    { "args": [[[3]]], "expected": 3, "explanation": "A single cell: you can stand in it from time 3." }
+  ],
+  "edgeTests": [[[[0]]], [[[0, 1], [2, 3]]], [[[0, 3], [1, 2]]], [[[5, 0], [1, 3]]], [[[0, 2], [1, 3]]]],
+  "expected": { "time": "O(n^2 log n)", "space": "O(n^2)" },
+  "hints": {
+    "nudge": "A route is possible at time t exactly when there is a path of cells that are ALL at most t. So the best time for a route is the highest cell on it. Which route has the lowest highest cell?",
+    "pattern": "Minimise the maximum along a path: Dijkstra-style search with a min-heap where the 'distance' of a cell is the highest elevation on the best path to it; or binary search on t with a flood fill.",
+    "pseudocode": "heap = [(grid[0][0], 0, 0)]; best time = 0\nwhile heap: (t, r, c) = pop the smallest; if (r, c) is the end: return t\n  for each unvisited neighbour: push (max(t, its elevation), neighbour); mark it visited",
+    "walkthrough": "Simulating time step by step and flood-filling each time is O(maxElevation * n^2). Two better ideas. (1) Binary search the answer: whether the end is reachable at time t only gets easier as t grows, so search t between the corner cells' maximum and the highest elevation, using a flood fill that only enters cells at most t. (2) Dijkstra with the 'cost of a path = its highest cell': keep a min-heap of cells by that cost, always expand the cell with the smallest cost, and give a neighbour the cost max(current cost, neighbour's elevation). The first time the end cell is taken out of the heap, its cost is the answer, because every cheaper path would have been explored first. O(n^2 log n)."
+  }
+}

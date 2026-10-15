@@ -1,0 +1,24 @@
+{
+  "slug": "trapped-water-2d",
+  "title": "Rain on a Landscape",
+  "concept": "heaps",
+  "difficulty": "hard",
+  "statement": "`heights` is a map of a landscape: `heights[r][c]` is the height of the ground in the cell at row `r`, column `c`. After heavy rain, water collects in the low parts. Water can flow from a cell to the cell **directly above, below, left or right** of it, and any water that reaches the **edge of the map** flows away. A cell holds water up to the lowest level at which it is still enclosed.\n\nReturn the **total volume of water** that stays on the map (each cell counts its water depth, which is the water level minus the ground height).",
+  "constraints": [
+    "1 <= rows, columns <= 100",
+    "0 <= heights[r][c] <= 20000"
+  ],
+  "signature": { "name": "trapped_water_2d", "params": [{ "name": "heights", "type": "int[][]" }], "returns": "int" },
+  "examples": [
+    { "args": [[[3, 3, 3, 3], [3, 1, 2, 3], [3, 3, 3, 3]]], "expected": 3, "explanation": "The two inner cells are surrounded by ground of height 3: they fill up to 3, holding (3 - 1) + (3 - 2) = 3." },
+    { "args": [[[5, 5, 5], [5, 1, 5], [5, 5, 5]]], "expected": 4, "explanation": "The single inner cell fills up to the rim, 5, holding 5 - 1 = 4." }
+  ],
+  "edgeTests": [[[[1]]], [[[1, 2], [3, 4]]], [[[9, 9, 9], [9, 0, 9], [9, 9, 9]]], [[[3, 3, 3], [3, 1, 3], [3, 3, 0]]], [[[1, 4, 3, 1, 3, 2], [3, 2, 1, 3, 2, 4], [2, 3, 3, 2, 3, 1]]]],
+  "expected": { "time": "O(rows * columns * log(rows * columns))", "space": "O(rows * columns)" },
+  "hints": {
+    "nudge": "In one dimension the water above a bar depends on the walls on both sides. In two dimensions the water can escape in any direction, so what decides the level of a cell? Think about the lowest way out.",
+    "pattern": "Start from the border and grow inwards with a min-heap: always take the lowest cell of the current 'wall'; its unvisited neighbours can hold water up to that wall height, and the neighbour joins the wall with height max(its own height, the wall height).",
+    "pseudocode": "put every border cell in a min-heap by height; mark them visited; total = 0\nwhile heap not empty:\n  (height, cell) = pop the lowest\n  for each unvisited neighbour nb: total += max(0, height - heights[nb]); push nb with max(height, heights[nb]); mark visited\nreturn total",
+    "walkthrough": "The water level of a cell is the lowest 'pass' through which it could drain: the smallest, over all paths from the cell to the edge, of the highest ground along the path. Compute this from the outside in. Keep the border cells in a min-heap (they are the first wall, and water over them flows away). Repeatedly remove the LOWEST wall cell: any neighbour that is not yet in the wall can be filled at most up to this height (everything else around the lowest wall cell is at least as high, so the lowest pass to it is through this cell). Its water is max(0, wall height - ground height), and it joins the wall with the higher of the two heights. Because you always process the lowest wall first, each cell is settled with its correct level. Each cell is pushed once: O(R * C log(R * C)). The total can reach 2 * 10^8, which fits in a 32-bit integer."
+  }
+}

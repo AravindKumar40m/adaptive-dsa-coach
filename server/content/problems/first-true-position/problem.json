@@ -1,0 +1,24 @@
+{
+  "slug": "first-true-position",
+  "title": "Find the First Bad Version",
+  "concept": "binary_search",
+  "difficulty": "easy",
+  "statement": "`flags` is a list of `0` and `1` in which all the `0`s come first and all the `1`s after them (for example `0, 0, 0, 1, 1`); either part can be empty. A `1` at position `i` means that version `i` of a program is bad, and once a version is bad every later version is bad too.\n\nReturn the **position of the first `1`**, or `-1` if there is none.",
+  "constraints": [
+    "0 <= len(flags) <= 100000",
+    "flags is sorted: zeros first, then ones"
+  ],
+  "signature": { "name": "first_true_index", "params": [{ "name": "flags", "type": "int[]" }], "returns": "int" },
+  "examples": [
+    { "args": [[0, 0, 1, 1, 1]], "expected": 2, "explanation": "The first 1 is at position 2." },
+    { "args": [[0, 0, 0]], "expected": -1, "explanation": "No 1 at all." }
+  ],
+  "edgeTests": [[[]], [[1]], [[0]], [[1, 1, 1]], [[0, 1]], [[0, 0, 0, 0, 1]]],
+  "expected": { "time": "O(log n)", "space": "O(1)" },
+  "hints": {
+    "nudge": "If you look at the middle flag and it is 0, what do you know about everything to its left? And if it is 1?",
+    "pattern": "Binary search for the boundary: keep a range that still contains the first 1; a 1 at the middle means the answer is at the middle or to its left, a 0 means it is to the right.",
+    "pseudocode": "lo = 0; hi = n          (hi = n means 'no 1 found yet')\nwhile lo < hi:\n  mid = (lo + hi) / 2\n  if flags[mid] == 1: hi = mid else: lo = mid + 1\nreturn lo if lo < n else -1",
+    "walkthrough": "Scanning from the left finds the first 1 in O(n). Because the list is sorted (0s then 1s), the middle element tells which half can be thrown away: if flags[mid] is 1, the first 1 is at mid or earlier, so keep [lo, mid]; if it is 0, the first 1 must be after mid, so keep [mid + 1, hi]. Use the half-open range [lo, hi) with hi starting at n, so that 'no 1 at all' ends with lo = n. The loop ends when lo == hi; that position is the first 1, or n if there is none (return -1). About log2(n) steps. This is the template for every 'find the first position where a monotone condition becomes true' problem."
+  }
+}
